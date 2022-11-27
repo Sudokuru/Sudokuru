@@ -10,4 +10,13 @@ describe("create Board object", () => {
             expect(err).toHaveProperty('Error_Message', CustomErrorEnum.INVALID_BOARD_LENGTH);
         }
     });
+
+    it('should throw invalid board character error', async () => {
+        try {
+            let obj:Board = new Board("a00000000000000000000000000000000000000000000000000000000000000000000000000000000");
+        } catch (err) {
+            expect(err).toBeInstanceOf(CustomError);
+            expect(err).toHaveProperty('Error_Message', CustomErrorEnum.INVALID_BOARD_CHARACTERS);
+        }
+    });
 });

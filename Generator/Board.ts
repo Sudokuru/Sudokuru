@@ -22,5 +22,8 @@ export class Board{
         if (board.length !== SudokuEnum.BOARD_LENGTH) {
             throw new CustomError(CustomErrorEnum.INVALID_BOARD_LENGTH);
         }
+        else if (!(/^[SudokuEnum.EMPTY_CELL + SudokuEnum.CANDIDATES]*$/.test(board))) {
+            throw new CustomError(CustomErrorEnum.INVALID_BOARD_CHARACTERS);
+        }
     }
 }
