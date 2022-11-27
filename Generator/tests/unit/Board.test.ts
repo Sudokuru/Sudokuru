@@ -3,8 +3,11 @@ import { CustomError, CustomErrorEnum } from '../../CustomError';
 
 describe("create Board object", () => {
     it('should throw invalid board length error', async () => {
-        let obj:Board = new Board("0");
-        expect(obj).toThrow(CustomError);
-        expect(obj).toThrow(CustomErrorEnum.INVALID_BOARD_LENGTH);
+        try {
+            let obj:Board = new Board("0");
+        } catch (err) {
+            expect(err).toBeInstanceOf(CustomError);
+            expect(err).toHaveProperty('Error_Message', CustomErrorEnum.INVALID_BOARD_LENGTH);
+        }
     });
 });
