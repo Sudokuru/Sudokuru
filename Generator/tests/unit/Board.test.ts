@@ -20,7 +20,7 @@ describe("create Board object", () => {
         }
     });
 
-    it('should create board object', async () => {
+    /*it('should create board object', async () => {
         let board:string[][] = [["0","0","0","0","0","0","0","0","0"],
                                 ["0","0","0","0","0","0","0","0","0"],
                                 ["0","0","0","0","0","0","0","0","0"],
@@ -32,5 +32,12 @@ describe("create Board object", () => {
                                 ["0","0","0","0","0","0","0","0","0"]];
         let obj:Board = new Board("000000000000000000000000000000000000000000000000000000000000000000000000000000000");
         expect(obj.getBoard()).toEqual(board);
+    });*/
+
+    it('should solve', async () => {
+        let board:Board = new Board("439275618051896437876143592342687951185329746697451283928734165563912874714568329");
+        let calcSolution:string = board.getSolutionString();
+        let solution:string = "439275618251896437876143592342687951185329746697451283928734165563912874714568329";
+        expect(calcSolution).toBe(solution);
     });
 });
