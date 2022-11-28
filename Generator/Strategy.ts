@@ -1,5 +1,10 @@
 import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
+
+export enum StrategyEnum {
+    NAKED_SINGLE = 0
+}
+
 /**
  * Constructed using 2d array of cells
  * Returns:

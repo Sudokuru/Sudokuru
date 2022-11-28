@@ -53,6 +53,13 @@ export class Cell{
         return this.value;
     }
 
+    public isEmpty():boolean {
+        if (this.value === SudokuEnum.EMPTY_CELL) {
+            return true;
+        }
+        return false;
+    }
+
     public getNotes():Map<string, undefined> {
         return this.notes;
     }

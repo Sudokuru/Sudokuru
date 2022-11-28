@@ -7,6 +7,7 @@ export enum CustomErrorEnum {
     COLUMN_INDEX_OUT_OF_RANGE = "The column index used isn't in the range 0-" + (SudokuEnum.COLUMN_LENGTH-1) + ".",
     INVALID_VALUE = "The value provided isn't one of the following options allowed: " + SudokuEnum.CANDIDATES,
     STRATEGY_NOT_IDENTIFIED = "A strategy hasn't been identified yet",
+    UNSOLVABLE = "This board isn't solvable",
     DEFAULT_ERROR = "Default Error"
 }
 

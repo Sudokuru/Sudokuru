@@ -26,5 +26,8 @@ export function validateValue(value: string):void {
             return;
         }
     }
+    if (value === SudokuEnum.EMPTY_CELL) {
+        return;
+    }
     throw new CustomError(CustomErrorEnum.INVALID_VALUE);
 }
