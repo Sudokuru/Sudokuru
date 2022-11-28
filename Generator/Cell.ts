@@ -8,6 +8,7 @@ import { SudokuEnum, validateRow, validateColumn, validateValue } from "./Sudoku
  * Column
  * Value
  * Notes
+ * Has note
  */
 export class Cell{
     private row: number;
@@ -54,6 +55,10 @@ export class Cell{
 
     public getNotes():Map<string, undefined> {
         return this.notes;
+    }
+
+    public hasNote(note: string):boolean {
+        return this.notes.has(note);
     }
 
     public setValue(value: string):void {

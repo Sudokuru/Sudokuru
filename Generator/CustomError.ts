@@ -6,6 +6,7 @@ export enum CustomErrorEnum {
     ROW_INDEX_OUT_OF_RANGE = "The row index used isn't in the range 0-" + (SudokuEnum.ROW_LENGTH-1) + ".",
     COLUMN_INDEX_OUT_OF_RANGE = "The column index used isn't in the range 0-" + (SudokuEnum.COLUMN_LENGTH-1) + ".",
     INVALID_VALUE = "The value provided isn't one of the following options allowed: " + SudokuEnum.CANDIDATES,
+    STRATEGY_NOT_IDENTIFIED = "A strategy hasn't been identified yet",
     DEFAULT_ERROR = "Default Error"
 }
 
