@@ -60,6 +60,14 @@ export class Cell{
         return this.box;
     }
 
+    public getBoxColumnStart():number {
+        return (this.box % SudokuEnum.BOX_LENGTH) * 3;
+    }
+
+    public getBoxRowStart():number {
+        return Math.floor(this.box / SudokuEnum.BOX_LENGTH) * 3;
+    }
+
     public isEmpty():boolean {
         if (this.value === SudokuEnum.EMPTY_CELL) {
             return true;
@@ -101,8 +109,8 @@ export class Cell{
     }
 
     private initializeBox():void {
-        this.box = Math.floor(this.column / 3);
-        this.box += Math.floor(this.row / 3) * 3;
+        this.box = Math.floor(this.column / SudokuEnum.BOX_LENGTH);
+        this.box += Math.floor(this.row / SudokuEnum.BOX_LENGTH) * SudokuEnum.BOX_LENGTH;
         return;
     }
 }

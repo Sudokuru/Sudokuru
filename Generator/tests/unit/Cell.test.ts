@@ -51,5 +51,11 @@ describe("create Cell object", () => {
         expect(b.getBox()).toBe(2);
         expect(c.getBox()).toBe(3);
         expect(d.getBox()).toBe(7);
+
+        expect(a.getBoxColumnStart()).toBe(0);
+        expect(b.getBoxColumnStart()).toBe(6);
+
+        expect(c.getBoxRowStart()).toBe(3);
+        expect(d.getBoxRowStart()).toBe(6);
     });
 });

@@ -40,4 +40,11 @@ describe("create Board object", () => {
         let solution:string = "439275618251896437876143592342687951185329746697451283928734165563912874714568329";
         expect(calcSolution).toBe(solution);
     });
+
+    it('should solve 2', async () => {
+        let board:Board = new Board("310084002200150006570003010423708095760030000009562030050006070007000900000001500");
+        let calcSolution:string = board.getSolutionString();
+        let solution:string = "316984752298157346574623819423718695765439128189562437851396274637245981942871563";
+        expect(calcSolution).toBe(solution);
+    });
 });

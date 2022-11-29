@@ -61,7 +61,7 @@ export class Board{
     private solve():void {
         let s:Solver = new Solver(this.board);
         let strategy:number = s.nextStep();
-        while (!strategy === null) {
+        while (strategy !== null) {
             if (strategy > this.strategy) {
                 this.strategy = strategy;
             }
