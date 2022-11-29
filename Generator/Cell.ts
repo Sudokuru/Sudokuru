@@ -6,6 +6,7 @@ import { SudokuEnum, validateRow, validateColumn, validateValue } from "./Sudoku
  * Returns:
  * Row
  * Column
+ * Box
  * Value
  * Notes
  * Has note
@@ -13,6 +14,7 @@ import { SudokuEnum, validateRow, validateColumn, validateValue } from "./Sudoku
 export class Cell{
     private row: number;
     private column: number;
+    private box: number;
     private value: string;
     private notes: Map<string, undefined>;
 
@@ -31,6 +33,7 @@ export class Cell{
         validateColumn(column);
         this.row = row;
         this.column = column;
+        this.initializeBox();
         if (value != undefined) {
             validateValue(value);
             this.value = value;
@@ -51,6 +54,10 @@ export class Cell{
 
     public getValue():string {
         return this.value;
+    }
+
+    public getBox():number {
+        return this.box;
     }
 
     public isEmpty():boolean {
@@ -90,6 +97,12 @@ export class Cell{
         for (let i:number = 0; i < SudokuEnum.CANDIDATES.length; i++) {
             this.notes.set(SudokuEnum.CANDIDATES[i], undefined);
         }
+        return;
+    }
+
+    private initializeBox():void {
+        this.box = Math.floor(this.column / 3);
+        this.box += Math.floor(this.row / 3) * 3;
         return;
     }
 }

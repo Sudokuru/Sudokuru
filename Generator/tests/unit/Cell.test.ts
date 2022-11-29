@@ -41,4 +41,15 @@ describe("create Cell object", () => {
         expect(obj.hasNote("2")).toBeFalsy;
         expect(obj.hasNote("3")).toBeFalsy;
     });
+    it('should initialize box', () => {
+        let a:Cell = new Cell(1, 1);
+        let b:Cell = new Cell(2, 7);
+        let c:Cell = new Cell(3, 0);
+        let d:Cell = new Cell(8, 4);
+
+        expect(a.getBox()).toBe(0);
+        expect(b.getBox()).toBe(2);
+        expect(c.getBox()).toBe(3);
+        expect(d.getBox()).toBe(7);
+    });
 });
