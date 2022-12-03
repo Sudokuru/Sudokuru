@@ -14,6 +14,7 @@ import { Solver } from "./Solver";
 export class Board{
     private board: string[][];
     private solution: string[][];
+    private solutionString: string;
     private strategy: number;
 
     /**
@@ -65,13 +66,7 @@ export class Board{
      * @returns solution string
      */
     public getSolutionString():string {
-        let solution:string = "";
-        for (let i:number = 0; i < this.solution.length; i++) {
-            for (let j:number = 0; j < this.solution[i].length; j++) {
-                solution += this.solution[i][j];
-            }
-        }
-        return solution;
+        return this.solutionString;
     }
 
     /**
@@ -95,6 +90,20 @@ export class Board{
             strategy = s.nextStep();
         }
         this.solution = s.getSolution();
+        this.setSolutionString();
+        return;
+    }
+
+    /**
+     * Sets solution string
+     */
+    private setSolutionString():void {
+        this.solutionString = "";
+        for (let i:number = 0; i < this.solution.length; i++) {
+            for (let j:number = 0; j < this.solution[i].length; j++) {
+                this.solutionString += this.solution[i][j];
+            }
+        }
         return;
     }
 

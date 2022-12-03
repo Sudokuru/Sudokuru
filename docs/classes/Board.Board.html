@@ -30,7 +30,7 @@ Difficulty (integer on scale)</p>
 <ul class="tsd-hierarchy">
 <li><span class="target">Board</span></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/91814af/Generator/Board.ts#L14">Board.ts:14</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/7344fd4/Generator/Board.ts#L14">Board.ts:14</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -44,6 +44,7 @@ Difficulty (integer on scale)</p>
 <h3 class="tsd-index-heading">Properties</h3>
 <div class="tsd-index-list"><a href="Board.Board.html#board" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-private"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="#FF984D" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12" id="icon-1024-path"></rect><path d="M9.354 16V7.24H12.174C12.99 7.24 13.638 7.476 14.118 7.948C14.606 8.412 14.85 9.036 14.85 9.82C14.85 10.604 14.606 11.232 14.118 11.704C13.638 12.168 12.99 12.4 12.174 12.4H10.434V16H9.354ZM10.434 11.428H12.174C12.646 11.428 13.022 11.284 13.302 10.996C13.59 10.7 13.734 10.308 13.734 9.82C13.734 9.324 13.59 8.932 13.302 8.644C13.022 8.356 12.646 8.212 12.174 8.212H10.434V11.428Z" fill="var(--color-text)" id="icon-1024-text"></path></svg><span>board</span></a>
 <a href="Board.Board.html#solution" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-private"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>solution</span></a>
+<a href="Board.Board.html#solutionString" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-private"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>solution<wbr/>String</span></a>
 <a href="Board.Board.html#strategy" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-private"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>strategy</span></a>
 </div></section>
 <section class="tsd-index-section">
@@ -53,6 +54,7 @@ Difficulty (integer on scale)</p>
 <a href="Board.Board.html#getSolutionString" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>get<wbr/>Solution<wbr/>String</span></a>
 <a href="Board.Board.html#getStrategyScore" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>get<wbr/>Strategy<wbr/>Score</span></a>
 <a href="Board.Board.html#setBoard" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-private"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>set<wbr/>Board</span></a>
+<a href="Board.Board.html#setSolutionString" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-private"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>set<wbr/>Solution<wbr/>String</span></a>
 <a href="Board.Board.html#solve" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-private"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>solve</span></a>
 </div></section></div></details></section></section>
 <section class="tsd-panel-group tsd-member-group">
@@ -76,24 +78,29 @@ Thrown if board has invalid length, characters, or is already solved</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="Board.Board.html" class="tsd-signature-type" data-tsd-kind="Class">Board</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/91814af/Generator/Board.ts#L26">Board.ts:26</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/7344fd4/Generator/Board.ts#L27">Board.ts:27</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private"><a id="board" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>board</span><a href="#board" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">board<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">[]</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/91814af/Generator/Board.ts#L15">Board.ts:15</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/7344fd4/Generator/Board.ts#L15">Board.ts:15</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private"><a id="solution" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>solution</span><a href="#solution" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">solution<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">[]</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/91814af/Generator/Board.ts#L16">Board.ts:16</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/7344fd4/Generator/Board.ts#L16">Board.ts:16</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private"><a id="solutionString" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>solution<wbr/>String</span><a href="#solutionString" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature">solution<wbr/>String<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/7344fd4/Generator/Board.ts#L17">Board.ts:17</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private"><a id="strategy" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>strategy</span><a href="#strategy" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">strategy<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/91814af/Generator/Board.ts#L17">Board.ts:17</a></li></ul></aside></section></section>
+<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/7344fd4/Generator/Board.ts#L18">Board.ts:18</a></li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="getBoard" class="tsd-anchor"></a>
@@ -107,7 +114,7 @@ Thrown if board has invalid length, characters, or is already solved</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">[]</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/91814af/Generator/Board.ts#L51">Board.ts:51</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/7344fd4/Generator/Board.ts#L52">Board.ts:52</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="getSolution" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>Solution</span><a href="#getSolution" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -119,7 +126,7 @@ Thrown if board has invalid length, characters, or is already solved</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">[]</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/91814af/Generator/Board.ts#L59">Board.ts:59</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/7344fd4/Generator/Board.ts#L60">Board.ts:60</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="getSolutionString" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>Solution<wbr/>String</span><a href="#getSolutionString" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -131,7 +138,7 @@ Thrown if board has invalid length, characters, or is already solved</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/91814af/Generator/Board.ts#L67">Board.ts:67</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/7344fd4/Generator/Board.ts#L68">Board.ts:68</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="getStrategyScore" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>Strategy<wbr/>Score</span><a href="#getStrategyScore" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -143,7 +150,7 @@ Thrown if board has invalid length, characters, or is already solved</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/91814af/Generator/Board.ts#L81">Board.ts:81</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/7344fd4/Generator/Board.ts#L76">Board.ts:76</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private"><a id="setBoard" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>set<wbr/>Board</span><a href="#setBoard" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
@@ -160,7 +167,17 @@ Thrown if board has invalid length, characters, or is already solved</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/91814af/Generator/Board.ts#L105">Board.ts:105</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/7344fd4/Generator/Board.ts#L114">Board.ts:114</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private"><a id="setSolutionString" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>set<wbr/>Solution<wbr/>String</span><a href="#setSolutionString" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+<li class="tsd-signature tsd-anchor-link" id="setSolutionString.setSolutionString-1">set<wbr/>Solution<wbr/>String<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#setSolutionString.setSolutionString-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Sets solution string</p>
+</div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/7344fd4/Generator/Board.ts#L100">Board.ts:100</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private"><a id="solve" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>solve</span><a href="#solve" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
@@ -170,7 +187,7 @@ Thrown if board has invalid length, characters, or is already solved</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/91814af/Generator/Board.ts#L88">Board.ts:88</a></li></ul></aside></li></ul></section></section></div>
+<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/7344fd4/Generator/Board.ts#L83">Board.ts:83</a></li></ul></aside></li></ul></section></section></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 <div class="tsd-navigation settings">
 <details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
@@ -207,12 +224,14 @@ Thrown if board has invalid length, characters, or is already solved</p>
 <li class="tsd-kind-constructor tsd-parent-kind-class"><a href="Board.Board.html#constructor" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-512-path"></use><use href="#icon-512-text"></use></svg>constructor</a></li>
 <li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="Board.Board.html#board" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>board</a></li>
 <li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="Board.Board.html#solution" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>solution</a></li>
+<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="Board.Board.html#solutionString" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>solution<wbr/>String</a></li>
 <li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="Board.Board.html#strategy" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>strategy</a></li>
 <li class="tsd-kind-method tsd-parent-kind-class"><a href="Board.Board.html#getBoard" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>get<wbr/>Board</a></li>
 <li class="tsd-kind-method tsd-parent-kind-class"><a href="Board.Board.html#getSolution" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>get<wbr/>Solution</a></li>
 <li class="tsd-kind-method tsd-parent-kind-class"><a href="Board.Board.html#getSolutionString" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>get<wbr/>Solution<wbr/>String</a></li>
 <li class="tsd-kind-method tsd-parent-kind-class"><a href="Board.Board.html#getStrategyScore" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>get<wbr/>Strategy<wbr/>Score</a></li>
 <li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="Board.Board.html#setBoard" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>set<wbr/>Board</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="Board.Board.html#setSolutionString" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>set<wbr/>Solution<wbr/>String</a></li>
 <li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="Board.Board.html#solve" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>solve</a></li></ul></li></ul></nav></div></div>
 <div class="container tsd-generator">
 <p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div>
