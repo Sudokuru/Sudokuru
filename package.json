@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "update-docs": "npx typedoc Generator/*.ts --name GeneratorDocs"
   },
   "keywords": [],
   "author": "",

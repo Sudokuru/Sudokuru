@@ -16,6 +16,8 @@ export class CustomError {
 
     Error_Message!: CustomErrorEnum;
 
+    Status = 400;
+
     constructor(message: CustomErrorEnum){
         this.Error_Message = message;
     }

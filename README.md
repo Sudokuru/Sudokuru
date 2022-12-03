@@ -5,5 +5,5 @@ Reset package.json (run git checkout -- package.json)
 Run npm i
 Should be able to run npm test successfully now
 
-ts-docs will be generated with following command (still working on this):
-npx typedoc Generator/*.ts --name GeneratorDocs
+test using npm test
+update docs with npm run update-docs
