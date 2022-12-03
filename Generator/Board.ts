@@ -7,7 +7,7 @@ import { Solver } from "./Solver";
  * Throws exception if invalid board
  * Returns:
  * Board (2d array, one array per row each containing one string per cell)
- * Solution (2d array)
+ * Solution (2d array or string)
  * Most complex strategy that could be needed to solve
  * Difficulty (integer on scale)
  */
@@ -18,11 +18,13 @@ export class Board{
 
     /**
      * Creates board object if valid, otherwise throws error
-     * @constructor
-     * @param {string} board - 81 length board string (left to right, top to bottom)
+     * 
+     * @param board - 81 length board string (left to right, top to bottom)
+     * @throws {@link CustomError}
+     * Thrown if board has invalid length, characters, or is already solved
      */
     constructor(board: string) {
-        // Regex !^[0123456789]*$ which makes sure only contains those chars
+        // Regex ^[0123456789]*$ which makes sure only contains those chars
         let valid:string = SudokuEnum.EMPTY_CELL + SudokuEnum.CANDIDATES;
         valid = "^[" + valid + "]*$";
 
@@ -32,7 +34,9 @@ export class Board{
         else if (!new RegExp(valid).test(board)) {
             throw new CustomError(CustomErrorEnum.INVALID_BOARD_CHARACTERS);
         }
-        // add error if no zeros i.e. already solved
+        else if (!board.includes(SudokuEnum.EMPTY_CELL)) {
+            throw new CustomError(CustomErrorEnum.BOARD_ALREADY_SOLVED);
+        }
 
         this.setBoard(board);
 
@@ -40,14 +44,26 @@ export class Board{
         this.solve();
     }
 
+    /**
+     * Get board array
+     * @returns board array
+     */
     public getBoard():string[][] {
         return this.board;
     }
 
+    /**
+     * Get solution array
+     * @returns solution array
+     */
     public getSolution():string[][] {
         return this.solution;
     }
 
+    /**
+     * Get solution string
+     * @returns solution string
+     */
     public getSolutionString():string {
         let solution:string = "";
         for (let i:number = 0; i < this.solution.length; i++) {
@@ -58,6 +74,17 @@ export class Board{
         return solution;
     }
 
+    /**
+     * Get strategy score
+     * @returns strategy score
+     */
+    public getStrategyScore():number {
+        return this.strategy;
+    }
+
+    /**
+     * Solves the puzzle and sets strategy and solution
+     */
     private solve():void {
         let s:Solver = new Solver(this.board);
         let strategy:number = s.nextStep();
@@ -71,6 +98,10 @@ export class Board{
         return;
     }
 
+    /**
+     * Sets board array
+     * @param board - board string
+     */
     private setBoard(board: string):void {
         this.board = new Array();
         for (let i:number = 0; i < SudokuEnum.COLUMN_LENGTH; i++) {
