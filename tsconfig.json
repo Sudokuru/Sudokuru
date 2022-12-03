@@ -4,7 +4,7 @@
     "types": ["node", "jest"],
     "module": "commonjs",
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "./Generator",
     "strict": false,
     "moduleResolution": "node",
     "esModuleInterop": true,
