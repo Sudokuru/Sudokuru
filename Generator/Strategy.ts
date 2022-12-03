@@ -1,6 +1,10 @@
 import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
 
+/**
+ * Includes constants representing the various Sudoku strategies
+ * @enum
+ */
 export enum StrategyEnum {
     NAKED_SINGLE = 0
 }
@@ -22,7 +26,7 @@ export class Strategy{
     /**
      * Cell object using cells the strategy acts on
      * @constructor
-     * @param {Cell[][]} cells -
+     * @param cells - cells
      */
     constructor(cells: Cell[][]) {
         this.cells = cells;
@@ -30,6 +34,12 @@ export class Strategy{
         this.values = new Array();
     }
 
+    /**
+     * Gets values that can be placed
+     * @returns values that can be placed
+     * @throws {@link CustomError}
+     * Thrown if strategy hasn't been identified
+     */
     public getValuesToPlace():Cell[] {
         if (!this.identified) {
             throw new CustomError(CustomErrorEnum.STRATEGY_NOT_IDENTIFIED);
@@ -37,6 +47,10 @@ export class Strategy{
         return this.values;
     }
 
+    /**
+     * Checks if strategy is a naked single and if so adds values that can be placed
+     * @returns true if strategy is a naked single
+     */
     public isNakedSingle():boolean {
         let notes:Map<string, undefined> = this.cells[0][0].getNotes();
         if (notes.size == 1) {
