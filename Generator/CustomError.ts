@@ -9,6 +9,7 @@ export enum CustomErrorEnum {
     INVALID_VALUE = "The value provided isn't one of the following options allowed: " + SudokuEnum.CANDIDATES,
     STRATEGY_NOT_IDENTIFIED = "A strategy hasn't been identified yet",
     UNSOLVABLE = "This board isn't solvable",
+    NOT_SOLVED = "This board isn't solved",
     DEFAULT_ERROR = "Default Error"
 }
 
