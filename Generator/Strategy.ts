@@ -13,13 +13,19 @@ export enum StrategyEnum {
  * Constructed using 2d array of cells
  * Returns:
  * Whether or object constitutes specific strategies
+ * Cause (cells that "cause" the strategy to be applicable)
  * What candidates can be placed as result of strategy
  * What candidates can be removed from cells notes as result of strategy
+ * What strategy type this is (correlates to StrategyEnum)
  */
 export class Strategy{
     private cells: Cell[][];
     // Contains values that can be placed because of this Strategy
     private values: Cell[];
+    // Contains notes that can be removed because of this Strategy
+    private notes: Cell[];
+    // What specific strategy is used (correlated to StrategyEnum)
+    private strategyType: number;
     // Whether or not strategy has been identified and ready to use
     private identified: boolean;
 
@@ -32,11 +38,25 @@ export class Strategy{
         this.cells = cells;
         this.identified = false;
         this.values = new Array();
+        this.notes = new Array();
+    }
+
+    /**
+     * Gets cells that "cause" strategy to be applicable
+     * @returns cells
+     * @throws {@link CustomError}
+     * Thrown if strategy hasn't been identified
+     */
+    public getCause():Cell[][] {
+        if (!this.identified) {
+            throw new CustomError(CustomErrorEnum.STRATEGY_NOT_IDENTIFIED);
+        }
+        return this.cells;
     }
 
     /**
      * Gets values that can be placed
-     * @returns values that can be placed
+     * @returns Cells containing values that can be placed
      * @throws {@link CustomError}
      * Thrown if strategy hasn't been identified
      */
@@ -45,6 +65,27 @@ export class Strategy{
             throw new CustomError(CustomErrorEnum.STRATEGY_NOT_IDENTIFIED);
         }
         return this.values;
+    }
+
+    /**
+     * Gets notes that can be removed
+     * @returns Cells containing notes that can be removed
+     * @throws {@link CustomError}
+     * Thrown if strategy hasn't been identified
+     */
+    public getNotesToRemove():Cell[] {
+        if (!this.identified) {
+            throw new CustomError(CustomErrorEnum.STRATEGY_NOT_IDENTIFIED);
+        }
+        return this.notes;
+    }
+
+    /**
+     * Gets strategyType
+     * @returns strategyType
+     */
+    public getStrategyType():number {
+        return this.strategyType;
     }
 
     /**
@@ -59,6 +100,7 @@ export class Strategy{
                 let column:number = this.cells[0][0].getColumn();
                 this.values.push(new Cell(row, column, note));
             }
+            this.strategyType = StrategyEnum.NAKED_SINGLE;
             this.identified = true;
             return true;
         }
