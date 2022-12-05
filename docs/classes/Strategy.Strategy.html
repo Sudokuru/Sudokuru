@@ -20,15 +20,17 @@
 <div class="tsd-comment tsd-typography"><p>Constructed using 2d array of cells
 Returns:
 Whether or object constitutes specific strategies
+Cause (cells that &quot;cause&quot; the strategy to be applicable)
 What candidates can be placed as result of strategy
-What candidates can be removed from cells notes as result of strategy</p>
+What candidates can be removed from cells notes as result of strategy
+What strategy type this is (correlates to StrategyEnum)</p>
 </div></section>
 <section class="tsd-panel tsd-hierarchy">
 <h4>Hierarchy</h4>
 <ul class="tsd-hierarchy">
 <li><span class="target">Strategy</span></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/7344fd4/Generator/Strategy.ts#L19">Strategy.ts:19</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/6e95e63/Generator/Strategy.ts#L21">Strategy.ts:21</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -42,11 +44,16 @@ What candidates can be removed from cells notes as result of strategy</p>
 <h3 class="tsd-index-heading">Properties</h3>
 <div class="tsd-index-list"><a href="Strategy.Strategy.html#cells" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-private"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="#FF984D" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12" id="icon-1024-path"></rect><path d="M9.354 16V7.24H12.174C12.99 7.24 13.638 7.476 14.118 7.948C14.606 8.412 14.85 9.036 14.85 9.82C14.85 10.604 14.606 11.232 14.118 11.704C13.638 12.168 12.99 12.4 12.174 12.4H10.434V16H9.354ZM10.434 11.428H12.174C12.646 11.428 13.022 11.284 13.302 10.996C13.59 10.7 13.734 10.308 13.734 9.82C13.734 9.324 13.59 8.932 13.302 8.644C13.022 8.356 12.646 8.212 12.174 8.212H10.434V11.428Z" fill="var(--color-text)" id="icon-1024-text"></path></svg><span>cells</span></a>
 <a href="Strategy.Strategy.html#identified" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-private"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>identified</span></a>
+<a href="Strategy.Strategy.html#notes" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-private"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>notes</span></a>
+<a href="Strategy.Strategy.html#strategyType" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-private"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>strategy<wbr/>Type</span></a>
 <a href="Strategy.Strategy.html#values" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-private"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>values</span></a>
 </div></section>
 <section class="tsd-index-section">
 <h3 class="tsd-index-heading">Methods</h3>
-<div class="tsd-index-list"><a href="Strategy.Strategy.html#getValuesToPlace" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="#FF4DB8" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12" id="icon-2048-path"></rect><path d="M9.162 16V7.24H10.578L11.514 10.072C11.602 10.328 11.674 10.584 11.73 10.84C11.794 11.088 11.842 11.28 11.874 11.416C11.906 11.28 11.954 11.088 12.018 10.84C12.082 10.584 12.154 10.324 12.234 10.06L13.122 7.24H14.538V16H13.482V12.82C13.482 12.468 13.49 12.068 13.506 11.62C13.53 11.172 13.558 10.716 13.59 10.252C13.622 9.78 13.654 9.332 13.686 8.908C13.726 8.476 13.762 8.1 13.794 7.78L12.366 12.16H11.334L9.894 7.78C9.934 8.092 9.97 8.456 10.002 8.872C10.042 9.28 10.078 9.716 10.11 10.18C10.142 10.636 10.166 11.092 10.182 11.548C10.206 12.004 10.218 12.428 10.218 12.82V16H9.162Z" fill="var(--color-text)" id="icon-2048-text"></path></svg><span>get<wbr/>Values<wbr/>To<wbr/>Place</span></a>
+<div class="tsd-index-list"><a href="Strategy.Strategy.html#getCause" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="#FF4DB8" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12" id="icon-2048-path"></rect><path d="M9.162 16V7.24H10.578L11.514 10.072C11.602 10.328 11.674 10.584 11.73 10.84C11.794 11.088 11.842 11.28 11.874 11.416C11.906 11.28 11.954 11.088 12.018 10.84C12.082 10.584 12.154 10.324 12.234 10.06L13.122 7.24H14.538V16H13.482V12.82C13.482 12.468 13.49 12.068 13.506 11.62C13.53 11.172 13.558 10.716 13.59 10.252C13.622 9.78 13.654 9.332 13.686 8.908C13.726 8.476 13.762 8.1 13.794 7.78L12.366 12.16H11.334L9.894 7.78C9.934 8.092 9.97 8.456 10.002 8.872C10.042 9.28 10.078 9.716 10.11 10.18C10.142 10.636 10.166 11.092 10.182 11.548C10.206 12.004 10.218 12.428 10.218 12.82V16H9.162Z" fill="var(--color-text)" id="icon-2048-text"></path></svg><span>get<wbr/>Cause</span></a>
+<a href="Strategy.Strategy.html#getNotesToRemove" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>get<wbr/>Notes<wbr/>To<wbr/>Remove</span></a>
+<a href="Strategy.Strategy.html#getStrategyType" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>get<wbr/>Strategy<wbr/>Type</span></a>
+<a href="Strategy.Strategy.html#getValuesToPlace" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>get<wbr/>Values<wbr/>To<wbr/>Place</span></a>
 <a href="Strategy.Strategy.html#isNakedSingle" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>is<wbr/>Naked<wbr/>Single</span></a>
 </div></section></div></details></section></section>
 <section class="tsd-panel-group tsd-member-group">
@@ -67,26 +74,78 @@ What candidates can be removed from cells notes as result of strategy</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="Strategy.Strategy.html" class="tsd-signature-type" data-tsd-kind="Class">Strategy</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/7344fd4/Generator/Strategy.ts#L31">Strategy.ts:31</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/6e95e63/Generator/Strategy.ts#L37">Strategy.ts:37</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private"><a id="cells" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>cells</span><a href="#cells" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">cells<span class="tsd-signature-symbol">:</span> <a href="Cell.Cell.html" class="tsd-signature-type" data-tsd-kind="Class">Cell</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">[]</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/7344fd4/Generator/Strategy.ts#L20">Strategy.ts:20</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/6e95e63/Generator/Strategy.ts#L22">Strategy.ts:22</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private"><a id="identified" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>identified</span><a href="#identified" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">identified<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/7344fd4/Generator/Strategy.ts#L24">Strategy.ts:24</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/6e95e63/Generator/Strategy.ts#L30">Strategy.ts:30</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private"><a id="notes" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>notes</span><a href="#notes" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature">notes<span class="tsd-signature-symbol">:</span> <a href="Cell.Cell.html" class="tsd-signature-type" data-tsd-kind="Class">Cell</a><span class="tsd-signature-symbol">[]</span></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/6e95e63/Generator/Strategy.ts#L26">Strategy.ts:26</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private"><a id="strategyType" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>strategy<wbr/>Type</span><a href="#strategyType" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature">strategy<wbr/>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/6e95e63/Generator/Strategy.ts#L28">Strategy.ts:28</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private"><a id="values" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>values</span><a href="#values" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">values<span class="tsd-signature-symbol">:</span> <a href="Cell.Cell.html" class="tsd-signature-type" data-tsd-kind="Class">Cell</a><span class="tsd-signature-symbol">[]</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/7344fd4/Generator/Strategy.ts#L22">Strategy.ts:22</a></li></ul></aside></section></section>
+<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/6e95e63/Generator/Strategy.ts#L24">Strategy.ts:24</a></li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
+<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="getCause" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>get<wbr/>Cause</span><a href="#getCause" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+<li class="tsd-signature tsd-anchor-link" id="getCause.getCause-1">get<wbr/>Cause<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Cell.Cell.html" class="tsd-signature-type" data-tsd-kind="Class">Cell</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">[]</span><a href="#getCause.getCause-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Gets cells that &quot;cause&quot; strategy to be applicable</p>
+
+<h3>Returns</h3><p>cells</p>
+
+<h3>Throws</h3><p><a href="../modules/CustomError.html">CustomError</a>
+Thrown if strategy hasn&#39;t been identified</p>
+</div>
+<h4 class="tsd-returns-title">Returns <a href="Cell.Cell.html" class="tsd-signature-type" data-tsd-kind="Class">Cell</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">[]</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/6e95e63/Generator/Strategy.ts#L50">Strategy.ts:50</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="getNotesToRemove" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>get<wbr/>Notes<wbr/>To<wbr/>Remove</span><a href="#getNotesToRemove" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+<li class="tsd-signature tsd-anchor-link" id="getNotesToRemove.getNotesToRemove-1">get<wbr/>Notes<wbr/>To<wbr/>Remove<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Cell.Cell.html" class="tsd-signature-type" data-tsd-kind="Class">Cell</a><span class="tsd-signature-symbol">[]</span><a href="#getNotesToRemove.getNotesToRemove-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Gets notes that can be removed</p>
+
+<h3>Returns</h3><p>Cells containing notes that can be removed</p>
+
+<h3>Throws</h3><p><a href="../modules/CustomError.html">CustomError</a>
+Thrown if strategy hasn&#39;t been identified</p>
+</div>
+<h4 class="tsd-returns-title">Returns <a href="Cell.Cell.html" class="tsd-signature-type" data-tsd-kind="Class">Cell</a><span class="tsd-signature-symbol">[]</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/6e95e63/Generator/Strategy.ts#L76">Strategy.ts:76</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="getStrategyType" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>get<wbr/>Strategy<wbr/>Type</span><a href="#getStrategyType" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+<li class="tsd-signature tsd-anchor-link" id="getStrategyType.getStrategyType-1">get<wbr/>Strategy<wbr/>Type<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><a href="#getStrategyType.getStrategyType-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Gets strategyType</p>
+
+<h3>Returns</h3><p>strategyType</p>
+</div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/6e95e63/Generator/Strategy.ts#L87">Strategy.ts:87</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="getValuesToPlace" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>Values<wbr/>To<wbr/>Place</span><a href="#getValuesToPlace" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -94,14 +153,14 @@ What candidates can be removed from cells notes as result of strategy</p>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Gets values that can be placed</p>
 
-<h3>Returns</h3><p>values that can be placed</p>
+<h3>Returns</h3><p>Cells containing values that can be placed</p>
 
 <h3>Throws</h3><p><a href="../modules/CustomError.html">CustomError</a>
 Thrown if strategy hasn&#39;t been identified</p>
 </div>
 <h4 class="tsd-returns-title">Returns <a href="Cell.Cell.html" class="tsd-signature-type" data-tsd-kind="Class">Cell</a><span class="tsd-signature-symbol">[]</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/7344fd4/Generator/Strategy.ts#L43">Strategy.ts:43</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/6e95e63/Generator/Strategy.ts#L63">Strategy.ts:63</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="isNakedSingle" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>is<wbr/>Naked<wbr/>Single</span><a href="#isNakedSingle" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -113,7 +172,7 @@ Thrown if strategy hasn&#39;t been identified</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/7344fd4/Generator/Strategy.ts#L54">Strategy.ts:54</a></li></ul></aside></li></ul></section></section></div>
+<li>Defined in <a href="https://github.com/SudoKuru/SudokuPuzzleGenerator/blob/6e95e63/Generator/Strategy.ts#L95">Strategy.ts:95</a></li></ul></aside></li></ul></section></section></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 <div class="tsd-navigation settings">
 <details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
@@ -150,7 +209,12 @@ Thrown if strategy hasn&#39;t been identified</p>
 <li class="tsd-kind-constructor tsd-parent-kind-class"><a href="Strategy.Strategy.html#constructor" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-512-path"></use><use href="#icon-512-text"></use></svg>constructor</a></li>
 <li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="Strategy.Strategy.html#cells" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>cells</a></li>
 <li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="Strategy.Strategy.html#identified" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>identified</a></li>
+<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="Strategy.Strategy.html#notes" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>notes</a></li>
+<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="Strategy.Strategy.html#strategyType" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>strategy<wbr/>Type</a></li>
 <li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="Strategy.Strategy.html#values" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>values</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class"><a href="Strategy.Strategy.html#getCause" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>get<wbr/>Cause</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class"><a href="Strategy.Strategy.html#getNotesToRemove" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>get<wbr/>Notes<wbr/>To<wbr/>Remove</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class"><a href="Strategy.Strategy.html#getStrategyType" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>get<wbr/>Strategy<wbr/>Type</a></li>
 <li class="tsd-kind-method tsd-parent-kind-class"><a href="Strategy.Strategy.html#getValuesToPlace" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>get<wbr/>Values<wbr/>To<wbr/>Place</a></li>
 <li class="tsd-kind-method tsd-parent-kind-class"><a href="Strategy.Strategy.html#isNakedSingle" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>is<wbr/>Naked<wbr/>Single</a></li></ul></li></ul></nav></div></div>
 <div class="container tsd-generator">

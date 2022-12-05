@@ -5,7 +5,7 @@ import { Strategy } from "./Strategy";
  * Contains hint information for each strategy
  * @enum
  */
-enum HintInfo {
+export enum HintInfo {
     NAKED_SINGLE = "Naked singles are when you only have one number left as a possibility in a cell"
 }
 
@@ -13,7 +13,7 @@ enum HintInfo {
  * Contains what action hint is trying to get you to do
  * @enum
  */
-enum HintAction {
+export enum HintAction {
     NAKED_SINGLE = "When you see a naked single you can fill it in with its last remaining possibility"
 }
 
@@ -26,7 +26,7 @@ enum HintAction {
  * Info (string that explains what strategy is being used)
  * Action (string that explains how strategy is being used)
  */
-class Hint{
+export class Hint{
     private strategy: Strategy;
     private info: string;
     private action: string;
@@ -85,7 +85,10 @@ class Hint{
     }
 }
 
-class NakedSingleHint extends Hint {
+/**
+ * Naked single strategy hint class
+ */
+export class NakedSingleHint extends Hint {
     constructor(strategy: Strategy) {
         super(strategy, HintInfo.NAKED_SINGLE, HintAction.NAKED_SINGLE);
     }
