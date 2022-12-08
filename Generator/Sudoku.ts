@@ -8,7 +8,7 @@ export enum SudokuEnum {
     ROW_LENGTH = 9,
     COLUMN_LENGTH = 9,
     BOX_LENGTH = 3,
-    BOARD_LENGTH = ROW_LENGTH * COLUMN_LENGTH,
+    BOARD_LENGTH = 81,
     EMPTY_CELL = "0",
     CANDIDATES = "123456789"
 }
@@ -18,6 +18,7 @@ export enum SudokuEnum {
  * @enum
  */
 export enum StrategyEnum {
+    INVALID = -1,
     NAKED_SINGLE = 0
 }
 
