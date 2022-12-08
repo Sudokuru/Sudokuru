@@ -49,9 +49,7 @@ export class Strategy{
      * Thrown if strategy hasn't been identified
      */
     public getCause():Cell[][] {
-        if (!this.identified) {
-            throw new CustomError(CustomErrorEnum.STRATEGY_NOT_IDENTIFIED);
-        }
+        this.verifyIdentified();
         return this.cells;
     }
 
@@ -62,9 +60,7 @@ export class Strategy{
      * Thrown if strategy hasn't been identified
      */
     public getValuesToPlace():Cell[] {
-        if (!this.identified) {
-            throw new CustomError(CustomErrorEnum.STRATEGY_NOT_IDENTIFIED);
-        }
+        this.verifyIdentified();
         return this.values;
     }
 
@@ -75,10 +71,20 @@ export class Strategy{
      * Thrown if strategy hasn't been identified
      */
     public getNotesToRemove():Cell[] {
+        this.verifyIdentified();
+        return this.notes;
+    }
+
+    /**
+     * Verified that a strategy has been identified, otherwise throws an error
+     * @throws {@link CustomError}
+     * Thrown if strategy hasn't been identified
+     */
+    public verifyIdentified():void {
         if (!this.identified) {
             throw new CustomError(CustomErrorEnum.STRATEGY_NOT_IDENTIFIED);
         }
-        return this.notes;
+        return;
     }
 
     /**
