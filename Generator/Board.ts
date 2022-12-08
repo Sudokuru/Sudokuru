@@ -1,5 +1,5 @@
 import { CustomError, CustomErrorEnum } from "./CustomError";
-import { SudokuEnum } from "./Sudoku";
+import { getBoardArray, SudokuEnum } from "./Sudoku";
 import { Solver } from "./Solver";
 import { Hint } from "./Hint";
 import { StrategyEnum } from "./Sudoku"
@@ -42,7 +42,7 @@ export class Board{
             throw new CustomError(CustomErrorEnum.BOARD_ALREADY_SOLVED);
         }
 
-        this.setBoard(board);
+        this.board = getBoardArray(board);
 
         this.mostDifficultStrategy = 0;
         this.solve();
@@ -108,19 +108,5 @@ export class Board{
             }
         }
         return;
-    }
-
-    /**
-     * Sets board array
-     * @param board - board string
-     */
-    private setBoard(board: string):void {
-        this.board = new Array();
-        for (let i:number = 0; i < SudokuEnum.COLUMN_LENGTH; i++) {
-            this.board.push([]);
-            for (let j:number = 0; j < SudokuEnum.ROW_LENGTH; j++) {
-                this.board[i].push(board[(i*SudokuEnum.ROW_LENGTH)+j]);
-            }
-        }
     }
 }

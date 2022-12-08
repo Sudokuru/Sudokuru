@@ -62,3 +62,19 @@ export function validateValue(value: string):void {
     }
     throw new CustomError(CustomErrorEnum.INVALID_VALUE);
 }
+
+/**
+ * Given a board string returns the equivalent board array
+ * @param board - board string
+ * @returns board array
+ */
+export function getBoardArray(board: string):string[][] {
+    let boardArray: string[][] = new Array();
+    for (let i:number = 0; i < SudokuEnum.COLUMN_LENGTH; i++) {
+        boardArray.push([]);
+        for (let j:number = 0; j < SudokuEnum.ROW_LENGTH; j++) {
+            boardArray[i].push(board[(i*SudokuEnum.ROW_LENGTH)+j]);
+        }
+    }
+    return boardArray;
+}
