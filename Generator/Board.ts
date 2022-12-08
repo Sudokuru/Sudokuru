@@ -1,6 +1,7 @@
 import { CustomError, CustomErrorEnum } from "./CustomError";
 import { SudokuEnum } from "./Sudoku";
 import { Solver } from "./Solver";
+import { Hint } from "./Hint";
 
 /**
  * Constructed using board string
@@ -82,12 +83,12 @@ export class Board{
      */
     private solve():void {
         let s:Solver = new Solver(this.board);
-        let strategy:number = s.nextStep();
-        while (strategy !== null) {
-            if (strategy > this.strategy) {
-                this.strategy = strategy;
+        let hint:Hint = s.nextStep();
+        while (hint !== null) {
+            if (hint.getStrategyType() > this.strategy) {
+                this.strategy = hint.getStrategyType();
             }
-            strategy = s.nextStep();
+            hint = s.nextStep();
         }
         this.solution = s.getSolution();
         this.setSolutionString();
