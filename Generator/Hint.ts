@@ -45,6 +45,14 @@ export class Hint{
     }
 
     /**
+     * Gets strategy type
+     * @returns strategy type
+     */
+    public getStrategyType():number {
+        return this.strategy.getStrategyType();
+    }
+
+    /**
      * Gets cells that "cause" strategy to be applicable
      * @returns cells "causing" strategy
      */

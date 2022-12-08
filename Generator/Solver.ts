@@ -3,6 +3,7 @@ import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
 import { Strategy, StrategyEnum } from "./Strategy";
 import { SudokuEnum } from "./Sudoku";
+import { Hint, NakedSingleHint } from "./Hint";
 
 /**
  * Constructed using 2d board array
@@ -13,6 +14,7 @@ import { SudokuEnum } from "./Sudoku";
 export class Solver{
     private board: Cell[][];
     private solved: boolean;
+    private hint: Hint;
 
     /**
      * Creates solver object
@@ -28,11 +30,11 @@ export class Solver{
 
     /**
      * Takes the next step in solving puzzle
-     * @returns strategy used or null if finished
+     * @returns hint used or null if finished
      * @throws {@link CustomError}
      * Thrown if board is unsolvable
      */
-    public nextStep():number {
+    public nextStep():Hint {
         let cells: Cell[][] = new Array();
         this.initializeCellArray(cells, SudokuEnum.COLUMN_LENGTH);
         this.addEveryEmptyCell(cells);
@@ -41,9 +43,10 @@ export class Solver{
             return null;
         }
 
-        let strategy:number = this.getStrategy(cells);
-        if (strategy !== null) {
-            return strategy;
+        this.setHint(cells);
+        if (this.hint !== null) {
+            this.applyHint();
+            return this.hint;
         }
 
         throw new CustomError(CustomErrorEnum.UNSOLVABLE);
@@ -67,23 +70,27 @@ export class Solver{
     }
 
     /**
-     * Gets and applies the next applicable strategy
+     * Gets and sets the next hint if a strategy can be applied, otherwise sets to null
      * @param cells - empty cells
-     * @returns strategy if one is available, else returns null
      */
-    private getStrategy(cells: Cell[][]):number {
-        if(this.hasNakedSingle(cells)) {
-            return StrategyEnum.NAKED_SINGLE;
-        }
-        return null;
+    private setHint(cells: Cell[][]):void {
+        if(this.setNakedSingle(cells)) {}
+        return;
     }
 
     /**
-     * Returns if puzzle has a naked single and applies it
-     * @param cells - empty cells
-     * @returns true is contains a naked single
+     * Applies hint (places values according to hint)
      */
-    private hasNakedSingle(cells: Cell[][]):boolean {
+    private applyHint():void {
+        this.placeValues(this.hint.getEffectPlacements());
+    }
+
+    /**
+     * Returns true if puzzle has a naked single and sets hint, otherwise returns false
+     * @param cells - empty cells
+     * @returns true if contains a naked single
+     */
+    private setNakedSingle(cells: Cell[][]):boolean {
         for (let i:number = 0; i < cells.length; i++) {
             for (let j:number = 0; j < cells[i].length; j++) {
                 let single: Cell[][] = new Array();
@@ -91,7 +98,7 @@ export class Solver{
                 single[0].push(cells[i][j]);
                 let nakedSingle: Strategy = new Strategy(single);
                 if (nakedSingle.isNakedSingle()) {
-                    this.placeValues(nakedSingle.getValuesToPlace());
+                    this.hint = new NakedSingleHint(nakedSingle);
                     return true;
                 }
             }
