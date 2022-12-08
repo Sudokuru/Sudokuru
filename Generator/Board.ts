@@ -2,6 +2,7 @@ import { CustomError, CustomErrorEnum } from "./CustomError";
 import { SudokuEnum } from "./Sudoku";
 import { Solver } from "./Solver";
 import { Hint } from "./Hint";
+import { StrategyEnum } from "./Sudoku"
 
 /**
  * Constructed using board string
@@ -12,11 +13,12 @@ import { Hint } from "./Hint";
  * Most complex strategy that could be needed to solve
  * Difficulty (integer on scale)
  */
+
 export class Board{
     private board: string[][];
     private solution: string[][];
     private solutionString: string;
-    private strategy: number;
+    private mostDifficultStrategy: StrategyEnum;
 
     /**
      * Creates board object if valid, otherwise throws error
@@ -42,7 +44,7 @@ export class Board{
 
         this.setBoard(board);
 
-        this.strategy = 0;
+        this.mostDifficultStrategy = 0;
         this.solve();
     }
 
@@ -75,7 +77,7 @@ export class Board{
      * @returns strategy score
      */
     public getStrategyScore():number {
-        return this.strategy;
+        return this.mostDifficultStrategy;
     }
 
     /**
@@ -85,8 +87,8 @@ export class Board{
         let s:Solver = new Solver(this.board);
         let hint:Hint = s.nextStep();
         while (hint !== null) {
-            if (hint.getStrategyType() > this.strategy) {
-                this.strategy = hint.getStrategyType();
+            if (hint.getStrategyType() > this.mostDifficultStrategy) {
+                this.mostDifficultStrategy = hint.getStrategyType();
             }
             hint = s.nextStep();
         }
