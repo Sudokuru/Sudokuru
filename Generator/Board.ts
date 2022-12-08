@@ -44,7 +44,7 @@ export class Board{
 
         this.board = getBoardArray(board);
 
-        this.mostDifficultStrategy = 0;
+        this.mostDifficultStrategy = -1;
         this.solve();
     }
 
