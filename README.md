@@ -19,7 +19,7 @@ erDiagram
         string_2D_array board
         string_2D_array solution
         string solutionString
-        number strategy
+        StrategyEnum mostDifficultStrategy
     }
     SOLVER {
         Cell_2D_array board

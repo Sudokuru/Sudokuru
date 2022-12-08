@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
+    "test:unit": "jest --testPathPattern=Generator/tests/unit",
+    "test:integration": "jest --testPathPattern=Generator/tests/integration",
     "update-docs": "npx typedoc Generator/*.ts --name GeneratorDocs"
   },
   "keywords": [],
