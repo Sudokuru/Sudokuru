@@ -80,7 +80,7 @@ export class Strategy{
      * @throws {@link CustomError}
      * Thrown if strategy hasn't been identified
      */
-    public verifyIdentified():void {
+    private verifyIdentified():void {
         if (!this.identified) {
             throw new CustomError(CustomErrorEnum.STRATEGY_NOT_IDENTIFIED);
         }
