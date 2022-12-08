@@ -116,15 +116,22 @@ export class Solver{
         if (!this.solved) {
             throw new CustomError(CustomErrorEnum.NOT_SOLVED);
         }
+        return this.getBoard();
+    }
 
-        let solution:string[][] = new Array();
+    /**
+     * Returns current state of the board being solved
+     * @returns current board array
+     */
+    public getBoard():string[][] {
+        let board:string[][] = new Array();
         for (let i:number = 0; i < this.board.length; i++) {
-            solution.push(new Array());
+            board.push(new Array());
             for (let j:number = 0; j < this.board[i].length; j++) {
-                solution[i].push(this.board[i][j].getValue());
+                board[i].push(this.board[i][j].getValue());
             }
         }
-        return solution;
+        return board;
     }
 
     /**
