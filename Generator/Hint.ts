@@ -92,6 +92,6 @@ export class Hint{
  */
 export class NakedSingleHint extends Hint {
     constructor(strategy: Strategy) {
-        super(strategy, HintInfo.NAKED_SINGLE, HintAction.NAKED_SINGLE);
+        super(strategy, NAKED_SINGLE.HINT_INFO, NAKED_SINGLE.HINT_ACTION);
     }
 }
