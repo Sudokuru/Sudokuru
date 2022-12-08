@@ -1,13 +1,6 @@
 import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
-
-/**
- * Includes constants representing the various Sudoku strategies
- * @enum
- */
-export enum StrategyEnum {
-    NAKED_SINGLE = 0
-}
+import { StrategyEnum } from "./Sudoku"
 
 /**
  * Constructed using 2d array of cells

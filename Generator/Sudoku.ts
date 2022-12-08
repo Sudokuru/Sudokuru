@@ -14,6 +14,14 @@ export enum SudokuEnum {
 }
 
 /**
+ * Includes constants representing the various Sudoku strategies
+ * @enum
+ */
+export enum StrategyEnum {
+    NAKED_SINGLE = 0
+}
+
+/**
  * Checks that row is in range
  * @param row - row
  * @throws {@link CustomError}

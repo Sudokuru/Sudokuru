@@ -1,8 +1,8 @@
 import { finished } from "stream";
 import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
-import { Strategy, StrategyEnum } from "./Strategy";
-import { SudokuEnum } from "./Sudoku";
+import { Strategy } from "./Strategy";
+import { SudokuEnum, StrategyEnum } from "./Sudoku";
 import { Hint, NakedSingleHint } from "./Hint";
 
 /**
