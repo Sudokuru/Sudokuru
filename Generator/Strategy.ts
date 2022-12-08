@@ -19,6 +19,7 @@ export enum StrategyEnum {
  * What strategy type this is (correlates to StrategyEnum)
  */
 export class Strategy{
+    // Contains cells that "cause" strategy to be applicable
     private cells: Cell[][];
     // Contains values that can be placed because of this Strategy
     private values: Cell[];
