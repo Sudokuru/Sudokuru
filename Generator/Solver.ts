@@ -125,13 +125,34 @@ export class Solver{
      */
     public getBoard():string[][] {
         let board:string[][] = new Array();
-        for (let i:number = 0; i < this.board.length; i++) {
+        for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
             board.push(new Array());
-            for (let j:number = 0; j < this.board[i].length; j++) {
-                board[i].push(this.board[i][j].getValue());
+            for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                board[row].push(this.board[row][column].getValue());
             }
         }
         return board;
+    }
+
+    /**
+     * Returns current notes stored by the Solver for cells without a value
+     * @returns array of notes arrays for notes of empty cells in order LR-TD
+     */
+    public getNotes():string[][] {
+        let notes:string[][] = new Array();
+        let i:number = -1;
+        for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+            for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                if (this.board[row][column].isEmpty()) {
+                    notes.push(new Array());
+                    i++;
+                    this.board[row][column].getNotes().forEach((value: undefined, key: string) => {
+                        notes[i].push(key);
+                    });
+                }
+            }
+        }
+        return notes;
     }
 
     /**

@@ -4,13 +4,37 @@ async function nextStep() {
     let res = await fetch(url);
     let data = await res.json();
     let board = data.board;
-    let b = document.getElementById("boardTable");
+    let notes = data.notes;
+    let noteIndex = 0;
+    let table = document.getElementById("boardTable");
     let newBoard = "";
-    b.rows[0].cells[0].innerHTML = "testing";
+    let value;
+    let values = "123456789";
     for (let row = 0; row < 9; row++) {
-        for (let col = 0; col < 9; col++) {
-            b.rows[row].cells[col].innerHTML = board[row][col];
-            newBoard += board[row][col];
+        for (let column = 0; column < 9; column++) {
+            value = board[row][column];
+            newBoard += value;
+            if (value === "0") {
+                value = "";
+                for (let r = 0; r < 3; r++) {
+                    for (let c = 0; c < 3; c++) {
+                        if (notes[noteIndex].includes(values[(r*3)+c])) {
+                            value += values[(r*3)+c];
+                        }
+                        else {
+                            value += "-";
+                        }
+                        value += "-";
+                    }
+                    value += "<br/>";
+                }
+                noteIndex++;
+            }
+            else {
+                table.rows[row].cells[column].style.fontSize = "32px";
+            }
+            table.rows[row].cells[column].innerHTML = value;
+            console.log(value);
         }
     }
     document.getElementById("board").value = newBoard;
