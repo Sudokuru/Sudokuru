@@ -56,6 +56,7 @@ function updateTable(board:string[][], notes:string[][], stepNumber:number):void
         for (let column:number = 0; column < 9; column++) {
             // Adds notes to the html table cell if cell is empty or had value placed this step
             if (board[row][column] === EMPTY_CELL || (board[row][column] !== oldBoard[row][column])) {
+                (<HTMLTableElement>table).rows[row].cells[column].style.fontSize = "12px";
                 value = "";
                 // If value is placed add it to value, otherwise add notes to value and if value placed this step highlights its note green
                 for (let r:number = 0; r < 3; r++) {
@@ -91,6 +92,34 @@ function updateTable(board:string[][], notes:string[][], stepNumber:number):void
             noteIndex++;
         }
     }
+    // Update user input box with current board string
+    let boardInput:HTMLInputElement = <HTMLInputElement>document.getElementById("board");
+    boardInput.value = getBoardString(board);
+    return;
+}
+
+function previousStep() {
+    // Return if there is no previous step (stepNumber not intialized)
+    if (sessionStorage.getItem("stepNumber") === null) {
+        return;
+    }
+    // Get stepNumber
+    let stepNumber:string = sessionStorage.getItem("stepNumber");
+    let newStepNumber:string = (Number(stepNumber) - 1).toString();
+    stepNumber = (Number(newStepNumber) - 1).toString();
+    // Return if trying to go before the first step
+    if (newStepNumber === "0") {
+        return;
+    }
+    // Set new step number
+    sessionStorage.setItem("stepNumber", newStepNumber);
+    // Get previous board and notes from sessionStorage
+    let board:string[][] = JSON.parse(sessionStorage.getItem("board" + stepNumber));
+    let notes:string[][] = JSON.parse(sessionStorage.getItem("notes" + stepNumber));
+    stepNumber = (Number(stepNumber) + 1).toString();
+    // Update Sudoku html table
+    updateTable(board, notes, Number(stepNumber));
+    return;
 }
 
 async function nextStep() {
@@ -113,10 +142,9 @@ async function nextStep() {
         stepNumber = sessionStorage.getItem("stepNumber");
     }
     else {
-        // Convert board string to array and add intial board state to sessionStorage
+        // Convert board string to array
         let boardArray:string[][] = getBoardArray(boardInputString);
-        sessionStorage.setItem("board0", JSON.stringify(boardArray));
-        stepNumber = "1";
+        stepNumber = "0";
     }
 
     // Add board, notes, and new stepNumber to sessionStorage
@@ -125,9 +153,12 @@ async function nextStep() {
     let newStepNumber:string = (Number(stepNumber) + 1).toString();
     sessionStorage.setItem("stepNumber", newStepNumber);
 
+    // Change stepNumber if on first step so updateTable uses current board for oldBoard
+    if (stepNumber === "0") {
+        stepNumber = "1";
+    }
+
     // Update Sudoku html table
     updateTable(board, notes, Number(stepNumber));
-    
-    // Update user input box with current board string
-    boardInput.value = getBoardString(board);
+    return;
 }
