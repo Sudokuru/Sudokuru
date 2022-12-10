@@ -51,6 +51,14 @@ function updateTable(board:string[][], notes:string[][], stepNumber:number):void
     else {
         (<HTMLButtonElement>document.getElementById("previousStep")).disabled = false;
     }
+    // Disable nextStep button if on the last step, otherwise enable it
+    if (notes === null) {
+        (<HTMLButtonElement>document.getElementById("nextStep")).disabled = true;
+    }
+    else {
+        (<HTMLButtonElement>document.getElementById("nextStep")).disabled = false;
+
+    }
     // Get board and notes from previous step
     let prevStepNumber = (stepNumber - 1).toString();
     let oldBoard = JSON.parse(sessionStorage.getItem("board" + prevStepNumber));
