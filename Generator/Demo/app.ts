@@ -16,7 +16,12 @@ app.get('/solver/nextStep', (req, res) => {
     let board: string[][] = getBoardArray(req.query.board);
     let solver: Solver = new Solver(board);
     let hint: Hint = solver.nextStep();
-    res.send({ board: solver.getBoard(), notes: solver.getNotes(), info: hint.getInfo(), action: hint.getAction() });
+    if (hint !== null) {
+        res.send({ board: solver.getBoard(), notes: solver.getNotes(), info: hint.getInfo(), action: hint.getAction() });
+    }
+    else {
+        res.send({ board: solver.getBoard(), notes: null, info: null, action: null });
+    }
 });
 
 app.use(errorHandler);
