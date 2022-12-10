@@ -83,12 +83,13 @@ function updateTable(board:string[][], notes:string[][], info:string, action: st
         for (let column:number = 0; column < 9; column++) {
             // Adds notes to the html table cell if cell is empty or had value placed this step
             if (board[row][column] === EMPTY_CELL || (board[row][column] !== oldBoard[row][column])) {
-                (<HTMLTableElement>table).rows[row].cells[column].style.fontSize = "12px";
+                (<HTMLTableElement>table).rows[row].cells[column].style.fontSize = "16px";
                 value = "";
                 // If value is placed add it to value, otherwise add notes to value and if value placed this step highlights its note green
                 for (let r:number = 0; r < 3; r++) {
                     for (let c:number = 0; c < 3; c++) {
                         // If this value was placed in this cell this step highlight it green, else add normally
+                        // If this value was removed from notes this step highlight it red
                         if (board[row][column] !== oldBoard[row][column] && 
                             CANDIDATES[(r*3)+c] === board[row][column]) {
                             value += '<span style="color:green">';
@@ -98,6 +99,11 @@ function updateTable(board:string[][], notes:string[][], info:string, action: st
                         else {
                             if (notes[noteIndex].includes(CANDIDATES[(r*3)+c])) {
                                 value += CANDIDATES[(r*3)+c];
+                            }
+                            else if (oldNotes[noteIndex].includes(CANDIDATES[(r*3)+c])) {
+                                value += '<span style="color:red">';
+                                value += CANDIDATES[(r*3)+c];
+                                value += '</span>';
                             }
                             else {
                                 value += "-";
