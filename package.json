@@ -7,12 +7,14 @@
     "test": "jest",
     "test:unit": "jest --testPathPattern=Generator/tests/unit",
     "test:integration": "jest --testPathPattern=Generator/tests/integration",
-    "update-docs": "npx typedoc Generator/*.ts --name GeneratorDocs"
+    "update-docs": "npx typedoc Generator/*.ts --name GeneratorDocs",
+    "start": "tsc Generator/Demo/script.ts && ts-node Generator/Demo/app.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.18.2",
     "jest-junit": "^14.0.1",
     "ts-node": "^10.9.1"

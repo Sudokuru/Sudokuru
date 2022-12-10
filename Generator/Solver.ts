@@ -116,15 +116,41 @@ export class Solver{
         if (!this.solved) {
             throw new CustomError(CustomErrorEnum.NOT_SOLVED);
         }
+        return this.getBoard();
+    }
 
-        let solution:string[][] = new Array();
-        for (let i:number = 0; i < this.board.length; i++) {
-            solution.push(new Array());
-            for (let j:number = 0; j < this.board[i].length; j++) {
-                solution[i].push(this.board[i][j].getValue());
+    /**
+     * Returns current state of the board being solved
+     * @returns current board array
+     */
+    public getBoard():string[][] {
+        let board:string[][] = new Array();
+        for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+            board.push(new Array());
+            for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                board[row].push(this.board[row][column].getValue());
             }
         }
-        return solution;
+        return board;
+    }
+
+    /**
+     * Returns current notes stored by the Solver
+     * @returns array of notes arrays in order (one array with an array for each cell)
+     */
+    public getNotes():string[][] {
+        let notes:string[][] = new Array();
+        let i:number = -1;
+        for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+            for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                notes.push(new Array());
+                i++;
+                this.board[row][column].getNotes().forEach((value: undefined, key: string) => {
+                    notes[i].push(key);
+                });
+            }
+        }
+        return notes;
     }
 
     /**
