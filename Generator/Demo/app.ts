@@ -6,7 +6,7 @@ import { Hint } from "../Hint";
 const expressApp = require('express');
 const app = expressApp();
 const cors = require("cors");
-const port = 3000;
+const port = 3001;
 
 app.use(cors());
 app.use(expressApp.urlencoded({ extended: true }));
