@@ -135,21 +135,19 @@ export class Solver{
     }
 
     /**
-     * Returns current notes stored by the Solver for cells without a value
-     * @returns array of notes arrays for notes of empty cells in order LR-TD
+     * Returns current notes stored by the Solver
+     * @returns array of notes arrays in order (one array with an array for each cell)
      */
     public getNotes():string[][] {
         let notes:string[][] = new Array();
         let i:number = -1;
         for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
             for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
-                if (this.board[row][column].isEmpty()) {
-                    notes.push(new Array());
-                    i++;
-                    this.board[row][column].getNotes().forEach((value: undefined, key: string) => {
-                        notes[i].push(key);
-                    });
-                }
+                notes.push(new Array());
+                i++;
+                this.board[row][column].getNotes().forEach((value: undefined, key: string) => {
+                    notes[i].push(key);
+                });
             }
         }
         return notes;
