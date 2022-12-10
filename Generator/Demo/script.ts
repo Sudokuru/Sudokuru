@@ -41,50 +41,17 @@ function getBoardString(boardArray: string[][]):string {
     return board;
 }
 
-async function nextStep() {
-    // Get input board from user input box and create request url
-    let boardInput:HTMLInputElement = <HTMLInputElement>document.getElementById("board");
-    let boardInputString:string = boardInput.value;
-    let url:string = NEXT_STEP_ENDPOINT + boardInputString;
-
-    // Call and await Solvers response
-    let res:Response = await fetch(url);
-    let data:nextStepResponse = await res.json();
-
-    // Set data returned from Solver
-    let board:string[][] = data.board;
-    let notes:string[][] = data.notes;
-
-    // Get stepNumber if available, otherwise set stepNumber to 1 and set board0 to boardInputString
-    let stepNumber:string;
-    if (sessionStorage.getItem("stepNumber") !== null) {
-        stepNumber = sessionStorage.getItem("stepNumber");
-    }
-    else {
-        // Convert board string to array and add intial board state to sessionStorage
-        let boardArray:string[][] = getBoardArray(boardInputString);
-        sessionStorage.setItem("board0", JSON.stringify(boardArray));
-        stepNumber = "1";
-    }
-
-    // Add board, notes, and new stepNumber to sessionStorage
-    sessionStorage.setItem("board" + stepNumber, JSON.stringify(board));
-    sessionStorage.setItem("notes" + stepNumber, JSON.stringify(notes));
-    let newStepNumber:string = (Number(stepNumber) + 1).toString();
-    sessionStorage.setItem("stepNumber", newStepNumber);
-
+function updateTable(board:string[][], notes:string[][], stepNumber:number):void {
     // Get board and notes from previous step
-    let prevStepNumber = (Number(stepNumber) - 1).toString();
+    let prevStepNumber = (stepNumber - 1).toString();
     let oldBoard = JSON.parse(sessionStorage.getItem("board" + prevStepNumber));
     let oldNotes = JSON.parse(sessionStorage.getItem("notes" + prevStepNumber));
-
+    // Stores value or set of notes that get added to cells in the html Sudoku table
+    let value:string;
     // index of note, used to know which to display in each cell of the table
     let noteIndex:number = 0;
     // Sudoku html table
     let table:HTMLElement = document.getElementById("boardTable");
-    // Stores value or set of notes that get added to cells in the html Sudoku table
-    let value:string;
-
     for (let row:number = 0; row < 9; row++) {
         for (let column:number = 0; column < 9; column++) {
             // Adds notes to the html table cell if cell is empty or had value placed this step
@@ -124,6 +91,43 @@ async function nextStep() {
             noteIndex++;
         }
     }
+}
+
+async function nextStep() {
+    // Get input board from user input box and create request url
+    let boardInput:HTMLInputElement = <HTMLInputElement>document.getElementById("board");
+    let boardInputString:string = boardInput.value;
+    let url:string = NEXT_STEP_ENDPOINT + boardInputString;
+
+    // Call and await Solvers response
+    let res:Response = await fetch(url);
+    let data:nextStepResponse = await res.json();
+
+    // Set data returned from Solver
+    let board:string[][] = data.board;
+    let notes:string[][] = data.notes;
+
+    // Get stepNumber if available, otherwise set stepNumber to 1 and set board0 to boardInputString
+    let stepNumber:string;
+    if (sessionStorage.getItem("stepNumber") !== null) {
+        stepNumber = sessionStorage.getItem("stepNumber");
+    }
+    else {
+        // Convert board string to array and add intial board state to sessionStorage
+        let boardArray:string[][] = getBoardArray(boardInputString);
+        sessionStorage.setItem("board0", JSON.stringify(boardArray));
+        stepNumber = "1";
+    }
+
+    // Add board, notes, and new stepNumber to sessionStorage
+    sessionStorage.setItem("board" + stepNumber, JSON.stringify(board));
+    sessionStorage.setItem("notes" + stepNumber, JSON.stringify(notes));
+    let newStepNumber:string = (Number(stepNumber) + 1).toString();
+    sessionStorage.setItem("stepNumber", newStepNumber);
+
+    // Update Sudoku html table
+    updateTable(board, notes, Number(stepNumber));
+    
     // Update user input box with current board string
     boardInput.value = getBoardString(board);
 }
