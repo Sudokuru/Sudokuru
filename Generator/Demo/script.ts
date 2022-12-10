@@ -41,7 +41,8 @@ function getBoardString(boardArray: string[][]):string {
     return board;
 }
 
-function updateTable(board:string[][], notes:string[][], stepNumber:number):void {
+function updateTable(board:string[][], notes:string[][], info:string, action: string, 
+    stepNumber:number):void {
     // Change stepNumber if on first step so uses current board for oldBoard
     // Also disable previous step button if on first step, otherwise enable it
     if (stepNumber === 0) {
@@ -52,13 +53,18 @@ function updateTable(board:string[][], notes:string[][], stepNumber:number):void
         (<HTMLButtonElement>document.getElementById("previousStep")).disabled = false;
     }
     // Disable nextStep and play buttons if on the last step, otherwise enable them
+    // Also remove hint/info if on last step, otherwise add them
     if (notes === null) {
         (<HTMLButtonElement>document.getElementById("nextStep")).disabled = true;
         (<HTMLButtonElement>document.getElementById("play")).disabled = true;
+        (<HTMLParagraphElement>document.getElementById("info")).innerText = "";
+        (<HTMLParagraphElement>document.getElementById("action")).innerText = "";
     }
     else {
         (<HTMLButtonElement>document.getElementById("nextStep")).disabled = false;
         (<HTMLButtonElement>document.getElementById("play")).disabled = false;
+        (<HTMLParagraphElement>document.getElementById("info")).innerText = info;
+        (<HTMLParagraphElement>document.getElementById("action")).innerText = action;
     }
     // Get board and notes from previous step
     let prevStepNumber = (stepNumber - 1).toString();
@@ -134,8 +140,10 @@ function previousStep() {
     // Get previous board and notes from sessionStorage
     let board:string[][] = JSON.parse(sessionStorage.getItem("board" + stepNumber));
     let notes:string[][] = JSON.parse(sessionStorage.getItem("notes" + stepNumber));
+    let info:string = JSON.parse(sessionStorage.getItem("info" + stepNumber));
+    let action:string = JSON.parse(sessionStorage.getItem("action" + stepNumber));
     // Update Sudoku html table
-    updateTable(board, notes, Number(stepNumber));
+    updateTable(board, notes, info, action, Number(stepNumber));
     return;
 }
 
@@ -152,6 +160,8 @@ async function nextStep() {
     // Set data returned from Solver
     let board:string[][] = data.board;
     let notes:string[][] = data.notes;
+    let info:string = data.info;
+    let action:string = data.action;
 
     // Get stepNumber if available, otherwise set stepNumber to 1 and set board0 to boardInputString
     let stepNumber:string;
@@ -167,6 +177,8 @@ async function nextStep() {
     // Add board, notes, and new stepNumber to sessionStorage
     sessionStorage.setItem("board" + stepNumber, JSON.stringify(board));
     sessionStorage.setItem("notes" + stepNumber, JSON.stringify(notes));
+    sessionStorage.setItem("info" + stepNumber, JSON.stringify(info));
+    sessionStorage.setItem("action" + stepNumber, JSON.stringify(action));
     // stepNumber is set to the number of steps taken, board and notes above 0 indexed
     // so board0 set when stepNumber = 1 (first step), board1 when stepNumber = 2, ...
     let newStepNumber:string = (Number(stepNumber) + 1).toString();
@@ -174,7 +186,7 @@ async function nextStep() {
 
     // Update Sudoku html table
     // cals with 0-indexed step number i.e. correlates to board/notes for curr step
-    updateTable(board, notes, Number(stepNumber));
+    updateTable(board, notes, info, action, Number(stepNumber));
     return;
 }
 
