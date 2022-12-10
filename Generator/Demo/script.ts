@@ -8,6 +8,9 @@ interface nextStepResponse {
 const NEXT_STEP_ENDPOINT:string = "http://localhost:3000/solver/nextStep?board=";
 const CANDIDATES:string = "123456789";
 const EMPTY_CELL = "0";
+const SINGLE_NAKED_SINGLE = "439275618051896437876143592342687951185329746697451283928734165563912874714568329";
+const ONLY_NAKED_SINGLES = "310084002200150006570003010423708095760030000009562030050006070007000900000001500";
+
 
 /**
  * Given a board string returns the equivalent board array
@@ -195,4 +198,17 @@ async function play() {
         nextStep();
         await new Promise(f => setTimeout(f, 500));
     }
+}
+
+function loadPuzzle() {
+    let puzzle:string = (<HTMLSelectElement>document.getElementById("puzzleSelect")).value;
+    let boardInput:HTMLInputElement = <HTMLInputElement>document.getElementById("board");
+    if (puzzle === "SINGLE_NAKED_SINGLE") {
+        boardInput.value = SINGLE_NAKED_SINGLE;
+    }
+    else {//if (puzzle === "ONLY_NAKED_SINGLES") {
+        boardInput.value = ONLY_NAKED_SINGLES;
+    }
+    sessionStorage.clear();
+    nextStep();
 }
