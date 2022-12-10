@@ -42,6 +42,15 @@ function getBoardString(boardArray: string[][]):string {
 }
 
 function updateTable(board:string[][], notes:string[][], stepNumber:number):void {
+    // Change stepNumber if on first step so uses current board for oldBoard
+    // Also disable previous step button if on first step, otherwise enable it
+    if (stepNumber === 0) {
+        stepNumber = 1;
+        (<HTMLButtonElement>document.getElementById("previousStep")).disabled = true;
+    }
+    else {
+        (<HTMLButtonElement>document.getElementById("previousStep")).disabled = false;
+    }
     // Get board and notes from previous step
     let prevStepNumber = (stepNumber - 1).toString();
     let oldBoard = JSON.parse(sessionStorage.getItem("board" + prevStepNumber));
@@ -116,7 +125,6 @@ function previousStep() {
     // Get previous board and notes from sessionStorage
     let board:string[][] = JSON.parse(sessionStorage.getItem("board" + stepNumber));
     let notes:string[][] = JSON.parse(sessionStorage.getItem("notes" + stepNumber));
-    stepNumber = (Number(stepNumber) + 1).toString();
     // Update Sudoku html table
     updateTable(board, notes, Number(stepNumber));
     return;
@@ -150,15 +158,13 @@ async function nextStep() {
     // Add board, notes, and new stepNumber to sessionStorage
     sessionStorage.setItem("board" + stepNumber, JSON.stringify(board));
     sessionStorage.setItem("notes" + stepNumber, JSON.stringify(notes));
+    // stepNumber is set to the number of steps taken, board and notes above 0 indexed
+    // so board0 set when stepNumber = 1 (first step), board1 when stepNumber = 2, ...
     let newStepNumber:string = (Number(stepNumber) + 1).toString();
     sessionStorage.setItem("stepNumber", newStepNumber);
 
-    // Change stepNumber if on first step so updateTable uses current board for oldBoard
-    if (stepNumber === "0") {
-        stepNumber = "1";
-    }
-
     // Update Sudoku html table
+    // cals with 0-indexed step number i.e. correlates to board/notes for curr step
     updateTable(board, notes, Number(stepNumber));
     return;
 }
