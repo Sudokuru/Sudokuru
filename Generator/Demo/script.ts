@@ -51,13 +51,14 @@ function updateTable(board:string[][], notes:string[][], stepNumber:number):void
     else {
         (<HTMLButtonElement>document.getElementById("previousStep")).disabled = false;
     }
-    // Disable nextStep button if on the last step, otherwise enable it
+    // Disable nextStep and play buttons if on the last step, otherwise enable them
     if (notes === null) {
         (<HTMLButtonElement>document.getElementById("nextStep")).disabled = true;
+        (<HTMLButtonElement>document.getElementById("play")).disabled = true;
     }
     else {
         (<HTMLButtonElement>document.getElementById("nextStep")).disabled = false;
-
+        (<HTMLButtonElement>document.getElementById("play")).disabled = false;
     }
     // Get board and notes from previous step
     let prevStepNumber = (stepNumber - 1).toString();
@@ -175,4 +176,11 @@ async function nextStep() {
     // cals with 0-indexed step number i.e. correlates to board/notes for curr step
     updateTable(board, notes, Number(stepNumber));
     return;
+}
+
+async function play() {
+    while (!(<HTMLButtonElement>document.getElementById("nextStep")).disabled) {
+        nextStep();
+        await new Promise(f => setTimeout(f, 500));
+    }
 }
