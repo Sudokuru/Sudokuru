@@ -5,12 +5,47 @@ interface nextStepResponse {
     action: string
 }
 
+const NEXT_STEP_ENDPOINT:string = "http://localhost:3000/solver/nextStep?board=";
+const CANDIDATES:string = "123456789";
+const EMPTY_CELL = "0";
+
+/**
+ * Given a board string returns the equivalent board array
+ * @param board - board string
+ * @returns board array
+ */
+function getBoardArray(board: string):string[][] {
+    let boardArray:string[][] = new Array();
+    for (let i = 0; i < 9; i++) {
+        boardArray.push([]);
+        for (let j = 0; j < 9; j++) {
+            boardArray[i].push(board[(i*9)+j]);
+        }
+    }
+    return boardArray;
+}
+
+
+/**
+ * Given a board array returns the equivalent board string
+ * @param boardArray - board array
+ * @returns board string
+ */
+function getBoardString(boardArray: string[][]):string {
+    let board:string = "";
+    for (let row:number = 0; row < 9; row++) {
+        for (let column:number = 0; column < 9; column++) {
+            board += boardArray[row][column];
+        }
+    }
+    return board;
+}
+
 async function nextStep() {
     // Get input board from user input box and create request url
-    let url:string = "http://localhost:3000/solver/nextStep?board=";
     let boardInput:HTMLInputElement = <HTMLInputElement>document.getElementById("board");
-    let boardString:string = boardInput.value;
-    url += boardString;
+    let boardInputString:string = boardInput.value;
+    let url:string = NEXT_STEP_ENDPOINT + boardInputString;
 
     // Call and await Solvers response
     let res:Response = await fetch(url);
@@ -20,23 +55,19 @@ async function nextStep() {
     let board:string[][] = data.board;
     let notes:string[][] = data.notes;
 
-    // Store board and notes in sessionStorage
+    // Get stepNumber if available, otherwise set stepNumber to 1 and set board0 to boardInputString
     let stepNumber:string;
     if (sessionStorage.getItem("stepNumber") !== null) {
         stepNumber = sessionStorage.getItem("stepNumber");
     }
     else {
-        // Convert board string to array
-        let boardArray:string[][] = new Array();
-        for (let i = 0; i < 9; i++) {
-            boardArray.push([]);
-            for (let j = 0; j < 9; j++) {
-                boardArray[i].push(boardString[(i*9)+j]);
-            }
-        }
+        // Convert board string to array and add intial board state to sessionStorage
+        let boardArray:string[][] = getBoardArray(boardInputString);
         sessionStorage.setItem("board0", JSON.stringify(boardArray));
         stepNumber = "1";
     }
+
+    // Add board, notes, and new stepNumber to sessionStorage
     sessionStorage.setItem("board" + stepNumber, JSON.stringify(board));
     sessionStorage.setItem("notes" + stepNumber, JSON.stringify(notes));
     let newStepNumber:string = (Number(stepNumber) + 1).toString();
@@ -47,55 +78,52 @@ async function nextStep() {
     let oldBoard = JSON.parse(sessionStorage.getItem("board" + prevStepNumber));
     let oldNotes = JSON.parse(sessionStorage.getItem("notes" + prevStepNumber));
 
+    // index of note, used to know which to display in each cell of the table
     let noteIndex:number = 0;
+    // Sudoku html table
     let table:HTMLElement = document.getElementById("boardTable");
-    let newBoard:string = "";
+    // Stores value or set of notes that get added to cells in the html Sudoku table
     let value:string;
-    let values:string = "123456789";
 
     for (let row:number = 0; row < 9; row++) {
         for (let column:number = 0; column < 9; column++) {
-            value = board[row][column];
-            newBoard += value;
-            if (value === "0" || (value !== oldBoard[row][column])) {
+            // Adds notes to the html table cell if cell is empty or had value placed this step
+            if (board[row][column] === EMPTY_CELL || (board[row][column] !== oldBoard[row][column])) {
                 value = "";
+                // If value is placed add it to value, otherwise add notes to value and if value placed this step highlights its note green
                 for (let r:number = 0; r < 3; r++) {
                     for (let c:number = 0; c < 3; c++) {
-                        if (board[row][column] === oldBoard[row][column]) {
-                            if (notes[noteIndex].includes(values[(r*3)+c])) {
-                                value += values[(r*3)+c];
+                        // If this value was placed in this cell this step highlight it green, else add normally
+                        if (board[row][column] !== oldBoard[row][column] && 
+                            CANDIDATES[(r*3)+c] === board[row][column]) {
+                            value += '<span style="color:green">';
+                            value += board[row][column];
+                            value += '</span>';
+                        }
+                        else {
+                            if (notes[noteIndex].includes(CANDIDATES[(r*3)+c])) {
+                                value += CANDIDATES[(r*3)+c];
                             }
                             else {
                                 value += "-";
                             }
                             value += "-";
                         }
-                        else {
-                            if (values[(r*3)+c] === board[row][column]) {
-                                value += '<span style="color:green">';
-                                value += board[row][column];
-                                value += '</span>';
-                            }
-                            else {
-                                if (notes[noteIndex].includes(values[(r*3)+c])) {
-                                    value += values[(r*3)+c];
-                                }
-                                else {
-                                    value += "-";
-                                }
-                                value += "-";
-                            }
-                        }
                     }
                     value += "<br/>";
                 }
             }
             else {
+                value = board[row][column];
+                // Make placed value larger
                 (<HTMLTableElement>table).rows[row].cells[column].style.fontSize = "32px";
             }
+            // Place contents of value in table cell
             (<HTMLTableElement>table).rows[row].cells[column].innerHTML = value;
+            // Update noteIndex to keep track of next cells notes
             noteIndex++;
         }
     }
-    boardInput.value = newBoard;
+    // Update user input box with current board string
+    boardInput.value = getBoardString(board);
 }
