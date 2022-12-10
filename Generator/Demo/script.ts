@@ -156,11 +156,57 @@ function previousStep() {
     return;
 }
 
-async function nextStep() {
+/**
+ * Gets board input string from user input box
+ * @returns board input string
+ */
+function getInputBoard():string {
+    return (<HTMLInputElement>document.getElementById("board")).value;
+}
+
+/**
+ * Gets next step endpoint url by combining endpoint with current board string
+ * @returns next step endpoint url
+ */
+function getNextStepURL():string {
+    return NEXT_STEP_ENDPOINT + getInputBoard();
+}
+
+/**
+ * Gets stepNumber from sessionStorage if available, otherwise "0"
+ * @returns step number if available, otherwise "0"
+ */
+function getStepNumber():string {
+    if (sessionStorage.getItem("stepNumber") !== null) {
+        return sessionStorage.getItem("stepNumber");
+    }
+    else {
+        return "0";
+    }
+}
+
+/**
+ * Sets board state in sessionStorage for given stepNumber
+ * @param stepNumber 
+ * @param board 
+ * @param notes 
+ * @param info 
+ * @param action 
+ */
+function setBoardState(stepNumber:string, board:string[][], notes:string[][], info:string, action:string):void {
+    sessionStorage.setItem("board" + stepNumber, JSON.stringify(board));
+    sessionStorage.setItem("notes" + stepNumber, JSON.stringify(notes));
+    sessionStorage.setItem("info" + stepNumber, JSON.stringify(info));
+    sessionStorage.setItem("action" + stepNumber, JSON.stringify(action));
+    return;
+}
+
+/**
+ * Gets next step data, stores it in session storage, and updates table
+ */
+async function nextStep():Promise<void> {
     // Get input board from user input box and create request url
-    let boardInput:HTMLInputElement = <HTMLInputElement>document.getElementById("board");
-    let boardInputString:string = boardInput.value;
-    let url:string = NEXT_STEP_ENDPOINT + boardInputString;
+    let url:string = getNextStepURL();
 
     // Call and await Solvers response
     let res:Response = await fetch(url);
@@ -172,47 +218,43 @@ async function nextStep() {
     let info:string = data.info;
     let action:string = data.action;
 
-    // Get stepNumber if available, otherwise set stepNumber to 1 and set board0 to boardInputString
-    let stepNumber:string;
-    if (sessionStorage.getItem("stepNumber") !== null) {
-        stepNumber = sessionStorage.getItem("stepNumber");
-    }
-    else {
-        // Convert board string to array
-        let boardArray:string[][] = getBoardArray(boardInputString);
-        stepNumber = "0";
-    }
-
+    // Get stepNumber if available, otherwise set stepNumber to 0
+    let stepNumber:string = getStepNumber();
+    
     // Add board, notes, and new stepNumber to sessionStorage
-    sessionStorage.setItem("board" + stepNumber, JSON.stringify(board));
-    sessionStorage.setItem("notes" + stepNumber, JSON.stringify(notes));
-    sessionStorage.setItem("info" + stepNumber, JSON.stringify(info));
-    sessionStorage.setItem("action" + stepNumber, JSON.stringify(action));
+    setBoardState(stepNumber, board, notes, info, action);
+
     // stepNumber is set to the number of steps taken, board and notes above 0 indexed
     // so board0 set when stepNumber = 1 (first step), board1 when stepNumber = 2, ...
     let newStepNumber:string = (Number(stepNumber) + 1).toString();
     sessionStorage.setItem("stepNumber", newStepNumber);
 
     // Update Sudoku html table
-    // cals with 0-indexed step number i.e. correlates to board/notes for curr step
+    // called with 0-indexed step number i.e. correlates to board/notes for curr step
     updateTable(board, notes, info, action, Number(stepNumber));
     return;
 }
 
-async function play() {
+/**
+ * Runs nextStep every half second until the puzzle is solved
+ */
+async function play():Promise<void> {
     while (!(<HTMLButtonElement>document.getElementById("nextStep")).disabled) {
         nextStep();
         await new Promise(f => setTimeout(f, 500));
     }
 }
 
-function loadPuzzle() {
+/**
+ * Loads puzzle chosen from puzzle bank selector element
+ */
+function loadPuzzle():void {
     let puzzle:string = (<HTMLSelectElement>document.getElementById("puzzleSelect")).value;
     let boardInput:HTMLInputElement = <HTMLInputElement>document.getElementById("board");
     if (puzzle === "SINGLE_NAKED_SINGLE") {
         boardInput.value = SINGLE_NAKED_SINGLE;
     }
-    else {//if (puzzle === "ONLY_NAKED_SINGLES") {
+    else {
         boardInput.value = ONLY_NAKED_SINGLES;
     }
     sessionStorage.clear();
