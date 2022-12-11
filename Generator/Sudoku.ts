@@ -19,7 +19,8 @@ export enum SudokuEnum {
  */
 export enum StrategyEnum {
     INVALID = -1,
-    NAKED_SINGLE = 0
+    NAKED_SINGLE = 0,
+    HIDDEN_SINGLE = 1
 }
 
 /**
