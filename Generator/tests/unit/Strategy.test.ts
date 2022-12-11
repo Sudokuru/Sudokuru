@@ -32,3 +32,37 @@ describe("create naked single", () => {
         expect(strategy.getValuesToPlace()[0].getValue()).toBe("9");
     });
 });
+
+describe("create hidden single", () => {
+    it('should not be a hidden single', () => {
+        let cells:Cell[][] = new Array();
+        cells.push(new Array());
+        for (let i:number = 0; i < 9; i++) {
+            cells[0].push(new Cell(0, 0));
+        }
+        cells[0][0].removeNote("3");
+        cells[0][4].removeNote("3");
+        cells[0][2].removeNote("5");
+        for (let i:number = 0; i < 7; i++) {
+            cells[0][i].removeNote("7");
+        }
+        for (let i:number = 1; i < 8; i++) {
+            cells[0][i].removeNote("6");
+        }
+        let strategy:Strategy = new Strategy(cells);
+        expect(strategy.isHiddenSingle()).toBeFalsy;
+    });
+    it ('should be a hidden single', () => {
+        let cells:Cell[][] = new Array();
+        cells.push(new Array());
+        for (let i:number = 0; i < 9; i++) {
+            cells[0].push(new Cell(0, 0));
+        }
+        for (let i:number = 0; i < 8; i++) {
+            cells[0][i].removeNote("9");
+        }
+        let strategy:Strategy = new Strategy(cells);
+        expect(strategy.isHiddenSingle()).toBeTruthy;
+        expect(strategy.getValuesToPlace()[0].getValue()).toBe("9");
+    });
+});

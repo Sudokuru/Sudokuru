@@ -1,6 +1,6 @@
 import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
-import { StrategyEnum } from "./Sudoku"
+import { SudokuEnum, StrategyEnum } from "./Sudoku"
 
 /**
  * Constructed using 2d array of cells
@@ -94,15 +94,66 @@ export class Strategy{
      */
     public isNakedSingle():boolean {
         let notes:Map<string, undefined> = this.cells[0][0].getNotes();
+        // If the Cell provided only has 1 note then it is a naked single
         if (notes.size == 1) {
+            // Add Cell to values that can be placed
             for (const note of notes.keys()) {
                 let row:number = this.cells[0][0].getRow();
                 let column:number = this.cells[0][0].getColumn();
                 this.values.push(new Cell(row, column, note));
             }
+            // Identify strategy and return that it is a naked single
             this.strategyType = StrategyEnum.NAKED_SINGLE;
             this.identified = true;
             return true;
+        }
+        return false;
+    }
+
+    /**
+     * Checks if strategy is a hidden single and if so adds values that can be placed
+     * @returns true if strategy is a hidden single
+     */
+    public isHiddenSingle():boolean {
+        // stores whether or not candidate has appeared so far in cells
+        let found:boolean[] = new Array(SudokuEnum.ROW_LENGTH).fill(false);
+        // intialized to null
+        // if find cell candidate corresponding to index and !found, add to this array
+        // if find cell candidate corresponding to indec and found, set this to null
+        let single:Cell[] = new Array(SudokuEnum.ROW_LENGTH).fill(null);
+
+        let notes:Map<string, undefined>;
+        let noteIndex:number, row:number, column:number;
+        // Checks notes of every empty cell in group (row/column/box) provided
+        for (let i:number = 0; i < this.cells.length; i++) {
+            for (let j:number = 0; j < this.cells[i].length; j++) {
+                // Checks each note of the cell
+                notes = this.cells[i][j].getNotes();
+                for (const note of notes.keys()) {
+                    // Set single Cell to this cell if this note !found, otherwise to null
+                    noteIndex = Number(note) - 1;
+                    if (!found[noteIndex]) {
+                        found[noteIndex] = true;
+                        row = this.cells[i][j].getRow();
+                        column = this.cells[i][j].getColumn();
+                        single[noteIndex] = new Cell(row, column, note);
+                    }
+                    else {
+                        single[noteIndex] = null;
+                    }
+                }
+            }
+        }
+
+        // Checks if a hidden single was found
+        for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
+            if (found[i] && single[i] !== null) {
+                // Identify strategy and return that it is a hidden single
+                this.values.push(single[i]);
+                this.strategyType = StrategyEnum.HIDDEN_SINGLE;
+                this.identified = true;
+                return true;
+            }
         }
         return false;
     }
