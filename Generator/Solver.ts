@@ -1,9 +1,8 @@
-import { finished } from "stream";
 import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
 import { Strategy } from "./Strategy";
 import { SudokuEnum, StrategyEnum } from "./Sudoku";
-import { Hint, NakedSingleHint } from "./Hint";
+import { HiddenSingleHint, Hint, NakedSingleHint } from "./Hint";
 
 /**
  * Constructed using 2d board array
@@ -75,6 +74,7 @@ export class Solver{
      */
     private setHint(cells: Cell[][]):void {
         if(this.setNakedSingle(cells)) {}
+        else if (this.setHiddenSingle(cells)) {}
         return;
     }
 
@@ -91,18 +91,49 @@ export class Solver{
      * @returns true if contains a naked single
      */
     private setNakedSingle(cells: Cell[][]):boolean {
+        // Checks every cell for a naked single
         for (let i:number = 0; i < cells.length; i++) {
             for (let j:number = 0; j < cells[i].length; j++) {
+                // Creates a Cell array containing a possible naked single
                 let single: Cell[][] = new Array();
                 this.initializeCellArray(single, 1);
                 single[0].push(cells[i][j]);
+                // Create a naked single strategy using the array of cells
                 let nakedSingle: Strategy = new Strategy(single);
+                // Checks if strategy object constitutes a naked single
                 if (nakedSingle.isNakedSingle()) {
                     this.hint = new NakedSingleHint(nakedSingle);
                     return true;
                 }
             }
         }
+        return false;
+    }
+
+    /**
+     * Returns true if puzzle has a hidden single and sets hint, otherwise returns false
+     * @param cells - empty cells
+     * @returns true if contains a hidden single
+     */
+    private setHiddenSingle(cells: Cell[][]):boolean {
+        // Checks every cell row for a hidden single
+        for (let i:number = 0; i < cells.length; i++) {
+            // Creates a Cell array containing a possible hidden single
+            let rowSingle: Cell[][] = new Array();
+            this.initializeCellArray(rowSingle, 1);
+            for (let j:number = 0; j < cells[i].length; j++) {
+                rowSingle[0].push(cells[i][j]);
+            }
+            // Create a hidden single strategy using the array of cells in the row
+            let hiddenSingle: Strategy = new Strategy(rowSingle);
+            // Checks if strategy object constitutes a hidden single
+            if (hiddenSingle.isHiddenSingle()) {
+                this.hint = new HiddenSingleHint(hiddenSingle);
+                return true;
+            }
+        }
+        // Checks every cell column for a hidden single
+        // Checks every cell box for a hidden single
         return false;
     }
 
