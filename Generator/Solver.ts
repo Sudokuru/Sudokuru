@@ -154,6 +154,25 @@ export class Solver{
             }
         }
         // Checks every cell box for a hidden single
+        for (let box:number = 0; box < SudokuEnum.BOX_COUNT; box++) {
+            // Create Cell array containing a possible hidden single
+            let boxSingle: Cell[][] = new Array();
+            this.initializeCellArray(boxSingle, 1);
+            for (let i:number = 0; i < cells.length; i++) {
+                for (let j:number = 0; j < cells[i].length; j++) {
+                    if (cells[i][j].getBox() === box) {
+                        boxSingle[0].push(cells[i][j]);
+                    }
+                }
+            }
+            // Create hidden single strategy using the array of cells in the box
+            let hiddenSingle: Strategy = new Strategy(boxSingle);
+            // Checks if strategy object constitutes a hidden single
+            if (hiddenSingle.isHiddenSingle()) {
+                this.hint = new HiddenSingleHint(hiddenSingle);
+                return true;
+            }
+        }
         return false;
     }
 

@@ -8,6 +8,7 @@ export enum SudokuEnum {
     ROW_LENGTH = 9,
     COLUMN_LENGTH = 9,
     BOX_LENGTH = 3,
+    BOX_COUNT = 9,
     BOARD_LENGTH = 81,
     EMPTY_CELL = "0",
     CANDIDATES = "123456789"
