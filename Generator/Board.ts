@@ -149,8 +149,6 @@ export class Board{
                                             let compareRow: number = baseRow+l;
                                             let row: number = baseRow + n;
                                             
-                                            let array1 = boardArray[column][row];
-                                            let array2 = boardArray[compareColumn][compareRow];
                                             if (((column != compareColumn) && (row != compareRow)) && (boardArray[column][row] != "0") 
                                                 && (boardArray[column][row] == boardArray[compareColumn][compareRow])){
                                                 throw new CustomError(CustomErrorEnum.DUPLICATE_VALUE_IN_BOX);
