@@ -22,10 +22,7 @@ export class Board{
 
     /**
      * Creates board object if valid, otherwise throws error
-     * 
      * @param board - 81 length board string (left to right, top to bottom)
-     * @throws {@link CustomError}
-     * Thrown if board has invalid length, characters, or is already solved
      */
     constructor(board: string) {
 
@@ -101,6 +98,10 @@ export class Board{
 
     /**
      * Determines if the input board is a valid Sudoku board
+     * @param board - 81 length board string (left to right, top to bottom)
+     * @throws {@link CustomError}
+     * Thrown if board has invalid length, characters, is already solved, or if there are duplicate values 
+     * in a row, column, or box (Excluding zeros)
      */
     public validatePuzzle(board: string):boolean {
 
