@@ -28,19 +28,8 @@ export class Board{
      * Thrown if board has invalid length, characters, or is already solved
      */
     constructor(board: string) {
-        // Regex ^[0123456789]*$ which makes sure only contains those chars
-        let valid:string = SudokuEnum.EMPTY_CELL + SudokuEnum.CANDIDATES;
-        valid = "^[" + valid + "]*$";
 
-        if (board.length !== SudokuEnum.BOARD_LENGTH) {
-            throw new CustomError(CustomErrorEnum.INVALID_BOARD_LENGTH);
-        }
-        else if (!new RegExp(valid).test(board)) {
-            throw new CustomError(CustomErrorEnum.INVALID_BOARD_CHARACTERS);
-        }
-        else if (!board.includes(SudokuEnum.EMPTY_CELL)) {
-            throw new CustomError(CustomErrorEnum.BOARD_ALREADY_SOLVED);
-        }
+        this.validatePuzzle(board);
 
         this.board = getBoardArray(board);
 
@@ -108,5 +97,73 @@ export class Board{
             }
         }
         return;
+    }
+
+    /**
+     * Determines if the input board is a valid Sudoku board
+     */
+    public validatePuzzle(board: string):boolean {
+
+        // Regex ^[0123456789]*$ which makes sure only contains those chars
+        let valid:string = SudokuEnum.EMPTY_CELL + SudokuEnum.CANDIDATES;
+        valid = "^[" + valid + "]*$";
+
+        if (board.length !== SudokuEnum.BOARD_LENGTH) {
+            throw new CustomError(CustomErrorEnum.INVALID_BOARD_LENGTH);
+        }
+        else if (!new RegExp(valid).test(board)) {
+            throw new CustomError(CustomErrorEnum.INVALID_BOARD_CHARACTERS);
+        }
+        else if (!board.includes(SudokuEnum.EMPTY_CELL)) {
+            throw new CustomError(CustomErrorEnum.BOARD_ALREADY_SOLVED);
+        }
+        else {
+            var boardArray: string[][] = getBoardArray(board);
+            for (let i:number = 0; i < SudokuEnum.COLUMN_LENGTH; i++){
+                for (let j:number = 0; j < SudokuEnum.ROW_LENGTH; j++){
+                    if (boardArray[i][j] != "0"){
+                        // checks to see if there are any duplicate values in the row
+                        for (let k:number = 0; k < j; k++){
+                            if (boardArray[i][j] == boardArray[i][k]){
+                                throw new CustomError(CustomErrorEnum.DUPLICATE_VALUE_IN_ROW);
+                            }
+                        }
+                        // checks to see if there are any duplicate values in the column
+                        for (let k:number = 0; k < i; k++){
+                            if (boardArray[i][j] == boardArray[k][j]){
+                                throw new CustomError(CustomErrorEnum.DUPLICATE_VALUE_IN_COLUMN);
+                            }
+                        }
+                        // checks to see if there are any duplicate values in the box
+                        if (i%3 == 2 && j%3 == 2){
+                            for (let k:number = 0; k < SudokuEnum.BOX_LENGTH; k++){
+                                for (let l:number = 0; l < SudokuEnum.BOX_LENGTH; l++) {
+                                    for(let m: number = 0; m < SudokuEnum.BOX_LENGTH; m++){
+                                        for (let n: number = 0; n < SudokuEnum.BOX_LENGTH; n++){
+                                            
+                                            let baseColumn: number = i-(SudokuEnum.BOX_LENGTH-1);
+                                            let compareColumn: number = baseColumn+k;
+                                            let column: number = baseColumn + m;
+                                            
+                                            let baseRow: number = j-(SudokuEnum.BOX_LENGTH-1);
+                                            let compareRow: number = baseRow+l;
+                                            let row: number = baseRow + n;
+                                            
+                                            let array1 = boardArray[column][row];
+                                            let array2 = boardArray[compareColumn][compareRow];
+                                            if (((column != compareColumn) && (row != compareRow)) && (boardArray[column][row] != "0") 
+                                                && (boardArray[column][row] == boardArray[compareColumn][compareRow])){
+                                                throw new CustomError(CustomErrorEnum.DUPLICATE_VALUE_IN_BOX);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return true;
     }
 }

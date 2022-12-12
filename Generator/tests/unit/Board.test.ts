@@ -1,5 +1,6 @@
 import {Board} from '../../Board';
 import { CustomError, CustomErrorEnum } from '../../CustomError';
+import { getError } from '../testResources';
 
 enum TestBoards {
     SINGLE_NAKED_SINGLE = "439275618051896437876143592342687951185329746697451283928734165563912874714568329",
@@ -10,32 +11,47 @@ enum TestBoards {
     ROW_HIDDEN_SINGLES_SOLUTION = "683942751574816329921735486817453692469287513235691847358169274142378965796524138"
 }
 
+enum InvalidTestBoards {
+    DUPLICATE_VALUE_IN_COLUMN = "310084002300150006570003010423708095760030000009562030050006070007000900000001500",
+    DUPLICATE_VALUE_IN_ROW = "330084002200150006570003010423708095760030000009562030050006070007000900000001500",
+    DUPLICATE_VALUE_IN_BOX = "310084002200150006570803010423708095760030000009562030050006070007000900000001500",
+}
+
 describe("create Board objects", () => {
-    it('should throw invalid board length error', () => {
-        try {
-            let obj:Board = new Board(TestBoards.SINGLE_NAKED_SINGLE + "0");
-        } catch (err) {
-            expect(err).toBeInstanceOf(CustomError);
-            expect(err).toHaveProperty('Error_Message', CustomErrorEnum.INVALID_BOARD_LENGTH);
-        }
+    it('should throw invalid board length error', async () => {
+        const error = await getError(async () => new Board(TestBoards.SINGLE_NAKED_SINGLE + "0"));
+        expect(error).toBeInstanceOf(CustomError);
+        expect(error).toHaveProperty('Error_Message', CustomErrorEnum.INVALID_BOARD_LENGTH);
     });
 
-    it('should throw invalid board character error', () => {
-        try {
-            let obj:Board = new Board("a" + TestBoards.SINGLE_NAKED_SINGLE.substring(1));
-        } catch (err) {
-            expect(err).toBeInstanceOf(CustomError);
-            expect(err).toHaveProperty('Error_Message', CustomErrorEnum.INVALID_BOARD_CHARACTERS);
-        }
+    it('should throw invalid board character error', async () => {
+        const error = await getError(async () => new Board("a" + TestBoards.SINGLE_NAKED_SINGLE.substring(1)));
+        expect(error).toBeInstanceOf(CustomError);
+        expect(error).toHaveProperty('Error_Message', CustomErrorEnum.INVALID_BOARD_CHARACTERS);
     });
 
-    it('should throw board already solved error', () => {
-        try {
-            let obj:Board = new Board(TestBoards.SINGLE_NAKED_SINGLE_SOLUTION);
-        } catch (err) {
-            expect(err).toBeInstanceOf(CustomError);
-            expect(err).toHaveProperty('Error_Message', CustomErrorEnum.BOARD_ALREADY_SOLVED);
-        }
+    it('should throw board already solved error', async () => {
+        const error = await getError(async () => new Board(TestBoards.SINGLE_NAKED_SINGLE_SOLUTION));
+        expect(error).toBeInstanceOf(CustomError);
+        expect(error).toHaveProperty('Error_Message', CustomErrorEnum.BOARD_ALREADY_SOLVED);
+    });
+
+    it('should throw duplicate value in row error', async () => {
+        const error = await getError(async () => new Board(InvalidTestBoards.DUPLICATE_VALUE_IN_COLUMN));
+        expect(error).toBeInstanceOf(CustomError);
+        expect(error).toHaveProperty('Error_Message', CustomErrorEnum.DUPLICATE_VALUE_IN_COLUMN);
+    });
+
+    it('should throw duplicate value in row error', async () => {
+        const error = await getError(async () => new Board(InvalidTestBoards.DUPLICATE_VALUE_IN_ROW));
+        expect(error).toBeInstanceOf(CustomError);
+        expect(error).toHaveProperty('Error_Message', CustomErrorEnum.DUPLICATE_VALUE_IN_ROW);
+    });
+
+    it('should throw duplicate value in box error', async () => {
+        const error = await getError(async () => new Board(InvalidTestBoards.DUPLICATE_VALUE_IN_BOX));
+        expect(error).toBeInstanceOf(CustomError);
+        expect(error).toHaveProperty('Error_Message', CustomErrorEnum.DUPLICATE_VALUE_IN_BOX);
     });
 });
 
