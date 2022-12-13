@@ -3,6 +3,7 @@ import { getBoardArray, SudokuEnum } from "./Sudoku";
 import { Solver } from "./Solver";
 import { Hint } from "./Hint";
 import { StrategyEnum } from "./Sudoku"
+import { Cell } from "./Cell";
 
 /**
  * Constructed using board string
@@ -119,45 +120,50 @@ export class Board{
             throw new CustomError(CustomErrorEnum.BOARD_ALREADY_SOLVED);
         }
         else {
+            // Checks board for duplicate values in the same row/column/box
             var boardArray: string[][] = getBoardArray(board);
-            for (let i:number = 0; i < SudokuEnum.COLUMN_LENGTH; i++){
-                for (let j:number = 0; j < SudokuEnum.ROW_LENGTH; j++){
-                    if (boardArray[i][j] != "0"){
-                        // checks to see if there are any duplicate values in the row
-                        for (let k:number = 0; k < j; k++){
-                            if (boardArray[i][j] == boardArray[i][k]){
-                                throw new CustomError(CustomErrorEnum.DUPLICATE_VALUE_IN_ROW);
-                            }
+            // checks every row for duplicate values
+            for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+                // seen stores whetehr or not a value has been seen in the row already
+                let seen:boolean[] = new Array(SudokuEnum.ROW_LENGTH).fill(false);
+                for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                    // If value hasn't beeen seen before (or if there is no value) in this row mark it as seen, else throw a duplicate value error
+                    if ((boardArray[row][column] === "0") || !seen[Number(boardArray[row][column])-1]) {
+                        seen[Number(boardArray[row][column])-1] = true;
+                    }
+                    else {
+                        throw new CustomError(CustomErrorEnum.DUPLICATE_VALUE_IN_ROW);
+                    }
+                }
+            }
+            // checks every column for duplicate values
+            for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                // seen stores whetehr or not a value has been seen in the row already
+                let seen:boolean[] = new Array(SudokuEnum.ROW_LENGTH).fill(false);
+                for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+                    // If value hasn't beeen seen before (or if there is no value) in this column mark it as seen, else throw a duplicate value error
+                    if ((boardArray[row][column] === "0") || !seen[Number(boardArray[row][column])-1]) {
+                        seen[Number(boardArray[row][column])-1] = true;
+                    }
+                    else {
+                        throw new CustomError(CustomErrorEnum.DUPLICATE_VALUE_IN_COLUMN);
+                    }
+                }
+            }
+            // checks every box for duplicate values
+            for (let box:number = 0; box < SudokuEnum.BOX_COUNT; box++) {
+                // seen stores whether or not a value has been seen in the box already
+                let seen:boolean[] = new Array(SudokuEnum.ROW_LENGTH).fill(false);
+                let rowStart:number = Cell.getBoxRowStart(box);
+                for (let row:number = rowStart; row < (rowStart + SudokuEnum.BOX_LENGTH); row++) {
+                    let columnStart:number = Cell.getBoxColumnStart(box);
+                    for (let column:number = columnStart; column < (columnStart + SudokuEnum.BOX_LENGTH); column++) {
+                        // If value hasn't beeen seen before (or if there is no value) in this box mark it as seen, else throw a duplicate value error
+                        if ((boardArray[row][column] === "0") || !seen[Number(boardArray[row][column])-1]) {
+                            seen[Number(boardArray[row][column])-1] = true;
                         }
-                        // checks to see if there are any duplicate values in the column
-                        for (let k:number = 0; k < i; k++){
-                            if (boardArray[i][j] == boardArray[k][j]){
-                                throw new CustomError(CustomErrorEnum.DUPLICATE_VALUE_IN_COLUMN);
-                            }
-                        }
-                        // checks to see if there are any duplicate values in the box
-                        if (i%3 == 2 && j%3 == 2){
-                            for (let k:number = 0; k < SudokuEnum.BOX_LENGTH; k++){
-                                for (let l:number = 0; l < SudokuEnum.BOX_LENGTH; l++) {
-                                    for(let m: number = 0; m < SudokuEnum.BOX_LENGTH; m++){
-                                        for (let n: number = 0; n < SudokuEnum.BOX_LENGTH; n++){
-                                            
-                                            let baseColumn: number = i-(SudokuEnum.BOX_LENGTH-1);
-                                            let compareColumn: number = baseColumn+k;
-                                            let column: number = baseColumn + m;
-                                            
-                                            let baseRow: number = j-(SudokuEnum.BOX_LENGTH-1);
-                                            let compareRow: number = baseRow+l;
-                                            let row: number = baseRow + n;
-                                            
-                                            if (((column != compareColumn) && (row != compareRow)) && (boardArray[column][row] != "0") 
-                                                && (boardArray[column][row] == boardArray[compareColumn][compareRow])){
-                                                throw new CustomError(CustomErrorEnum.DUPLICATE_VALUE_IN_BOX);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                        else {
+                            throw new CustomError(CustomErrorEnum.DUPLICATE_VALUE_IN_BOX);
                         }
                     }
                 }
