@@ -122,23 +122,31 @@ export class Board{
         else {
             // Checks board for duplicate values in the same row/column/box
             var boardArray: string[][] = getBoardArray(board);
-            // Checks every cell
-            for (let r:number = 0; r < SudokuEnum.COLUMN_LENGTH; r++){
-                for (let c:number = 0; c < SudokuEnum.ROW_LENGTH; c++){
-                    // Checks every empty cell
-                    if (boardArray[r][c] != "0"){
-                        // checks to see if there are any duplicate values in the row
-                        for (let k:number = 0; k < c; k++){
-                            if (boardArray[r][c] == boardArray[r][k]){
-                                throw new CustomError(CustomErrorEnum.DUPLICATE_VALUE_IN_ROW);
-                            }
-                        }
-                        // checks to see if there are any duplicate values in the column
-                        for (let k:number = 0; k < r; k++){
-                            if (boardArray[r][c] == boardArray[k][c]){
-                                throw new CustomError(CustomErrorEnum.DUPLICATE_VALUE_IN_COLUMN);
-                            }
-                        }
+            // checks every row for duplicate values
+            for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+                // seen stores whetehr or not a value has been seen in the row already
+                let seen:boolean[] = new Array(SudokuEnum.ROW_LENGTH).fill(false);
+                for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                    // If value hasn't beeen seen before (or if there is no value) in this row mark it as seen, else throw a duplicate value error
+                    if ((boardArray[row][column] === "0") || !seen[Number(boardArray[row][column])-1]) {
+                        seen[Number(boardArray[row][column])-1] = true;
+                    }
+                    else {
+                        throw new CustomError(CustomErrorEnum.DUPLICATE_VALUE_IN_ROW);
+                    }
+                }
+            }
+            // checks every column for duplicate values
+            for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                // seen stores whetehr or not a value has been seen in the row already
+                let seen:boolean[] = new Array(SudokuEnum.ROW_LENGTH).fill(false);
+                for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+                    // If value hasn't beeen seen before (or if there is no value) in this column mark it as seen, else throw a duplicate value error
+                    if ((boardArray[row][column] === "0") || !seen[Number(boardArray[row][column])-1]) {
+                        seen[Number(boardArray[row][column])-1] = true;
+                    }
+                    else {
+                        throw new CustomError(CustomErrorEnum.DUPLICATE_VALUE_IN_COLUMN);
                     }
                 }
             }
