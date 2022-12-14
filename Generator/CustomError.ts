@@ -17,6 +17,7 @@ export enum CustomErrorEnum {
     STRATEGY_NOT_IDENTIFIED = "A strategy hasn't been identified yet",
     UNSOLVABLE = "This board isn't solvable",
     NOT_SOLVED = "This board isn't solved",
+    INVALID_CANDIDATE_TYPE = "Candidate isn't a string candidate or a number candidate index",
     DEFAULT_ERROR = "Default Error"
 }
 

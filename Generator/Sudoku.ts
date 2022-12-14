@@ -81,3 +81,20 @@ export function getBoardArray(board: string):string[][] {
     }
     return boardArray;
 }
+
+/**
+ * Given a candidate (string) or candidate index (number), calculates candidate index
+ * @param candidate - number candidate index or candidate string
+ * @returns candidate index
+ * @throws {@link CustomError}
+ * Thrown if candidate isn't a string candidate or a number candidate index
+ */
+export function getCandidateIndex(candidate: unknown):number {
+    if (typeof candidate === 'string') {
+        return Number(candidate) - 1;
+    }
+    else if (typeof candidate === 'number') {
+        return candidate as number;
+    }
+    throw new CustomError(CustomErrorEnum.INVALID_CANDIDATE_TYPE);
+}
