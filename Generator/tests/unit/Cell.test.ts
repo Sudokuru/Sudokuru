@@ -1,31 +1,23 @@
 import {Cell} from '../../Cell';
 import { CustomError, CustomErrorEnum } from '../../CustomError';
 import { SudokuEnum } from '../../Sudoku';
+import { getError } from '../testResources';
 
 describe("create Cell object", () => {
-    it('should throw row out of range error', () => {
-        try {
-            let obj:Cell = new Cell(-1, 0);
-        } catch (err) {
-            expect(err).toBeInstanceOf(CustomError);
-            expect(err).toHaveProperty('Error_Message', CustomErrorEnum.ROW_INDEX_OUT_OF_RANGE);
-        }
+    it('should throw row out of range error', async () => {
+        const error = await getError(async () => new Cell(-1, 0));
+        expect(error).toBeInstanceOf(CustomError);
+        expect(error).toHaveProperty('Error_Message', CustomErrorEnum.ROW_INDEX_OUT_OF_RANGE);
     });
-    it('should throw column out of range error', () => {
-        try {
-            let obj:Cell = new Cell(0, SudokuEnum.COLUMN_LENGTH);
-        } catch (err) {
-            expect(err).toBeInstanceOf(CustomError);
-            expect(err).toHaveProperty('Error_Message', CustomErrorEnum.COLUMN_INDEX_OUT_OF_RANGE);
-        }
+    it('should throw column out of range error', async () => {
+        const error = await getError(async () => new Cell(0, SudokuEnum.COLUMN_LENGTH));
+        expect(error).toBeInstanceOf(CustomError);
+        expect(error).toHaveProperty('Error_Message', CustomErrorEnum.COLUMN_INDEX_OUT_OF_RANGE);
     });
-    it('should throw invalid value error', () => {
-        try {
-            let obj:Cell = new Cell(0, 0, "a");
-        } catch (err) {
-            expect(err).toBeInstanceOf(CustomError);
-            expect(err).toHaveProperty('Error_Message', CustomErrorEnum.INVALID_VALUE);
-        }
+    it('should throw invalid value error', async () => {
+        const error = await getError(async () => new Cell(0, 0, "a"));
+        expect(error).toBeInstanceOf(CustomError);
+        expect(error).toHaveProperty('Error_Message', CustomErrorEnum.INVALID_VALUE);
     });
     it('should remove notes', () => {
         let obj:Cell = new Cell(0, 0);

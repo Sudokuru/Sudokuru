@@ -76,11 +76,27 @@ export class Cell{
     }
 
     /**
+     * Get given box column start
+     * @returns first column in given box
+     */
+    public static getBoxColumnStart(box: number) {
+        return (box % SudokuEnum.BOX_LENGTH) * 3;
+    }
+
+    /**
      * Get box column start
      * @returns first column in box
      */
     public getBoxColumnStart():number {
-        return (this.box % SudokuEnum.BOX_LENGTH) * 3;
+        return Cell.getBoxColumnStart(this.box);
+    }
+
+    /**
+     * Get given box row start
+     * @returns first row in given box
+     */
+    public static getBoxRowStart(box: number) {
+        return Math.floor(box / SudokuEnum.BOX_LENGTH) * 3;
     }
 
     /**
@@ -88,7 +104,7 @@ export class Cell{
      * @returns first row in box
      */
     public getBoxRowStart():number {
-        return Math.floor(this.box / SudokuEnum.BOX_LENGTH) * 3;
+        return Cell.getBoxRowStart(this.box);
     }
 
     /**

@@ -1,17 +1,15 @@
 import {Strategy} from '../../Strategy';
 import { Cell } from '../../Cell';
 import { CustomError, CustomErrorEnum } from '../../CustomError';
+import { getError } from '../testResources';
 
 describe("create naked single", () => {
-    it('should throw strategy not identified error', () => {
+    it('should throw strategy not identified error', async () => {
         let cells:Cell[][] = new Array();
         let strategy:Strategy = new Strategy(cells);
-        try {
-            strategy.getValuesToPlace();
-        } catch (err) {
-            expect(err).toBeInstanceOf(CustomError);
-            expect(err).toHaveProperty('Error_Message', CustomErrorEnum.STRATEGY_NOT_IDENTIFIED);
-        }
+        const error = await getError(async () => strategy.getValuesToPlace());
+        expect(error).toBeInstanceOf(CustomError);
+        expect(error).toHaveProperty('Error_Message', CustomErrorEnum.STRATEGY_NOT_IDENTIFIED);
     });
     it('should not be a naked single', () => {
         let cells:Cell[][] = new Array();
