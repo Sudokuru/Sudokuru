@@ -42,15 +42,15 @@ enum DuplicateRowValues {
 }
 
 enum DuplicateBoxValues {
-    DUPLICATE_VALUE_IN_FIRST_BOX = "",
-    DUPLICATE_VALUE_IN_SECOND_BOX = "",
-    DUPLICATE_VALUE_IN_THIRD_BOX = "",
-    DUPLICATE_VALUE_IN_FORTH_BOX = "",
-    DUPLICATE_VALUE_IN_FIFTH_BOX = "",
-    DUPLICATE_VALUE_IN_SIXTH_BOX = "",
-    DUPLICATE_VALUE_IN_SEVENTH_BOX = "",
-    DUPLICATE_VALUE_IN_EIGHTH_BOX = "",
-    DUPLICATE_VALUE_IN_NINTH_BOX = ""
+    DUPLICATE_THREE_IN_FIRST_BOX = "310084002230150006570003010423708095760030000009562030050006070007000900000001500",
+    DUPLICATE_FIVE_IN_SECOND_BOX = "310584002200150006570003010423708095760030000009062030050006070007000900000001500",
+    DUPLICATE_TWO_IN_THIRD_BOX = "310084002200150006570003210423708095760030000009562030050006070007000900000001500",
+    DUPLICATE_FOUR_IN_FORTH_BOX = "310084002200150006570003010423708095764030000009562030050006070007000900000001500",
+    DUPLICATE_FIVE_IN_FIFTH_BOX = "310084002200150006570003010423708095760035000009562030050006070007000900000001500",
+    DUPLICATE_NINE_IN_SIXTH_BOX = "310084002200150006570003010423708095760030009009562030050006070007000900000001500",
+    DUPLICATE_ONE_IN_SEVENTH_BOX = "310084002200150006570003010423708095760030000009562030051006070107000900000001500",
+    DUPLICATE_SIX_IN_EIGHTH_BOX = "310084002200150006570003010423708095760030000009562030050006070007600900000001500",
+    DUPLICATE_NINE_IN_NINTH_BOX = "310084002200150006570003010423708095760030000009562030050006079007000900000001500"
 }
 
 // How to iterate over enums:
@@ -93,14 +93,14 @@ describe("create Board objects", () => {
         }
     });
 
-    // it('should throw duplicate value in box error', async () => {
-    //     const values:string[] = Object.keys(DuplicateBoxValues).filter((v) => !isNaN(Number(v)));
-    //     for (let i = 0; i < values.length; i ++){
-    //         const error = await getError(async () => new Board(values[i]));
-    //         expect(error).toBeInstanceOf(CustomError);
-    //         expect(error).toHaveProperty('Error_Message', CustomErrorEnum.DUPLICATE_VALUE_IN_BOX);
-    //     }
-    // });
+    it('should throw duplicate value in box error', async () => {
+        const values:string[] = Object.values(DuplicateBoxValues);
+        for (let i = 0; i < values.length; i ++){
+            const error = await getError(async () => new Board(values[i]));
+            expect(error).toBeInstanceOf(CustomError);
+            expect(error).toHaveProperty('Error_Message', CustomErrorEnum.DUPLICATE_VALUE_IN_BOX);
+        }
+    });
 });
 
 describe("solve Boards", () => {
