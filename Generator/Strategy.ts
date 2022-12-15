@@ -1,6 +1,7 @@
 import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
 import { SudokuEnum, StrategyEnum } from "./Sudoku"
+import { Group } from "./Group";
 
 /**
  * Constructed using 2d array of cells
@@ -115,11 +116,10 @@ export class Strategy{
      * @returns true if strategy is a hidden single
      */
     public isHiddenSingle():boolean {
-        // stores whether or not candidate has appeared so far in cells
-        let found:boolean[] = new Array(SudokuEnum.ROW_LENGTH).fill(false);
-        // intialized to null
-        // if find cell candidate corresponding to index and !found, add to this array
-        // if find cell candidate corresponding to indec and found, set this to null
+        // stores candidates found in the cells
+        let found:Group = new Group(false);
+        // stores possible hidden single for each candidate at their corresponding index
+        // initialized to null, set to cell with hidden single, reset to null if multiple cells with note found
         let single:Cell[] = new Array(SudokuEnum.ROW_LENGTH).fill(null);
 
         let notes:Map<string, undefined>;
@@ -130,10 +130,9 @@ export class Strategy{
                 // Checks each note of the cell
                 notes = this.cells[i][j].getNotes();
                 for (const note of notes.keys()) {
-                    // Set single Cell to this cell if this note !found, otherwise to null
+                    // Add cell to hidden single Cell if this note not found before, otherwise set to null
                     noteIndex = Number(note) - 1;
-                    if (!found[noteIndex]) {
-                        found[noteIndex] = true;
+                    if (found.insert(noteIndex)) {
                         row = this.cells[i][j].getRow();
                         column = this.cells[i][j].getColumn();
                         single[noteIndex] = new Cell(row, column, note);
@@ -147,7 +146,7 @@ export class Strategy{
 
         // Checks if a hidden single was found
         for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
-            if (found[i] && single[i] !== null) {
+            if (found.contains(i) && single[i] !== null) {
                 // Identify strategy and return that it is a hidden single
                 this.values.push(single[i]);
                 this.strategyType = StrategyEnum.HIDDEN_SINGLE;
