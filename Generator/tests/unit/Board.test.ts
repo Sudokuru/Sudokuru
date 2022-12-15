@@ -93,14 +93,14 @@ describe("create Board objects", () => {
         }
     });
 
-    // it('should throw duplicate value in box error', async () => {
-    //     const values:string[] = Object.keys(DuplicateBoxValues).filter((v) => !isNaN(Number(v)));
-    //     for (let i = 0; i < values.length; i ++){
-    //         const error = await getError(async () => new Board(values[i]));
-    //         expect(error).toBeInstanceOf(CustomError);
-    //         expect(error).toHaveProperty('Error_Message', CustomErrorEnum.DUPLICATE_VALUE_IN_BOX);
-    //     }
-    // });
+    it('should throw duplicate value in box error', async () => {
+        const values:string[] = Object.values(DuplicateBoxValues);
+        for (let i = 0; i < values.length; i ++){
+            const error = await getError(async () => new Board(values[i]));
+            expect(error).toBeInstanceOf(CustomError);
+            expect(error).toHaveProperty('Error_Message', CustomErrorEnum.DUPLICATE_VALUE_IN_BOX);
+        }
+    });
 });
 
 describe("solve Boards", () => {
