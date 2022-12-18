@@ -12,6 +12,8 @@ permissions:
   pages: write
   id-token: write
   
+concurrency: main_workflow
+  
 jobs:
   build:
     name: Build
