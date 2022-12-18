@@ -16,7 +16,7 @@ concurrency: main_workflow
   
 jobs:
   build:
-    name: Build
+    name: Deploy Documentation
     runs-on: ubuntu-latest
     # Temperary fix, this will prevent the job from running if the build workflow fails. 
     # preferably, we would want the demo_deploy workflow to not run at all. 
@@ -36,7 +36,6 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v1
       with:
-        # Upload entire repository
         path: 'docs/'
     - name: Deploy to GitHub Pages
       id: deployment
