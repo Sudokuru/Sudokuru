@@ -2,9 +2,13 @@ name: "Build Pipeline"
 
 on:
   push:
-    branches: [ "main" ]
+    branches: 
+      - main
   pull_request:
-    branches: [ "main" ]
+    branches: 
+      - main
+      
+concurrency: main_workflow
     
 jobs:
   build:
