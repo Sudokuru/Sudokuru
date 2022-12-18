@@ -7,6 +7,8 @@ on:
   pull_request:
     branches: 
       - main
+      
+concurrency: main_workflow
     
 jobs:
   build:
