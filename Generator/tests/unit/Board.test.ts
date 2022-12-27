@@ -1,5 +1,6 @@
 import {Board} from '../../Board';
 import { CustomError, CustomErrorEnum } from '../../CustomError';
+import { StrategyEnum } from '../../Sudoku';
 import { getError } from '../testResources';
 
 enum TestBoards {
@@ -110,6 +111,14 @@ describe("solve Boards", () => {
         let board:Board = new Board(TestBoards.SINGLE_NAKED_SINGLE);
         expect(board.getSolutionString()).toBe(TestBoards.SINGLE_NAKED_SINGLE_SOLUTION);
         expect(board.getStrategyScore()).toBe(0);
+    });
+
+    it('should solve single naked single using hidden single', () => {
+        let algorithm:StrategyEnum[] = new Array();
+        algorithm.push(StrategyEnum.HIDDEN_SINGLE);
+        let board:Board = new Board(TestBoards.SINGLE_NAKED_SINGLE, algorithm);
+        expect(board.getSolutionString()).toBe(TestBoards.SINGLE_NAKED_SINGLE_SOLUTION);
+        expect(board.getStrategyScore()).toBe(1);
     });
 
     it('should solve naked singles only board', () => {
