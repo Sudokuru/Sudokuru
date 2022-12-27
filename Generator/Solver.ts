@@ -24,16 +24,30 @@ export class Solver{
      * Creates solver object
      * @param board - 2d board array
      */
-    constructor(board: string[][]) {
+    constructor(board: string[][]);
+    
+    /**
+     * Creates solver object
+     * @param board - 2d board array
+     * @param algorithm - specific order to apply strategies
+     */
+    constructor(board: string[][], algorithm: StrategyEnum[]);
+
+    constructor(board: string[][], algorithm?: StrategyEnum[]) {
         this.board = new Array();
         this.initializeCellArray(this.board, board.length);
         this.initializeBoard(board);
         this.simplifyAllNotes();
         this.solved = false;
-        this.algorithm = new Array();
-        // Initializes algorithm to use strategies in order of least to most complex
-        for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
-            this.algorithm.push(strategy);
+        if (algorithm === undefined) {
+            this.algorithm = new Array();
+            // Initializes algorithm to use strategies in order of least to most complex
+            for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
+                this.algorithm.push(strategy);
+            }
+        }
+        else {
+            this.algorithm = algorithm;
         }
     }
 
