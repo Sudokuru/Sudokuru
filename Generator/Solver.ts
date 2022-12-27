@@ -25,7 +25,7 @@ export class Solver{
      * @param board - 2d board array
      */
     constructor(board: string[][]);
-    
+
     /**
      * Creates solver object
      * @param board - 2d board array
@@ -98,11 +98,11 @@ export class Solver{
      */
     private setHint(cells: Cell[][]):void {
         // Attempts to use strategies in order specified by algorithm
-        for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
-            if (strategy === StrategyEnum.NAKED_SINGLE && this.setNakedSingle(cells)) {
+        for (let i: number = 0; i < StrategyEnum.COUNT; i++) {
+            if (this.algorithm[i] === StrategyEnum.NAKED_SINGLE && this.setNakedSingle(cells)) {
                 return;
             }
-            else if (strategy === StrategyEnum.HIDDEN_SINGLE && this.setHiddenSingle(cells)) {
+            else if (this.algorithm[i] === StrategyEnum.HIDDEN_SINGLE && this.setHiddenSingle(cells)) {
                 return;
             }
         }
