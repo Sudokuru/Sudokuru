@@ -1,6 +1,6 @@
 import errorHandler from "../HandleError";
 import { Solver } from "../Solver";
-import { getBoardArray } from "../Sudoku";
+import { StrategyEnum, getBoardArray } from "../Sudoku";
 import { Hint } from "../Hint";
 
 const expressApp = require('express');
@@ -14,7 +14,16 @@ app.use(expressApp.json());
 
 app.get('/solver/nextStep', (req, res) => {
     let board: string[][] = getBoardArray(req.query.board);
-    let solver: Solver = new Solver(board);
+    let algorithm: StrategyEnum[] = new Array();
+    for (let i: number = 1; i <= StrategyEnum.COUNT; i++) {
+        if (Number(req.query.nakedSingle) === i) {
+            algorithm.push(StrategyEnum.NAKED_SINGLE);
+        }
+        else if (Number(req.query.hiddenSingle) === i) {
+            algorithm.push(StrategyEnum.HIDDEN_SINGLE);
+        }
+    }
+    let solver: Solver = new Solver(board, algorithm);
     let hint: Hint = solver.nextStep();
     if (hint !== null) {
         res.send({ board: solver.getBoard(), notes: solver.getNotes(), info: hint.getInfo(), action: hint.getAction() });

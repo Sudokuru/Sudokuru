@@ -6,6 +6,8 @@ interface nextStepResponse {
 }
 
 const NEXT_STEP_ENDPOINT:string = "http://localhost:3001/solver/nextStep?board=";
+const NEXT_NAKED_SINGLE:string = "&nakedSingle=";
+const NEXT_HIDDEN_SINGLE:string = "&hiddenSingle=";
 const CANDIDATES:string = "123456789";
 const EMPTY_CELL = "0";
 const SINGLE_NAKED_SINGLE = "439275618051896437876143592342687951185329746697451283928734165563912874714568329";
@@ -243,11 +245,27 @@ function getInputBoard():string {
 }
 
 /**
- * Gets next step endpoint url by combining endpoint with current board string
+ * Gets order of strategy from user input boxes
+ * @returns strategy order string
+ */
+function getStrategyOrder():string {
+    let algorithm:string = "";
+
+    algorithm += NEXT_NAKED_SINGLE;
+    algorithm += (<HTMLInputElement>document.getElementById("nakedSingle")).value;
+
+    algorithm += NEXT_HIDDEN_SINGLE;
+    algorithm += (<HTMLInputElement>document.getElementById("hiddenSingle")).value;
+
+    return algorithm;
+}
+
+/**
+ * Gets next step endpoint url by combining endpoint with current board string and order of strategies
  * @returns next step endpoint url
  */
 function getNextStepURL():string {
-    return NEXT_STEP_ENDPOINT + getInputBoard();
+    return NEXT_STEP_ENDPOINT + getInputBoard() + getStrategyOrder();
 }
 
 /**
