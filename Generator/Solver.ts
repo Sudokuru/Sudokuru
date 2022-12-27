@@ -11,9 +11,14 @@ import { HiddenSingleHint, Hint, NakedSingleHint } from "./Hint";
  * Solution 2d board array
  */
 export class Solver{
+    // Stores representation of board being solved
     private board: Cell[][];
+    // Stores whether or not the board has been successfully solved
     private solved: boolean;
+    // Stores a hint corresponding to a step
     private hint: Hint;
+    // Stores order in which the Solver uses strategies to solve the Sudoku board (modified for testing strategies)
+    private algorithm: StrategyEnum[];
 
     /**
      * Creates solver object
@@ -25,6 +30,11 @@ export class Solver{
         this.initializeBoard(board);
         this.simplifyAllNotes();
         this.solved = false;
+        this.algorithm = new Array();
+        // Initializes algorithm to use strategies in order of least to most complex
+        for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
+            this.algorithm.push(strategy);
+        }
     }
 
     /**
@@ -73,9 +83,15 @@ export class Solver{
      * @param cells - empty cells
      */
     private setHint(cells: Cell[][]):void {
-        if(this.setNakedSingle(cells)) {}
-        else if (this.setHiddenSingle(cells)) {}
-        return;
+        // Attempts to use strategies in order specified by algorithm
+        for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
+            if (strategy === StrategyEnum.NAKED_SINGLE && this.setNakedSingle(cells)) {
+                return;
+            }
+            else if (strategy === StrategyEnum.HIDDEN_SINGLE && this.setHiddenSingle(cells)) {
+                return;
+            }
+        }
     }
 
     /**
