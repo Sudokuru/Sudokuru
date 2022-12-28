@@ -1,5 +1,6 @@
 import {Board} from '../../Board';
 import { CustomError, CustomErrorEnum } from '../../CustomError';
+import { StrategyEnum } from '../../Sudoku';
 import { getError } from '../testResources';
 
 enum TestBoards {
@@ -8,7 +9,9 @@ enum TestBoards {
     ONLY_NAKED_SINGLES = "310084002200150006570003010423708095760030000009562030050006070007000900000001500",
     ONLY_NAKED_SINGLES_SOLUTION = "316984752298157346574623819423718695765439128189562437851396274637245981942871563",
     ROW_HIDDEN_SINGLES = "603002001500000020901730006810400090060000000000690040350000004002070005000500108",
-    ROW_HIDDEN_SINGLES_SOLUTION = "683942751574816329921735486817453692469287513235691847358169274142378965796524138"
+    ROW_HIDDEN_SINGLES_SOLUTION = "683942751574816329921735486817453692469287513235691847358169274142378965796524138",
+    ROW_COLUMN_BOX_HIDDEN_SINGLES = "902100860075000001001080000600300048054809600108060900500401000000050002089000050",
+    ROW_COLUMN_BOX_HIDDEN_SINGLES_SOLUTION = "942137865875946231361285479697312548254879613138564927523491786416758392789623154"
 }
 
 enum InvalidTestBoards {
@@ -110,6 +113,14 @@ describe("solve Boards", () => {
         expect(board.getStrategyScore()).toBe(0);
     });
 
+    it('should solve single naked single using hidden single', () => {
+        let algorithm:StrategyEnum[] = new Array();
+        algorithm.push(StrategyEnum.HIDDEN_SINGLE);
+        let board:Board = new Board(TestBoards.SINGLE_NAKED_SINGLE, algorithm);
+        expect(board.getSolutionString()).toBe(TestBoards.SINGLE_NAKED_SINGLE_SOLUTION);
+        expect(board.getStrategyScore()).toBe(1);
+    });
+
     it('should solve naked singles only board', () => {
         let board:Board = new Board(TestBoards.ONLY_NAKED_SINGLES);
         expect(board.getSolutionString()).toBe(TestBoards.ONLY_NAKED_SINGLES_SOLUTION);
@@ -119,6 +130,12 @@ describe("solve Boards", () => {
     it ('should solve row hidden single', () => {
         let board:Board = new Board(TestBoards.ROW_HIDDEN_SINGLES);
         expect(board.getSolutionString()).toBe(TestBoards.ROW_HIDDEN_SINGLES_SOLUTION);
+        expect(board.getStrategyScore()).toBe(1);
+    });
+
+    it ('should solve row column box hidden singles', () => {
+        let board:Board = new Board(TestBoards.ROW_COLUMN_BOX_HIDDEN_SINGLES);
+        expect(board.getSolutionString()).toBe(TestBoards.ROW_COLUMN_BOX_HIDDEN_SINGLES_SOLUTION);
         expect(board.getStrategyScore()).toBe(1);
     });
 });

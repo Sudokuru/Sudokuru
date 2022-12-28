@@ -6,10 +6,13 @@ interface nextStepResponse {
 }
 
 const NEXT_STEP_ENDPOINT:string = "http://localhost:3001/solver/nextStep?board=";
+const NEXT_NAKED_SINGLE:string = "&nakedSingle=";
+const NEXT_HIDDEN_SINGLE:string = "&hiddenSingle=";
 const CANDIDATES:string = "123456789";
 const EMPTY_CELL = "0";
 const SINGLE_NAKED_SINGLE = "439275618051896437876143592342687951185329746697451283928734165563912874714568329";
 const ONLY_NAKED_SINGLES = "310084002200150006570003010423708095760030000009562030050006070007000900000001500";
+const HIDDEN_SINGLES = "902100860075000001001080000600300048054809600108060900500401000000050002089000050";
 
 /**
  * Given a board array returns the equivalent board string
@@ -243,11 +246,27 @@ function getInputBoard():string {
 }
 
 /**
- * Gets next step endpoint url by combining endpoint with current board string
+ * Gets order of strategy from user input boxes
+ * @returns strategy order string
+ */
+function getStrategyOrder():string {
+    let algorithm:string = "";
+
+    algorithm += NEXT_NAKED_SINGLE;
+    algorithm += (<HTMLInputElement>document.getElementById("nakedSingle")).value;
+
+    algorithm += NEXT_HIDDEN_SINGLE;
+    algorithm += (<HTMLInputElement>document.getElementById("hiddenSingle")).value;
+
+    return algorithm;
+}
+
+/**
+ * Gets next step endpoint url by combining endpoint with current board string and order of strategies
  * @returns next step endpoint url
  */
 function getNextStepURL():string {
-    return NEXT_STEP_ENDPOINT + getInputBoard();
+    return NEXT_STEP_ENDPOINT + getInputBoard() + getStrategyOrder();
 }
 
 /**
@@ -332,8 +351,11 @@ function loadPuzzle():void {
     if (puzzle === "SINGLE_NAKED_SINGLE") {
         boardInput.value = SINGLE_NAKED_SINGLE;
     }
-    else {
+    else if (puzzle === "ONLY_NAKED_SINGLES") {
         boardInput.value = ONLY_NAKED_SINGLES;
+    }
+    else {
+        boardInput.value = HIDDEN_SINGLES;
     }
     sessionStorage.clear();
     nextStep();

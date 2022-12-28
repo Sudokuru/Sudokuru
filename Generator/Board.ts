@@ -21,18 +21,36 @@ export class Board{
     private solution: string[][];
     private solutionString: string;
     private mostDifficultStrategy: StrategyEnum;
+    private solver: Solver;
 
     /**
      * Creates board object if valid, otherwise throws error
      * @param board - 81 length board string (left to right, top to bottom)
      */
-    constructor(board: string) {
+    constructor(board:string);
+
+    /**
+     * Creates board object if valid, otherwise throws error
+     * @param board - 81 length board string (left to right, top to bottom)
+     * @param algorithm - specific order to apply strategies
+     */
+    constructor(board:string, algorithm: StrategyEnum[]);
+
+    constructor(board: string, algorithm?: StrategyEnum[]) {
 
         this.validatePuzzle(board);
 
         this.board = getBoardArray(board);
 
         this.mostDifficultStrategy = -1;
+
+        if (algorithm === undefined) {
+            this.solver = new Solver(this.board);
+        }
+        else {
+            this.solver = new Solver(this.board, algorithm);
+        }
+
         this.solve();
     }
 
@@ -72,15 +90,14 @@ export class Board{
      * Solves the puzzle and sets strategy and solution
      */
     private solve():void {
-        let s:Solver = new Solver(this.board);
-        let hint:Hint = s.nextStep();
+        let hint:Hint = this.solver.nextStep();
         while (hint !== null) {
             if (hint.getStrategyType() > this.mostDifficultStrategy) {
                 this.mostDifficultStrategy = hint.getStrategyType();
             }
-            hint = s.nextStep();
+            hint = this.solver.nextStep();
         }
-        this.solution = s.getSolution();
+        this.solution = this.solver.getSolution();
         this.setSolutionString();
         return;
     }

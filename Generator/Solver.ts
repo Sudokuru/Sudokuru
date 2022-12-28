@@ -11,20 +11,44 @@ import { HiddenSingleHint, Hint, NakedSingleHint } from "./Hint";
  * Solution 2d board array
  */
 export class Solver{
+    // Stores representation of board being solved
     private board: Cell[][];
+    // Stores whether or not the board has been successfully solved
     private solved: boolean;
+    // Stores a hint corresponding to a step
     private hint: Hint;
+    // Stores order in which the Solver uses strategies to solve the Sudoku board (modified for testing strategies)
+    private algorithm: StrategyEnum[];
 
     /**
      * Creates solver object
      * @param board - 2d board array
      */
-    constructor(board: string[][]) {
+    constructor(board: string[][]);
+
+    /**
+     * Creates solver object
+     * @param board - 2d board array
+     * @param algorithm - specific order to apply strategies
+     */
+    constructor(board: string[][], algorithm: StrategyEnum[]);
+
+    constructor(board: string[][], algorithm?: StrategyEnum[]) {
         this.board = new Array();
         this.initializeCellArray(this.board, board.length);
         this.initializeBoard(board);
         this.simplifyAllNotes();
         this.solved = false;
+        if (algorithm === undefined) {
+            this.algorithm = new Array();
+            // Initializes algorithm to use strategies in order of least to most complex
+            for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
+                this.algorithm.push(strategy);
+            }
+        }
+        else {
+            this.algorithm = algorithm;
+        }
     }
 
     /**
@@ -73,9 +97,15 @@ export class Solver{
      * @param cells - empty cells
      */
     private setHint(cells: Cell[][]):void {
-        if(this.setNakedSingle(cells)) {}
-        else if (this.setHiddenSingle(cells)) {}
-        return;
+        // Attempts to use strategies in order specified by algorithm
+        for (let i: number = 0; i < StrategyEnum.COUNT; i++) {
+            if (this.algorithm[i] === StrategyEnum.NAKED_SINGLE && this.setNakedSingle(cells)) {
+                return;
+            }
+            else if (this.algorithm[i] === StrategyEnum.HIDDEN_SINGLE && this.setHiddenSingle(cells)) {
+                return;
+            }
+        }
     }
 
     /**
