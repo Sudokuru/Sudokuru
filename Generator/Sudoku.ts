@@ -133,3 +133,21 @@ export function getCellsInColumn(cells: Cell[][], n: number):Cell[] {
     }
     return column;
 }
+
+/**
+ * Given a 2d board cell array and a number n returns an array containing cells in the nth box
+ * @param cells - 2d board cell array
+ * @param n - box getting cells from
+ * @return array of cells in nth box
+ */
+export function getCellsInBox(cells: Cell[][], n: number):Cell[] {
+    let box: Cell[] = new Array();
+    for (let i:number = 0; i < cells.length; i++) {
+        for (let j:number = 0; j < cells[i].length; j++) {
+            if (cells[i][j].getBox() === n) {
+                box.push(cells[i][j]);
+            }
+        }
+    }
+    return box;
+}

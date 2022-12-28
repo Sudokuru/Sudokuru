@@ -1,7 +1,7 @@
 import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
 import { Strategy } from "./Strategy";
-import { SudokuEnum, StrategyEnum, getCellsInRow, getCellsInColumn } from "./Sudoku";
+import { SudokuEnum, StrategyEnum, getCellsInRow, getCellsInColumn, getCellsInBox } from "./Sudoku";
 import { HiddenSingleHint, Hint, NakedSingleHint } from "./Hint";
 
 /**
@@ -176,14 +176,7 @@ export class Solver{
         for (let box:number = 0; box < SudokuEnum.BOX_COUNT; box++) {
             // Create Cell array containing a possible hidden single
             let boxSingle: Cell[][] = new Array();
-            this.initializeCellArray(boxSingle, 1);
-            for (let i:number = 0; i < cells.length; i++) {
-                for (let j:number = 0; j < cells[i].length; j++) {
-                    if (cells[i][j].getBox() === box) {
-                        boxSingle[0].push(cells[i][j]);
-                    }
-                }
-            }
+            boxSingle.push(getCellsInBox(cells, box));
             // Create hidden single strategy using the array of cells in the box
             let hiddenSingle: Strategy = new Strategy(boxSingle);
             // Checks if strategy object constitutes a hidden single
