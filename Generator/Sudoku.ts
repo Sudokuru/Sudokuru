@@ -1,3 +1,4 @@
+import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
 
 /**
@@ -98,4 +99,37 @@ export function getCandidateIndex(candidate: unknown):number {
         return candidate as number;
     }
     throw new CustomError(CustomErrorEnum.INVALID_CANDIDATE_TYPE);
+}
+
+/**
+ * Given a 2d board cell array and a number n returns an array containing cells in the nth row
+ * @param cells - 2d board cell array
+ * @param n - row getting cells from
+ * @return array of cells in nth row
+ */
+export function getCellsInRow(cells: Cell[][], n: number):Cell[] {
+    let row: Cell[] = new Array();
+    for (let column: number = 0; column < cells[n].length; column++) {
+        row.push(cells[n][column]);
+    }
+    return row;
+}
+
+/**
+ * Given a 2d board cell array and a number n returns an array containing cells in the nth column
+ * @param cells - 2d board cell array
+ * @param n - column getting cells from
+ * @return array of cells in nth column
+ */
+export function getCellsInColumn(cells: Cell[][], n: number):Cell[] {
+    let column: Cell[] = new Array();
+    for (let i:number = 0; i < cells.length; i++) {
+        for (let j:number = 0; j < cells[i].length; j++) {
+            if (cells[i][j].getColumn() === n) {
+                column.push(cells[i][j]);
+                j = cells[i].length;
+            }
+        }
+    }
+    return column;
 }

@@ -1,7 +1,7 @@
 import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
 import { Strategy } from "./Strategy";
-import { SudokuEnum, StrategyEnum } from "./Sudoku";
+import { SudokuEnum, StrategyEnum, getCellsInRow, getCellsInColumn } from "./Sudoku";
 import { HiddenSingleHint, Hint, NakedSingleHint } from "./Hint";
 
 /**
@@ -150,10 +150,7 @@ export class Solver{
         for (let i:number = 0; i < cells.length; i++) {
             // Creates a Cell array containing a possible hidden single
             let rowSingle: Cell[][] = new Array();
-            this.initializeCellArray(rowSingle, 1);
-            for (let j:number = 0; j < cells[i].length; j++) {
-                rowSingle[0].push(cells[i][j]);
-            }
+            rowSingle.push(getCellsInRow(cells, i));
             // Create a hidden single strategy using the array of cells in the row
             let hiddenSingle: Strategy = new Strategy(rowSingle);
             // Checks if strategy object constitutes a hidden single
@@ -166,15 +163,7 @@ export class Solver{
         for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
             // Create Cell array containing a possible hidden single
             let columnSingle: Cell[][] = new Array();
-            this.initializeCellArray(columnSingle, 1);
-            for (let i:number = 0; i < cells.length; i++) {
-                for (let j:number = 0; j < cells[i].length; j++) {
-                    if (cells[i][j].getColumn() === column) {
-                        columnSingle[0].push(cells[i][j]);
-                        j = cells[i].length;
-                    }
-                }
-            }
+            columnSingle.push(getCellsInColumn(cells, column));
             // Create hidden single strategy using the array of cells in the column
             let hiddenSingle: Strategy = new Strategy(columnSingle);
             // Checks if strategy object constitutes a hidden single
