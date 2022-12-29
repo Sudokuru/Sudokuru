@@ -19,4 +19,19 @@ describe("create Group object", () => {
         expect(obj.insert(2)).toBeTruthy;
         expect(obj.contains("3")).toBeTruthy;
     });
+    it('should be equal then unequal', () => {
+        let a:Group = new Group(false);
+        a.insert(3);
+        a.insert(6);
+
+        let b:Group = new Group(false);
+        b.insert(3);
+        b.insert(6);
+        
+        expect(a.equals(b)).toBeTruthy;
+
+        a.insert(7);
+
+        expect(b.equals(a)).toBeFalsy;
+    });
 });

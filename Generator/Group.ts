@@ -63,4 +63,16 @@ export class Group{
         this.candidates[candidateIndex] = true;
         return true;
     }
+
+    public equals(obj: Group):boolean {
+        if (this.candidates.length !== obj.candidates.length) {
+            return false;
+        }
+        for (let i:number = 0; i < this.candidates.length; i++) {
+            if (this.contains(i) !== obj.contains(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
