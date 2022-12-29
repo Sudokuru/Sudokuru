@@ -141,47 +141,30 @@ export class Solver{
     }
 
     /**
+     * If given Strategy is a hidden single it sets the hint to it and returns true
+     * @param hiddenSingle - Strategy
+     * @returns true if given Strategy is a hidden single
+     */
+    private setHiddenSingleHint(hiddenSingle: Strategy):boolean {
+        if (hiddenSingle.isHiddenSingle()) {
+            this.hint = new HiddenSingleHint(hiddenSingle);
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Returns true if puzzle has a hidden single and sets hint, otherwise returns false
      * @param cells - empty cells
      * @returns true if contains a hidden single
      */
     private setHiddenSingle(cells: Cell[][]):boolean {
-        // Checks every cell row for a hidden single
-        for (let i:number = 0; i < cells.length; i++) {
-            // Creates a Cell array containing a possible hidden single
-            let rowSingle: Cell[][] = new Array();
-            rowSingle.push(getCellsInRow(cells, i));
-            // Create a hidden single strategy using the array of cells in the row
-            let hiddenSingle: Strategy = new Strategy(rowSingle);
-            // Checks if strategy object constitutes a hidden single
-            if (hiddenSingle.isHiddenSingle()) {
-                this.hint = new HiddenSingleHint(hiddenSingle);
-                return true;
-            }
-        }
-        // Checks every cell column for a hidden single
-        for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
-            // Create Cell array containing a possible hidden single
-            let columnSingle: Cell[][] = new Array();
-            columnSingle.push(getCellsInColumn(cells, column));
-            // Create hidden single strategy using the array of cells in the column
-            let hiddenSingle: Strategy = new Strategy(columnSingle);
-            // Checks if strategy object constitutes a hidden single
-            if (hiddenSingle.isHiddenSingle()) {
-                this.hint = new HiddenSingleHint(hiddenSingle);
-                return true;
-            }
-        }
-        // Checks every cell box for a hidden single
-        for (let box:number = 0; box < SudokuEnum.BOX_COUNT; box++) {
-            // Create Cell array containing a possible hidden single
-            let boxSingle: Cell[][] = new Array();
-            boxSingle.push(getCellsInBox(cells, box));
-            // Create hidden single strategy using the array of cells in the box
-            let hiddenSingle: Strategy = new Strategy(boxSingle);
-            // Checks if strategy object constitutes a hidden single
-            if (hiddenSingle.isHiddenSingle()) {
-                this.hint = new HiddenSingleHint(hiddenSingle);
+        // Checks every group of rows, columns, and boxes for hidden singles
+        for (let group:number = 0; group < SudokuEnum.ROW_LENGTH; group++) {
+            let row: Strategy = Strategy.getRowStrategy(cells, group);
+            let column: Strategy = Strategy.getColumnStrategy(cells, group);
+            let box: Strategy = Strategy.getBoxStrategy(cells, group);
+            if (this.setHiddenSingleHint(row) || this.setHiddenSingleHint(column) || this.setHiddenSingleHint(box)) {
                 return true;
             }
         }

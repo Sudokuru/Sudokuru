@@ -1,6 +1,6 @@
 import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
-import { SudokuEnum, StrategyEnum } from "./Sudoku"
+import { SudokuEnum, StrategyEnum, getCellsInRow, getCellsInColumn, getCellsInBox } from "./Sudoku"
 import { Group } from "./Group";
 
 /**
@@ -155,5 +155,41 @@ export class Strategy{
             }
         }
         return false;
+    }
+
+    /**
+     * Creates a Strategy object centered around the nth row in the given board
+     * @param cells - cells in a board
+     * @param n - row creating strategy around
+     * @returns strategy using given row
+     */
+    public static getRowStrategy(cells: Cell[][], n: number):Strategy {
+        let row: Cell[][] = new Array();
+        row.push(getCellsInRow(cells, n));
+        return new Strategy(row);
+    }
+
+    /**
+     * Creates a Strategy object centered around the nth column in the given board
+     * @param cells - cells in a board
+     * @param n - column creating strategy around
+     * @returns strategy using given column
+     */
+    public static getColumnStrategy(cells: Cell[][], n: number):Strategy {
+        let column: Cell[][] = new Array();
+        column.push(getCellsInColumn(cells, n));
+        return new Strategy(column);
+    }
+
+    /**
+     * Creates a Strategy object centered around the nth box in the given board
+     * @param cells - cells in a board
+     * @param n - box creating strategy around
+     * @returns strategy using given box
+     */
+    public static getBoxStrategy(cells: Cell[][], n: number):Strategy {
+        let box: Cell[][] = new Array();
+        box.push(getCellsInBox(cells, n));
+        return new Strategy(box);
     }
 }
