@@ -19,6 +19,17 @@ describe("create Group object", () => {
         expect(obj.insert(2)).toBeTruthy;
         expect(obj.contains("3")).toBeTruthy;
     });
+    it('should remove a candidates', () => {
+        let obj:Group = new Group(true);
+
+        expect(obj.contains("1")).toBeTruthy;
+        expect(obj.remove("1")).toBeTruthy;
+        expect(obj.contains("1")).toBeFalsy;
+        expect(obj.remove("1")).toBeFalsy;
+
+        expect(obj.remove(3)).toBeTruthy;
+        expect(obj.contains(3)).toBeFalsy;
+    });
     it('should be equal then unequal', () => {
         let a:Group = new Group(false);
         a.insert(3);

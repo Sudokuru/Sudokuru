@@ -64,6 +64,30 @@ export class Group{
         return true;
     }
 
+    /**
+     * Remove candidate from Group
+     * @param candidate - candidate
+     * @returns true if candidate was removed, false if candidate wasn't in Group to begin with
+     */
+    public remove(candidate: string):boolean;
+
+    /**
+     * Remove candidate from Group
+     * @param candidateIndex - zero based index of candidate
+     * @returns true if candidate was removed, false if candidate wasn't in Group to begin with
+     */
+    public remove(candidateIndex: number):boolean;
+    
+    public remove(candidate: unknown):boolean {
+        let candidateIndex:number = getCandidateIndex(candidate);
+
+        if (this.candidates[candidateIndex] === false) {
+            return false;
+        }
+        this.candidates[candidateIndex] = false;
+        return true;
+    }
+
     public equals(obj: Group):boolean {
         if (this.candidates.length !== obj.candidates.length) {
             return false;
