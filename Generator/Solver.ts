@@ -155,21 +155,33 @@ export class Solver{
     }
 
     /**
+     * Returns true if puzzle has given strategy (in a row, column, or box) and sets hint, otherwise returns false
+     * @param strategy - strategy to check for
+     * @param cells - cells to create strategy with
+     * @returns true if contains given strategy
+     */
+    private setGroupStrategy(strategy: StrategyEnum, cells: Cell[][]):boolean {
+        // Checks every group of rows, columns, and boxes for given strategy
+        for (let group:number = 0; group < SudokuEnum.ROW_LENGTH; group++) {
+            let row: Strategy = Strategy.getRowStrategy(this.board, cells, group);
+            let column: Strategy = Strategy.getColumnStrategy(this.board, cells, group);
+            let box: Strategy = Strategy.getBoxStrategy(this.board, cells, group);
+            if (strategy === StrategyEnum.HIDDEN_SINGLE) {
+                if (this.setHiddenSingleHint(row) || this.setHiddenSingleHint(column) || this.setHiddenSingleHint(box)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Returns true if puzzle has a hidden single and sets hint, otherwise returns false
      * @param cells - empty cells
      * @returns true if contains a hidden single
      */
     private setHiddenSingle(cells: Cell[][]):boolean {
-        // Checks every group of rows, columns, and boxes for hidden singles
-        for (let group:number = 0; group < SudokuEnum.ROW_LENGTH; group++) {
-            let row: Strategy = Strategy.getRowStrategy(this.board, cells, group);
-            let column: Strategy = Strategy.getColumnStrategy(this.board, cells, group);
-            let box: Strategy = Strategy.getBoxStrategy(this.board, cells, group);
-            if (this.setHiddenSingleHint(row) || this.setHiddenSingleHint(column) || this.setHiddenSingleHint(box)) {
-                return true;
-            }
-        }
-        return false;
+        return this.setGroupStrategy(StrategyEnum.HIDDEN_SINGLE, cells);
     }
 
     /**
