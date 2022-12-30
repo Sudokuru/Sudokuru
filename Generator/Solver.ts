@@ -2,7 +2,7 @@ import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
 import { Strategy } from "./Strategy";
 import { SudokuEnum, StrategyEnum, getCellsInRow, getCellsInColumn, getCellsInBox } from "./Sudoku";
-import { HiddenSingleHint, Hint, NakedSingleHint } from "./Hint";
+import { HiddenSingleHint, Hint, NakedPairHint, NakedSingleHint } from "./Hint";
 import { Group } from "./Group";
 
 /**
@@ -106,6 +106,9 @@ export class Solver{
             else if (this.algorithm[i] === StrategyEnum.HIDDEN_SINGLE && this.setHiddenSingle(cells)) {
                 return;
             }
+            else if (this.algorithm[i] === StrategyEnum.NAKED_PAIR && this.setNakedPair(cells)) {
+                return;
+            }
         }
     }
 
@@ -155,6 +158,19 @@ export class Solver{
     }
 
     /**
+     * If given Strategy is a naked pair it sets the hint to it and returns true
+     * @param nakedPair - Strategy
+     * @returns true if given Strategy is a naked pair
+     */
+    private setNakedPairHint(nakedPair: Strategy):boolean {
+        if (nakedPair.isNakedPair()) {
+            this.hint = new NakedPairHint(nakedPair);
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Returns true if puzzle has given strategy (in a row, column, or box) and sets hint, otherwise returns false
      * @param strategy - strategy to check for
      * @param cells - cells to create strategy with
@@ -171,6 +187,11 @@ export class Solver{
                     return true;
                 }
             }
+            else if (strategy === StrategyEnum.NAKED_PAIR) {
+                if (this.setNakedPairHint(row) || this.setNakedPairHint(column) || this.setNakedPairHint(box)) {
+                    return true;
+                }
+            }
         }
         return false;
     }
@@ -182,6 +203,15 @@ export class Solver{
      */
     private setHiddenSingle(cells: Cell[][]):boolean {
         return this.setGroupStrategy(StrategyEnum.HIDDEN_SINGLE, cells);
+    }
+
+    /**
+     * Returns true if puzzle has a naked pair and sets hint, otherwise returns false
+     * @param cells - empty cells
+     * @returns true if contains a naked pair
+     */
+    private setNakedPair(cells: Cell[][]):boolean {
+        return this.setGroupStrategy(StrategyEnum.NAKED_PAIR, cells);
     }
 
     /**
