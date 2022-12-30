@@ -89,13 +89,15 @@ export function getBoardArray(board: string):string[][] {
  * @param candidate - number candidate index or candidate string
  * @returns candidate index
  * @throws {@link CustomError}
- * Thrown if candidate isn't a string candidate or a number candidate index
+ * Thrown if candidate isn't a string candidate or a number candidate index or is out of valid range
  */
 export function getCandidateIndex(candidate: unknown):number {
     if (typeof candidate === 'string') {
+        validateValue((Number(candidate) - 1).toString());
         return Number(candidate) - 1;
     }
     else if (typeof candidate === 'number') {
+        validateValue((Number(candidate) + 1).toString());
         return candidate as number;
     }
     throw new CustomError(CustomErrorEnum.INVALID_CANDIDATE_TYPE);

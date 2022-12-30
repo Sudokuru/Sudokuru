@@ -1,3 +1,4 @@
+import { Group } from "./Group";
 import { SudokuEnum, validateRow, validateColumn, validateValue } from "./Sudoku";
 /**
  * Constructed using row and column and optionally placed value
@@ -16,7 +17,7 @@ export class Cell{
     private column: number;
     private box: number;
     private value: string;
-    private notes: Map<string, undefined>;
+    private notes: Group;
 
     /**
      * Creates cell object using given row/column, throws error if invalid
@@ -33,14 +34,14 @@ export class Cell{
         this.row = row;
         this.column = column;
         this.initializeBox();
-        if (value != undefined) {
+        if (value !== undefined) {
             validateValue(value);
             this.value = value;
         }
         else {
             this.value = SudokuEnum.EMPTY_CELL;
         }
-        this.initializeNotes();
+        this.notes = new Group(true);
     }
 
     /**
@@ -122,7 +123,7 @@ export class Cell{
      * Get notes map
      * @returns notes map
      */
-    public getNotes():Map<string, undefined> {
+    public getNotes():Group {
         return this.notes;
     }
 
@@ -132,7 +133,7 @@ export class Cell{
      * @returns true if note is in notes
      */
     public hasNote(note: string):boolean {
-        return this.notes.has(note);
+        return this.notes.contains(note);
     }
 
     /**
@@ -149,7 +150,7 @@ export class Cell{
      * @param note - note
      */
     public removeNote(note: string):void {
-        this.notes.delete(note);
+        this.notes.remove(note);
         return;
     }
 
@@ -157,20 +158,11 @@ export class Cell{
      * Removes notes
      * @param notes - notes
      */
-    public removeNotes(notes: Map<string, undefined>):void {
-        for (const note of notes.keys()) {
-            this.notes.delete(note);
-        }
-        return;
-    }
-
-    /**
-     * Initializes notes to contain every possibility
-     */
-    private initializeNotes():void {
-        this.notes = new Map();
-        for (let i:number = 0; i < SudokuEnum.CANDIDATES.length; i++) {
-            this.notes.set(SudokuEnum.CANDIDATES[i], undefined);
+    public removeNotes(notes: Group):void {
+        for (let note:number = 0; note < SudokuEnum.ROW_LENGTH; note++) {
+            if (notes.contains(note)) {
+                this.notes.remove(note);
+            }
         }
         return;
     }

@@ -1,5 +1,6 @@
 import {Cell} from '../../Cell';
 import { CustomError, CustomErrorEnum } from '../../CustomError';
+import { Group } from '../../Group';
 import { SudokuEnum } from '../../Sudoku';
 import { getError } from '../testResources';
 
@@ -28,7 +29,9 @@ describe("create Cell object", () => {
 
         expect(obj.hasNote("2")).toBeTruthy;
         expect(obj.hasNote("3")).toBeTruthy;
-        let notes:Map<string, undefined> = new Map([["2", undefined], ["3", undefined]]);
+        let notes:Group = new Group(false);
+        notes.insert("2");
+        notes.insert("3");
         obj.removeNotes(notes);
         expect(obj.hasNote("2")).toBeFalsy;
         expect(obj.hasNote("3")).toBeFalsy;

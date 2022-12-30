@@ -5,8 +5,10 @@ import { SudokuEnum, getCandidateIndex } from "./Sudoku";
  * Can insert values
  */
 export class Group{
-    // Values are true if candidate is in group, false otherwise
+    // Values are true if candidate is in Group, false otherwise
     private candidates: boolean[];
+    // Number of candidates that are currently in Group
+    private size: number;
 
     /**
      * Creates Group object given value to initial candidates to
@@ -14,6 +16,12 @@ export class Group{
      */
     constructor(initialValue: boolean) {
         this.candidates = new Array(SudokuEnum.ROW_LENGTH).fill(initialValue);
+        if (initialValue === true) {
+            this.size = SudokuEnum.ROW_LENGTH;
+        }
+        else {
+            this.size = 0;
+        }
     }
 
     /**
@@ -61,6 +69,7 @@ export class Group{
             return false;
         }
         this.candidates[candidateIndex] = true;
+        this.size++;
         return true;
     }
 
@@ -85,9 +94,15 @@ export class Group{
             return false;
         }
         this.candidates[candidateIndex] = false;
+        this.size--;
         return true;
     }
 
+    /**
+     * Returns true if this Groups candidates are the same as those in the given Group
+     * @param obj - Group being compared against
+     * @returns true if this Group has same note values as obj
+     */
     public equals(obj: Group):boolean {
         if (this.candidates.length !== obj.candidates.length) {
             return false;
@@ -98,5 +113,13 @@ export class Group{
             }
         }
         return true;
+    }
+
+    /**
+     * Returns the number of candidates in this Group
+     * @returns size
+     */
+    public getSize():number {
+        return this.size;
     }
 }

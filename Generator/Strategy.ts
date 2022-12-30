@@ -94,14 +94,16 @@ export class Strategy{
      * @returns true if strategy is a naked single
      */
     public isNakedSingle():boolean {
-        let notes:Map<string, undefined> = this.cells[0][0].getNotes();
+        let notes:Group = this.cells[0][0].getNotes();
         // If the Cell provided only has 1 note then it is a naked single
-        if (notes.size == 1) {
+        if (notes.getSize() == 1) {
             // Add Cell to values that can be placed
-            for (const note of notes.keys()) {
-                let row:number = this.cells[0][0].getRow();
-                let column:number = this.cells[0][0].getColumn();
-                this.values.push(new Cell(row, column, note));
+            for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
+                if (notes.contains(i)) {
+                    let row:number = this.cells[0][0].getRow();
+                    let column:number = this.cells[0][0].getColumn();
+                    this.values.push(new Cell(row, column, (i+1).toString()));
+                }
             }
             // Identify strategy and return that it is a naked single
             this.strategyType = StrategyEnum.NAKED_SINGLE;
@@ -122,23 +124,24 @@ export class Strategy{
         // initialized to null, set to cell with hidden single, reset to null if multiple cells with note found
         let single:Cell[] = new Array(SudokuEnum.ROW_LENGTH).fill(null);
 
-        let notes:Map<string, undefined>;
-        let noteIndex:number, row:number, column:number;
+        let notes:Group;
+        let row:number, column:number;
         // Checks notes of every empty cell in group (row/column/box) provided
         for (let i:number = 0; i < this.cells.length; i++) {
             for (let j:number = 0; j < this.cells[i].length; j++) {
                 // Checks each note of the cell
                 notes = this.cells[i][j].getNotes();
-                for (const note of notes.keys()) {
-                    // Add cell to hidden single Cell if this note not found before, otherwise set to null
-                    noteIndex = Number(note) - 1;
-                    if (found.insert(noteIndex)) {
-                        row = this.cells[i][j].getRow();
-                        column = this.cells[i][j].getColumn();
-                        single[noteIndex] = new Cell(row, column, note);
-                    }
-                    else {
-                        single[noteIndex] = null;
+                for (let note:number = 0; note < SudokuEnum.ROW_LENGTH; note++) {
+                    if (notes.contains(note)) {
+                        // Add cell to hidden single Cell if this note not found before, otherwise set to null
+                        if (found.insert(note)) {
+                            row = this.cells[i][j].getRow();
+                            column = this.cells[i][j].getColumn();
+                            single[note] = new Cell(row, column, (note+1).toString());
+                        }
+                        else {
+                            single[note] = null;
+                        }
                     }
                 }
             }

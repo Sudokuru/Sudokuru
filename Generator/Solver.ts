@@ -3,6 +3,7 @@ import { CustomError, CustomErrorEnum } from "./CustomError";
 import { Strategy } from "./Strategy";
 import { SudokuEnum, StrategyEnum, getCellsInRow, getCellsInColumn, getCellsInBox } from "./Sudoku";
 import { HiddenSingleHint, Hint, NakedSingleHint } from "./Hint";
+import { Group } from "./Group";
 
 /**
  * Constructed using 2d board array
@@ -210,9 +211,12 @@ export class Solver{
             for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
                 notes.push(new Array());
                 i++;
-                this.board[row][column].getNotes().forEach((value: undefined, key: string) => {
-                    notes[i].push(key);
-                });
+                let cellNotes:Group = this.board[row][column].getNotes();
+                for (let j:number = 0; j < SudokuEnum.ROW_LENGTH; j++) {
+                    if (cellNotes.contains(j)) {
+                        notes[i].push((j+1).toString());
+                    }
+                }
             }
         }
         return notes;
@@ -224,7 +228,9 @@ export class Solver{
     private simplifyAllNotes():void {
         for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
             for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
-                this.simplifyNotes(this.board[row][column]);
+                if (!this.board[row][column].isEmpty()) {
+                    this.simplifyNotes(this.board[row][column]);
+                }
             }
         }
     }
