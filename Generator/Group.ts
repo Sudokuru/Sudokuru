@@ -169,6 +169,21 @@ export class Group{
     }
 
     /**
+     * Given a Group obj returns a Group containing every candidate in both this Group and obj
+     * @param obj - Group being intersected with
+     * @returns Group containing the intersection of this Group and obj
+     */
+    public intersection(obj: Group):Group {
+        let intersection:Group = new Group(false);
+        for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
+            if (this.contains(i) && obj.contains(i)) {
+                intersection.insert(i);
+            }
+        }
+        return intersection;
+    }
+
+    /**
      * Returns the number of candidates in this Group
      * @returns size
      */
