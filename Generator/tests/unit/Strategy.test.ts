@@ -85,13 +85,12 @@ describe("create naked pair", () => {
     it("should be a naked pair", () => {
         // Create board
         let board:Cell[][] = new Array();
-        board.push(new Array());
-        for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
-            board[0].push(new Cell(0, column));
+        for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+            board.push(new Array());
+            for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                board[row].push(new Cell(row, column));
+            }
         }
-        board[0].push(new Cell(0, 2));
-        board.push(new Array());
-        board[1].push(new Cell(1, 0));
 
         // Create pair
         let cells:Cell[][] = new Array();
