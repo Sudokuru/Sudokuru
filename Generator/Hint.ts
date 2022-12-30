@@ -1,4 +1,5 @@
 import { Cell } from "./Cell";
+import { Group } from "./Group";
 import { Strategy } from "./Strategy";
 
 /**
@@ -73,10 +74,10 @@ export class Hint{
     }
 
     /**
-     * Gets cells that have notes in them that can be removed as result of strategy
-     * @returns cells containing notes to removed
+     * Gets notes that can be removed as result of strategy
+     * @returns Groups containing notes to removed
      */
-    public getEffectRemovals():Cell[] {
+    public getEffectRemovals():Group[] {
         return this.strategy.getNotesToRemove();
     }
 

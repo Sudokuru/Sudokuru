@@ -23,6 +23,7 @@ export enum StrategyEnum {
     INVALID = -1,
     NAKED_SINGLE,
     HIDDEN_SINGLE,
+    NAKED_PAIR,
     COUNT
 }
 
@@ -152,4 +153,21 @@ export function getCellsInBox(cells: Cell[][], n: number):Cell[] {
         }
     }
     return box;
+}
+
+/**
+* Given a 2d cell array and a cell, returns the next cell iterating left to right, top to bottom, if there is none returns null
+ * @param cells - 2d cell array
+ * @param cell - current cell
+ * @returns next cell in cells if there is one, otherwise null
+ */
+export function getNextCell(cells: Cell[][], cell: Cell):Cell {
+    for (let row:number = cell.getRow(); row < cells.length; row++) {
+        for (let column:number = cell.getColumn(); column < cells[row].length; column++) {
+            if (row !== cell.getRow() || column !== cell.getColumn()) {
+                return cells[row][column];
+            }
+        }
+    }
+    return null;
 }

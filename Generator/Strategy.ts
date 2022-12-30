@@ -1,6 +1,6 @@
 import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
-import { SudokuEnum, StrategyEnum, getCellsInRow, getCellsInColumn, getCellsInBox } from "./Sudoku"
+import { SudokuEnum, StrategyEnum, getCellsInRow, getCellsInColumn, getCellsInBox, getNextCell } from "./Sudoku"
 import { Group } from "./Group";
 
 /**
@@ -20,7 +20,7 @@ export class Strategy{
     // Contains values that can be placed because of this Strategy
     private values: Cell[];
     // Contains notes that can be removed because of this Strategy
-    private notes: Cell[];
+    private notes: Group[];
     // What specific strategy is used (correlated to StrategyEnum)
     private strategyType: number;
     // Whether or not strategy has been identified and ready to use
@@ -67,7 +67,7 @@ export class Strategy{
      * @throws {@link CustomError}
      * Thrown if strategy hasn't been identified
      */
-    public getNotesToRemove():Cell[] {
+    public getNotesToRemove():Group[] {
         this.verifyIdentified();
         return this.notes;
     }
@@ -158,6 +158,38 @@ export class Strategy{
                 this.strategyType = StrategyEnum.HIDDEN_SINGLE;
                 this.identified = true;
                 return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if strategy is a naked pair and if so adds notes that can be removed
+     * @returns true if strategy is a naked pair
+     */
+    public isNakedPair():boolean {
+        // Checks each pair by checking each cell against every cell in "front" of it
+        let cell: Cell, nextCell: Cell;
+        for (let row:number = 0; row < this.cells.length; row++) {
+            for (let column:number = 0; column < this.cells[row].length; column++) {
+                cell = this.cells[row][column];
+                nextCell = getNextCell(this.cells, cell);
+                if (cell.getNotes().getSize() === 2 && cell.getNotes().equals(nextCell.getNotes())) {
+                    // If the pair shares a row can remove them from every cell in row (except themselves)
+                    if (cell.getRow() === nextCell.getRow()) {
+                        for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                            if (column !== cell.getColumn() && column !== nextCell.getColumn()) {
+                                let notes:Group = new Group(false, cell.getRow(), column);
+                                notes.insert(cell.getNotes());
+                                this.notes.push(notes);
+                            }
+                        }
+                    }
+                    // Need to remove notes for shared column and box here
+                    this.strategyType = StrategyEnum.NAKED_PAIR;
+                    this.identified = true;
+                    return true;
+                }
             }
         }
         return false;
