@@ -23,6 +23,16 @@ export enum HIDDEN_SINGLE {
 }
 
 /**
+ * Contains hint information for naked pair strategy
+ * Contains what action hint is trying to get you to do
+ * @enum
+ */
+export enum NAKED_PAIR {
+    HINT_INFO = "Naked pairs are when you only have the same two numbers left as a possibility in two cells in the same row, column, or box",
+    HINT_ACTION = "When you see a naked pair you can remove them from the notes of every other cell in the row, column, or box that they share"
+}
+
+/**
  * Constructed using strategy object and info/action strings
  * Inherited by hint classes for specific strategies like NakedSingle
  * Returns:
@@ -113,5 +123,14 @@ export class NakedSingleHint extends Hint {
 export class HiddenSingleHint extends Hint {
     constructor(strategy: Strategy) {
         super(strategy, HIDDEN_SINGLE.HINT_INFO, HIDDEN_SINGLE.HINT_ACTION);
+    }
+}
+
+/**
+ * Naked pair strategy hint class
+ */
+export class NakedPairHint extends Hint {
+    constructor(strategy: Strategy) {
+        super(strategy, NAKED_PAIR.HINT_INFO, NAKED_PAIR.HINT_ACTION);
     }
 }
