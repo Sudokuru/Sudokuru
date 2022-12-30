@@ -86,8 +86,26 @@ export class Group{
      * @returns true if candidate was removed, false if candidate wasn't in Group to begin with
      */
     public remove(candidateIndex: number):boolean;
+
+    /**
+     * Given a Group of candidates removes them from this Group
+     * @param candidates - Group containing candidates to remove from this Group
+     * @returns true if at least one of the candidates was removed, false if none of them were in Group to begin with
+     */
+    public remove(candidates: Group):boolean;
     
     public remove(candidate: unknown):boolean {
+        if (candidate instanceof Group) {
+            let removed:boolean = false;
+            for (let note:number = 0; note < SudokuEnum.ROW_LENGTH; note++) {
+                if (candidate.contains(note)) {
+                    this.remove(note);
+                    removed = true;
+                }
+            }
+            return removed;
+        }
+
         let candidateIndex:number = getCandidateIndex(candidate);
 
         if (this.candidates[candidateIndex] === false) {

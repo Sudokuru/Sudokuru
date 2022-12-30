@@ -22,7 +22,7 @@ describe("create Group object", () => {
         expect(obj.insert(2)).toBeTruthy;
         expect(obj.contains("3")).toBeTruthy;
     });
-    it('should remove a candidates', () => {
+    it('should remove some candidates', () => {
         let obj:Group = new Group(true);
         expect(obj.getSize()).toBe(9);
 
@@ -35,6 +35,14 @@ describe("create Group object", () => {
 
         expect(obj.remove(3)).toBeTruthy;
         expect(obj.contains(3)).toBeFalsy;
+
+        let r:Group = new Group(false);
+        expect(obj.remove(r)).toBeFalsy;
+        r.insert("1");
+        r.insert(6);
+        r.insert(7);
+        expect(obj.remove(r)).toBeTruthy;
+        expect(obj.getSize()).toBe(5);
     });
     it('should be equal then unequal', () => {
         let a:Group = new Group(false);
