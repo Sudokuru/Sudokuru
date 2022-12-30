@@ -8,6 +8,7 @@ interface nextStepResponse {
 const NEXT_STEP_ENDPOINT:string = "http://localhost:3001/solver/nextStep?board=";
 const NEXT_NAKED_SINGLE:string = "&nakedSingle=";
 const NEXT_HIDDEN_SINGLE:string = "&hiddenSingle=";
+const NEXT_NAKED_PAIR:string = "&nakedPair=";
 const CANDIDATES:string = "123456789";
 const EMPTY_CELL = "0";
 const SINGLE_NAKED_SINGLE = "439275618051896437876143592342687951185329746697451283928734165563912874714568329";
@@ -257,6 +258,9 @@ function getStrategyOrder():string {
 
     algorithm += NEXT_HIDDEN_SINGLE;
     algorithm += (<HTMLInputElement>document.getElementById("hiddenSingle")).value;
+
+    algorithm += NEXT_NAKED_PAIR;
+    algorithm += (<HTMLInputElement>document.getElementById("nakedPair")).value;
 
     return algorithm;
 }

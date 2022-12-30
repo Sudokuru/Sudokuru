@@ -22,6 +22,9 @@ app.get('/solver/nextStep', (req, res) => {
         else if (Number(req.query.hiddenSingle) === i) {
             algorithm.push(StrategyEnum.HIDDEN_SINGLE);
         }
+        else if (Number(req.query.nakedPair) === i) {
+            algorithm.push(StrategyEnum.NAKED_PAIR);
+        }
     }
     let solver: Solver = new Solver(board, algorithm);
     let hint: Hint = solver.nextStep();
