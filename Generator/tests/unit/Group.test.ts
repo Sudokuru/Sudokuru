@@ -21,6 +21,10 @@ describe("create Group object", () => {
         expect(obj.contains("3")).toBeFalsy;
         expect(obj.insert(2)).toBeTruthy;
         expect(obj.contains("3")).toBeTruthy;
+
+        let i:Group = new Group(true);
+        expect(obj.insert(i)).toBeTruthy;
+        expect(obj.getSize()).toBe(9);
     });
     it('should remove some candidates', () => {
         let obj:Group = new Group(true);

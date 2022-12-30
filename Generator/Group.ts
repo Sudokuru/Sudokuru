@@ -78,8 +78,26 @@ export class Group{
      * @returns true if candidate was inserted, false if candidate was already in Group
      */
     public insert(candidateIndex: number):boolean;
+
+    /**
+     * Given a Group of candidates inserts them into this Group
+     * @param candidates - Group containing candidates to insert into this Group
+     * @returns true if at least one of the candidates was inserted, false if all of them were already in Group
+     */
+    public insert(candidates: Group):boolean;
     
     public insert(candidate: unknown):boolean {
+        if (candidate instanceof Group) {
+            let inserted:boolean = false;
+            for (let note:number = 0; note < SudokuEnum.ROW_LENGTH; note++) {
+                if (candidate.contains(note)) {
+                    this.insert(note);
+                    inserted = true;
+                }
+            }
+            return inserted;
+        }
+
         let candidateIndex:number = getCandidateIndex(candidate);
 
         if (this.candidates[candidateIndex] === true) {
