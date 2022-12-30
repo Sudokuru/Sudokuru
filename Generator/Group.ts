@@ -9,18 +9,35 @@ export class Group{
     private candidates: boolean[];
     // Number of candidates that are currently in Group
     private size: number;
+    // Optional row and column values corresponding to a Cell in a board
+    private row: number;
+    private column: number;
 
     /**
      * Creates Group object given value to initial candidates to
      * @param initialValue - candidate initial value
      */
-    constructor(initialValue: boolean) {
+    constructor(initialValue: boolean);
+
+    /**
+     * Creates Group object given value to initial candidates to
+     * @param initialValue - candidate initial value
+     * @param row - row to corresponding cell
+     * @param column - column to corresponding cell
+     */
+    constructor(initialValue: boolean, row: number, column: number);
+
+    constructor(initialValue: boolean, row?: number, column?: number) {
         this.candidates = new Array(SudokuEnum.ROW_LENGTH).fill(initialValue);
         if (initialValue === true) {
             this.size = SudokuEnum.ROW_LENGTH;
         }
         else {
             this.size = 0;
+        }
+        if (row !== undefined && column !== undefined) {
+            this.row = row;
+            this.column = column;
         }
     }
 
@@ -139,5 +156,21 @@ export class Group{
      */
     public getSize():number {
         return this.size;
+    }
+
+    /**
+     * Get row
+     * @returns row
+     */
+    public getRow():number {
+        return this.row;
+    }
+
+    /**
+     * Get column
+     * @returns column
+     */
+    public getColumn():number {
+        return this.column;
     }
 }
