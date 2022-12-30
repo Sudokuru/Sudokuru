@@ -130,7 +130,7 @@ export class Solver{
                 this.initializeCellArray(single, 1);
                 single[0].push(cells[i][j]);
                 // Create a naked single strategy using the array of cells
-                let nakedSingle: Strategy = new Strategy(single);
+                let nakedSingle: Strategy = new Strategy(this.board, single);
                 // Checks if strategy object constitutes a naked single
                 if (nakedSingle.isNakedSingle()) {
                     this.hint = new NakedSingleHint(nakedSingle);
@@ -162,9 +162,9 @@ export class Solver{
     private setHiddenSingle(cells: Cell[][]):boolean {
         // Checks every group of rows, columns, and boxes for hidden singles
         for (let group:number = 0; group < SudokuEnum.ROW_LENGTH; group++) {
-            let row: Strategy = Strategy.getRowStrategy(cells, group);
-            let column: Strategy = Strategy.getColumnStrategy(cells, group);
-            let box: Strategy = Strategy.getBoxStrategy(cells, group);
+            let row: Strategy = Strategy.getRowStrategy(this.board, cells, group);
+            let column: Strategy = Strategy.getColumnStrategy(this.board, cells, group);
+            let box: Strategy = Strategy.getBoxStrategy(this.board, cells, group);
             if (this.setHiddenSingleHint(row) || this.setHiddenSingleHint(column) || this.setHiddenSingleHint(box)) {
                 return true;
             }

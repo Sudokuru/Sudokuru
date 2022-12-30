@@ -13,6 +13,8 @@ import { Group } from "./Group";
  * What strategy type this is (correlates to StrategyEnum)
  */
 export class Strategy{
+    // Contains representation of board being solved
+    private board: Cell[][];
     // Contains cells that "cause" strategy to be applicable
     private cells: Cell[][];
     // Contains values that can be placed because of this Strategy
@@ -29,7 +31,8 @@ export class Strategy{
      * @constructor
      * @param cells - cells
      */
-    constructor(cells: Cell[][]) {
+    constructor(board: Cell[][], cells: Cell[][]) {
+        this.board = board;
         this.cells = cells;
         this.identified = false;
         this.values = new Array();
@@ -166,10 +169,10 @@ export class Strategy{
      * @param n - row creating strategy around
      * @returns strategy using given row
      */
-    public static getRowStrategy(cells: Cell[][], n: number):Strategy {
+    public static getRowStrategy(board: Cell[][], cells: Cell[][], n: number):Strategy {
         let row: Cell[][] = new Array();
         row.push(getCellsInRow(cells, n));
-        return new Strategy(row);
+        return new Strategy(board, row);
     }
 
     /**
@@ -178,10 +181,10 @@ export class Strategy{
      * @param n - column creating strategy around
      * @returns strategy using given column
      */
-    public static getColumnStrategy(cells: Cell[][], n: number):Strategy {
+    public static getColumnStrategy(board: Cell[][], cells: Cell[][], n: number):Strategy {
         let column: Cell[][] = new Array();
         column.push(getCellsInColumn(cells, n));
-        return new Strategy(column);
+        return new Strategy(board, column);
     }
 
     /**
@@ -190,9 +193,9 @@ export class Strategy{
      * @param n - box creating strategy around
      * @returns strategy using given box
      */
-    public static getBoxStrategy(cells: Cell[][], n: number):Strategy {
+    public static getBoxStrategy(board: Cell[][], cells: Cell[][], n: number):Strategy {
         let box: Cell[][] = new Array();
         box.push(getCellsInBox(cells, n));
-        return new Strategy(box);
+        return new Strategy(board, box);
     }
 }

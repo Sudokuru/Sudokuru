@@ -6,7 +6,7 @@ import { getError } from '../testResources';
 describe("create naked single", () => {
     it('should throw strategy not identified error', async () => {
         let cells:Cell[][] = new Array();
-        let strategy:Strategy = new Strategy(cells);
+        let strategy:Strategy = new Strategy(cells, cells);
         const error = await getError(async () => strategy.getValuesToPlace());
         expect(error).toBeInstanceOf(CustomError);
         expect(error).toHaveProperty('Error_Message', CustomErrorEnum.STRATEGY_NOT_IDENTIFIED);
@@ -15,7 +15,7 @@ describe("create naked single", () => {
         let cells:Cell[][] = new Array();
         let cell:Cell = new Cell(0, 0);
         cells.push([cell]);
-        let strategy:Strategy = new Strategy(cells);
+        let strategy:Strategy = new Strategy(cells, cells);
         expect(strategy.isNakedSingle).toBeFalsy;
     });
     it('should be a naked single', () => {
@@ -25,7 +25,7 @@ describe("create naked single", () => {
             cell.removeNote(i.toString());
         }
         cells.push([cell]);
-        let strategy:Strategy = new Strategy(cells);
+        let strategy:Strategy = new Strategy(cells, cells);
         expect(strategy.isNakedSingle()).toBeTruthy;
         expect(strategy.getValuesToPlace()[0].getValue()).toBe("9");
     });
@@ -47,7 +47,7 @@ describe("create hidden single", () => {
         for (let i:number = 1; i < 8; i++) {
             cells[0][i].removeNote("6");
         }
-        let strategy:Strategy = new Strategy(cells);
+        let strategy:Strategy = new Strategy(cells, cells);
         expect(strategy.isHiddenSingle()).toBeFalsy;
     });
     it ('should be a hidden single', () => {
@@ -59,7 +59,7 @@ describe("create hidden single", () => {
         for (let i:number = 0; i < 8; i++) {
             cells[0][i].removeNote("9");
         }
-        let strategy:Strategy = new Strategy(cells);
+        let strategy:Strategy = new Strategy(cells, cells);
         expect(strategy.isHiddenSingle()).toBeTruthy;
         expect(strategy.getValuesToPlace()[0].getValue()).toBe("9");
     });
