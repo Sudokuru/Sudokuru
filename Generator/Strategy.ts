@@ -174,26 +174,29 @@ export class Strategy{
             for (let column:number = 0; column < this.cells[row].length; column++) {
                 cell = this.cells[row][column];
                 nextCell = getNextCell(this.cells, cell);
-                if (nextCell !== null && cell.getNotes().getSize() === 2 && cell.getNotes().equals(nextCell.getNotes())) {
-                    // If the pair shares a row can remove them from every cell in row (except themselves)
-                    if (cell.getRow() === nextCell.getRow()) {
-                        for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
-                            if (column !== cell.getColumn() && column !== nextCell.getColumn()) {
-                                // Adds notes to remove if there are any to remove
-                                if (this.board[cell.getRow()][column].getNotes().intersection(cell.getNotes()).getSize() > 0) {
-                                    let notes:Group = new Group(false, cell.getRow(), column);
-                                    notes.insert(cell.getNotes());
-                                    this.notes.push(notes);
+                while (nextCell !== null) {
+                    if (cell.getNotes().getSize() === 2 && cell.getNotes().equals(nextCell.getNotes())) {
+                        // If the pair shares a row can remove them from every cell in row (except themselves)
+                        if (cell.getRow() === nextCell.getRow()) {
+                            for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                                if (column !== cell.getColumn() && column !== nextCell.getColumn()) {
+                                    // Adds notes to remove if there are any to remove
+                                    if (this.board[cell.getRow()][column].getNotes().intersection(cell.getNotes()).getSize() > 0) {
+                                        let notes:Group = new Group(false, cell.getRow(), column);
+                                        notes.insert(cell.getNotes());
+                                        this.notes.push(notes);
+                                    }
                                 }
                             }
                         }
+                        // Need to remove notes for shared column and box here
+                        if (this.notes.length !== 0) {
+                            this.strategyType = StrategyEnum.NAKED_PAIR;
+                            this.identified = true;
+                            return true;
+                        }
                     }
-                    // Need to remove notes for shared column and box here
-                    if (this.notes.length !== 0) {
-                        this.strategyType = StrategyEnum.NAKED_PAIR;
-                        this.identified = true;
-                        return true;
-                    }
+                    nextCell = getNextCell(this.cells, nextCell);
                 }
             }
         }

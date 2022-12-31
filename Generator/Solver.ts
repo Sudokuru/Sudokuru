@@ -117,6 +117,7 @@ export class Solver{
      */
     private applyHint():void {
         this.placeValues(this.hint.getEffectPlacements());
+        this.removeNotes(this.hint.getEffectRemovals());
     }
 
     /**
@@ -382,5 +383,18 @@ export class Solver{
             this.simplifyNotes(this.board[row][column]);
         }
         return;
+    }
+
+    /**
+     * Removes given notes from board
+     * @param notes - Groups containing notes to remove
+     */
+    private removeNotes(notes: Group[]):void {
+        let row:number, column:number;
+        for (let i:number = 0; i < notes.length; i++) {
+            row = notes[i].getRow();
+            column = notes[i].getColumn();
+            this.board[row][column].removeNotes(notes[i]);
+        }
     }
 }

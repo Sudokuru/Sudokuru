@@ -162,10 +162,11 @@ export function getCellsInBox(cells: Cell[][], n: number):Cell[] {
  * @returns next cell in cells if there is one, otherwise null
  */
 export function getNextCell(cells: Cell[][], cell: Cell):Cell {
-    for (let row:number = cell.getRow(); row < cells.length; row++) {
-        for (let column:number = cell.getColumn(); column < cells[row].length; column++) {
-            if (row !== cell.getRow() || column !== cell.getColumn()) {
-                return cells[row][column];
+    for (let i:number = 0; i < cells.length; i++) {
+        for (let j:number = 0; j < cells[i].length; j++) {
+            if (cells[i][j].getRow() > cell.getRow() || 
+                (cells[i][j].getRow() === cell.getRow() && cells[i][j].getColumn() > cell.getColumn())) {
+                return cells[i][j];
             }
         }
     }
