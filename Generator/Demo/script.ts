@@ -6,6 +6,7 @@ interface nextStepResponse {
 }
 
 const NEXT_STEP_ENDPOINT:string = "http://localhost:3001/solver/nextStep?board=";
+const NEXT_NOTES:string = "&notes=";
 const NEXT_NAKED_SINGLE:string = "&nakedSingle=";
 const NEXT_HIDDEN_SINGLE:string = "&hiddenSingle=";
 const NEXT_NAKED_PAIR:string = "&nakedPair=";
@@ -247,6 +248,22 @@ function getInputBoard():string {
 }
 
 /**
+ * Gets notes last received by the Solver or undefined if none available
+ * @returns notes or undefined if none available i.e. at first step
+ */
+function getNotes():string {
+    let notes:string = NEXT_NOTES;
+    let stepNumber:string = getStepNumber();
+    if (stepNumber !== "0") {
+        notes += sessionStorage.getItem("notes" + (Number(stepNumber) - 1).toString());
+    }
+    else {
+        notes += "undefined";
+    }
+    return notes;
+}
+
+/**
  * Gets order of strategy from user input boxes
  * @returns strategy order string
  */
@@ -270,7 +287,7 @@ function getStrategyOrder():string {
  * @returns next step endpoint url
  */
 function getNextStepURL():string {
-    return NEXT_STEP_ENDPOINT + getInputBoard() + getStrategyOrder();
+    return NEXT_STEP_ENDPOINT + getInputBoard() + getNotes() + getStrategyOrder();
 }
 
 /**
