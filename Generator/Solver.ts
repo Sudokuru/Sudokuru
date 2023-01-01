@@ -1,7 +1,7 @@
 import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
 import { Strategy } from "./Strategy";
-import { SudokuEnum, StrategyEnum, getCellsInRow, getCellsInColumn, getCellsInBox } from "./Sudoku";
+import { SudokuEnum, StrategyEnum } from "./Sudoku";
 import { HiddenSingleHint, Hint, NakedPairHint, NakedSingleHint } from "./Hint";
 import { Group } from "./Group";
 
@@ -24,32 +24,15 @@ export class Solver{
     /**
      * Creates solver object
      * @param board - 2d board array
+     * @param algorithm - optional parameter specifying order to apply strategies
      */
-    constructor(board: string[][]);
-
-    /**
-     * Creates solver object
-     * @param board - 2d board array
-     * @param algorithm - specific order to apply strategies
-     */
-    constructor(board: string[][], algorithm: StrategyEnum[]);
-
-    constructor(board: string[][], algorithm?: StrategyEnum[]) {
+    constructor(board: string[][], algorithm: StrategyEnum[] = Strategy.getDefaultAlgorithm()) {
         this.board = new Array();
         this.initializeCellArray(this.board, board.length);
         this.initializeBoard(board);
         this.simplifyAllNotes();
         this.solved = false;
-        if (algorithm === undefined) {
-            this.algorithm = new Array();
-            // Initializes algorithm to use strategies in order of least to most complex
-            for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
-                this.algorithm.push(strategy);
-            }
-        }
-        else {
-            this.algorithm = algorithm;
-        }
+        this.algorithm = algorithm;
     }
 
     /**

@@ -238,4 +238,17 @@ export class Strategy{
         box.push(getCellsInBox(cells, n));
         return new Strategy(board, box);
     }
+
+    /**
+     * Returns algorithm which includes all of the strategies in order of least to most complex
+     * @returns default algorithm
+     */
+    public static getDefaultAlgorithm():StrategyEnum[] {
+        let algorithm:StrategyEnum[] = new Array();
+        // Adds strategies in order of least to most complex
+        for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
+            algorithm.push(strategy);
+        }
+        return algorithm;
+    }
 }
