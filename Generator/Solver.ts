@@ -25,12 +25,18 @@ export class Solver{
      * Creates solver object
      * @param board - 2d board array
      * @param algorithm - optional parameter specifying order to apply strategies
+     * @param notes - optional parameter specifying initial state of the notes (one array with an array for each cell in order)
      */
-    constructor(board: string[][], algorithm: StrategyEnum[] = Strategy.getDefaultAlgorithm()) {
+    constructor(board: string[][], algorithm: StrategyEnum[] = Strategy.getDefaultAlgorithm(), notes?: string[][]) {
         this.board = new Array();
         this.initializeCellArray(this.board, board.length);
         this.initializeBoard(board);
-        this.simplifyAllNotes();
+        if (notes === undefined) {
+            this.simplifyAllNotes();
+        }
+        else {
+            this.setNotes(notes);
+        }
         this.solved = false;
         this.algorithm = algorithm;
     }
@@ -246,6 +252,25 @@ export class Solver{
             }
         }
         return notes;
+    }
+
+    /**
+     * Sets boards notes to given notes
+     * @param notes - array of notes arrays in order (one array with an array for each cell)
+     */
+    public setNotes(notes: string[][]):void {
+        let index:number;
+        for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+            for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                // Remove every note except ones provided
+                let removedNotes:Group = new Group(true);
+                index = (row * SudokuEnum.COLUMN_LENGTH) + column;
+                for (let note:number = 0; note < notes[index].length; note++) {
+                    removedNotes.remove(notes[index][note]);
+                }
+                this.board[row][column].removeNotes(removedNotes);
+            }
+        }
     }
 
     /**
