@@ -95,8 +95,8 @@ describe("create naked pair", () => {
         // Create pair
         let cells:Cell[][] = new Array();
         cells.push(new Array());
-        cells[0].push(new Cell(0, 0));
-        cells[0].push(new Cell(0, 1));
+        cells[0].push(board[0][0]);
+        cells[0].push(board[0][7]);
 
         // Remove all but naked pair from pair
         let notes:Group = new Group(true);
