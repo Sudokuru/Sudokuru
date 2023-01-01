@@ -189,6 +189,19 @@ export class Strategy{
                                 }
                             }
                         }
+                        // If the pair shares a column can remove them from every cell in column (except themselves)
+                        if (cell.getColumn() === nextCell.getColumn()) {
+                            for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+                                if (row !== cell.getRow() && row !== nextCell.getRow()) {
+                                    // Adds notes to remove if there are any to remove
+                                    if (this.board[row][cell.getColumn()].getNotes().intersection(cell.getNotes()).getSize() > 0) {
+                                        let notes:Group = new Group(false, row, cell.getColumn());
+                                        notes.insert(cell.getNotes());
+                                        this.notes.push(notes);
+                                    }
+                                }
+                            }
+                        }
                         // Need to remove notes for shared column and box here
                         if (this.notes.length !== 0) {
                             this.strategyType = StrategyEnum.NAKED_PAIR;
