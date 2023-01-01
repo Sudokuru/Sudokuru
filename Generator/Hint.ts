@@ -1,4 +1,5 @@
 import { Cell } from "./Cell";
+import { Group } from "./Group";
 import { Strategy } from "./Strategy";
 
 /**
@@ -19,6 +20,16 @@ export enum NAKED_SINGLE {
 export enum HIDDEN_SINGLE {
     HINT_INFO = "Hidden singles are when you only have one cell left still containing a specific value in a row, column, or box",
     HINT_ACTION = "When you see a hidden single you can fill it in with its unique possibility"
+}
+
+/**
+ * Contains hint information for naked pair strategy
+ * Contains what action hint is trying to get you to do
+ * @enum
+ */
+export enum NAKED_PAIR {
+    HINT_INFO = "Naked pairs are when you only have the same two numbers left as a possibility in two cells in the same row, column, or box",
+    HINT_ACTION = "When you see a naked pair you can remove them from the notes of every other cell in the row, column, or box that they share"
 }
 
 /**
@@ -73,10 +84,10 @@ export class Hint{
     }
 
     /**
-     * Gets cells that have notes in them that can be removed as result of strategy
-     * @returns cells containing notes to removed
+     * Gets notes that can be removed as result of strategy
+     * @returns Groups containing notes to removed
      */
-    public getEffectRemovals():Cell[] {
+    public getEffectRemovals():Group[] {
         return this.strategy.getNotesToRemove();
     }
 
@@ -112,5 +123,14 @@ export class NakedSingleHint extends Hint {
 export class HiddenSingleHint extends Hint {
     constructor(strategy: Strategy) {
         super(strategy, HIDDEN_SINGLE.HINT_INFO, HIDDEN_SINGLE.HINT_ACTION);
+    }
+}
+
+/**
+ * Naked pair strategy hint class
+ */
+export class NakedPairHint extends Hint {
+    constructor(strategy: Strategy) {
+        super(strategy, NAKED_PAIR.HINT_INFO, NAKED_PAIR.HINT_ACTION);
     }
 }
