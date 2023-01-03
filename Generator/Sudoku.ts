@@ -156,6 +156,54 @@ export function getCellsInBox(cells: Cell[][], n: number):Cell[] {
 }
 
 /**
+ * Given cell array and cell returns next cell in same row iterating left to right, if there is none returns null
+ * @param cells - 2d cell array
+ * @param cell - current cell
+ * @returns next cell in cells in same row if there is one, otherwise null
+ */
+export function getNextCellInRow(cells: Cell[][], cell: Cell):Cell {
+    let row: Cell[] = getCellsInRow(cells, cell.getRow());
+    for (let i:number = 0; i < row.length; i++) {
+        if (row[i].getColumn() > cell.getColumn()) {
+            return row[i];
+        }
+    }
+    return null;
+}
+
+/**
+ * Given cell array and cell returns next cell in same column iterating top to bottom, if there is none returns null
+ * @param cells - 2d cell array
+ * @param cell - current cell
+ * @returns next cell in cells in same column if there is one, otherwise null
+ */
+export function getNextCellInColumn(cells: Cell[][], cell: Cell):Cell {
+    let column: Cell[] = getCellsInColumn(cells, cell.getColumn());
+    for (let i:number = 0; i < column.length; i++) {
+        if (column[i].getRow() > cell.getRow()) {
+            return column[i];
+        }
+    }
+    return null;
+}
+
+/**
+ * Given cell array and cell returns next cell in same box iterating left to right, top to bottom, if there is none returns null
+ * @param cells - 2d cell array
+ * @param cell - current cell
+ * @returns next cell in cells in same box if there is one, otherwise null
+ */
+export function getNextCellInBox(cells: Cell[][], cell: Cell):Cell {
+    let box: Cell[] = getCellsInBox(cells, cell.getBox());
+    for (let i:number = 0; i < box.length; i++) {
+        if ((box[i].getRow() > cell.getRow()) || ((box[i].getRow() == cell.getRow()) && (box[i].getColumn() > cell.getRow()))) {
+            return box[i];
+        }
+    }
+    return null;
+}
+
+/**
 * Given a 2d cell array and a cell, returns the next cell iterating left to right, top to bottom, if there is none returns null
  * @param cells - 2d cell array
  * @param cell - current cell
