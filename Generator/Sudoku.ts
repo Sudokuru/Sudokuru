@@ -28,6 +28,17 @@ export enum StrategyEnum {
 }
 
 /**
+ * Includes constants representing the various groups of cells
+ * @enum
+ */
+export enum GroupEnum {
+    ROW = 0,
+    COLUMN,
+    BOX,
+    COUNT
+}
+
+/**
  * Checks that row is in range
  * @param row - row
  * @throws {@link CustomError}
@@ -201,6 +212,25 @@ export function getNextCellInBox(cells: Cell[][], cell: Cell):Cell {
         }
     }
     return null;
+}
+
+/**
+ * Given cell array, cell, and group type returns next cell in group if there is one, otherwise null (left to right, top down)
+ * @param cells - 2d cell array
+ * @param cell - current cell
+ * @param group - group type
+ * @returns next cell in cells same group if there is one, otherwise null
+ */
+export function getNextCellInGroup(cells: Cell[][], cell: Cell, group: GroupEnum):Cell {
+    if (group === GroupEnum.ROW) {
+        return getNextCellInRow(cells, cell);
+    }
+    else if (group === GroupEnum.COLUMN) {
+        return getNextCellInColumn(cells, cell);
+    }
+    else {
+        return getNextCellInBox(cells, cell);
+    }
 }
 
 /**
