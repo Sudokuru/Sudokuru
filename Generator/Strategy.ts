@@ -1,6 +1,6 @@
 import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
-import { SudokuEnum, StrategyEnum, getCellsInRow, getCellsInColumn, getCellsInBox, getNextCell } from "./Sudoku"
+import { SudokuEnum, StrategyEnum, getCellsInRow, getCellsInColumn, getCellsInBox, getNextCell, GroupEnum, getNextCellInGroup } from "./Sudoku"
 import { Group } from "./Group";
 
 /**
@@ -173,61 +173,63 @@ export class Strategy{
         for (let row:number = 0; row < this.cells.length; row++) {
             for (let column:number = 0; column < this.cells[row].length; column++) {
                 cell = this.cells[row][column];
-                nextCell = getNextCell(this.cells, cell);
-                while (nextCell !== null) {
-                    if (cell.getNotes().getSize() === 2 && cell.getNotes().equals(nextCell.getNotes())) {
-                        // If the pair shares a row can remove them from every cell in row (except themselves)
-                        if (cell.getRow() === nextCell.getRow()) {
-                            for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
-                                if (column !== cell.getColumn() && column !== nextCell.getColumn()) {
-                                    // Adds notes to remove if there are any to remove
-                                    if (this.board[cell.getRow()][column].getNotes().intersection(cell.getNotes()).getSize() > 0) {
-                                        let notes:Group = new Group(false, cell.getRow(), column);
-                                        notes.insert(cell.getNotes());
-                                        this.notes.push(notes);
-                                    }
-                                }
-                            }
-                        }
-                        // If the pair shares a column can remove them from every cell in column (except themselves)
-                        if (cell.getColumn() === nextCell.getColumn()) {
-                            for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
-                                if (row !== cell.getRow() && row !== nextCell.getRow()) {
-                                    // Adds notes to remove if there are any to remove
-                                    if (this.board[row][cell.getColumn()].getNotes().intersection(cell.getNotes()).getSize() > 0) {
-                                        let notes:Group = new Group(false, row, cell.getColumn());
-                                        notes.insert(cell.getNotes());
-                                        this.notes.push(notes);
-                                    }
-                                }
-                            }
-                        }
-                        // If the pair shares a box can remove them from every cell in box (except themselves)
-                        if (cell.getBox() === nextCell.getBox()) {
-                            let box:number = cell.getBox();
-                            let columnStart:number = Cell.getBoxColumnStart(box);
-                            let rowStart:number = Cell.getBoxRowStart(box);
-                            for (let column:number = columnStart; column < (columnStart + SudokuEnum.BOX_LENGTH); column++) {
-                                for (let row:number = rowStart; row < (rowStart + SudokuEnum.BOX_LENGTH); row++) {
-                                    if ((row !== cell.getRow() || column !== cell.getColumn()) && 
-                                        (row !== nextCell.getRow() || column !== nextCell.getColumn())) {
+                for (let group:GroupEnum = 0; group < GroupEnum.COUNT; group++) {
+                    nextCell = getNextCellInGroup(this.cells, cell, group);
+                    while (nextCell !== null) {
+                        if (cell.getNotes().getSize() === 2 && cell.getNotes().equals(nextCell.getNotes())) {
+                            // If the pair shares a row can remove them from every cell in row (except themselves)
+                            if (group === GroupEnum.ROW) {
+                                for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                                    if (column !== cell.getColumn() && column !== nextCell.getColumn()) {
                                         // Adds notes to remove if there are any to remove
-                                        if (this.board[row][column].getNotes().intersection(cell.getNotes()).getSize() > 0) {
-                                            let notes:Group = new Group(false, row, column);
+                                        if (this.board[cell.getRow()][column].getNotes().intersection(cell.getNotes()).getSize() > 0) {
+                                            let notes:Group = new Group(false, cell.getRow(), column);
                                             notes.insert(cell.getNotes());
                                             this.notes.push(notes);
                                         }
                                     }
                                 }
                             }
+                            // If the pair shares a column can remove them from every cell in column (except themselves)
+                            if (group === GroupEnum.COLUMN) {
+                                for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+                                    if (row !== cell.getRow() && row !== nextCell.getRow()) {
+                                        // Adds notes to remove if there are any to remove
+                                        if (this.board[row][cell.getColumn()].getNotes().intersection(cell.getNotes()).getSize() > 0) {
+                                            let notes:Group = new Group(false, row, cell.getColumn());
+                                            notes.insert(cell.getNotes());
+                                            this.notes.push(notes);
+                                        }
+                                    }
+                                }
+                            }
+                            // If the pair shares a box can remove them from every cell in box (except themselves)
+                            if (group === GroupEnum.BOX) {
+                                let box:number = cell.getBox();
+                                let columnStart:number = Cell.getBoxColumnStart(box);
+                                let rowStart:number = Cell.getBoxRowStart(box);
+                                for (let column:number = columnStart; column < (columnStart + SudokuEnum.BOX_LENGTH); column++) {
+                                    for (let row:number = rowStart; row < (rowStart + SudokuEnum.BOX_LENGTH); row++) {
+                                        if ((row !== cell.getRow() || column !== cell.getColumn()) && 
+                                            (row !== nextCell.getRow() || column !== nextCell.getColumn())) {
+                                            // Adds notes to remove if there are any to remove
+                                            if (this.board[row][column].getNotes().intersection(cell.getNotes()).getSize() > 0) {
+                                                let notes:Group = new Group(false, row, column);
+                                                notes.insert(cell.getNotes());
+                                                this.notes.push(notes);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (this.notes.length !== 0) {
+                                this.strategyType = StrategyEnum.NAKED_PAIR;
+                                this.identified = true;
+                                return true;
+                            }
                         }
-                        if (this.notes.length !== 0) {
-                            this.strategyType = StrategyEnum.NAKED_PAIR;
-                            this.identified = true;
-                            return true;
-                        }
+                        nextCell = getNextCellInGroup(this.cells, nextCell, group);
                     }
-                    nextCell = getNextCell(this.cells, nextCell);
                 }
             }
         }
@@ -241,8 +243,7 @@ export class Strategy{
      * @returns strategy using given row
      */
     public static getRowStrategy(board: Cell[][], cells: Cell[][], n: number):Strategy {
-        let row: Cell[][] = new Array();
-        row.push(getCellsInRow(cells, n));
+        let row: Cell[][] = getCellsInRow(cells, n);
         return new Strategy(board, row);
     }
 
@@ -253,8 +254,7 @@ export class Strategy{
      * @returns strategy using given column
      */
     public static getColumnStrategy(board: Cell[][], cells: Cell[][], n: number):Strategy {
-        let column: Cell[][] = new Array();
-        column.push(getCellsInColumn(cells, n));
+        let column: Cell[][] = getCellsInColumn(cells, n);
         return new Strategy(board, column);
     }
 
@@ -265,8 +265,7 @@ export class Strategy{
      * @returns strategy using given box
      */
     public static getBoxStrategy(board: Cell[][], cells: Cell[][], n: number):Strategy {
-        let box: Cell[][] = new Array();
-        box.push(getCellsInBox(cells, n));
+        let box: Cell[][] = getCellsInBox(cells, n);
         return new Strategy(board, box);
     }
 

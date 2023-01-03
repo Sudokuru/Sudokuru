@@ -116,31 +116,41 @@ export function getCandidateIndex(candidate: unknown):number {
 }
 
 /**
- * Given a 2d board cell array and a number n returns an array containing cells in the nth row
+ * Given a 2d board cell array and a number n returns a 2d array containing only cells in the nth row
  * @param cells - 2d board cell array
  * @param n - row getting cells from
  * @return array of cells in nth row
  */
-export function getCellsInRow(cells: Cell[][], n: number):Cell[] {
-    let row: Cell[] = new Array();
+export function getCellsInRow(cells: Cell[][], n: number):Cell[][] {
+    let row: Cell[][] = new Array();
+    for (let r = 0; r < cells.length; r++) {
+        row.push([]);
+    }
+    if (cells[n] === undefined) {
+        console.log(cells.length);
+        console.log(cells);
+    }
     for (let column: number = 0; column < cells[n].length; column++) {
-        row.push(cells[n][column]);
+        row[n].push(cells[n][column]);
     }
     return row;
 }
 
 /**
- * Given a 2d board cell array and a number n returns an array containing cells in the nth column
+ * Given a 2d board cell array and a number n returns a 2d array containing only cells in the nth column
  * @param cells - 2d board cell array
  * @param n - column getting cells from
  * @return array of cells in nth column
  */
-export function getCellsInColumn(cells: Cell[][], n: number):Cell[] {
-    let column: Cell[] = new Array();
+export function getCellsInColumn(cells: Cell[][], n: number):Cell[][] {
+    let column: Cell[][] = new Array();
+    for (let r = 0; r < cells.length; r++) {
+        column.push([]);
+    }
     for (let i:number = 0; i < cells.length; i++) {
         for (let j:number = 0; j < cells[i].length; j++) {
             if (cells[i][j].getColumn() === n) {
-                column.push(cells[i][j]);
+                column[i].push(cells[i][j]);
                 j = cells[i].length;
             }
         }
@@ -149,17 +159,20 @@ export function getCellsInColumn(cells: Cell[][], n: number):Cell[] {
 }
 
 /**
- * Given a 2d board cell array and a number n returns an array containing cells in the nth box
+ * Given a 2d board cell array and a number n returns a 2d array containing only cells in the nth box
  * @param cells - 2d board cell array
  * @param n - box getting cells from
  * @return array of cells in nth box
  */
-export function getCellsInBox(cells: Cell[][], n: number):Cell[] {
-    let box: Cell[] = new Array();
+export function getCellsInBox(cells: Cell[][], n: number):Cell[][] {
+    let box: Cell[][] = new Array();
+    for (let r = 0; r < cells.length; r++) {
+        box.push([]);
+    }
     for (let i:number = 0; i < cells.length; i++) {
-        for (let j:number = 0; j < cells[i].length; j++) {
+         for (let j:number = 0; j < cells[i].length; j++) {
             if (cells[i][j].getBox() === n) {
-                box.push(cells[i][j]);
+                box[i].push(cells[i][j]);
             }
         }
     }
@@ -173,10 +186,10 @@ export function getCellsInBox(cells: Cell[][], n: number):Cell[] {
  * @returns next cell in cells in same row if there is one, otherwise null
  */
 export function getNextCellInRow(cells: Cell[][], cell: Cell):Cell {
-    let row: Cell[] = getCellsInRow(cells, cell.getRow());
-    for (let i:number = 0; i < row.length; i++) {
-        if (row[i].getColumn() > cell.getColumn()) {
-            return row[i];
+    let row: Cell[][] = getCellsInRow(cells, cell.getRow());
+    for (let i:number = 0; i < row[cell.getRow()].length; i++) {
+        if (row[cell.getRow()][i].getColumn() > cell.getColumn()) {
+            return row[cell.getRow()][i];
         }
     }
     return null;
@@ -189,10 +202,12 @@ export function getNextCellInRow(cells: Cell[][], cell: Cell):Cell {
  * @returns next cell in cells in same column if there is one, otherwise null
  */
 export function getNextCellInColumn(cells: Cell[][], cell: Cell):Cell {
-    let column: Cell[] = getCellsInColumn(cells, cell.getColumn());
+    let column: Cell[][] = getCellsInColumn(cells, cell.getColumn());
     for (let i:number = 0; i < column.length; i++) {
-        if (column[i].getRow() > cell.getRow()) {
-            return column[i];
+        for (let j:number = 0; j < column[i].length; j++) {
+            if (column[i][j].getRow() > cell.getRow()) {
+                return column[i][j];
+            }
         }
     }
     return null;
@@ -205,10 +220,12 @@ export function getNextCellInColumn(cells: Cell[][], cell: Cell):Cell {
  * @returns next cell in cells in same box if there is one, otherwise null
  */
 export function getNextCellInBox(cells: Cell[][], cell: Cell):Cell {
-    let box: Cell[] = getCellsInBox(cells, cell.getBox());
+    let box: Cell[][] = getCellsInBox(cells, cell.getBox());
     for (let i:number = 0; i < box.length; i++) {
-        if ((box[i].getRow() > cell.getRow()) || ((box[i].getRow() == cell.getRow()) && (box[i].getColumn() > cell.getRow()))) {
-            return box[i];
+        for (let j:number = 0; j < box[i].length; j++) {
+            if ((i > cell.getRow()) || ((i === cell.getRow()) && (j > cell.getColumn()))) {
+                return box[i][j];
+            }
         }
     }
     return null;
