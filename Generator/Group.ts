@@ -12,6 +12,8 @@ export class Group{
     // Optional row and column values corresponding to a Cell in a board
     private row: number;
     private column: number;
+    // Contains array for each subset size 1-9, each subarray stores every possible subset with given size
+    private static subsets: Group[][];
 
     /**
      * Creates Group object given value to initial candidates to
@@ -184,6 +186,16 @@ export class Group{
     }
 
     /**
+     * Creates a clone of this object and returns it
+     * @returns clone of this Group
+     */
+    public clone():Group {
+        let clone:Group = new Group(false);
+        clone.insert(this);
+        return clone;
+    }
+
+    /**
      * Returns the number of candidates in this Group
      * @returns size
      */
@@ -205,5 +217,52 @@ export class Group{
      */
     public getColumn():number {
         return this.column;
+    }
+
+    /**
+     * Adds every possible subset to subsets
+     * @param index - index of candidate being decided upon addition to subsets
+     * @param inSubset - stores candidates in current subset being computed
+     */
+    private static addSubsets(index: number, inSubset: Group):void {
+        // Recursively adds all subsets
+        if (index === SudokuEnum.ROW_LENGTH) {
+            if (inSubset.getSize() > 0) {
+                Group.subsets[inSubset.getSize()-1].push(inSubset.clone());
+            }
+        }
+        else {
+            // Add subsets including candidate at index
+            inSubset.insert(index);
+            Group.addSubsets(index + 1, inSubset);
+            // Add subsets excluding candidate at index
+            inSubset.remove(index);
+            Group.addSubsets(index + 1, inSubset);
+        }
+        return;
+    }
+
+    /**
+     * Initializes subsets to have subarrays for each subset size 1-9 storing all subsets with that size
+     */
+    private static initializeSubsets():void {
+        Group.subsets = new Array();
+        for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
+            Group.subsets.push([]);
+        }
+        Group.addSubsets(0, new Group(false));
+        return;
+    }
+
+    /**
+     * Given a size returns array containing all subsets with that many candidates
+     * @param size - number of elements in desired subsets
+     * @returns array containg Groups with every possible subset of given size
+     */
+    public static getSubset(size: number):Group[] {
+        if (Group.subsets === undefined) {
+            Group.initializeSubsets();
+        }
+        return Group.subsets[size-1];
     }
 }
