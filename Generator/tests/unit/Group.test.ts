@@ -57,8 +57,17 @@ describe("create Group object", () => {
         let b:Group = new Group(false);
         b.insert(3);
         b.insert(6);
+
+        let c:Group = new Group(false);
+        c.insert(4);
+
+        let d:Group = new Group(false);
+        d.insert(a);
+        d.insert(4);
         
         expect(a.equals(b)).toBeTruthy;
+        expect(a.equals(a.clone())).toBeTruthy;
+        expect(d.equals(Group.union([a, c]))).toBeTruthy;
 
         a.insert(7);
 

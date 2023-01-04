@@ -186,6 +186,19 @@ export class Group{
     }
 
     /**
+     * Given an array of groups returns a Group that represents their union (contains every candidate any of them contains)
+     * @param groups - Groups being unioned
+     * @returns Group containing the union of the given groups (contains every candidate that any of them contain)
+     */
+    public static union(groups: Group[]):Group {
+        let union:Group = new Group(false);
+        for (let i:number = 0; i < groups.length; i++) {
+            union.insert(groups[i]);
+        }
+        return union;
+    }
+
+    /**
      * Creates a clone of this object and returns it
      * @returns clone of this Group
      */
