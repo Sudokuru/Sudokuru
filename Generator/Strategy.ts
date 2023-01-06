@@ -1,6 +1,6 @@
 import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
-import { SudokuEnum, StrategyEnum, getCellsInRow, getCellsInColumn, getCellsInBox, getNextCell, GroupEnum, getNextCellInGroup } from "./Sudoku"
+import { SudokuEnum, StrategyEnum, getCellsInRow, getCellsInColumn, getCellsInBox, GroupEnum, getNextCellInGroup, TupleEnum } from "./Sudoku"
 import { Group } from "./Group";
 
 /**
@@ -93,6 +93,116 @@ export class Strategy{
     }
 
     /**
+     * Given a cell in a group type and a subset returns whether or not the cell is in the subset of the group
+     * @param subset - contains some candidates in group
+     * @param cell - cell in group
+     * @param group - group e.g. row, column, or box
+     * @returns if cell is in subset of group
+     */
+    private inSubset(subset: Group, cell: Cell, group: GroupEnum):boolean {
+        if (group === GroupEnum.ROW) {
+            return subset.contains(cell.getColumn());
+        }
+        else if (group === GroupEnum.COLUMN) {
+            return subset.contains(cell.getRow());
+        }
+        else {
+            let boxRowStart:number = Cell.getBoxRowStart(cell.getBox());
+            let boxColumnStart:number = Cell.getBoxColumnStart(cell.getBox());
+            let boxIndex:number = (cell.getRow() - boxRowStart) * 3;
+            boxIndex += cell.getColumn() - boxColumnStart;
+            return subset.contains(boxIndex);
+        }
+    }
+
+    /**
+     * Checks if strategy is a naked set of given tuple and if so adds values that can be placed
+     * @param tuple - e.g. could be single or pair for naked single or naked pair respectively
+     * @returns true if strategy is a naked tuple
+     */
+    private isNakedSet(tuple: TupleEnum):boolean {
+        // Checks if tuple exists by getting all cells (with note size <= tuple) in each group and trying to build tuple
+        // Checks every subset (combination) of cells in each group (row/column/box)
+        let subsets:Group[] = Group.getSubset(tuple);
+        // Used to prevent adding cells to notes to remove multiple times when evaluating box after finding row/column set
+        let usedRow:number = -1;
+        let usedColumn:number = -1;
+        for (let group:GroupEnum = 0; group < GroupEnum.COUNT; group++) {
+            for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
+                // Contains cells in the same row, column, or box
+                let cells: Cell[] = new Array();
+                let nextCell:Cell = getNextCellInGroup(this.cells, null, group, i);
+                // Adds every cell in same row, column, or box to cells
+                while (nextCell !== null) {
+                    cells.push(nextCell);
+                    nextCell = getNextCellInGroup(this.cells, cells[cells.length - 1], group);
+                }
+                // Tries to build a naked set of size tuple for each possible size tuple subset of candidates
+                // Is naked set iff union of all cells has notes size equal to tuple
+                for (let j:number = 0; j < subsets.length; j++) {
+                    // Stores indexes of the cells that make up the naked set
+                    let inNakedSet:Group = new Group(false);
+                    // Stores the cellls that make up the naked set
+                    let nakedSet:Cell[] = new Array();
+                    // Adds each cell in cells that is part of the subset to the naked set
+                    for (let k:number = 0; k < cells.length; k++) {
+                        if (this.inSubset(subsets[j], cells[k], group)) { 
+                            nakedSet.push(cells[k]);
+                            inNakedSet.insert(k);
+                        }
+                    }
+                    // If naked set is correct size (i.e. every element in subset was in cells)
+                    if (nakedSet.length === tuple) {
+                        // Stores notes contained by cells in naked set
+                        let nakedSetNotes:Group[] = new Array();
+                        for (let k:number = 0; k < tuple; k++) {
+                            nakedSetNotes.push(nakedSet[k].getNotes());
+                        }
+                        // Calculates alll notes in naked set
+                        let nakedSetCandidates:Group = Group.union(nakedSetNotes);
+                        // If naked set has correct number of notes
+                        if (nakedSetCandidates.getSize() <= tuple) {
+                            // Adds notes to remove if there are any to remove
+                            for (let k:number = 0; k < cells.length; k++) {
+                                // If cell isn't part of naked set itself and it contains some of the same values as naked set remove them
+                                // Skip if row or column is 'used' i.e. removed due to shared row or column already and checking for others in shared box
+                                if (!inNakedSet.contains(k) && (cells[k].getNotes().intersection(nakedSetCandidates)).getSize() > 0 && 
+                                    cells[k].getRow() !== usedRow && cells[k].getColumn () !== usedColumn) {
+                                    let notes:Group = new Group(false, cells[k].getRow(), cells[k].getColumn());
+                                    notes.insert(nakedSetCandidates);
+                                    this.notes.push(notes);
+                                }
+                            }
+                            // If notes can be removed as result of naked set then it is a valid strategy
+                            if (this.notes.length > 0) {
+                                if (tuple === TupleEnum.PAIR) {
+                                    this.strategyType = StrategyEnum.NAKED_PAIR;
+                                }
+                                this.identified = true;
+                                // If naked set shares a row or column it might also share a box so skip to check that
+                                if (group !== GroupEnum.BOX) {
+                                    // Set used row or column to avoiding adding same cells notes twice
+                                    if (group === GroupEnum.ROW) {
+                                        usedRow = this.notes[0].getRow();
+                                    }
+                                    else {
+                                        usedColumn = this.notes[0].getColumn();
+                                    }
+                                    // Skip to box part of for loop to check if box is also shared
+                                    group = GroupEnum.BOX - 1;
+                                    j = subsets.length;
+                                    i = SudokuEnum.ROW_LENGTH;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return this.identified;
+    }
+
+    /**
      * Checks if strategy is a naked single and if so adds values that can be placed
      * @returns true if strategy is a naked single
      */
@@ -168,72 +278,7 @@ export class Strategy{
      * @returns true if strategy is a naked pair
      */
     public isNakedPair():boolean {
-        // Checks each pair by checking each cell against every cell in "front" of it
-        let cell: Cell, nextCell: Cell;
-        for (let row:number = 0; row < this.cells.length; row++) {
-            for (let column:number = 0; column < this.cells[row].length; column++) {
-                cell = this.cells[row][column];
-                for (let group:GroupEnum = 0; group < GroupEnum.COUNT; group++) {
-                    nextCell = getNextCellInGroup(this.cells, cell, group);
-                    while (nextCell !== null) {
-                        if (cell.getNotes().getSize() === 2 && cell.getNotes().equals(nextCell.getNotes())) {
-                            // If the pair shares a row can remove them from every cell in row (except themselves)
-                            if (group === GroupEnum.ROW) {
-                                for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
-                                    if (column !== cell.getColumn() && column !== nextCell.getColumn()) {
-                                        // Adds notes to remove if there are any to remove
-                                        if (this.board[cell.getRow()][column].getNotes().intersection(cell.getNotes()).getSize() > 0) {
-                                            let notes:Group = new Group(false, cell.getRow(), column);
-                                            notes.insert(cell.getNotes());
-                                            this.notes.push(notes);
-                                        }
-                                    }
-                                }
-                            }
-                            // If the pair shares a column can remove them from every cell in column (except themselves)
-                            if (group === GroupEnum.COLUMN) {
-                                for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
-                                    if (row !== cell.getRow() && row !== nextCell.getRow()) {
-                                        // Adds notes to remove if there are any to remove
-                                        if (this.board[row][cell.getColumn()].getNotes().intersection(cell.getNotes()).getSize() > 0) {
-                                            let notes:Group = new Group(false, row, cell.getColumn());
-                                            notes.insert(cell.getNotes());
-                                            this.notes.push(notes);
-                                        }
-                                    }
-                                }
-                            }
-                            // If the pair shares a box can remove them from every cell in box (except themselves)
-                            if (group === GroupEnum.BOX) {
-                                let box:number = cell.getBox();
-                                let columnStart:number = Cell.getBoxColumnStart(box);
-                                let rowStart:number = Cell.getBoxRowStart(box);
-                                for (let column:number = columnStart; column < (columnStart + SudokuEnum.BOX_LENGTH); column++) {
-                                    for (let row:number = rowStart; row < (rowStart + SudokuEnum.BOX_LENGTH); row++) {
-                                        if ((row !== cell.getRow() || column !== cell.getColumn()) && 
-                                            (row !== nextCell.getRow() || column !== nextCell.getColumn())) {
-                                            // Adds notes to remove if there are any to remove
-                                            if (this.board[row][column].getNotes().intersection(cell.getNotes()).getSize() > 0) {
-                                                let notes:Group = new Group(false, row, column);
-                                                notes.insert(cell.getNotes());
-                                                this.notes.push(notes);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            if (this.notes.length !== 0) {
-                                this.strategyType = StrategyEnum.NAKED_PAIR;
-                                this.identified = true;
-                                return true;
-                            }
-                        }
-                        nextCell = getNextCellInGroup(this.cells, nextCell, group);
-                    }
-                }
-            }
-        }
-        return false;
+        return this.isNakedSet(TupleEnum.PAIR);
     }
 
     /**

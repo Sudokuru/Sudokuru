@@ -99,6 +99,8 @@ export class Solver{
                 return;
             }
         }
+        this.hint = null;
+        return;
     }
 
     /**
@@ -178,7 +180,7 @@ export class Solver{
                 }
             }
             else if (strategy === StrategyEnum.NAKED_PAIR) {
-                if (this.setNakedPairHint(row) || this.setNakedPairHint(column) || this.setNakedPairHint(box)) {
+                if (this.setNakedPairHint(new Strategy(this.board, cells))) {
                     return true;
                 }
             }

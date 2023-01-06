@@ -39,6 +39,14 @@ export enum GroupEnum {
 }
 
 /**
+ * Includes constants representing the various tuples e.g. naked single, pair, ...
+ */
+export enum TupleEnum {
+    SINGLE = 1,
+    PAIR
+}
+
+/**
  * Checks that row is in range
  * @param row - row
  * @throws {@link CustomError}
@@ -97,6 +105,32 @@ export function getBoardArray(board: string):string[][] {
 }
 
 /**
+ * Creates an empty 2d Cell array with a subarray for each row in a Sudoku board
+ * @returns empty cell board array
+ */
+export function getEmptyCellBoard():Cell[][] {
+    let board: Cell[][] = new Array();
+    for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+        board.push([]);
+    }
+    return board;
+}
+
+/**
+ * Creates a 2d Cell array with a subarray for each row in Sudoku and an empty Cell for each column in each row
+ * @returns blank cell board
+ */
+export function getBlankCellBoard():Cell[][] {
+    let board: Cell[][] = getEmptyCellBoard();
+    for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+        for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+            board[row].push(new Cell(row, column));
+        }
+    }
+    return board;
+}
+
+/**
  * Given a candidate (string) or candidate index (number), calculates candidate index
  * @param candidate - number candidate index or candidate string
  * @returns candidate index
@@ -122,14 +156,7 @@ export function getCandidateIndex(candidate: unknown):number {
  * @return array of cells in nth row
  */
 export function getCellsInRow(cells: Cell[][], n: number):Cell[][] {
-    let row: Cell[][] = new Array();
-    for (let r = 0; r < cells.length; r++) {
-        row.push([]);
-    }
-    if (cells[n] === undefined) {
-        console.log(cells.length);
-        console.log(cells);
-    }
+    let row: Cell[][] = getEmptyCellBoard();
     for (let column: number = 0; column < cells[n].length; column++) {
         row[n].push(cells[n][column]);
     }
@@ -143,14 +170,11 @@ export function getCellsInRow(cells: Cell[][], n: number):Cell[][] {
  * @return array of cells in nth column
  */
 export function getCellsInColumn(cells: Cell[][], n: number):Cell[][] {
-    let column: Cell[][] = new Array();
-    for (let r = 0; r < cells.length; r++) {
-        column.push([]);
-    }
+    let column: Cell[][] = getEmptyCellBoard();
     for (let i:number = 0; i < cells.length; i++) {
         for (let j:number = 0; j < cells[i].length; j++) {
             if (cells[i][j].getColumn() === n) {
-                column[i].push(cells[i][j]);
+                column[cells[i][j].getRow()].push(cells[i][j]);
                 j = cells[i].length;
             }
         }
@@ -165,14 +189,11 @@ export function getCellsInColumn(cells: Cell[][], n: number):Cell[][] {
  * @return array of cells in nth box
  */
 export function getCellsInBox(cells: Cell[][], n: number):Cell[][] {
-    let box: Cell[][] = new Array();
-    for (let r = 0; r < cells.length; r++) {
-        box.push([]);
-    }
+    let box: Cell[][] = getEmptyCellBoard();
     for (let i:number = 0; i < cells.length; i++) {
          for (let j:number = 0; j < cells[i].length; j++) {
             if (cells[i][j].getBox() === n) {
-                box[i].push(cells[i][j]);
+                box[cells[i][j].getRow()].push(cells[i][j]);
             }
         }
     }
@@ -181,15 +202,22 @@ export function getCellsInBox(cells: Cell[][], n: number):Cell[][] {
 
 /**
  * Given cell array and cell returns next cell in same row iterating left to right, if there is none returns null
+ * If given cell is null then returns first cell in row
  * @param cells - 2d cell array
- * @param cell - current cell
+ * @param cell - current cell or null if getting first cell
+ * @param index - optional param used when cell is null to specify what row/column/box to get first cell from
  * @returns next cell in cells in same row if there is one, otherwise null
  */
-export function getNextCellInRow(cells: Cell[][], cell: Cell):Cell {
-    let row: Cell[][] = getCellsInRow(cells, cell.getRow());
-    for (let i:number = 0; i < row[cell.getRow()].length; i++) {
-        if (row[cell.getRow()][i].getColumn() > cell.getColumn()) {
-            return row[cell.getRow()][i];
+export function getNextCellInRow(cells: Cell[][], cell: Cell, index?: number):Cell {
+    // Set index if cell is provided
+    if (cell !== null) {
+        index = cell.getRow();
+    }
+    let row: Cell[][] = getCellsInRow(cells, index);
+    for (let i:number = 0; i < row[index].length; i++) {
+        // Return first cell if cell is null otherwise returns next cell in column after cell
+        if (cell === null || row[cell.getRow()][i].getColumn() > cell.getColumn()) {
+            return row[index][i];
         }
     }
     return null;
@@ -197,15 +225,22 @@ export function getNextCellInRow(cells: Cell[][], cell: Cell):Cell {
 
 /**
  * Given cell array and cell returns next cell in same column iterating top to bottom, if there is none returns null
+ * If given cell is null then returns first cell in column
  * @param cells - 2d cell array
- * @param cell - current cell
+ * @param cell - current cell or null if getting first cell
+ * @param index - optional param used when cell is null to specify what column to get first cell from
  * @returns next cell in cells in same column if there is one, otherwise null
  */
-export function getNextCellInColumn(cells: Cell[][], cell: Cell):Cell {
-    let column: Cell[][] = getCellsInColumn(cells, cell.getColumn());
+export function getNextCellInColumn(cells: Cell[][], cell: Cell, index?: number):Cell {
+    // Set index if cell is provided
+    if (cell !== null) {
+        index = cell.getColumn();
+    }
+    let column: Cell[][] = getCellsInColumn(cells, index);
     for (let i:number = 0; i < column.length; i++) {
         for (let j:number = 0; j < column[i].length; j++) {
-            if (column[i][j].getRow() > cell.getRow()) {
+            // Return first cell if cell is null otherwise returns next cell in row after cell
+            if (cell === null || column[i][j].getRow() > cell.getRow()) {
                 return column[i][j];
             }
         }
@@ -215,15 +250,22 @@ export function getNextCellInColumn(cells: Cell[][], cell: Cell):Cell {
 
 /**
  * Given cell array and cell returns next cell in same box iterating left to right, top to bottom, if there is none returns null
+ * If given cell is null then returns first cell in box
  * @param cells - 2d cell array
- * @param cell - current cell
+ * @param cell - current cell or null if getting first cell
+ * @param index - optional param used when cell is null to specify what box to get first cell from
  * @returns next cell in cells in same box if there is one, otherwise null
  */
-export function getNextCellInBox(cells: Cell[][], cell: Cell):Cell {
-    let box: Cell[][] = getCellsInBox(cells, cell.getBox());
+export function getNextCellInBox(cells: Cell[][], cell: Cell, index?: number):Cell {
+    // Set index if cell is proivded
+    if (cell !== null) {
+        index = cell.getBox();
+    }
+    let box: Cell[][] = getCellsInBox(cells, index);
     for (let i:number = 0; i < box.length; i++) {
         for (let j:number = 0; j < box[i].length; j++) {
-            if ((i > cell.getRow()) || ((i === cell.getRow()) && (j > cell.getColumn()))) {
+            // Return first cell if cell is null otherwise returns next cell in box after cell
+            if (cell === null || (i > cell.getRow()) || ((i === cell.getRow()) && (j > cell.getColumn()))) {
                 return box[i][j];
             }
         }
@@ -233,20 +275,22 @@ export function getNextCellInBox(cells: Cell[][], cell: Cell):Cell {
 
 /**
  * Given cell array, cell, and group type returns next cell in group if there is one, otherwise null (left to right, top down)
+ * If null passed for cell will return first cell in group
  * @param cells - 2d cell array
- * @param cell - current cell
+ * @param cell - current cell or null if getting first cell in group
  * @param group - group type
+ * @param index - optional param used when cell is null to specify what row/column/box to get first cell from
  * @returns next cell in cells same group if there is one, otherwise null
  */
-export function getNextCellInGroup(cells: Cell[][], cell: Cell, group: GroupEnum):Cell {
+export function getNextCellInGroup(cells: Cell[][], cell: Cell, group: GroupEnum, index?: number):Cell {
     if (group === GroupEnum.ROW) {
-        return getNextCellInRow(cells, cell);
+        return getNextCellInRow(cells, cell, index);
     }
     else if (group === GroupEnum.COLUMN) {
-        return getNextCellInColumn(cells, cell);
+        return getNextCellInColumn(cells, cell, index);
     }
     else {
-        return getNextCellInBox(cells, cell);
+        return getNextCellInBox(cells, cell, index);
     }
 }
 

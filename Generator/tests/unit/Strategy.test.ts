@@ -3,7 +3,7 @@ import { Cell } from '../../Cell';
 import { CustomError, CustomErrorEnum } from '../../CustomError';
 import { getError } from '../testResources';
 import { Group } from '../../Group';
-import { SudokuEnum } from '../../Sudoku';
+import { SudokuEnum, getBlankCellBoard } from '../../Sudoku';
 
 describe("create naked single", () => {
     it('should throw strategy not identified error', async () => {
@@ -69,17 +69,25 @@ describe("create hidden single", () => {
 
 describe("create naked pair", () => {
     it("should not be a naked pair", () => {
+        // Create board
+        let board:Cell[][] = getBlankCellBoard();
+
+        // Create pair
         let cells:Cell[][] = new Array();
         cells.push(new Array());
-        cells[0].push(new Cell(0, 0));
-        cells[0].push(new Cell(0, 1));
+        cells[0].push(board[0][0]);
+        cells[0].push(board[0][1]);
+
+        // Remove all but naked pair from one cell and remove naked pair plus one more note from other cell
         let notes:Group = new Group(true);
         notes.remove(1);
         notes.remove(2);
         cells[0][0].removeNotes(notes);
         notes.remove(3);
         cells[0][1].removeNotes(notes);
-        let strategy:Strategy = new Strategy(cells, cells);
+
+        // Test that it isn't a naked pair
+        let strategy:Strategy = new Strategy(board, board);
         expect(strategy.isNakedPair()).toBeFalsy;
     });
     it("should be a naked pair", () => {
@@ -96,7 +104,7 @@ describe("create naked pair", () => {
         let cells:Cell[][] = new Array();
         cells.push(new Array());
         cells[0].push(board[0][0]);
-        cells[0].push(board[0][7]);
+        cells[0].push(board[0][1]);
 
         // Remove all but naked pair from pair
         let notes:Group = new Group(true);
@@ -105,9 +113,9 @@ describe("create naked pair", () => {
         cells[0][0].removeNotes(notes);
         cells[0][1].removeNotes(notes);
 
-        // Test that is naked pair and can remove notes from every cell in row except naked pair themself
-        let strategy:Strategy = new Strategy(board, cells);
+        // Test that is naked pair and can remove notes from every cell in shared row and box except naked pair themself
+        let strategy:Strategy = new Strategy(board, board);
         expect(strategy.isNakedPair()).toBeTruthy;
-        expect(strategy.getNotesToRemove().length).toBe(7);
+        expect(strategy.getNotesToRemove().length).toBe(13);
     });
 });
