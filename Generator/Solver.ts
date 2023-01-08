@@ -117,23 +117,7 @@ export class Solver{
      * @returns true if contains a naked single
      */
     private setNakedSingle(cells: Cell[][]):boolean {
-        // Checks every cell for a naked single
-        for (let i:number = 0; i < cells.length; i++) {
-            for (let j:number = 0; j < cells[i].length; j++) {
-                // Creates a Cell array containing a possible naked single
-                let single: Cell[][] = new Array();
-                this.initializeCellArray(single, 1);
-                single[0].push(cells[i][j]);
-                // Create a naked single strategy using the array of cells
-                let nakedSingle: Strategy = new Strategy(this.board, single);
-                // Checks if strategy object constitutes a naked single
-                if (nakedSingle.isNakedSingle()) {
-                    this.hint = new NakedSingleHint(nakedSingle);
-                    return true;
-                }
-            }
-        }
-        return false;
+        return this.setGroupStrategy(StrategyEnum.NAKED_SINGLE, cells);
     }
 
     /**
@@ -163,6 +147,19 @@ export class Solver{
     }
 
     /**
+     * If given Strategy is a naked pair it sets the hint to it and returns true
+     * @param nakedPair - Strategy
+     * @returns true if given Strategy is a naked pair
+     */
+    private setNakedSingleHint(nakedPair: Strategy):boolean {
+        if (nakedPair.isNakedSingle()) {
+            this.hint = new NakedSingleHint(nakedPair);
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Returns true if puzzle has given strategy (in a row, column, or box) and sets hint, otherwise returns false
      * @param strategy - strategy to check for
      * @param cells - cells to create strategy with
@@ -179,11 +176,13 @@ export class Solver{
                     return true;
                 }
             }
-            else if (strategy === StrategyEnum.NAKED_PAIR) {
-                if (this.setNakedPairHint(new Strategy(this.board, cells))) {
-                    return true;
-                }
-            }
+        }
+        // Checks entire board for given strategies
+        if (strategy === StrategyEnum.NAKED_SINGLE && this.setNakedSingleHint(new Strategy(this.board, cells))) {
+            return true;
+        }
+        else if (strategy === StrategyEnum.NAKED_PAIR && this.setNakedPairHint(new Strategy(this.board, cells))) {
+            return true;
         }
         return false;
     }

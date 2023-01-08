@@ -93,7 +93,8 @@ export class Strategy{
     }
 
     /**
-     * Given a cell in a group type and a subset returns whether or not the cell is in the subset of the group
+     * Given a cell and a group type and a subset returns whether or not the cell is in the part of the group designated by the subset
+     * For example if the group is ROW and the subset contains 1 and 3 then returns whether or not the cell is in the 2nd or 4th column of the row
      * @param subset - contains some candidates in group
      * @param cell - cell in group
      * @param group - group e.g. row, column, or box
@@ -162,6 +163,21 @@ export class Strategy{
                         let nakedSetCandidates:Group = Group.union(nakedSetNotes);
                         // If naked set has correct number of notes
                         if (nakedSetCandidates.getSize() <= tuple) {
+                            // If it is a naked single places value
+                            if (tuple === TupleEnum.SINGLE) {
+                                let row:number = nakedSet[0].getRow();
+                                let column:number = nakedSet[0].getColumn();
+                                let single:string = undefined;
+                                for (let singleCandidate:number = 0; singleCandidate < SudokuEnum.ROW_LENGTH; singleCandidate++) {
+                                    if (nakedSetCandidates.contains(singleCandidate)) {
+                                        single = (singleCandidate+1).toString();
+                                    }
+                                }
+                                this.values.push(new Cell(row, column, single));
+                                this.strategyType = StrategyEnum.NAKED_SINGLE;
+                                this.identified = true;
+                                return true;
+                            }
                             // Adds notes to remove if there are any to remove
                             for (let k:number = 0; k < cells.length; k++) {
                                 // If cell isn't part of naked set itself and it contains some of the same values as naked set remove them
@@ -207,23 +223,7 @@ export class Strategy{
      * @returns true if strategy is a naked single
      */
     public isNakedSingle():boolean {
-        let notes:Group = this.cells[0][0].getNotes();
-        // If the Cell provided only has 1 note then it is a naked single
-        if (notes.getSize() == 1) {
-            // Add Cell to values that can be placed
-            for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
-                if (notes.contains(i)) {
-                    let row:number = this.cells[0][0].getRow();
-                    let column:number = this.cells[0][0].getColumn();
-                    this.values.push(new Cell(row, column, (i+1).toString()));
-                }
-            }
-            // Identify strategy and return that it is a naked single
-            this.strategyType = StrategyEnum.NAKED_SINGLE;
-            this.identified = true;
-            return true;
-        }
-        return false;
+        return this.isNakedSet(TupleEnum.SINGLE);
     }
 
     /**

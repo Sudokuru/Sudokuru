@@ -120,8 +120,8 @@ export class Cell{
     }
 
     /**
-     * Get notes map
-     * @returns notes map
+     * Get notes group
+     * @returns notes group
      */
     public getNotes():Group {
         return this.notes;
