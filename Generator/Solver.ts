@@ -2,7 +2,7 @@ import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
 import { Strategy } from "./Strategy";
 import { SudokuEnum, StrategyEnum } from "./Sudoku";
-import { HiddenSingleHint, Hint, NakedPairHint, NakedSingleHint } from "./Hint";
+import { HiddenSingleHint, Hint, NakedPairHint, NakedSingleHint, NakedTripletHint } from "./Hint";
 import { Group } from "./Group";
 
 /**
@@ -98,6 +98,9 @@ export class Solver{
             else if (this.algorithm[i] === StrategyEnum.NAKED_PAIR && this.setNakedPair(cells)) {
                 return;
             }
+            else if (this.algorithm[i] === StrategyEnum.NAKED_TRIPLET && this.setNakedTriplet(cells)) {
+                return;
+            }
         }
         this.hint = null;
         return;
@@ -138,9 +141,9 @@ export class Solver{
      * @param nakedPair - Strategy
      * @returns true if given Strategy is a naked pair
      */
-    private setNakedPairHint(nakedPair: Strategy):boolean {
-        if (nakedPair.isNakedPair()) {
-            this.hint = new NakedPairHint(nakedPair);
+    private setNakedSingleHint(nakedPair: Strategy):boolean {
+        if (nakedPair.isNakedSingle()) {
+            this.hint = new NakedSingleHint(nakedPair);
             return true;
         }
         return false;
@@ -151,9 +154,22 @@ export class Solver{
      * @param nakedPair - Strategy
      * @returns true if given Strategy is a naked pair
      */
-    private setNakedSingleHint(nakedPair: Strategy):boolean {
-        if (nakedPair.isNakedSingle()) {
-            this.hint = new NakedSingleHint(nakedPair);
+    private setNakedPairHint(nakedPair: Strategy):boolean {
+        if (nakedPair.isNakedPair()) {
+            this.hint = new NakedPairHint(nakedPair);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * If given Strategy is a naked triplet it sets the hint to it and returns true
+     * @param nakedTriplet - Strategy
+     * @returns true if given Strategy is a naked triplet
+     */
+    private setNakedTripletHint(nakedTriplet: Strategy):boolean {
+        if (nakedTriplet.isNakedTriplet()) {
+            this.hint = new NakedTripletHint(nakedTriplet);
             return true;
         }
         return false;
@@ -184,6 +200,9 @@ export class Solver{
         else if (strategy === StrategyEnum.NAKED_PAIR && this.setNakedPairHint(new Strategy(this.board, cells))) {
             return true;
         }
+        else if (strategy === StrategyEnum.NAKED_TRIPLET && this.setNakedTripletHint(new Strategy(this.board, cells))) {
+            return true;
+        }
         return false;
     }
 
@@ -203,6 +222,15 @@ export class Solver{
      */
     private setNakedPair(cells: Cell[][]):boolean {
         return this.setGroupStrategy(StrategyEnum.NAKED_PAIR, cells);
+    }
+
+    /**
+     * Returns true if puzzle has a naked triplet and sets hint, otherwise returns false
+     * @param cells - empty cells
+     * @returns true if contains a naked triplet
+     */
+    private setNakedTriplet(cells: Cell[][]):boolean {
+        return this.setGroupStrategy(StrategyEnum.NAKED_TRIPLET, cells);
     }
 
     /**

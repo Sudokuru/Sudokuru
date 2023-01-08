@@ -24,6 +24,7 @@ export enum StrategyEnum {
     NAKED_SINGLE,
     HIDDEN_SINGLE,
     NAKED_PAIR,
+    NAKED_TRIPLET,
     COUNT
 }
 
@@ -43,7 +44,8 @@ export enum GroupEnum {
  */
 export enum TupleEnum {
     SINGLE = 1,
-    PAIR
+    PAIR,
+    TRIPLET
 }
 
 /**

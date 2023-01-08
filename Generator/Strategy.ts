@@ -194,6 +194,9 @@ export class Strategy{
                                 if (tuple === TupleEnum.PAIR) {
                                     this.strategyType = StrategyEnum.NAKED_PAIR;
                                 }
+                                else if (tuple === TupleEnum.TRIPLET) {
+                                    this.strategyType = StrategyEnum.NAKED_TRIPLET;
+                                }
                                 this.identified = true;
                                 // If naked set shares a row or column it might also share a box so skip to check that
                                 if (group !== GroupEnum.BOX) {
@@ -279,6 +282,14 @@ export class Strategy{
      */
     public isNakedPair():boolean {
         return this.isNakedSet(TupleEnum.PAIR);
+    }
+
+    /**
+     * Checks if strategy is a naked triplet and if so adds notes that can be removed
+     * @returns true if strategy is a naked triplet
+     */
+    public isNakedTriplet():boolean {
+        return this.isNakedSet(TupleEnum.TRIPLET);
     }
 
     /**
