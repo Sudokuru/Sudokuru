@@ -209,3 +209,41 @@ describe("create naked quintuplet", () => {
         expect(strategy.getNotesToRemove().length).toBe(4);
     });
 });
+
+describe("create naked sextuplet", () => {
+    it("should be a naked sextuplet", () => {
+        // Create board
+        let board:Cell[][] = getBlankCellBoard();
+
+        // Create sextuplet
+        let cells:Cell[][] = new Array();
+        cells.push(new Array());
+        cells[0].push(board[0][0]);
+        cells[0].push(board[0][1]);
+        cells[0].push(board[0][2]);
+        cells[0].push(board[0][3]);
+        cells[0].push(board[0][4]);
+        cells[0].push(board[0][5]);
+
+        // Remove all but naked sextuplet from sextuplet (and one more from last four cells)
+        let notes:Group = new Group(true);
+        notes.remove(1);
+        notes.remove(2);
+        notes.remove(3);
+        notes.remove(4);
+        notes.remove(5);
+        notes.remove(6);
+        cells[0][0].removeNotes(notes);
+        cells[0][1].removeNotes(notes);
+        notes.insert(3);
+        cells[0][2].removeNotes(notes);
+        cells[0][3].removeNotes(notes);
+        cells[0][4].removeNotes(notes);
+        cells[0][5].removeNotes(notes);
+
+        // Test that is naked sextuplet and can remove notes from every cell in shared row and box except naked sextuplet themself
+        let strategy:Strategy = new Strategy(board, board);
+        expect(strategy.isNakedSextuplet()).toBeTruthy;
+        expect(strategy.getNotesToRemove().length).toBe(3);
+    });
+});

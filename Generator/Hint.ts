@@ -63,6 +63,16 @@ export enum NAKED_QUINTUPLET {
 }
 
 /**
+ * Contains hint information for naked sextuplet strategy
+ * Contains what action hint is trying to get you to do
+ * @enum
+ */
+export enum NAKED_SEXTUPLET {
+    HINT_INFO = "Naked sextuplets are when you only have the same six numbers left as a possibility in six cells in the same row, column, or box",
+    HINT_ACTION = "When you see a naked sextuplet you can remove them from the notes of every other cell in the row, column, or box that they share"
+}
+
+/**
  * Constructed using strategy object and info/action strings
  * Inherited by hint classes for specific strategies like NakedSingle
  * Returns:
@@ -189,5 +199,14 @@ export class NakedQuadrupletHint extends Hint {
 export class NakedQuintupletHint extends Hint {
     constructor(strategy: Strategy) {
         super(strategy, NAKED_QUINTUPLET.HINT_INFO, NAKED_QUINTUPLET.HINT_ACTION);
+    }
+}
+
+/**
+ * Naked sextuplet strategy hint class
+ */
+export class NakedSextupletHint extends Hint {
+    constructor(strategy: Strategy) {
+        super(strategy, NAKED_SEXTUPLET.HINT_INFO, NAKED_SEXTUPLET.HINT_ACTION);
     }
 }

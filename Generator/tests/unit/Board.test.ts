@@ -203,4 +203,17 @@ describe("solve Boards", () => {
         expect(board.getSolutionString()).toBe(TestBoards.ONLY_NAKED_SINGLES_SOLUTION);
         expect(board.getStrategyScore()).toBe(StrategyEnum.NAKED_QUINTUPLET);
     });
+
+    it('should solve naked sextuplet', () => {
+        let algorithm:StrategyEnum[] = new Array();
+        algorithm.push(StrategyEnum.NAKED_SEXTUPLET);
+        for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
+            if (strategy !== StrategyEnum.NAKED_SEXTUPLET) {
+                algorithm.push(strategy);
+            }
+        }
+        let board:Board = new Board(TestBoards.ONLY_NAKED_SINGLES, algorithm);
+        expect(board.getSolutionString()).toBe(TestBoards.ONLY_NAKED_SINGLES_SOLUTION);
+        expect(board.getStrategyScore()).toBe(StrategyEnum.NAKED_SEXTUPLET);
+    });
 });

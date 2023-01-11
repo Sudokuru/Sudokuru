@@ -2,7 +2,7 @@ import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
 import { Strategy } from "./Strategy";
 import { SudokuEnum, StrategyEnum } from "./Sudoku";
-import { HiddenSingleHint, Hint, NakedPairHint, NakedSingleHint, NakedTripletHint, NakedQuadrupletHint, NakedQuintupletHint } from "./Hint";
+import { HiddenSingleHint, Hint, NakedPairHint, NakedSingleHint, NakedTripletHint, NakedQuadrupletHint, NakedQuintupletHint, NakedSextupletHint } from "./Hint";
 import { Group } from "./Group";
 
 /**
@@ -107,6 +107,9 @@ export class Solver{
             else if (this.algorithm[i] === StrategyEnum.NAKED_QUINTUPLET && this.setNakedQuintuplet(cells)) {
                 return;
             }
+            else if (this.algorithm[i] === StrategyEnum.NAKED_SEXTUPLET && this.setNakedSextuplet(cells)) {
+                return;
+            }
         }
         this.hint = null;
         return;
@@ -183,7 +186,7 @@ export class Solver{
 
     /**
      * If given Strategy is a naked quadruplet it sets the hint to it and returns true
-     * @param nakedTriplet - Strategy
+     * @param nakedQuadruplet - Strategy
      * @returns true if given Strategy is a naked quadruplet
      */
     private setNakedQuadrupletHint(nakedQuadruplet: Strategy):boolean {
@@ -196,12 +199,25 @@ export class Solver{
 
     /**
      * If given Strategy is a naked quintuplet it sets the hint to it and returns true
-     * @param nakedTriplet - Strategy
+     * @param nakedQuintuplet - Strategy
      * @returns true if given Strategy is a naked quintuplet
      */
     private setNakedQuintupletHint(nakedQuintuplet: Strategy):boolean {
         if (nakedQuintuplet.isNakedQuintuplet()) {
             this.hint = new NakedQuintupletHint(nakedQuintuplet);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * If given Strategy is a naked sextuplet it sets the hint to it and returns true
+     * @param nakedSextuplet - Strategy
+     * @returns true if given Strategy is a naked sextuplet
+     */
+    private setNakedSextupletHint(nakedSextuplet: Strategy):boolean {
+        if (nakedSextuplet.isNakedSextuplet()) {
+            this.hint = new NakedSextupletHint(nakedSextuplet);
             return true;
         }
         return false;
@@ -239,6 +255,9 @@ export class Solver{
             return true;
         }
         else if (strategy === StrategyEnum.NAKED_QUINTUPLET && this.setNakedQuintupletHint(new Strategy(this.board, cells))) {
+            return true;
+        }
+        else if (strategy === StrategyEnum.NAKED_SEXTUPLET && this.setNakedSextupletHint(new Strategy(this.board, cells))) {
             return true;
         }
         return false;
@@ -287,6 +306,15 @@ export class Solver{
      */
     private setNakedQuintuplet(cells: Cell[][]):boolean {
         return this.setGroupStrategy(StrategyEnum.NAKED_QUINTUPLET, cells);
+    }
+
+    /**
+     * Returns true if puzzle has a naked sextuplet and sets hint, otherwise returns false
+     * @param cells - empty cells
+     * @returns true if contains a naked sextuplet
+     */
+    private setNakedSextuplet(cells: Cell[][]):boolean {
+        return this.setGroupStrategy(StrategyEnum.NAKED_SEXTUPLET, cells);
     }
 
     /**
