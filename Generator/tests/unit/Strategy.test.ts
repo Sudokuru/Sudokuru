@@ -174,3 +174,38 @@ describe("create naked quadruplet", () => {
         expect(strategy.getNotesToRemove().length).toBe(5);
     });
 });
+
+describe("create naked quintuplet", () => {
+    it("should be a naked quintuplet", () => {
+        // Create board
+        let board:Cell[][] = getBlankCellBoard();
+
+        // Create quintuplet
+        let cells:Cell[][] = new Array();
+        cells.push(new Array());
+        cells[0].push(board[0][0]);
+        cells[0].push(board[0][1]);
+        cells[0].push(board[0][2]);
+        cells[0].push(board[0][3]);
+        cells[0].push(board[0][4]);
+
+        // Remove all but naked quintuplet from quintuplet (and one more from last three cells)
+        let notes:Group = new Group(true);
+        notes.remove(1);
+        notes.remove(2);
+        notes.remove(3);
+        notes.remove(4);
+        notes.remove(5);
+        cells[0][0].removeNotes(notes);
+        cells[0][1].removeNotes(notes);
+        notes.insert(3);
+        cells[0][2].removeNotes(notes);
+        cells[0][3].removeNotes(notes);
+        cells[0][4].removeNotes(notes);
+
+        // Test that is naked quintuplet and can remove notes from every cell in shared row and box except naked quintuplet themself
+        let strategy:Strategy = new Strategy(board, board);
+        expect(strategy.isNakedQuintuplet()).toBeTruthy;
+        expect(strategy.getNotesToRemove().length).toBe(4);
+    });
+});
