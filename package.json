@@ -1,8 +1,8 @@
 {
-  "name": "sudokupuzzlegenerator",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "sudokuru",
+  "version": "0.0.0",
+  "description": "This is a package used for generating and validating sudoku puzzles.",
+  "main": "Generator/Board.ts",
   "scripts": {
     "test": "jest",
     "test:unit": "jest --testPathPattern=Generator/tests/unit",
@@ -11,8 +11,8 @@
     "start": "tsc Generator/Demo/script.ts && ts-node Generator/Demo/app.ts"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "sudokuruinc",
+  "license": "GPL-3.0",
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.18.2",
