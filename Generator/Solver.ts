@@ -2,7 +2,7 @@ import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
 import { Strategy } from "./Strategy";
 import { SudokuEnum, StrategyEnum } from "./Sudoku";
-import { HiddenSingleHint, Hint, NakedPairHint, NakedSingleHint, NakedTripletHint } from "./Hint";
+import { HiddenSingleHint, Hint, NakedPairHint, NakedSingleHint, NakedTripletHint, NakedQuadrupletHint } from "./Hint";
 import { Group } from "./Group";
 
 /**
@@ -101,6 +101,9 @@ export class Solver{
             else if (this.algorithm[i] === StrategyEnum.NAKED_TRIPLET && this.setNakedTriplet(cells)) {
                 return;
             }
+            else if (this.algorithm[i] === StrategyEnum.NAKED_QUADRUPLET && this.setNakedQuadruplet(cells)) {
+                return;
+            }
         }
         this.hint = null;
         return;
@@ -176,6 +179,19 @@ export class Solver{
     }
 
     /**
+     * If given Strategy is a naked quadruplet it sets the hint to it and returns true
+     * @param nakedTriplet - Strategy
+     * @returns true if given Strategy is a naked quadruplet
+     */
+    private setNakedQuadrupletHint(nakedQuadruplet: Strategy):boolean {
+        if (nakedQuadruplet.isNakedQuadruplet()) {
+            this.hint = new NakedQuadrupletHint(nakedQuadruplet);
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Returns true if puzzle has given strategy (in a row, column, or box) and sets hint, otherwise returns false
      * @param strategy - strategy to check for
      * @param cells - cells to create strategy with
@@ -201,6 +217,9 @@ export class Solver{
             return true;
         }
         else if (strategy === StrategyEnum.NAKED_TRIPLET && this.setNakedTripletHint(new Strategy(this.board, cells))) {
+            return true;
+        }
+        else if (strategy === StrategyEnum.NAKED_QUADRUPLET && this.setNakedQuadrupletHint(new Strategy(this.board, cells))) {
             return true;
         }
         return false;
@@ -231,6 +250,15 @@ export class Solver{
      */
     private setNakedTriplet(cells: Cell[][]):boolean {
         return this.setGroupStrategy(StrategyEnum.NAKED_TRIPLET, cells);
+    }
+
+    /**
+     * Returns true if puzzle has a naked quadruplet and sets hint, otherwise returns false
+     * @param cells - empty cells
+     * @returns true if contains a naked quadruplet
+     */
+    private setNakedQuadruplet(cells: Cell[][]):boolean {
+        return this.setGroupStrategy(StrategyEnum.NAKED_QUADRUPLET, cells);
     }
 
     /**

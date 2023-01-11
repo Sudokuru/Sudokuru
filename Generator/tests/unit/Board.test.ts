@@ -177,4 +177,17 @@ describe("solve Boards", () => {
         expect(board.getSolutionString()).toBe(TestBoards.NAKED_TRIPLET_SOLUTION);
         expect(board.getStrategyScore()).toBe(StrategyEnum.NAKED_TRIPLET);
     });
+
+    it('should solve naked quadruplet', () => {
+        let algorithm:StrategyEnum[] = new Array();
+        algorithm.push(StrategyEnum.NAKED_QUADRUPLET);
+        for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
+            if (strategy !== StrategyEnum.NAKED_QUADRUPLET) {
+                algorithm.push(strategy);
+            }
+        }
+        let board:Board = new Board(TestBoards.ONLY_NAKED_SINGLES, algorithm);
+        expect(board.getSolutionString()).toBe(TestBoards.ONLY_NAKED_SINGLES_SOLUTION);
+        expect(board.getStrategyScore()).toBe(StrategyEnum.NAKED_QUADRUPLET);
+    });
 });

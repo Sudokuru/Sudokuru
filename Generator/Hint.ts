@@ -28,7 +28,7 @@ export enum HIDDEN_SINGLE {
  * @enum
  */
 export enum NAKED_PAIR {
-    HINT_INFO = "Naked pairs are when you only have the same two numbers left as a possibility in two or more cells in the same row, column, or box",
+    HINT_INFO = "Naked pairs are when you only have the same two numbers left as a possibility in two cells in the same row, column, or box",
     HINT_ACTION = "When you see a naked pair you can remove them from the notes of every other cell in the row, column, or box that they share"
 }
 
@@ -38,8 +38,18 @@ export enum NAKED_PAIR {
  * @enum
  */
 export enum NAKED_TRIPLET {
-    HINT_INFO = "Naked triplets are when you only have the same three numbers left as a possibility in three or more cells in the same row, column, or box",
+    HINT_INFO = "Naked triplets are when you only have the same three numbers left as a possibility in three cells in the same row, column, or box",
     HINT_ACTION = "When you see a naked triplet you can remove them from the notes of every other cell in the row, column, or box that they share"
+}
+
+/**
+ * Contains hint information for naked quadruplet strategy
+ * Contains what action hint is trying to get you to do
+ * @enum
+ */
+export enum NAKED_QUADRUPLET {
+    HINT_INFO = "Naked quadruplets are when you only have the same four numbers left as a possibility in four cells in the same row, column, or box",
+    HINT_ACTION = "When you see a naked quadruplet you can remove them from the notes of every other cell in the row, column, or box that they share"
 }
 
 /**
@@ -151,5 +161,14 @@ export class NakedPairHint extends Hint {
 export class NakedTripletHint extends Hint {
     constructor(strategy: Strategy) {
         super(strategy, NAKED_TRIPLET.HINT_INFO, NAKED_TRIPLET.HINT_ACTION);
+    }
+}
+
+/**
+ * Naked quadruplet strategy hint class
+ */
+export class NakedQuadrupletHint extends Hint {
+    constructor(strategy: Strategy) {
+        super(strategy, NAKED_QUADRUPLET.HINT_INFO, NAKED_QUADRUPLET.HINT_ACTION);
     }
 }

@@ -136,9 +136,41 @@ describe("create naked triplet", () => {
         notes.insert(3);
         cells[0][2].removeNotes(notes);
 
-        // Test that is naked pair and can remove notes from every cell in shared row and box except naked pair themself
+        // Test that is naked triplet and can remove notes from every cell in shared row and box except naked triplet themself
         let strategy:Strategy = new Strategy(board, board);
         expect(strategy.isNakedTriplet()).toBeTruthy;
         expect(strategy.getNotesToRemove().length).toBe(12);
+    });
+});
+
+describe("create naked quadruplet", () => {
+    it("should be a naked quadruplet", () => {
+        // Create board
+        let board:Cell[][] = getBlankCellBoard();
+
+        // Create quadruplet
+        let cells:Cell[][] = new Array();
+        cells.push(new Array());
+        cells[0].push(board[0][0]);
+        cells[0].push(board[0][1]);
+        cells[0].push(board[0][2]);
+        cells[0].push(board[0][3]);
+
+        // Remove all but naked quadruplet from quadruplet (and one more from last two cells)
+        let notes:Group = new Group(true);
+        notes.remove(1);
+        notes.remove(2);
+        notes.remove(3);
+        notes.remove(4);
+        cells[0][0].removeNotes(notes);
+        cells[0][1].removeNotes(notes);
+        notes.insert(3);
+        cells[0][2].removeNotes(notes);
+        cells[0][3].removeNotes(notes);
+
+        // Test that is naked quadruplet and can remove notes from every cell in shared row and box except naked quadruplet themself
+        let strategy:Strategy = new Strategy(board, board);
+        expect(strategy.isNakedQuadruplet()).toBeTruthy;
+        expect(strategy.getNotesToRemove().length).toBe(5);
     });
 });

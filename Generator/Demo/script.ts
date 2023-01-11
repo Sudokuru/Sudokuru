@@ -11,6 +11,7 @@ const NEXT_NAKED_SINGLE:string = "&nakedSingle=";
 const NEXT_HIDDEN_SINGLE:string = "&hiddenSingle=";
 const NEXT_NAKED_PAIR:string = "&nakedPair=";
 const NEXT_NAKED_TRIPLET:string = "&nakedTriplet=";
+const NEXT_NAKED_QUADRUPLET:string = "&nakedQuadruplet=";
 const CANDIDATES:string = "123456789";
 const EMPTY_CELL = "0";
 const SINGLE_NAKED_SINGLE = "439275618051896437876143592342687951185329746697451283928734165563912874714568329";
@@ -283,6 +284,9 @@ function getStrategyOrder():string {
 
     algorithm += NEXT_NAKED_TRIPLET;
     algorithm += (<HTMLInputElement>document.getElementById("nakedTriplet")).value;
+
+    algorithm += NEXT_NAKED_QUADRUPLET;
+    algorithm += (<HTMLInputElement>document.getElementById("nakedQuadruplet")).value;
 
     return algorithm;
 }

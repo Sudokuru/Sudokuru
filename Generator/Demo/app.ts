@@ -28,6 +28,9 @@ app.get('/solver/nextStep', (req, res) => {
         else if (Number(req.query.nakedTriplet) === i) {
             algorithm.push(StrategyEnum.NAKED_TRIPLET);
         }
+        else if (Number(req.query.nakedQuadruplet) === i) {
+            algorithm.push(StrategyEnum.NAKED_QUADRUPLET);
+        }
     }
     let notes: string[][];
     if (req.query.notes !== "undefined") {
