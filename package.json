@@ -2,7 +2,7 @@
   "name": "sudokuru",
   "version": "0.0.0",
   "description": "This is a package used for generating and validating sudoku puzzles.",
-  "main": "Generator/Board.ts",
+  "main": "index.ts",
   "scripts": {
     "test": "jest",
     "test:unit": "jest --testPathPattern=Generator/tests/unit",
