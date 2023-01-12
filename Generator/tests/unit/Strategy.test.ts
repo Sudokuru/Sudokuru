@@ -1,9 +1,9 @@
 import {Strategy} from '../../Strategy';
 import { Cell } from '../../Cell';
 import { CustomError, CustomErrorEnum } from '../../CustomError';
-import { getError } from '../testResources';
+import { getBlankCellBoard, getError, getRowTuplet } from '../testResources';
 import { Group } from '../../Group';
-import { SudokuEnum, getBlankCellBoard } from '../../Sudoku';
+import { SudokuEnum, TupleEnum } from '../../Sudoku';
 
 describe("create naked single", () => {
     it('should throw strategy not identified error', async () => {
@@ -73,10 +73,7 @@ describe("create naked pair", () => {
         let board:Cell[][] = getBlankCellBoard();
 
         // Create pair
-        let cells:Cell[][] = new Array();
-        cells.push(new Array());
-        cells[0].push(board[0][0]);
-        cells[0].push(board[0][1]);
+        let cells:Cell[][] = getRowTuplet(TupleEnum.PAIR, board);
 
         // Remove all but naked pair from one cell and remove naked pair plus one more note from other cell
         let notes:Group = new Group(true);
@@ -95,10 +92,7 @@ describe("create naked pair", () => {
         let board:Cell[][] = getBlankCellBoard();
 
         // Create pair
-        let cells:Cell[][] = new Array();
-        cells.push(new Array());
-        cells[0].push(board[0][0]);
-        cells[0].push(board[0][1]);
+        let cells:Cell[][] = getRowTuplet(TupleEnum.PAIR, board);
 
         // Remove all but naked pair from pair
         let notes:Group = new Group(true);
@@ -120,11 +114,7 @@ describe("create naked triplet", () => {
         let board:Cell[][] = getBlankCellBoard();
 
         // Create triplet
-        let cells:Cell[][] = new Array();
-        cells.push(new Array());
-        cells[0].push(board[0][0]);
-        cells[0].push(board[0][1]);
-        cells[0].push(board[0][2]);
+        let cells:Cell[][] = getRowTuplet(TupleEnum.TRIPLET, board);
 
         // Remove all but naked triplet from triplet (and one more from one cell)
         let notes:Group = new Group(true);
@@ -149,12 +139,7 @@ describe("create naked quadruplet", () => {
         let board:Cell[][] = getBlankCellBoard();
 
         // Create quadruplet
-        let cells:Cell[][] = new Array();
-        cells.push(new Array());
-        cells[0].push(board[0][0]);
-        cells[0].push(board[0][1]);
-        cells[0].push(board[0][2]);
-        cells[0].push(board[0][3]);
+        let cells:Cell[][] = getRowTuplet(TupleEnum.QUADRUPLET, board);
 
         // Remove all but naked quadruplet from quadruplet (and one more from last two cells)
         let notes:Group = new Group(true);
@@ -181,13 +166,7 @@ describe("create naked quintuplet", () => {
         let board:Cell[][] = getBlankCellBoard();
 
         // Create quintuplet
-        let cells:Cell[][] = new Array();
-        cells.push(new Array());
-        cells[0].push(board[0][0]);
-        cells[0].push(board[0][1]);
-        cells[0].push(board[0][2]);
-        cells[0].push(board[0][3]);
-        cells[0].push(board[0][4]);
+        let cells:Cell[][] = getRowTuplet(TupleEnum.QUINTUPLET, board);
 
         // Remove all but naked quintuplet from quintuplet (and one more from last three cells)
         let notes:Group = new Group(true);
@@ -216,14 +195,7 @@ describe("create naked sextuplet", () => {
         let board:Cell[][] = getBlankCellBoard();
 
         // Create sextuplet
-        let cells:Cell[][] = new Array();
-        cells.push(new Array());
-        cells[0].push(board[0][0]);
-        cells[0].push(board[0][1]);
-        cells[0].push(board[0][2]);
-        cells[0].push(board[0][3]);
-        cells[0].push(board[0][4]);
-        cells[0].push(board[0][5]);
+        let cells:Cell[][] = getRowTuplet(TupleEnum.SEXTUPLET, board);
 
         // Remove all but naked sextuplet from sextuplet (and one more from last four cells)
         let notes:Group = new Group(true);
@@ -254,15 +226,7 @@ describe("create naked septuplet", () => {
         let board:Cell[][] = getBlankCellBoard();
 
         // Create septuplet
-        let cells:Cell[][] = new Array();
-        cells.push(new Array());
-        cells[0].push(board[0][0]);
-        cells[0].push(board[0][1]);
-        cells[0].push(board[0][2]);
-        cells[0].push(board[0][3]);
-        cells[0].push(board[0][4]);
-        cells[0].push(board[0][5]);
-        cells[0].push(board[0][6]);
+        let cells:Cell[][] = getRowTuplet(TupleEnum.SEPTUPLET, board);
 
         // Remove all but naked septuplet from septuplet (and one more from last five cells)
         let notes:Group = new Group(true);

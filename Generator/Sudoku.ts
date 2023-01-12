@@ -127,20 +127,6 @@ export function getEmptyCellBoard():Cell[][] {
 }
 
 /**
- * Creates a 2d Cell array with a subarray for each row in Sudoku and an empty Cell for each column in each row
- * @returns blank cell board
- */
-export function getBlankCellBoard():Cell[][] {
-    let board: Cell[][] = getEmptyCellBoard();
-    for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
-        for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
-            board[row].push(new Cell(row, column));
-        }
-    }
-    return board;
-}
-
-/**
  * Given a candidate (string) or candidate index (number), calculates candidate index
  * @param candidate - number candidate index or candidate string
  * @returns candidate index
