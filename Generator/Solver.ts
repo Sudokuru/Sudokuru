@@ -2,7 +2,7 @@ import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
 import { Strategy } from "./Strategy";
 import { SudokuEnum, StrategyEnum } from "./Sudoku";
-import { HiddenSingleHint, Hint, NakedPairHint, NakedSingleHint, NakedTripletHint, NakedQuadrupletHint, NakedQuintupletHint, NakedSextupletHint } from "./Hint";
+import { HiddenSingleHint, Hint, NakedPairHint, NakedSingleHint, NakedTripletHint, NakedQuadrupletHint, NakedQuintupletHint, NakedSextupletHint, NakedSeptupletHint } from "./Hint";
 import { Group } from "./Group";
 
 /**
@@ -108,6 +108,9 @@ export class Solver{
                 return;
             }
             else if (this.algorithm[i] === StrategyEnum.NAKED_SEXTUPLET && this.setNakedSextuplet(cells)) {
+                return;
+            }
+            else if (this.algorithm[i] === StrategyEnum.NAKED_SEPTUPLET && this.setNakedSeptuplet(cells)) {
                 return;
             }
         }
@@ -224,6 +227,19 @@ export class Solver{
     }
 
     /**
+     * If given Strategy is a naked septuplet it sets the hint to it and returns true
+     * @param nakedSeptuplet - Strategy
+     * @returns true if given Strategy is a naked septuplet
+     */
+    private setNakedSeptupletHint(nakedSeptuplet: Strategy):boolean {
+        if (nakedSeptuplet.isNakedSeptuplet()) {
+            this.hint = new NakedSeptupletHint(nakedSeptuplet);
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Returns true if puzzle has given strategy (in a row, column, or box) and sets hint, otherwise returns false
      * @param strategy - strategy to check for
      * @param cells - cells to create strategy with
@@ -258,6 +274,9 @@ export class Solver{
             return true;
         }
         else if (strategy === StrategyEnum.NAKED_SEXTUPLET && this.setNakedSextupletHint(new Strategy(this.board, cells))) {
+            return true;
+        }
+        else if (strategy === StrategyEnum.NAKED_SEPTUPLET && this.setNakedSeptupletHint(new Strategy(this.board, cells))) {
             return true;
         }
         return false;
@@ -315,6 +334,15 @@ export class Solver{
      */
     private setNakedSextuplet(cells: Cell[][]):boolean {
         return this.setGroupStrategy(StrategyEnum.NAKED_SEXTUPLET, cells);
+    }
+
+    /**
+     * Returns true if puzzle has a naked septuplet and sets hint, otherwise returns false
+     * @param cells - empty cells
+     * @returns true if contains a naked septuplet
+     */
+    private setNakedSeptuplet(cells: Cell[][]):boolean {
+        return this.setGroupStrategy(StrategyEnum.NAKED_SEPTUPLET, cells);
     }
 
     /**

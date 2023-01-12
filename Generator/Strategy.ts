@@ -206,6 +206,9 @@ export class Strategy{
                                 else if (tuple === TupleEnum.SEXTUPLET) {
                                     this.strategyType = StrategyEnum.NAKED_SEXTUPLET;
                                 }
+                                else if (tuple === TupleEnum.SEPTUPLET) {
+                                    this.strategyType = StrategyEnum.NAKED_SEPTUPLET;
+                                }
                                 this.identified = true;
                                 // If naked set shares a row or column it might also share a box so skip to check that
                                 if (group !== GroupEnum.BOX) {
@@ -323,6 +326,14 @@ export class Strategy{
      */
     public isNakedSextuplet():boolean {
         return this.isNakedSet(TupleEnum.SEXTUPLET);
+    }
+
+    /**
+     * Checks if strategy is a naked septuplet and if so adds notes that can be removed
+     * @returns true if strategy is a naked septuplet
+     */
+    public isNakedSeptuplet():boolean {
+        return this.isNakedSet(TupleEnum.SEPTUPLET);
     }
 
     /**

@@ -216,4 +216,17 @@ describe("solve Boards", () => {
         expect(board.getSolutionString()).toBe(TestBoards.ONLY_NAKED_SINGLES_SOLUTION);
         expect(board.getStrategyScore()).toBe(StrategyEnum.NAKED_SEXTUPLET);
     });
+
+    it('should solve naked septuplet', () => {
+        let algorithm:StrategyEnum[] = new Array();
+        algorithm.push(StrategyEnum.NAKED_SEPTUPLET);
+        for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
+            if (strategy !== StrategyEnum.NAKED_SEPTUPLET) {
+                algorithm.push(strategy);
+            }
+        }
+        let board:Board = new Board(TestBoards.COLUMN_NAKED_PAIR, algorithm);
+        expect(board.getSolutionString()).toBe(TestBoards.COLUMN_NAKED_PAIR_SOLUTION);
+        expect(board.getStrategyScore()).toBe(StrategyEnum.NAKED_SEPTUPLET);
+    });
 });

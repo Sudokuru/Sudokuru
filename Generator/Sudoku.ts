@@ -28,6 +28,7 @@ export enum StrategyEnum {
     NAKED_QUADRUPLET,
     NAKED_QUINTUPLET,
     NAKED_SEXTUPLET,
+    NAKED_SEPTUPLET,
     COUNT
 }
 
@@ -51,7 +52,8 @@ export enum TupleEnum {
     TRIPLET,
     QUADRUPLET,
     QUINTUPLET,
-    SEXTUPLET
+    SEXTUPLET,
+    SEPTUPLET
 }
 
 /**
