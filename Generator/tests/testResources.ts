@@ -53,3 +53,15 @@ export function removeTupleNotes(tuple: TupleEnum, notes: Group):void {
     }
     return;
 }
+
+/**
+ * Removes notes from each of the cells in cells first row
+ * @param notes - notes to remove from each cell in cells first row
+ * @param cells - cells to remove notes from
+ */
+export function removeNotesFromEach(notes: Group, cells: Cell[][]):void {
+    for (let i:number = 0; i < cells[0].length; i++) {
+        cells[0][i].removeNotes(notes);
+    }
+    return;
+}

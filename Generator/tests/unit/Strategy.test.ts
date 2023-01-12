@@ -1,7 +1,7 @@
 import {Strategy} from '../../Strategy';
 import { Cell } from '../../Cell';
 import { CustomError, CustomErrorEnum } from '../../CustomError';
-import { getBlankCellBoard, getError, getRowTuplet, removeTupleNotes } from '../testResources';
+import { getBlankCellBoard, getError, getRowTuplet, removeNotesFromEach, removeTupleNotes } from '../testResources';
 import { Group } from '../../Group';
 import { SudokuEnum, TupleEnum } from '../../Sudoku';
 
@@ -76,11 +76,11 @@ describe("create naked pair", () => {
         let cells:Cell[][] = getRowTuplet(TupleEnum.PAIR, board);
 
         // Remove all but naked pair from one cell and remove naked pair plus one more note from other cell
+        // Removing the extra note turns it into a naked single instead of a naked pair
         let notes:Group = new Group(true);
         removeTupleNotes(TupleEnum.PAIR, notes);
-        cells[0][0].removeNotes(notes);
-        notes.remove(3);
-        cells[0][1].removeNotes(notes);
+        removeNotesFromEach(notes, cells);
+        cells[0][1].removeNote("2");
 
         // Test that it isn't a naked pair
         let strategy:Strategy = new Strategy(board, board);
@@ -96,8 +96,7 @@ describe("create naked pair", () => {
         // Remove all but naked pair from pair
         let notes:Group = new Group(true);
         removeTupleNotes(TupleEnum.PAIR, notes);
-        cells[0][0].removeNotes(notes);
-        cells[0][1].removeNotes(notes);
+        removeNotesFromEach(notes, cells);
 
         // Test that is naked pair and can remove notes from every cell in shared row and box except naked pair themself
         let strategy:Strategy = new Strategy(board, board);
@@ -114,13 +113,10 @@ describe("create naked triplet", () => {
         // Create triplet
         let cells:Cell[][] = getRowTuplet(TupleEnum.TRIPLET, board);
 
-        // Remove all but naked triplet from triplet (and one more from one cell)
+        // Remove all but naked triplet from triplet
         let notes:Group = new Group(true);
         removeTupleNotes(TupleEnum.TRIPLET, notes);
-        cells[0][0].removeNotes(notes);
-        cells[0][1].removeNotes(notes);
-        notes.insert(3);
-        cells[0][2].removeNotes(notes);
+        removeNotesFromEach(notes, cells);
 
         // Test that is naked triplet and can remove notes from every cell in shared row and box except naked triplet themself
         let strategy:Strategy = new Strategy(board, board);
@@ -137,14 +133,11 @@ describe("create naked quadruplet", () => {
         // Create quadruplet
         let cells:Cell[][] = getRowTuplet(TupleEnum.QUADRUPLET, board);
 
-        // Remove all but naked quadruplet from quadruplet (and one more from last two cells)
+        // Remove all but naked quadruplet from quadruplet (and one more from last cell)
         let notes:Group = new Group(true);
         removeTupleNotes(TupleEnum.QUADRUPLET, notes);
-        cells[0][0].removeNotes(notes);
-        cells[0][1].removeNotes(notes);
-        notes.insert(3);
-        cells[0][2].removeNotes(notes);
-        cells[0][3].removeNotes(notes);
+        removeNotesFromEach(notes, cells);
+        cells[0][3].removeNote("1");
 
         // Test that is naked quadruplet and can remove notes from every cell in shared row and box except naked quadruplet themself
         let strategy:Strategy = new Strategy(board, board);
@@ -161,15 +154,11 @@ describe("create naked quintuplet", () => {
         // Create quintuplet
         let cells:Cell[][] = getRowTuplet(TupleEnum.QUINTUPLET, board);
 
-        // Remove all but naked quintuplet from quintuplet (and one more from last three cells)
+        // Remove all but naked quintuplet from quintuplet (and one more from last cell)
         let notes:Group = new Group(true);
         removeTupleNotes(TupleEnum.QUINTUPLET, notes);
-        cells[0][0].removeNotes(notes);
-        cells[0][1].removeNotes(notes);
-        notes.insert(3);
-        cells[0][2].removeNotes(notes);
-        cells[0][3].removeNotes(notes);
-        cells[0][4].removeNotes(notes);
+        removeNotesFromEach(notes, cells);
+        cells[0][4].removeNote("1");
 
         // Test that is naked quintuplet and can remove notes from every cell in shared row and box except naked quintuplet themself
         let strategy:Strategy = new Strategy(board, board);
@@ -186,16 +175,11 @@ describe("create naked sextuplet", () => {
         // Create sextuplet
         let cells:Cell[][] = getRowTuplet(TupleEnum.SEXTUPLET, board);
 
-        // Remove all but naked sextuplet from sextuplet (and one more from last four cells)
+        // Remove all but naked sextuplet from sextuplet (and one more from last cell)
         let notes:Group = new Group(true);
         removeTupleNotes(TupleEnum.SEXTUPLET, notes);
-        cells[0][0].removeNotes(notes);
-        cells[0][1].removeNotes(notes);
-        notes.insert(3);
-        cells[0][2].removeNotes(notes);
-        cells[0][3].removeNotes(notes);
-        cells[0][4].removeNotes(notes);
-        cells[0][5].removeNotes(notes);
+        removeNotesFromEach(notes, cells);
+        cells[0][5].removeNote("1");
 
         // Test that is naked sextuplet and can remove notes from every cell in shared row and box except naked sextuplet themself
         let strategy:Strategy = new Strategy(board, board);
@@ -215,14 +199,8 @@ describe("create naked septuplet", () => {
         // Remove all but naked septuplet from septuplet (and one more from last five cells)
         let notes:Group = new Group(true);
         removeTupleNotes(TupleEnum.SEPTUPLET, notes);
-        cells[0][0].removeNotes(notes);
-        cells[0][1].removeNotes(notes);
-        notes.insert(3);
-        cells[0][2].removeNotes(notes);
-        cells[0][3].removeNotes(notes);
-        cells[0][4].removeNotes(notes);
-        cells[0][5].removeNotes(notes);
-        cells[0][6].removeNotes(notes);
+        removeNotesFromEach(notes, cells);
+        cells[0][6].removeNote("1");
 
         // Test that is naked septuplet and can remove notes from every cell in shared row and box except naked septuplet themself
         let strategy:Strategy = new Strategy(board, board);
