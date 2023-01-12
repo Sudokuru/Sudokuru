@@ -1,7 +1,7 @@
 import {Strategy} from '../../Strategy';
 import { Cell } from '../../Cell';
 import { CustomError, CustomErrorEnum } from '../../CustomError';
-import { getBlankCellBoard, getError, getRowTuplet } from '../testResources';
+import { getBlankCellBoard, getError, getRowTuplet, removeTupleNotes } from '../testResources';
 import { Group } from '../../Group';
 import { SudokuEnum, TupleEnum } from '../../Sudoku';
 
@@ -77,8 +77,7 @@ describe("create naked pair", () => {
 
         // Remove all but naked pair from one cell and remove naked pair plus one more note from other cell
         let notes:Group = new Group(true);
-        notes.remove(1);
-        notes.remove(2);
+        removeTupleNotes(TupleEnum.PAIR, notes);
         cells[0][0].removeNotes(notes);
         notes.remove(3);
         cells[0][1].removeNotes(notes);
@@ -96,8 +95,7 @@ describe("create naked pair", () => {
 
         // Remove all but naked pair from pair
         let notes:Group = new Group(true);
-        notes.remove(1);
-        notes.remove(2);
+        removeTupleNotes(TupleEnum.PAIR, notes);
         cells[0][0].removeNotes(notes);
         cells[0][1].removeNotes(notes);
 
@@ -118,9 +116,7 @@ describe("create naked triplet", () => {
 
         // Remove all but naked triplet from triplet (and one more from one cell)
         let notes:Group = new Group(true);
-        notes.remove(1);
-        notes.remove(2);
-        notes.remove(3);
+        removeTupleNotes(TupleEnum.TRIPLET, notes);
         cells[0][0].removeNotes(notes);
         cells[0][1].removeNotes(notes);
         notes.insert(3);
@@ -143,10 +139,7 @@ describe("create naked quadruplet", () => {
 
         // Remove all but naked quadruplet from quadruplet (and one more from last two cells)
         let notes:Group = new Group(true);
-        notes.remove(1);
-        notes.remove(2);
-        notes.remove(3);
-        notes.remove(4);
+        removeTupleNotes(TupleEnum.QUADRUPLET, notes);
         cells[0][0].removeNotes(notes);
         cells[0][1].removeNotes(notes);
         notes.insert(3);
@@ -170,11 +163,7 @@ describe("create naked quintuplet", () => {
 
         // Remove all but naked quintuplet from quintuplet (and one more from last three cells)
         let notes:Group = new Group(true);
-        notes.remove(1);
-        notes.remove(2);
-        notes.remove(3);
-        notes.remove(4);
-        notes.remove(5);
+        removeTupleNotes(TupleEnum.QUINTUPLET, notes);
         cells[0][0].removeNotes(notes);
         cells[0][1].removeNotes(notes);
         notes.insert(3);
@@ -199,12 +188,7 @@ describe("create naked sextuplet", () => {
 
         // Remove all but naked sextuplet from sextuplet (and one more from last four cells)
         let notes:Group = new Group(true);
-        notes.remove(1);
-        notes.remove(2);
-        notes.remove(3);
-        notes.remove(4);
-        notes.remove(5);
-        notes.remove(6);
+        removeTupleNotes(TupleEnum.SEXTUPLET, notes);
         cells[0][0].removeNotes(notes);
         cells[0][1].removeNotes(notes);
         notes.insert(3);
@@ -230,13 +214,7 @@ describe("create naked septuplet", () => {
 
         // Remove all but naked septuplet from septuplet (and one more from last five cells)
         let notes:Group = new Group(true);
-        notes.remove(1);
-        notes.remove(2);
-        notes.remove(3);
-        notes.remove(4);
-        notes.remove(5);
-        notes.remove(6);
-        notes.remove(7);
+        removeTupleNotes(TupleEnum.SEPTUPLET, notes);
         cells[0][0].removeNotes(notes);
         cells[0][1].removeNotes(notes);
         notes.insert(3);

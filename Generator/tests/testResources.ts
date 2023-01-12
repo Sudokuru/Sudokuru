@@ -1,5 +1,6 @@
 import { Cell } from "../Cell";
 import { SudokuEnum, TupleEnum, getEmptyCellBoard } from "../Sudoku";
+import { Group } from "../Group";
 
 // code taken from here: //https://stackoverflow.com/questions/46042613/how-to-test-the-type-of-a-thrown-exception-in-jest#:~:text=In%20Jest%20you%20have%20to%20pass%20a%20function,you%20also%20want%20to%20check%20for%20error%20message%3A
 class NoErrorThrownError extends Error {};
@@ -39,4 +40,16 @@ export function getRowTuplet(tuple: TupleEnum, board: Cell[][]):Cell[][] {
         cells[0].push(board[0][i]);
     }
     return cells;
+}
+
+/**
+ * Returns the first tuple notes from the given notes Group
+ * @param tuple - number of notes being removed
+ * @param notes - Group containing notes
+ */
+export function removeTupleNotes(tuple: TupleEnum, notes: Group):void {
+    for (let note:number = 0; note < tuple; note++) {
+        notes.remove(note);
+    }
+    return;
 }
