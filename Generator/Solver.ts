@@ -127,15 +127,6 @@ export class Solver{
     }
 
     /**
-     * Returns true if puzzle has a naked single and sets hint, otherwise returns false
-     * @param cells - empty cells
-     * @returns true if contains a naked single
-     */
-    private setNakedSingle(cells: Cell[][]):boolean {
-        return this.setGroupStrategy(StrategyEnum.NAKED_SINGLE, cells);
-    }
-
-    /**
      * If given Strategy is a hidden single it sets the hint to it and returns true
      * @param hiddenSingle - Strategy
      * @returns true if given Strategy is a hidden single
@@ -143,97 +134,6 @@ export class Solver{
     private setHiddenSingleHint(hiddenSingle: Strategy):boolean {
         if (hiddenSingle.isHiddenSingle()) {
             this.hint = new HiddenSingleHint(hiddenSingle);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * If given Strategy is a naked pair it sets the hint to it and returns true
-     * @param nakedPair - Strategy
-     * @returns true if given Strategy is a naked pair
-     */
-    private setNakedSingleHint(nakedPair: Strategy):boolean {
-        if (nakedPair.isNakedSingle()) {
-            this.hint = new NakedSingleHint(nakedPair);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * If given Strategy is a naked pair it sets the hint to it and returns true
-     * @param nakedPair - Strategy
-     * @returns true if given Strategy is a naked pair
-     */
-    private setNakedPairHint(nakedPair: Strategy):boolean {
-        if (nakedPair.isNakedPair()) {
-            this.hint = new NakedPairHint(nakedPair);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * If given Strategy is a naked triplet it sets the hint to it and returns true
-     * @param nakedTriplet - Strategy
-     * @returns true if given Strategy is a naked triplet
-     */
-    private setNakedTripletHint(nakedTriplet: Strategy):boolean {
-        if (nakedTriplet.isNakedTriplet()) {
-            this.hint = new NakedTripletHint(nakedTriplet);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * If given Strategy is a naked quadruplet it sets the hint to it and returns true
-     * @param nakedQuadruplet - Strategy
-     * @returns true if given Strategy is a naked quadruplet
-     */
-    private setNakedQuadrupletHint(nakedQuadruplet: Strategy):boolean {
-        if (nakedQuadruplet.isNakedQuadruplet()) {
-            this.hint = new NakedQuadrupletHint(nakedQuadruplet);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * If given Strategy is a naked quintuplet it sets the hint to it and returns true
-     * @param nakedQuintuplet - Strategy
-     * @returns true if given Strategy is a naked quintuplet
-     */
-    private setNakedQuintupletHint(nakedQuintuplet: Strategy):boolean {
-        if (nakedQuintuplet.isNakedQuintuplet()) {
-            this.hint = new NakedQuintupletHint(nakedQuintuplet);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * If given Strategy is a naked sextuplet it sets the hint to it and returns true
-     * @param nakedSextuplet - Strategy
-     * @returns true if given Strategy is a naked sextuplet
-     */
-    private setNakedSextupletHint(nakedSextuplet: Strategy):boolean {
-        if (nakedSextuplet.isNakedSextuplet()) {
-            this.hint = new NakedSextupletHint(nakedSextuplet);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * If given Strategy is a naked septuplet it sets the hint to it and returns true
-     * @param nakedSeptuplet - Strategy
-     * @returns true if given Strategy is a naked septuplet
-     */
-    private setNakedSeptupletHint(nakedSeptuplet: Strategy):boolean {
-        if (nakedSeptuplet.isNakedSeptuplet()) {
-            this.hint = new NakedSeptupletHint(nakedSeptuplet);
             return true;
         }
         return false;
@@ -257,28 +157,6 @@ export class Solver{
                 }
             }
         }
-        // Checks entire board for given strategies
-        if (strategy === StrategyEnum.NAKED_SINGLE && this.setNakedSingleHint(new Strategy(this.board, cells))) {
-            return true;
-        }
-        else if (strategy === StrategyEnum.NAKED_PAIR && this.setNakedPairHint(new Strategy(this.board, cells))) {
-            return true;
-        }
-        else if (strategy === StrategyEnum.NAKED_TRIPLET && this.setNakedTripletHint(new Strategy(this.board, cells))) {
-            return true;
-        }
-        else if (strategy === StrategyEnum.NAKED_QUADRUPLET && this.setNakedQuadrupletHint(new Strategy(this.board, cells))) {
-            return true;
-        }
-        else if (strategy === StrategyEnum.NAKED_QUINTUPLET && this.setNakedQuintupletHint(new Strategy(this.board, cells))) {
-            return true;
-        }
-        else if (strategy === StrategyEnum.NAKED_SEXTUPLET && this.setNakedSextupletHint(new Strategy(this.board, cells))) {
-            return true;
-        }
-        else if (strategy === StrategyEnum.NAKED_SEPTUPLET && this.setNakedSeptupletHint(new Strategy(this.board, cells))) {
-            return true;
-        }
         return false;
     }
 
@@ -292,12 +170,31 @@ export class Solver{
     }
 
     /**
+     * Returns true if puzzle has a naked single and sets hint, otherwise returns false
+     * @param cells - empty cells
+     * @returns true if contains a naked single
+     */
+    private setNakedSingle(cells: Cell[][]):boolean {
+        let nakedSingle: Strategy = new Strategy(this.board, cells);
+        if (nakedSingle.isNakedSingle()) {
+            this.hint = new NakedSingleHint(nakedSingle);
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Returns true if puzzle has a naked pair and sets hint, otherwise returns false
      * @param cells - empty cells
      * @returns true if contains a naked pair
      */
     private setNakedPair(cells: Cell[][]):boolean {
-        return this.setGroupStrategy(StrategyEnum.NAKED_PAIR, cells);
+        let nakedPair: Strategy = new Strategy(this.board, cells);
+        if (nakedPair.isNakedPair()) {
+            this.hint = new NakedPairHint(nakedPair);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -306,7 +203,12 @@ export class Solver{
      * @returns true if contains a naked triplet
      */
     private setNakedTriplet(cells: Cell[][]):boolean {
-        return this.setGroupStrategy(StrategyEnum.NAKED_TRIPLET, cells);
+        let nakedTriplet: Strategy = new Strategy(this.board, cells);
+        if (nakedTriplet.isNakedTriplet()) {
+            this.hint = new NakedTripletHint(nakedTriplet);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -315,7 +217,12 @@ export class Solver{
      * @returns true if contains a naked quadruplet
      */
     private setNakedQuadruplet(cells: Cell[][]):boolean {
-        return this.setGroupStrategy(StrategyEnum.NAKED_QUADRUPLET, cells);
+        let nakedQuadruplet: Strategy = new Strategy(this.board, cells);
+        if (nakedQuadruplet.isNakedQuadruplet()) {
+            this.hint = new NakedQuintupletHint(nakedQuadruplet);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -324,7 +231,12 @@ export class Solver{
      * @returns true if contains a naked quintuplet
      */
     private setNakedQuintuplet(cells: Cell[][]):boolean {
-        return this.setGroupStrategy(StrategyEnum.NAKED_QUINTUPLET, cells);
+        let nakedQuintuplet: Strategy = new Strategy(this.board, cells);
+        if (nakedQuintuplet.isNakedQuintuplet()) {
+            this.hint = new NakedQuintupletHint(nakedQuintuplet);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -333,7 +245,12 @@ export class Solver{
      * @returns true if contains a naked sextuplet
      */
     private setNakedSextuplet(cells: Cell[][]):boolean {
-        return this.setGroupStrategy(StrategyEnum.NAKED_SEXTUPLET, cells);
+        let nakedSextuplet: Strategy = new Strategy(this.board, cells);
+        if (nakedSextuplet.isNakedSextuplet()) {
+            this.hint = new NakedSextupletHint(nakedSextuplet);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -342,7 +259,12 @@ export class Solver{
      * @returns true if contains a naked septuplet
      */
     private setNakedSeptuplet(cells: Cell[][]):boolean {
-        return this.setGroupStrategy(StrategyEnum.NAKED_SEPTUPLET, cells);
+        let nakedSeptuplet: Strategy = new Strategy(this.board, cells);
+        if (nakedSeptuplet.isNakedSeptuplet()) {
+            this.hint = new NakedSeptupletHint(nakedSeptuplet);
+            return true;
+        }
+        return false;
     }
 
     /**
