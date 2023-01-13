@@ -222,7 +222,7 @@ export class Solver{
     private setNakedQuadruplet(cells: Cell[][]):boolean {
         let nakedQuadruplet: Strategy = new Strategy(this.board, cells);
         if (nakedQuadruplet.isNakedQuadruplet()) {
-            this.hint = new NakedQuintupletHint(nakedQuadruplet);
+            this.hint = new NakedQuadrupletHint(nakedQuadruplet);
             return true;
         }
         return false;
