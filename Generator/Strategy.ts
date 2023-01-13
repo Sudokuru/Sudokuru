@@ -145,8 +145,7 @@ export class Strategy{
                             for (let k:number = 0; k < cells.length; k++) {
                                 // If cell isn't part of naked set itself and it contains some of the same values as naked set remove them
                                 // Skip if row or column is 'used' i.e. removed due to shared row or column already and checking for others in shared box
-                                if (!inNakedSet.contains(k) && (cells[k].getNotes().intersection(nakedSetCandidates)).getSize() > 0 && 
-                                    cells[k].getRow() !== usedRow && cells[k].getColumn () !== usedColumn) {
+                                if (!inNakedSet.contains(k) && (cells[k].getNotes().intersection(nakedSetCandidates)).getSize() > 0) {
                                     let notes:Group = new Group(false, cells[k].getRow(), cells[k].getColumn());
                                     notes.insert(nakedSetCandidates);
                                     this.notes.push(notes);
@@ -165,10 +164,27 @@ export class Strategy{
                                     else {
                                         usedColumn = this.notes[0].getColumn();
                                     }
-                                    // Skip to box part of for loop to check if box is also shared
-                                    group = GroupEnum.BOX - 1;
-                                    j = subsets.length;
-                                    i = SudokuEnum.ROW_LENGTH;
+                                    // Check if naked set shares a box
+                                    let boxes:Group = new Group(false);
+                                    let box:number;
+                                    for (let k:number = 0; k < nakedSet.length; k++) {
+                                        box = nakedSet[k].getBox();
+                                        boxes.insert(box);
+                                    }
+                                    if (boxes.getSize() === 1) {
+                                        // Since the naked set also all share the same box add to notes any notes you can remove from cells in the shared box
+                                        let boxCells: Cell[] = getCellsInGroup(this.cells, GroupEnum.BOX, box);
+                                        for (let k:number = 0; k < boxCells.length; k++) {
+                                            if (boxCells[k].getRow() !== usedRow && boxCells[k].getColumn() !== usedColumn) {
+                                                if ((boxCells[k].getNotes().intersection(nakedSetCandidates)).getSize() > 0) {
+                                                    let notes:Group = new Group(false, boxCells[k].getRow(), boxCells[k].getColumn());
+                                                    notes.insert(nakedSetCandidates);
+                                                    this.notes.push(notes);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    return true;
                                 }
                             }
                         }
