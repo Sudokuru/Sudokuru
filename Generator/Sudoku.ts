@@ -1,5 +1,6 @@
 import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
+import { Group } from "./Group";
 
 /**
  * Includes standard Sudoku constants
@@ -293,7 +294,27 @@ export function getNextCellInGroup(cells: Cell[][], cell: Cell, group: GroupEnum
 }
 
 /**
-* Given a 2d cell array and a cell, returns the next cell iterating left to right, top to bottom, if there is none returns null
+ * Given a cell board array and a group and index returns all cells in the indexth group in the board
+ * @param cells - 2d cell board array
+ * @param group - row, column, or box
+ * @param index - index of row, column, or box
+ * @returns all cells in the indexth group e.g. all cells in 5th row
+ */
+export function getCellsInGroup(cells: Cell[][], group: GroupEnum, index: number):Cell[] {
+    // Contains cells in the same row, column, or box
+    let groupCells: Cell[] = new Array();
+    // Gets first cell in group
+    let nextCell:Cell = getNextCellInGroup(cells, null, group, index);
+    // Adds every cell in same row, column, or box to cells
+    while (nextCell !== null) {
+        groupCells.push(nextCell);
+        nextCell = getNextCellInGroup(cells, groupCells[groupCells.length - 1], group);
+    }
+    return groupCells;
+}
+
+/**
+ * Given a 2d cell array and a cell, returns the next cell iterating left to right, top to bottom, if there is none returns null
  * @param cells - 2d cell array
  * @param cell - current cell
  * @returns next cell in cells if there is one, otherwise null
@@ -308,4 +329,60 @@ export function getNextCell(cells: Cell[][], cell: Cell):Cell {
         }
     }
     return null;
+}
+
+/**
+ * Given a set of cells returns a group containing the union of the notes of all the cells in the set
+ * @param set - set of cells containing notes being unioned
+ * @returns union of all notes in the set
+ */
+export function getUnionOfSetNotes(set: Cell[]):Group {
+    // Stores notes contained by cells in naked set
+    let setNotes:Group[] = new Array();
+    for (let k:number = 0; k < set.length; k++) {
+        setNotes.push(set[k].getNotes());
+    }
+    return Group.union(setNotes);
+}
+
+/**
+ * Given a cell and a group type and a subset returns whether or not the cell is in the part of the group designated by the subset
+ * For example if the group is ROW and the subset contains 1 and 3 then returns whether or not the cell is in the 2nd or 4th column of the row
+ * @param subset - contains some candidates in group
+ * @param cell - cell in group
+ * @param group - group e.g. row, column, or box
+ * @returns if cell is in subset of group
+ */
+export function inSubset(subset: Group, cell: Cell, group: GroupEnum):boolean {
+    if (group === GroupEnum.ROW) {
+        return subset.contains(cell.getColumn());
+    }
+    else if (group === GroupEnum.COLUMN) {
+        return subset.contains(cell.getRow());
+    }
+    else {
+        let boxRowStart:number = Cell.getBoxRowStart(cell.getBox());
+        let boxColumnStart:number = Cell.getBoxColumnStart(cell.getBox());
+        let boxIndex:number = (cell.getRow() - boxRowStart) * 3;
+        boxIndex += cell.getColumn() - boxColumnStart;
+        return subset.contains(boxIndex);
+    }
+}
+
+/**
+ * Returns a group containing indexes of given cells that appear in the given subset of the given group
+ * @param cells - cells array
+ * @param subset - subset of a group
+ * @param group - row, column, or box
+ * @returns group containing indexes of cells from cells that appear in the subset
+ */
+export function getCellsSubset(cells: Cell[], subset: Group, group: GroupEnum):Group {
+    let cellsSubset:Group = new Group(false);
+    // Adds each cell in cells that is part of the subset to cellsSubset
+    for (let k:number = 0; k < cells.length; k++) {
+        if (inSubset(subset, cells[k], group)) { 
+            cellsSubset.insert(k);
+        }
+    }
+    return cellsSubset;
 }

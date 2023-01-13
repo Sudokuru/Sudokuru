@@ -1,6 +1,6 @@
 import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
-import { SudokuEnum, StrategyEnum, getCellsInRow, getCellsInColumn, getCellsInBox, GroupEnum, getNextCellInGroup, TupleEnum } from "./Sudoku"
+import { SudokuEnum, StrategyEnum, getCellsInRow, getCellsInColumn, getCellsInBox, GroupEnum, getNextCellInGroup, TupleEnum, getCellsInGroup, getUnionOfSetNotes, inSubset, getCellsSubset } from "./Sudoku"
 import { Group } from "./Group";
 
 /**
@@ -93,30 +93,6 @@ export class Strategy{
     }
 
     /**
-     * Given a cell and a group type and a subset returns whether or not the cell is in the part of the group designated by the subset
-     * For example if the group is ROW and the subset contains 1 and 3 then returns whether or not the cell is in the 2nd or 4th column of the row
-     * @param subset - contains some candidates in group
-     * @param cell - cell in group
-     * @param group - group e.g. row, column, or box
-     * @returns if cell is in subset of group
-     */
-    private inSubset(subset: Group, cell: Cell, group: GroupEnum):boolean {
-        if (group === GroupEnum.ROW) {
-            return subset.contains(cell.getColumn());
-        }
-        else if (group === GroupEnum.COLUMN) {
-            return subset.contains(cell.getRow());
-        }
-        else {
-            let boxRowStart:number = Cell.getBoxRowStart(cell.getBox());
-            let boxColumnStart:number = Cell.getBoxColumnStart(cell.getBox());
-            let boxIndex:number = (cell.getRow() - boxRowStart) * 3;
-            boxIndex += cell.getColumn() - boxColumnStart;
-            return subset.contains(boxIndex);
-        }
-    }
-
-    /**
      * Checks if strategy is a naked set of given tuple and if so adds values that can be placed
      * @param tuple - e.g. could be single or pair for naked single or naked pair respectively
      * @returns true if strategy is a naked tuple
@@ -131,36 +107,23 @@ export class Strategy{
         for (let group:GroupEnum = 0; group < GroupEnum.COUNT; group++) {
             for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
                 // Contains cells in the same row, column, or box
-                let cells: Cell[] = new Array();
-                let nextCell:Cell = getNextCellInGroup(this.cells, null, group, i);
-                // Adds every cell in same row, column, or box to cells
-                while (nextCell !== null) {
-                    cells.push(nextCell);
-                    nextCell = getNextCellInGroup(this.cells, cells[cells.length - 1], group);
-                }
+                let cells: Cell[] = getCellsInGroup(this.cells, group, i);
                 // Tries to build a naked set of size tuple for each possible size tuple subset of candidates
                 // Is naked set iff union of all cells has notes size equal to tuple
                 for (let j:number = 0; j < subsets.length; j++) {
                     // Stores indexes of the cells that make up the naked set
-                    let inNakedSet:Group = new Group(false);
+                    let inNakedSet:Group = getCellsSubset(cells, subsets[j], group);
                     // Stores the cellls that make up the naked set
                     let nakedSet:Cell[] = new Array();
-                    // Adds each cell in cells that is part of the subset to the naked set
-                    for (let k:number = 0; k < cells.length; k++) {
-                        if (this.inSubset(subsets[j], cells[k], group)) { 
+                    for (let k:number = 0; k < SudokuEnum.ROW_LENGTH; k++) {
+                        if (inNakedSet.contains(k)) {
                             nakedSet.push(cells[k]);
-                            inNakedSet.insert(k);
                         }
                     }
                     // If naked set is correct size (i.e. every element in subset was in cells)
                     if (nakedSet.length === tuple) {
-                        // Stores notes contained by cells in naked set
-                        let nakedSetNotes:Group[] = new Array();
-                        for (let k:number = 0; k < tuple; k++) {
-                            nakedSetNotes.push(nakedSet[k].getNotes());
-                        }
                         // Calculates alll notes in naked set
-                        let nakedSetCandidates:Group = Group.union(nakedSetNotes);
+                        let nakedSetCandidates:Group = getUnionOfSetNotes(nakedSet);
                         // If naked set has correct number of notes
                         if (nakedSetCandidates.getSize() <= tuple) {
                             // If it is a naked single places value
