@@ -125,86 +125,25 @@ describe("create naked triplet", () => {
     });
 });
 
-describe("create naked quadruplet", () => {
-    it("should be a naked quadruplet", () => {
-        // Create board
-        let board:Cell[][] = getBlankCellBoard();
+describe("create naked quadruplet through septuplet", () => {
+    it("should be a naked quadruplet through septuplet", () => {
+        for (let tuple:TupleEnum = TupleEnum.QUADRUPLET; tuple <= TupleEnum.SEPTUPLET; tuple++) {
+            // Create board
+            let board:Cell[][] = getBlankCellBoard();
 
-        // Create quadruplet
-        let cells:Cell[][] = getRowTuplet(TupleEnum.QUADRUPLET, board);
+            // Create tuplet
+            let cells:Cell[][] = getRowTuplet(tuple, board);
 
-        // Remove all but naked quadruplet from quadruplet (and one more from last cell)
-        let notes:Group = new Group(true);
-        removeTupleNotes(TupleEnum.QUADRUPLET, notes);
-        removeNotesFromEach(notes, cells);
-        cells[0][3].removeNote("1");
+            // Remove all but naked set from tuplet (and one more from first cell)
+            let notes:Group = new Group(true);
+            removeTupleNotes(tuple, notes);
+            removeNotesFromEach(notes, cells);
+            cells[0][0].removeNote("1");
 
-        // Test that is naked quadruplet and can remove notes from every cell in shared row and box except naked quadruplet themself
-        let strategy:Strategy = new Strategy(board, board);
-        expect(strategy.isNakedQuadruplet()).toBeTruthy;
-        expect(strategy.getNotesToRemove().length).toBe(5);
-    });
-});
-
-describe("create naked quintuplet", () => {
-    it("should be a naked quintuplet", () => {
-        // Create board
-        let board:Cell[][] = getBlankCellBoard();
-
-        // Create quintuplet
-        let cells:Cell[][] = getRowTuplet(TupleEnum.QUINTUPLET, board);
-
-        // Remove all but naked quintuplet from quintuplet (and one more from last cell)
-        let notes:Group = new Group(true);
-        removeTupleNotes(TupleEnum.QUINTUPLET, notes);
-        removeNotesFromEach(notes, cells);
-        cells[0][4].removeNote("1");
-
-        // Test that is naked quintuplet and can remove notes from every cell in shared row and box except naked quintuplet themself
-        let strategy:Strategy = new Strategy(board, board);
-        expect(strategy.isNakedQuintuplet()).toBeTruthy;
-        expect(strategy.getNotesToRemove().length).toBe(4);
-    });
-});
-
-describe("create naked sextuplet", () => {
-    it("should be a naked sextuplet", () => {
-        // Create board
-        let board:Cell[][] = getBlankCellBoard();
-
-        // Create sextuplet
-        let cells:Cell[][] = getRowTuplet(TupleEnum.SEXTUPLET, board);
-
-        // Remove all but naked sextuplet from sextuplet (and one more from last cell)
-        let notes:Group = new Group(true);
-        removeTupleNotes(TupleEnum.SEXTUPLET, notes);
-        removeNotesFromEach(notes, cells);
-        cells[0][5].removeNote("1");
-
-        // Test that is naked sextuplet and can remove notes from every cell in shared row and box except naked sextuplet themself
-        let strategy:Strategy = new Strategy(board, board);
-        expect(strategy.isNakedSextuplet()).toBeTruthy;
-        expect(strategy.getNotesToRemove().length).toBe(3);
-    });
-});
-
-describe("create naked septuplet", () => {
-    it("should be a naked septuplet", () => {
-        // Create board
-        let board:Cell[][] = getBlankCellBoard();
-
-        // Create septuplet
-        let cells:Cell[][] = getRowTuplet(TupleEnum.SEPTUPLET, board);
-
-        // Remove all but naked septuplet from septuplet (and one more from last five cells)
-        let notes:Group = new Group(true);
-        removeTupleNotes(TupleEnum.SEPTUPLET, notes);
-        removeNotesFromEach(notes, cells);
-        cells[0][6].removeNote("1");
-
-        // Test that is naked septuplet and can remove notes from every cell in shared row and box except naked septuplet themself
-        let strategy:Strategy = new Strategy(board, board);
-        expect(strategy.isNakedSeptuplet()).toBeTruthy;
-        expect(strategy.getNotesToRemove().length).toBe(2);
+            // Test that is naked set and can remove notes from every cell in shared row and box except naked tuplet themself
+            let strategy:Strategy = new Strategy(board, board);
+            expect(strategy.isNakedSet(tuple)).toBeTruthy;
+            expect(strategy.getNotesToRemove().length).toBe(SudokuEnum.ROW_LENGTH - tuple);
+        }
     });
 });

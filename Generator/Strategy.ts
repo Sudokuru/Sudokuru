@@ -121,7 +121,7 @@ export class Strategy{
      * @param tuple - e.g. could be single or pair for naked single or naked pair respectively
      * @returns true if strategy is a naked tuple
      */
-    private isNakedSet(tuple: TupleEnum):boolean {
+    public isNakedSet(tuple: TupleEnum):boolean {
         // Checks if tuple exists by getting all cells (with note size <= tuple) in each group and trying to build tuple
         // Checks every subset (combination) of cells in each group (row/column/box)
         let subsets:Group[] = Group.getSubset(tuple);
