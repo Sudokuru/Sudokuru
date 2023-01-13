@@ -2,7 +2,7 @@ import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
 import { Strategy } from "./Strategy";
 import { SudokuEnum, StrategyEnum } from "./Sudoku";
-import { HiddenSingleHint, Hint, NakedPairHint, NakedSingleHint } from "./Hint";
+import { HiddenSingleHint, Hint, NakedPairHint, NakedSingleHint, NakedTripletHint, NakedQuadrupletHint, NakedQuintupletHint, NakedSextupletHint, NakedSeptupletHint, NakedOctupletHint } from "./Hint";
 import { Group } from "./Group";
 
 /**
@@ -98,7 +98,27 @@ export class Solver{
             else if (this.algorithm[i] === StrategyEnum.NAKED_PAIR && this.setNakedPair(cells)) {
                 return;
             }
+            else if (this.algorithm[i] === StrategyEnum.NAKED_TRIPLET && this.setNakedTriplet(cells)) {
+                return;
+            }
+            else if (this.algorithm[i] === StrategyEnum.NAKED_QUADRUPLET && this.setNakedQuadruplet(cells)) {
+                return;
+            }
+            else if (this.algorithm[i] === StrategyEnum.NAKED_QUINTUPLET && this.setNakedQuintuplet(cells)) {
+                return;
+            }
+            else if (this.algorithm[i] === StrategyEnum.NAKED_SEXTUPLET && this.setNakedSextuplet(cells)) {
+                return;
+            }
+            else if (this.algorithm[i] === StrategyEnum.NAKED_SEPTUPLET && this.setNakedSeptuplet(cells)) {
+                return;
+            }
+            else if (this.algorithm[i] === StrategyEnum.NAKED_OCTUPLET && this.setNakedOctuplet(cells)) {
+                return;
+            }
         }
+        this.hint = null;
+        return;
     }
 
     /**
@@ -110,31 +130,6 @@ export class Solver{
     }
 
     /**
-     * Returns true if puzzle has a naked single and sets hint, otherwise returns false
-     * @param cells - empty cells
-     * @returns true if contains a naked single
-     */
-    private setNakedSingle(cells: Cell[][]):boolean {
-        // Checks every cell for a naked single
-        for (let i:number = 0; i < cells.length; i++) {
-            for (let j:number = 0; j < cells[i].length; j++) {
-                // Creates a Cell array containing a possible naked single
-                let single: Cell[][] = new Array();
-                this.initializeCellArray(single, 1);
-                single[0].push(cells[i][j]);
-                // Create a naked single strategy using the array of cells
-                let nakedSingle: Strategy = new Strategy(this.board, single);
-                // Checks if strategy object constitutes a naked single
-                if (nakedSingle.isNakedSingle()) {
-                    this.hint = new NakedSingleHint(nakedSingle);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
      * If given Strategy is a hidden single it sets the hint to it and returns true
      * @param hiddenSingle - Strategy
      * @returns true if given Strategy is a hidden single
@@ -142,19 +137,6 @@ export class Solver{
     private setHiddenSingleHint(hiddenSingle: Strategy):boolean {
         if (hiddenSingle.isHiddenSingle()) {
             this.hint = new HiddenSingleHint(hiddenSingle);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * If given Strategy is a naked pair it sets the hint to it and returns true
-     * @param nakedPair - Strategy
-     * @returns true if given Strategy is a naked pair
-     */
-    private setNakedPairHint(nakedPair: Strategy):boolean {
-        if (nakedPair.isNakedPair()) {
-            this.hint = new NakedPairHint(nakedPair);
             return true;
         }
         return false;
@@ -177,11 +159,6 @@ export class Solver{
                     return true;
                 }
             }
-            else if (strategy === StrategyEnum.NAKED_PAIR) {
-                if (this.setNakedPairHint(row) || this.setNakedPairHint(column) || this.setNakedPairHint(box)) {
-                    return true;
-                }
-            }
         }
         return false;
     }
@@ -196,12 +173,115 @@ export class Solver{
     }
 
     /**
+     * Returns true if puzzle has a naked single and sets hint, otherwise returns false
+     * @param cells - empty cells
+     * @returns true if contains a naked single
+     */
+    private setNakedSingle(cells: Cell[][]):boolean {
+        let nakedSingle: Strategy = new Strategy(this.board, cells);
+        if (nakedSingle.isNakedSingle()) {
+            this.hint = new NakedSingleHint(nakedSingle);
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Returns true if puzzle has a naked pair and sets hint, otherwise returns false
      * @param cells - empty cells
      * @returns true if contains a naked pair
      */
     private setNakedPair(cells: Cell[][]):boolean {
-        return this.setGroupStrategy(StrategyEnum.NAKED_PAIR, cells);
+        let nakedPair: Strategy = new Strategy(this.board, cells);
+        if (nakedPair.isNakedPair()) {
+            this.hint = new NakedPairHint(nakedPair);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns true if puzzle has a naked triplet and sets hint, otherwise returns false
+     * @param cells - empty cells
+     * @returns true if contains a naked triplet
+     */
+    private setNakedTriplet(cells: Cell[][]):boolean {
+        let nakedTriplet: Strategy = new Strategy(this.board, cells);
+        if (nakedTriplet.isNakedTriplet()) {
+            this.hint = new NakedTripletHint(nakedTriplet);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns true if puzzle has a naked quadruplet and sets hint, otherwise returns false
+     * @param cells - empty cells
+     * @returns true if contains a naked quadruplet
+     */
+    private setNakedQuadruplet(cells: Cell[][]):boolean {
+        let nakedQuadruplet: Strategy = new Strategy(this.board, cells);
+        if (nakedQuadruplet.isNakedQuadruplet()) {
+            this.hint = new NakedQuadrupletHint(nakedQuadruplet);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns true if puzzle has a naked quintuplet and sets hint, otherwise returns false
+     * @param cells - empty cells
+     * @returns true if contains a naked quintuplet
+     */
+    private setNakedQuintuplet(cells: Cell[][]):boolean {
+        let nakedQuintuplet: Strategy = new Strategy(this.board, cells);
+        if (nakedQuintuplet.isNakedQuintuplet()) {
+            this.hint = new NakedQuintupletHint(nakedQuintuplet);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns true if puzzle has a naked sextuplet and sets hint, otherwise returns false
+     * @param cells - empty cells
+     * @returns true if contains a naked sextuplet
+     */
+    private setNakedSextuplet(cells: Cell[][]):boolean {
+        let nakedSextuplet: Strategy = new Strategy(this.board, cells);
+        if (nakedSextuplet.isNakedSextuplet()) {
+            this.hint = new NakedSextupletHint(nakedSextuplet);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns true if puzzle has a naked septuplet and sets hint, otherwise returns false
+     * @param cells - empty cells
+     * @returns true if contains a naked septuplet
+     */
+    private setNakedSeptuplet(cells: Cell[][]):boolean {
+        let nakedSeptuplet: Strategy = new Strategy(this.board, cells);
+        if (nakedSeptuplet.isNakedSeptuplet()) {
+            this.hint = new NakedSeptupletHint(nakedSeptuplet);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns true if puzzle has a naked octuplet and sets hint, otherwise returns false
+     * @param cells - empty cells
+     * @returns true if contains a naked octuplet
+     */
+    private setNakedOctuplet(cells: Cell[][]):boolean {
+        let nakedOctuplet: Strategy = new Strategy(this.board, cells);
+        if (nakedOctuplet.isNakedOctuplet()) {
+            this.hint = new NakedOctupletHint(nakedOctuplet);
+            return true;
+        }
+        return false;
     }
 
     /**

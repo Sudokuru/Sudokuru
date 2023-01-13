@@ -1,6 +1,6 @@
 import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
-import { SudokuEnum, StrategyEnum, getCellsInRow, getCellsInColumn, getCellsInBox, getNextCell } from "./Sudoku"
+import { SudokuEnum, StrategyEnum, getCellsInRow, getCellsInColumn, getCellsInBox, GroupEnum, getNextCellInGroup, TupleEnum, getCellsInGroup, getUnionOfSetNotes, inSubset, getCellsSubset } from "./Sudoku"
 import { Group } from "./Group";
 
 /**
@@ -93,27 +93,114 @@ export class Strategy{
     }
 
     /**
+     * Checks if strategy is a naked set of given tuple and if so adds values that can be placed
+     * @param tuple - e.g. could be single or pair for naked single or naked pair respectively
+     * @returns true if strategy is a naked tuple
+     */
+    public isNakedSet(tuple: TupleEnum):boolean {
+        // Checks if tuple exists by getting all cells (with note size <= tuple) in each group and trying to build tuple
+        // Checks every subset (combination) of cells in each group (row/column/box)
+        let subsets:Group[] = Group.getSubset(tuple);
+        // Used to prevent adding cells to notes to remove multiple times when evaluating box after finding row/column set
+        let usedRow:number = -1;
+        let usedColumn:number = -1;
+        for (let group:GroupEnum = 0; group < GroupEnum.COUNT; group++) {
+            for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
+                // Contains cells in the same row, column, or box
+                let cells: Cell[] = getCellsInGroup(this.cells, group, i);
+                // Tries to build a naked set of size tuple for each possible size tuple subset of candidates
+                // Is naked set iff union of all cells has notes size equal to tuple
+                for (let j:number = 0; j < subsets.length; j++) {
+                    // Stores indexes of the cells that make up the naked set
+                    let inNakedSet:Group = getCellsSubset(cells, subsets[j], group);
+                    // Stores the cellls that make up the naked set
+                    let nakedSet:Cell[] = new Array();
+                    for (let k:number = 0; k < SudokuEnum.ROW_LENGTH; k++) {
+                        if (inNakedSet.contains(k)) {
+                            nakedSet.push(cells[k]);
+                        }
+                    }
+                    // If naked set is correct size (i.e. every element in subset was in cells)
+                    if (nakedSet.length === tuple) {
+                        // Calculates alll notes in naked set
+                        let nakedSetCandidates:Group = getUnionOfSetNotes(nakedSet);
+                        // If naked set has correct number of notes
+                        if (nakedSetCandidates.getSize() <= tuple) {
+                            // If it is a naked single places value
+                            if (tuple === TupleEnum.SINGLE) {
+                                let row:number = nakedSet[0].getRow();
+                                let column:number = nakedSet[0].getColumn();
+                                let single:string = undefined;
+                                for (let singleCandidate:number = 0; singleCandidate < SudokuEnum.ROW_LENGTH; singleCandidate++) {
+                                    if (nakedSetCandidates.contains(singleCandidate)) {
+                                        single = (singleCandidate+1).toString();
+                                    }
+                                }
+                                this.values.push(new Cell(row, column, single));
+                                this.strategyType = StrategyEnum.NAKED_SINGLE;
+                                this.identified = true;
+                                return true;
+                            }
+                            // Adds notes to remove if there are any to remove
+                            for (let k:number = 0; k < cells.length; k++) {
+                                // If cell isn't part of naked set itself and it contains some of the same values as naked set remove them
+                                // Skip if row or column is 'used' i.e. removed due to shared row or column already and checking for others in shared box
+                                if (!inNakedSet.contains(k) && (cells[k].getNotes().intersection(nakedSetCandidates)).getSize() > 0) {
+                                    let notes:Group = new Group(false, cells[k].getRow(), cells[k].getColumn());
+                                    notes.insert(nakedSetCandidates);
+                                    this.notes.push(notes);
+                                }
+                            }
+                            // If notes can be removed as result of naked set then it is a valid strategy
+                            if (this.notes.length > 0) {
+                                this.strategyType = StrategyEnum[StrategyEnum[tuple]];
+                                this.identified = true;
+                                // If naked set shares a row or column it might also share a box so skip to check that
+                                if (group !== GroupEnum.BOX) {
+                                    // Set used row or column to avoiding adding same cells notes twice
+                                    if (group === GroupEnum.ROW) {
+                                        usedRow = this.notes[0].getRow();
+                                    }
+                                    else {
+                                        usedColumn = this.notes[0].getColumn();
+                                    }
+                                    // Check if naked set shares a box
+                                    let boxes:Group = new Group(false);
+                                    let box:number;
+                                    for (let k:number = 0; k < nakedSet.length; k++) {
+                                        box = nakedSet[k].getBox();
+                                        boxes.insert(box);
+                                    }
+                                    if (boxes.getSize() === 1) {
+                                        // Since the naked set also all share the same box add to notes any notes you can remove from cells in the shared box
+                                        let boxCells: Cell[] = getCellsInGroup(this.cells, GroupEnum.BOX, box);
+                                        for (let k:number = 0; k < boxCells.length; k++) {
+                                            if (boxCells[k].getRow() !== usedRow && boxCells[k].getColumn() !== usedColumn) {
+                                                if ((boxCells[k].getNotes().intersection(nakedSetCandidates)).getSize() > 0) {
+                                                    let notes:Group = new Group(false, boxCells[k].getRow(), boxCells[k].getColumn());
+                                                    notes.insert(nakedSetCandidates);
+                                                    this.notes.push(notes);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return this.identified;
+    }
+
+    /**
      * Checks if strategy is a naked single and if so adds values that can be placed
      * @returns true if strategy is a naked single
      */
     public isNakedSingle():boolean {
-        let notes:Group = this.cells[0][0].getNotes();
-        // If the Cell provided only has 1 note then it is a naked single
-        if (notes.getSize() == 1) {
-            // Add Cell to values that can be placed
-            for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
-                if (notes.contains(i)) {
-                    let row:number = this.cells[0][0].getRow();
-                    let column:number = this.cells[0][0].getColumn();
-                    this.values.push(new Cell(row, column, (i+1).toString()));
-                }
-            }
-            // Identify strategy and return that it is a naked single
-            this.strategyType = StrategyEnum.NAKED_SINGLE;
-            this.identified = true;
-            return true;
-        }
-        return false;
+        return this.isNakedSet(TupleEnum.SINGLE);
     }
 
     /**
@@ -168,70 +255,55 @@ export class Strategy{
      * @returns true if strategy is a naked pair
      */
     public isNakedPair():boolean {
-        // Checks each pair by checking each cell against every cell in "front" of it
-        let cell: Cell, nextCell: Cell;
-        for (let row:number = 0; row < this.cells.length; row++) {
-            for (let column:number = 0; column < this.cells[row].length; column++) {
-                cell = this.cells[row][column];
-                nextCell = getNextCell(this.cells, cell);
-                while (nextCell !== null) {
-                    if (cell.getNotes().getSize() === 2 && cell.getNotes().equals(nextCell.getNotes())) {
-                        // If the pair shares a row can remove them from every cell in row (except themselves)
-                        if (cell.getRow() === nextCell.getRow()) {
-                            for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
-                                if (column !== cell.getColumn() && column !== nextCell.getColumn()) {
-                                    // Adds notes to remove if there are any to remove
-                                    if (this.board[cell.getRow()][column].getNotes().intersection(cell.getNotes()).getSize() > 0) {
-                                        let notes:Group = new Group(false, cell.getRow(), column);
-                                        notes.insert(cell.getNotes());
-                                        this.notes.push(notes);
-                                    }
-                                }
-                            }
-                        }
-                        // If the pair shares a column can remove them from every cell in column (except themselves)
-                        if (cell.getColumn() === nextCell.getColumn()) {
-                            for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
-                                if (row !== cell.getRow() && row !== nextCell.getRow()) {
-                                    // Adds notes to remove if there are any to remove
-                                    if (this.board[row][cell.getColumn()].getNotes().intersection(cell.getNotes()).getSize() > 0) {
-                                        let notes:Group = new Group(false, row, cell.getColumn());
-                                        notes.insert(cell.getNotes());
-                                        this.notes.push(notes);
-                                    }
-                                }
-                            }
-                        }
-                        // If the pair shares a box can remove them from every cell in box (except themselves)
-                        if (cell.getBox() === nextCell.getBox()) {
-                            let box:number = cell.getBox();
-                            let columnStart:number = Cell.getBoxColumnStart(box);
-                            let rowStart:number = Cell.getBoxRowStart(box);
-                            for (let column:number = columnStart; column < (columnStart + SudokuEnum.BOX_LENGTH); column++) {
-                                for (let row:number = rowStart; row < (rowStart + SudokuEnum.BOX_LENGTH); row++) {
-                                    if ((row !== cell.getRow() || column !== cell.getColumn()) && 
-                                        (row !== nextCell.getRow() || column !== nextCell.getColumn())) {
-                                        // Adds notes to remove if there are any to remove
-                                        if (this.board[row][column].getNotes().intersection(cell.getNotes()).getSize() > 0) {
-                                            let notes:Group = new Group(false, row, column);
-                                            notes.insert(cell.getNotes());
-                                            this.notes.push(notes);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        if (this.notes.length !== 0) {
-                            this.strategyType = StrategyEnum.NAKED_PAIR;
-                            this.identified = true;
-                            return true;
-                        }
-                    }
-                    nextCell = getNextCell(this.cells, nextCell);
-                }
-            }
-        }
-        return false;
+        return this.isNakedSet(TupleEnum.PAIR);
+    }
+
+    /**
+     * Checks if strategy is a naked triplet and if so adds notes that can be removed
+     * @returns true if strategy is a naked triplet
+     */
+    public isNakedTriplet():boolean {
+        return this.isNakedSet(TupleEnum.TRIPLET);
+    }
+
+    /**
+     * Checks if strategy is a naked quadruplet and if so adds notes that can be removed
+     * @returns true if strategy is a naked quadruplet
+     */
+    public isNakedQuadruplet():boolean {
+        return this.isNakedSet(TupleEnum.QUADRUPLET);
+    }
+
+    /**
+     * Checks if strategy is a naked quintuplet and if so adds notes that can be removed
+     * @returns true if strategy is a naked quintuplet
+     */
+    public isNakedQuintuplet():boolean {
+        return this.isNakedSet(TupleEnum.QUINTUPLET);
+    }
+
+    /**
+     * Checks if strategy is a naked sextuplet and if so adds notes that can be removed
+     * @returns true if strategy is a naked sextuplet
+     */
+    public isNakedSextuplet():boolean {
+        return this.isNakedSet(TupleEnum.SEXTUPLET);
+    }
+
+    /**
+     * Checks if strategy is a naked septuplet and if so adds notes that can be removed
+     * @returns true if strategy is a naked septuplet
+     */
+    public isNakedSeptuplet():boolean {
+        return this.isNakedSet(TupleEnum.SEPTUPLET);
+    }
+
+    /**
+     * Checks if strategy is a naked octuplet and if so adds notes that can be removed
+     * @returns true if strategy is a naked octuplet
+     */
+    public isNakedOctuplet():boolean {
+        return this.isNakedSet(TupleEnum.OCTUPLET);
     }
 
     /**
@@ -241,8 +313,7 @@ export class Strategy{
      * @returns strategy using given row
      */
     public static getRowStrategy(board: Cell[][], cells: Cell[][], n: number):Strategy {
-        let row: Cell[][] = new Array();
-        row.push(getCellsInRow(cells, n));
+        let row: Cell[][] = getCellsInRow(cells, n);
         return new Strategy(board, row);
     }
 
@@ -253,8 +324,7 @@ export class Strategy{
      * @returns strategy using given column
      */
     public static getColumnStrategy(board: Cell[][], cells: Cell[][], n: number):Strategy {
-        let column: Cell[][] = new Array();
-        column.push(getCellsInColumn(cells, n));
+        let column: Cell[][] = getCellsInColumn(cells, n);
         return new Strategy(board, column);
     }
 
@@ -265,8 +335,7 @@ export class Strategy{
      * @returns strategy using given box
      */
     public static getBoxStrategy(board: Cell[][], cells: Cell[][], n: number):Strategy {
-        let box: Cell[][] = new Array();
-        box.push(getCellsInBox(cells, n));
+        let box: Cell[][] = getCellsInBox(cells, n);
         return new Strategy(board, box);
     }
 

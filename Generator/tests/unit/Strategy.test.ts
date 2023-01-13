@@ -1,9 +1,9 @@
 import {Strategy} from '../../Strategy';
 import { Cell } from '../../Cell';
 import { CustomError, CustomErrorEnum } from '../../CustomError';
-import { getError } from '../testResources';
+import { getBlankCellBoard, getError, getRowTuplet, removeNotesFromEach, removeTupleNotes } from '../testResources';
 import { Group } from '../../Group';
-import { SudokuEnum } from '../../Sudoku';
+import { SudokuEnum, TupleEnum } from '../../Sudoku';
 
 describe("create naked single", () => {
     it('should throw strategy not identified error', async () => {
@@ -69,45 +69,81 @@ describe("create hidden single", () => {
 
 describe("create naked pair", () => {
     it("should not be a naked pair", () => {
-        let cells:Cell[][] = new Array();
-        cells.push(new Array());
-        cells[0].push(new Cell(0, 0));
-        cells[0].push(new Cell(0, 1));
+        // Create board
+        let board:Cell[][] = getBlankCellBoard();
+
+        // Create pair
+        let cells:Cell[][] = getRowTuplet(TupleEnum.PAIR, board);
+
+        // Remove all but naked pair from one cell and remove naked pair plus one more note from other cell
+        // Removing the extra note turns it into a naked single instead of a naked pair
         let notes:Group = new Group(true);
-        notes.remove(1);
-        notes.remove(2);
-        cells[0][0].removeNotes(notes);
-        notes.remove(3);
-        cells[0][1].removeNotes(notes);
-        let strategy:Strategy = new Strategy(cells, cells);
+        removeTupleNotes(TupleEnum.PAIR, notes);
+        removeNotesFromEach(notes, cells);
+        cells[0][1].removeNote("2");
+
+        // Test that it isn't a naked pair
+        let strategy:Strategy = new Strategy(board, board);
         expect(strategy.isNakedPair()).toBeFalsy;
     });
     it("should be a naked pair", () => {
         // Create board
-        let board:Cell[][] = new Array();
-        for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
-            board.push(new Array());
-            for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
-                board[row].push(new Cell(row, column));
-            }
-        }
+        let board:Cell[][] = getBlankCellBoard();
 
         // Create pair
-        let cells:Cell[][] = new Array();
-        cells.push(new Array());
-        cells[0].push(board[0][0]);
-        cells[0].push(board[0][7]);
+        let cells:Cell[][] = getRowTuplet(TupleEnum.PAIR, board);
 
         // Remove all but naked pair from pair
         let notes:Group = new Group(true);
-        notes.remove(1);
-        notes.remove(2);
-        cells[0][0].removeNotes(notes);
-        cells[0][1].removeNotes(notes);
+        removeTupleNotes(TupleEnum.PAIR, notes);
+        removeNotesFromEach(notes, cells);
 
-        // Test that is naked pair and can remove notes from every cell in row except naked pair themself
-        let strategy:Strategy = new Strategy(board, cells);
+        // Test that is naked pair and can remove notes from every cell in shared row and box except naked pair themself
+        let strategy:Strategy = new Strategy(board, board);
         expect(strategy.isNakedPair()).toBeTruthy;
-        expect(strategy.getNotesToRemove().length).toBe(7);
+        expect(strategy.getNotesToRemove().length).toBe(13);
+    });
+});
+
+describe("create naked triplet", () => {
+    it("should be a naked triplet", () => {
+        // Create board
+        let board:Cell[][] = getBlankCellBoard();
+
+        // Create triplet
+        let cells:Cell[][] = getRowTuplet(TupleEnum.TRIPLET, board);
+
+        // Remove all but naked triplet from triplet
+        let notes:Group = new Group(true);
+        removeTupleNotes(TupleEnum.TRIPLET, notes);
+        removeNotesFromEach(notes, cells);
+
+        // Test that is naked triplet and can remove notes from every cell in shared row and box except naked triplet themself
+        let strategy:Strategy = new Strategy(board, board);
+        expect(strategy.isNakedTriplet()).toBeTruthy;
+        expect(strategy.getNotesToRemove().length).toBe(12);
+    });
+});
+
+describe("create naked quadruplet through octuplet", () => {
+    it("should be a naked quadruplet through octuplet", () => {
+        for (let tuple:TupleEnum = TupleEnum.QUADRUPLET; tuple <= TupleEnum.OCTUPLET; tuple++) {
+            // Create board
+            let board:Cell[][] = getBlankCellBoard();
+
+            // Create tuplet
+            let cells:Cell[][] = getRowTuplet(tuple, board);
+
+            // Remove all but naked set from tuplet (and one more from first cell)
+            let notes:Group = new Group(true);
+            removeTupleNotes(tuple, notes);
+            removeNotesFromEach(notes, cells);
+            cells[0][0].removeNote("1");
+
+            // Test that is naked set and can remove notes from every cell in shared row and box except naked tuplet themself
+            let strategy:Strategy = new Strategy(board, board);
+            expect(strategy.isNakedSet(tuple)).toBeTruthy;
+            expect(strategy.getNotesToRemove().length).toBe(SudokuEnum.ROW_LENGTH - tuple);
+        }
     });
 });
