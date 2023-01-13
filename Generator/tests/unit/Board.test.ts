@@ -19,7 +19,9 @@ enum TestBoards {
     BOX_NAKED_PAIR = "700000006000320900000000054205060070197400560060000000010000000000095401630100020",
     BOX_NAKED_PAIR_SOLUTION = "783549216451326987926817354245961873197438562368752149514273698872695431639184725",
     NAKED_TRIPLET = "070408029002000004854020007008374200020000000003261700000093612200000403130642070",
-    NAKED_TRIPLET_SOLUTION = "671438529392715864854926137518374296726859341943261785487593612269187453135642978"
+    NAKED_TRIPLET_SOLUTION = "671438529392715864854926137518374296726859341943261785487593612269187453135642978",
+    NAKED_OCTUPLET = "390000500000050832008316970080030000639702010007000009070045098000690040000000000",
+    NAKED_OCTUPLET_SOLUTION = "394827561761459832528316974485931726639782415217564389173245698852693147946178253"
 }
 
 enum InvalidTestBoards {
@@ -228,5 +230,18 @@ describe("solve Boards", () => {
         let board:Board = new Board(TestBoards.COLUMN_NAKED_PAIR, algorithm);
         expect(board.getSolutionString()).toBe(TestBoards.COLUMN_NAKED_PAIR_SOLUTION);
         expect(board.getStrategyScore()).toBe(StrategyEnum.NAKED_SEPTUPLET);
+    });
+
+    it('should solve naked octuplet', () => {
+        let algorithm:StrategyEnum[] = new Array();
+        algorithm.push(StrategyEnum.NAKED_OCTUPLET);
+        for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
+            if (strategy !== StrategyEnum.NAKED_OCTUPLET) {
+                algorithm.push(strategy);
+            }
+        }
+        let board:Board = new Board(TestBoards.NAKED_OCTUPLET, algorithm);
+        expect(board.getSolutionString()).toBe(TestBoards.NAKED_OCTUPLET_SOLUTION);
+        expect(board.getStrategyScore()).toBe(StrategyEnum.NAKED_OCTUPLET);
     });
 });

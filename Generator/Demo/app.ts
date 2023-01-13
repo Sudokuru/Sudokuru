@@ -40,6 +40,9 @@ app.get('/solver/nextStep', (req, res) => {
         else if (Number(req.query.nakedSeptuplet) === i) {
             algorithm.push(StrategyEnum.NAKED_SEPTUPLET);
         }
+        else if (Number(req.query.nakedOctuplet) === i) {
+            algorithm.push(StrategyEnum.NAKED_OCTUPLET);
+        }
     }
     let notes: string[][];
     if (req.query.notes !== "undefined") {

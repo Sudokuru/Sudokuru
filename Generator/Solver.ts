@@ -2,7 +2,7 @@ import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
 import { Strategy } from "./Strategy";
 import { SudokuEnum, StrategyEnum } from "./Sudoku";
-import { HiddenSingleHint, Hint, NakedPairHint, NakedSingleHint, NakedTripletHint, NakedQuadrupletHint, NakedQuintupletHint, NakedSextupletHint, NakedSeptupletHint } from "./Hint";
+import { HiddenSingleHint, Hint, NakedPairHint, NakedSingleHint, NakedTripletHint, NakedQuadrupletHint, NakedQuintupletHint, NakedSextupletHint, NakedSeptupletHint, NakedOctupletHint } from "./Hint";
 import { Group } from "./Group";
 
 /**
@@ -111,6 +111,9 @@ export class Solver{
                 return;
             }
             else if (this.algorithm[i] === StrategyEnum.NAKED_SEPTUPLET && this.setNakedSeptuplet(cells)) {
+                return;
+            }
+            else if (this.algorithm[i] === StrategyEnum.NAKED_OCTUPLET && this.setNakedOctuplet(cells)) {
                 return;
             }
         }
@@ -262,6 +265,20 @@ export class Solver{
         let nakedSeptuplet: Strategy = new Strategy(this.board, cells);
         if (nakedSeptuplet.isNakedSeptuplet()) {
             this.hint = new NakedSeptupletHint(nakedSeptuplet);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns true if puzzle has a naked octuplet and sets hint, otherwise returns false
+     * @param cells - empty cells
+     * @returns true if contains a naked octuplet
+     */
+    private setNakedOctuplet(cells: Cell[][]):boolean {
+        let nakedOctuplet: Strategy = new Strategy(this.board, cells);
+        if (nakedOctuplet.isNakedOctuplet()) {
+            this.hint = new NakedOctupletHint(nakedOctuplet);
             return true;
         }
         return false;

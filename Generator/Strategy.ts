@@ -320,6 +320,14 @@ export class Strategy{
     }
 
     /**
+     * Checks if strategy is a naked octuplet and if so adds notes that can be removed
+     * @returns true if strategy is a naked octuplet
+     */
+    public isNakedOctuplet():boolean {
+        return this.isNakedSet(TupleEnum.OCTUPLET);
+    }
+
+    /**
      * Creates a Strategy object centered around the nth row in the given board
      * @param cells - cells in a board
      * @param n - row creating strategy around

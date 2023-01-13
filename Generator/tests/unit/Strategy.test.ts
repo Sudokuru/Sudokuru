@@ -125,9 +125,9 @@ describe("create naked triplet", () => {
     });
 });
 
-describe("create naked quadruplet through septuplet", () => {
-    it("should be a naked quadruplet through septuplet", () => {
-        for (let tuple:TupleEnum = TupleEnum.QUADRUPLET; tuple <= TupleEnum.SEPTUPLET; tuple++) {
+describe("create naked quadruplet through octuplet", () => {
+    it("should be a naked quadruplet through octuplet", () => {
+        for (let tuple:TupleEnum = TupleEnum.QUADRUPLET; tuple <= TupleEnum.OCTUPLET; tuple++) {
             // Create board
             let board:Cell[][] = getBlankCellBoard();
 
