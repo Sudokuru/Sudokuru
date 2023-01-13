@@ -191,24 +191,7 @@ export class Strategy{
                             }
                             // If notes can be removed as result of naked set then it is a valid strategy
                             if (this.notes.length > 0) {
-                                if (tuple === TupleEnum.PAIR) {
-                                    this.strategyType = StrategyEnum.NAKED_PAIR;
-                                }
-                                else if (tuple === TupleEnum.TRIPLET) {
-                                    this.strategyType = StrategyEnum.NAKED_TRIPLET;
-                                }
-                                else if (tuple === TupleEnum.QUADRUPLET) {
-                                    this.strategyType = StrategyEnum.NAKED_QUADRUPLET;
-                                }
-                                else if (tuple === TupleEnum.QUINTUPLET) {
-                                    this.strategyType = StrategyEnum.NAKED_QUINTUPLET;
-                                }
-                                else if (tuple === TupleEnum.SEXTUPLET) {
-                                    this.strategyType = StrategyEnum.NAKED_SEXTUPLET;
-                                }
-                                else if (tuple === TupleEnum.SEPTUPLET) {
-                                    this.strategyType = StrategyEnum.NAKED_SEPTUPLET;
-                                }
+                                this.strategyType = StrategyEnum[StrategyEnum[tuple]];
                                 this.identified = true;
                                 // If naked set shares a row or column it might also share a box so skip to check that
                                 if (group !== GroupEnum.BOX) {
