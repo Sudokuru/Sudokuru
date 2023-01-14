@@ -1,0 +1,63 @@
+name: "Pipeline"
+
+on:
+  push:
+    branches: 
+      - main
+  pull_request:
+    branches: 
+      - main
+      
+concurrency: main_workflow
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+    
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+    
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      
+    - name: Install Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16.x
+        
+    - run: npm ci
+    - run: npm run test
+    - name: Test Reporter
+      uses: dorny/test-reporter@v1
+      if: success() || failure()    
+      with:
+        name: JEST Tests            
+        path: junit.xml    
+        reporter: jest-junit
+
+  deploy_documentation:
+    name: Deploy Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      - run: npm ci
+      - run: npm run update-docs
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: 'docs/'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
