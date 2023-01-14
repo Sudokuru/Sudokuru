@@ -11,7 +11,13 @@ enum TestBoards {
     ROW_HIDDEN_SINGLES = "603002001500000020901730006810400090060000000000690040350000004002070005000500108",
     ROW_HIDDEN_SINGLES_SOLUTION = "683942751574816329921735486817453692469287513235691847358169274142378965796524138",
     ROW_COLUMN_BOX_HIDDEN_SINGLES = "902100860075000001001080000600300048054809600108060900500401000000050002089000050",
-    ROW_COLUMN_BOX_HIDDEN_SINGLES_SOLUTION = "942137865875946231361285479697312548254879613138564927523491786416758392789623154"
+    ROW_COLUMN_BOX_HIDDEN_SINGLES_SOLUTION = "942137865875946231361285479697312548254879613138564927523491786416758392789623154",
+    ROW_NAKED_PAIR = "249871000387625419165493827936584271718362900452917386870206190520109008691748502",
+    ROW_NAKED_PAIR_SOLUTION = "249871653387625419165493827936584271718362945452917386873256194524139768691748532",
+    COLUMN_NAKED_PAIR = "030000506000098071000000490009800000002010000380400609800030960100000004560982030",
+    COLUMN_NAKED_PAIR_SOLUTION = "938741526456298371271365498619853742742619853385427619827134965193576284564982137",
+    BOX_NAKED_PAIR = "700000006000320900000000054205060070197400560060000000010000000000095401630100020",
+    BOX_NAKED_PAIR_SOLUTION = "783549216451326987926817354245961873197438562368752149514273698872695431639184725"
 }
 
 enum InvalidTestBoards {
@@ -110,7 +116,7 @@ describe("solve Boards", () => {
     it('should solve single naked single', () => {
         let board:Board = new Board(TestBoards.SINGLE_NAKED_SINGLE);
         expect(board.getSolutionString()).toBe(TestBoards.SINGLE_NAKED_SINGLE_SOLUTION);
-        expect(board.getStrategyScore()).toBe(0);
+        expect(board.getStrategyScore()).toBe(StrategyEnum.NAKED_SINGLE);
     });
 
     it('should solve single naked single using hidden single', () => {
@@ -118,24 +124,49 @@ describe("solve Boards", () => {
         algorithm.push(StrategyEnum.HIDDEN_SINGLE);
         let board:Board = new Board(TestBoards.SINGLE_NAKED_SINGLE, algorithm);
         expect(board.getSolutionString()).toBe(TestBoards.SINGLE_NAKED_SINGLE_SOLUTION);
-        expect(board.getStrategyScore()).toBe(1);
+        expect(board.getStrategyScore()).toBe(StrategyEnum.HIDDEN_SINGLE);
     });
 
     it('should solve naked singles only board', () => {
         let board:Board = new Board(TestBoards.ONLY_NAKED_SINGLES);
         expect(board.getSolutionString()).toBe(TestBoards.ONLY_NAKED_SINGLES_SOLUTION);
-        expect(board.getStrategyScore()).toBe(0);
+        expect(board.getStrategyScore()).toBe(StrategyEnum.NAKED_SINGLE);
     });
 
     it ('should solve row hidden single', () => {
         let board:Board = new Board(TestBoards.ROW_HIDDEN_SINGLES);
         expect(board.getSolutionString()).toBe(TestBoards.ROW_HIDDEN_SINGLES_SOLUTION);
-        expect(board.getStrategyScore()).toBe(1);
+        expect(board.getStrategyScore()).toBe(StrategyEnum.HIDDEN_SINGLE);
     });
 
     it ('should solve row column box hidden singles', () => {
         let board:Board = new Board(TestBoards.ROW_COLUMN_BOX_HIDDEN_SINGLES);
         expect(board.getSolutionString()).toBe(TestBoards.ROW_COLUMN_BOX_HIDDEN_SINGLES_SOLUTION);
-        expect(board.getStrategyScore()).toBe(1);
+        expect(board.getStrategyScore()).toBe(StrategyEnum.HIDDEN_SINGLE);
+    });
+
+    it('should solve row naked pair', () => {
+        let algorithm:StrategyEnum[] = new Array();
+        algorithm.push(StrategyEnum.NAKED_PAIR);
+        for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
+            if (strategy !== StrategyEnum.NAKED_PAIR) {
+                algorithm.push(strategy);
+            }
+        }
+        let board:Board = new Board(TestBoards.ROW_NAKED_PAIR, algorithm);
+        expect(board.getSolutionString()).toBe(TestBoards.ROW_NAKED_PAIR_SOLUTION);
+        expect(board.getStrategyScore()).toBe(StrategyEnum.NAKED_PAIR);
+    });
+
+    it('should solve column naked pair', () => {
+        let board:Board = new Board(TestBoards.COLUMN_NAKED_PAIR);
+        expect(board.getSolutionString()).toBe(TestBoards.COLUMN_NAKED_PAIR_SOLUTION);
+        expect(board.getStrategyScore()).toBe(StrategyEnum.NAKED_PAIR);
+    });
+
+    it('should solve box naked pair', () => {
+        let board:Board = new Board(TestBoards.BOX_NAKED_PAIR);
+        expect(board.getSolutionString()).toBe(TestBoards.BOX_NAKED_PAIR_SOLUTION);
+        expect(board.getStrategyScore()).toBe(StrategyEnum.NAKED_PAIR);
     });
 });

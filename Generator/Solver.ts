@@ -2,7 +2,8 @@ import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
 import { Strategy } from "./Strategy";
 import { SudokuEnum, StrategyEnum } from "./Sudoku";
-import { HiddenSingleHint, Hint, NakedSingleHint } from "./Hint";
+import { HiddenSingleHint, Hint, NakedPairHint, NakedSingleHint } from "./Hint";
+import { Group } from "./Group";
 
 /**
  * Constructed using 2d board array
@@ -23,32 +24,21 @@ export class Solver{
     /**
      * Creates solver object
      * @param board - 2d board array
+     * @param algorithm - optional parameter specifying order to apply strategies
+     * @param notes - optional parameter specifying initial state of the notes (one array with an array for each cell in order)
      */
-    constructor(board: string[][]);
-
-    /**
-     * Creates solver object
-     * @param board - 2d board array
-     * @param algorithm - specific order to apply strategies
-     */
-    constructor(board: string[][], algorithm: StrategyEnum[]);
-
-    constructor(board: string[][], algorithm?: StrategyEnum[]) {
+    constructor(board: string[][], algorithm: StrategyEnum[] = Strategy.getDefaultAlgorithm(), notes?: string[][]) {
         this.board = new Array();
         this.initializeCellArray(this.board, board.length);
         this.initializeBoard(board);
-        this.simplifyAllNotes();
-        this.solved = false;
-        if (algorithm === undefined) {
-            this.algorithm = new Array();
-            // Initializes algorithm to use strategies in order of least to most complex
-            for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
-                this.algorithm.push(strategy);
-            }
+        if (notes === undefined) {
+            this.simplifyAllNotes();
         }
         else {
-            this.algorithm = algorithm;
+            this.setNotes(notes);
         }
+        this.solved = false;
+        this.algorithm = algorithm;
     }
 
     /**
@@ -105,6 +95,9 @@ export class Solver{
             else if (this.algorithm[i] === StrategyEnum.HIDDEN_SINGLE && this.setHiddenSingle(cells)) {
                 return;
             }
+            else if (this.algorithm[i] === StrategyEnum.NAKED_PAIR && this.setNakedPair(cells)) {
+                return;
+            }
         }
     }
 
@@ -113,6 +106,7 @@ export class Solver{
      */
     private applyHint():void {
         this.placeValues(this.hint.getEffectPlacements());
+        this.removeNotes(this.hint.getEffectRemovals());
     }
 
     /**
@@ -129,10 +123,62 @@ export class Solver{
                 this.initializeCellArray(single, 1);
                 single[0].push(cells[i][j]);
                 // Create a naked single strategy using the array of cells
-                let nakedSingle: Strategy = new Strategy(single);
+                let nakedSingle: Strategy = new Strategy(this.board, single);
                 // Checks if strategy object constitutes a naked single
                 if (nakedSingle.isNakedSingle()) {
                     this.hint = new NakedSingleHint(nakedSingle);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * If given Strategy is a hidden single it sets the hint to it and returns true
+     * @param hiddenSingle - Strategy
+     * @returns true if given Strategy is a hidden single
+     */
+    private setHiddenSingleHint(hiddenSingle: Strategy):boolean {
+        if (hiddenSingle.isHiddenSingle()) {
+            this.hint = new HiddenSingleHint(hiddenSingle);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * If given Strategy is a naked pair it sets the hint to it and returns true
+     * @param nakedPair - Strategy
+     * @returns true if given Strategy is a naked pair
+     */
+    private setNakedPairHint(nakedPair: Strategy):boolean {
+        if (nakedPair.isNakedPair()) {
+            this.hint = new NakedPairHint(nakedPair);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns true if puzzle has given strategy (in a row, column, or box) and sets hint, otherwise returns false
+     * @param strategy - strategy to check for
+     * @param cells - cells to create strategy with
+     * @returns true if contains given strategy
+     */
+    private setGroupStrategy(strategy: StrategyEnum, cells: Cell[][]):boolean {
+        // Checks every group of rows, columns, and boxes for given strategy
+        for (let group:number = 0; group < SudokuEnum.ROW_LENGTH; group++) {
+            let row: Strategy = Strategy.getRowStrategy(this.board, cells, group);
+            let column: Strategy = Strategy.getColumnStrategy(this.board, cells, group);
+            let box: Strategy = Strategy.getBoxStrategy(this.board, cells, group);
+            if (strategy === StrategyEnum.HIDDEN_SINGLE) {
+                if (this.setHiddenSingleHint(row) || this.setHiddenSingleHint(column) || this.setHiddenSingleHint(box)) {
+                    return true;
+                }
+            }
+            else if (strategy === StrategyEnum.NAKED_PAIR) {
+                if (this.setNakedPairHint(row) || this.setNakedPairHint(column) || this.setNakedPairHint(box)) {
                     return true;
                 }
             }
@@ -146,64 +192,16 @@ export class Solver{
      * @returns true if contains a hidden single
      */
     private setHiddenSingle(cells: Cell[][]):boolean {
-        // Checks every cell row for a hidden single
-        for (let i:number = 0; i < cells.length; i++) {
-            // Creates a Cell array containing a possible hidden single
-            let rowSingle: Cell[][] = new Array();
-            this.initializeCellArray(rowSingle, 1);
-            for (let j:number = 0; j < cells[i].length; j++) {
-                rowSingle[0].push(cells[i][j]);
-            }
-            // Create a hidden single strategy using the array of cells in the row
-            let hiddenSingle: Strategy = new Strategy(rowSingle);
-            // Checks if strategy object constitutes a hidden single
-            if (hiddenSingle.isHiddenSingle()) {
-                this.hint = new HiddenSingleHint(hiddenSingle);
-                return true;
-            }
-        }
-        // Checks every cell column for a hidden single
-        for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
-            // Create Cell array containing a possible hidden single
-            let columnSingle: Cell[][] = new Array();
-            this.initializeCellArray(columnSingle, 1);
-            for (let i:number = 0; i < cells.length; i++) {
-                for (let j:number = 0; j < cells[i].length; j++) {
-                    if (cells[i][j].getColumn() === column) {
-                        columnSingle[0].push(cells[i][j]);
-                        j = cells[i].length;
-                    }
-                }
-            }
-            // Create hidden single strategy using the array of cells in the column
-            let hiddenSingle: Strategy = new Strategy(columnSingle);
-            // Checks if strategy object constitutes a hidden single
-            if (hiddenSingle.isHiddenSingle()) {
-                this.hint = new HiddenSingleHint(hiddenSingle);
-                return true;
-            }
-        }
-        // Checks every cell box for a hidden single
-        for (let box:number = 0; box < SudokuEnum.BOX_COUNT; box++) {
-            // Create Cell array containing a possible hidden single
-            let boxSingle: Cell[][] = new Array();
-            this.initializeCellArray(boxSingle, 1);
-            for (let i:number = 0; i < cells.length; i++) {
-                for (let j:number = 0; j < cells[i].length; j++) {
-                    if (cells[i][j].getBox() === box) {
-                        boxSingle[0].push(cells[i][j]);
-                    }
-                }
-            }
-            // Create hidden single strategy using the array of cells in the box
-            let hiddenSingle: Strategy = new Strategy(boxSingle);
-            // Checks if strategy object constitutes a hidden single
-            if (hiddenSingle.isHiddenSingle()) {
-                this.hint = new HiddenSingleHint(hiddenSingle);
-                return true;
-            }
-        }
-        return false;
+        return this.setGroupStrategy(StrategyEnum.HIDDEN_SINGLE, cells);
+    }
+
+    /**
+     * Returns true if puzzle has a naked pair and sets hint, otherwise returns false
+     * @param cells - empty cells
+     * @returns true if contains a naked pair
+     */
+    private setNakedPair(cells: Cell[][]):boolean {
+        return this.setGroupStrategy(StrategyEnum.NAKED_PAIR, cells);
     }
 
     /**
@@ -245,12 +243,34 @@ export class Solver{
             for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
                 notes.push(new Array());
                 i++;
-                this.board[row][column].getNotes().forEach((value: undefined, key: string) => {
-                    notes[i].push(key);
-                });
+                let cellNotes:Group = this.board[row][column].getNotes();
+                for (let j:number = 0; j < SudokuEnum.ROW_LENGTH; j++) {
+                    if (cellNotes.contains(j)) {
+                        notes[i].push((j+1).toString());
+                    }
+                }
             }
         }
         return notes;
+    }
+
+    /**
+     * Sets boards notes to given notes
+     * @param notes - array of notes arrays in order (one array with an array for each cell)
+     */
+    public setNotes(notes: string[][]):void {
+        let index:number;
+        for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+            for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                // Remove every note except ones provided
+                let removedNotes:Group = new Group(true);
+                index = (row * SudokuEnum.COLUMN_LENGTH) + column;
+                for (let note:number = 0; note < notes[index].length; note++) {
+                    removedNotes.remove(notes[index][note]);
+                }
+                this.board[row][column].removeNotes(removedNotes);
+            }
+        }
     }
 
     /**
@@ -259,7 +279,9 @@ export class Solver{
     private simplifyAllNotes():void {
         for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
             for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
-                this.simplifyNotes(this.board[row][column]);
+                if (!this.board[row][column].isEmpty()) {
+                    this.simplifyNotes(this.board[row][column]);
+                }
             }
         }
     }
@@ -369,5 +391,18 @@ export class Solver{
             this.simplifyNotes(this.board[row][column]);
         }
         return;
+    }
+
+    /**
+     * Removes given notes from board
+     * @param notes - Groups containing notes to remove
+     */
+    private removeNotes(notes: Group[]):void {
+        let row:number, column:number;
+        for (let i:number = 0; i < notes.length; i++) {
+            row = notes[i].getRow();
+            column = notes[i].getColumn();
+            this.board[row][column].removeNotes(notes[i]);
+        }
     }
 }

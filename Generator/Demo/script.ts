@@ -6,13 +6,17 @@ interface nextStepResponse {
 }
 
 const NEXT_STEP_ENDPOINT:string = "http://localhost:3001/solver/nextStep?board=";
+const NEXT_NOTES:string = "&notes=";
 const NEXT_NAKED_SINGLE:string = "&nakedSingle=";
 const NEXT_HIDDEN_SINGLE:string = "&hiddenSingle=";
+const NEXT_NAKED_PAIR:string = "&nakedPair=";
 const CANDIDATES:string = "123456789";
 const EMPTY_CELL = "0";
 const SINGLE_NAKED_SINGLE = "439275618051896437876143592342687951185329746697451283928734165563912874714568329";
 const ONLY_NAKED_SINGLES = "310084002200150006570003010423708095760030000009562030050006070007000900000001500";
 const HIDDEN_SINGLES = "902100860075000001001080000600300048054809600108060900500401000000050002089000050";
+const COLUMN_NAKED_PAIR = "030000506000098071000000490009800000002010000380400609800030960100000004560982030";
+const BOX_NAKED_PAIR = "700000006000320900000000054205060070197400560060000000010000000000095401630100020";
 
 /**
  * Given a board array returns the equivalent board string
@@ -246,6 +250,22 @@ function getInputBoard():string {
 }
 
 /**
+ * Gets notes last received by the Solver or undefined if none available
+ * @returns notes or undefined if none available i.e. at first step
+ */
+function getNotes():string {
+    let notes:string = NEXT_NOTES;
+    let stepNumber:string = getStepNumber();
+    if (stepNumber !== "0") {
+        notes += sessionStorage.getItem("notes" + (Number(stepNumber) - 1).toString());
+    }
+    else {
+        notes += "undefined";
+    }
+    return notes;
+}
+
+/**
  * Gets order of strategy from user input boxes
  * @returns strategy order string
  */
@@ -258,6 +278,9 @@ function getStrategyOrder():string {
     algorithm += NEXT_HIDDEN_SINGLE;
     algorithm += (<HTMLInputElement>document.getElementById("hiddenSingle")).value;
 
+    algorithm += NEXT_NAKED_PAIR;
+    algorithm += (<HTMLInputElement>document.getElementById("nakedPair")).value;
+
     return algorithm;
 }
 
@@ -266,7 +289,7 @@ function getStrategyOrder():string {
  * @returns next step endpoint url
  */
 function getNextStepURL():string {
-    return NEXT_STEP_ENDPOINT + getInputBoard() + getStrategyOrder();
+    return NEXT_STEP_ENDPOINT + getInputBoard() + getNotes() + getStrategyOrder();
 }
 
 /**
@@ -354,8 +377,14 @@ function loadPuzzle():void {
     else if (puzzle === "ONLY_NAKED_SINGLES") {
         boardInput.value = ONLY_NAKED_SINGLES;
     }
-    else {
+    else if (puzzle === "HIDDEN_SINGLES") {
         boardInput.value = HIDDEN_SINGLES;
+    }
+    else if (puzzle === "COLUMN_NAKED_PAIR") {
+        boardInput.value = COLUMN_NAKED_PAIR;
+    }
+    else {
+        boardInput.value = BOX_NAKED_PAIR;
     }
     sessionStorage.clear();
     nextStep();

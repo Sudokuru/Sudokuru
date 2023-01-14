@@ -22,8 +22,18 @@ app.get('/solver/nextStep', (req, res) => {
         else if (Number(req.query.hiddenSingle) === i) {
             algorithm.push(StrategyEnum.HIDDEN_SINGLE);
         }
+        else if (Number(req.query.nakedPair) === i) {
+            algorithm.push(StrategyEnum.NAKED_PAIR);
+        }
     }
-    let solver: Solver = new Solver(board, algorithm);
+    let notes: string[][];
+    if (req.query.notes !== "undefined") {
+        notes = JSON.parse(req.query.notes);
+    }
+    else {
+        notes = undefined;
+    }
+    let solver: Solver = new Solver(board, algorithm, notes);
     let hint: Hint = solver.nextStep();
     if (hint !== null) {
         res.send({ board: solver.getBoard(), notes: solver.getNotes(), info: hint.getInfo(), action: hint.getAction() });
