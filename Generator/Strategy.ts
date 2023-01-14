@@ -4,6 +4,38 @@ import { SudokuEnum, StrategyEnum, getCellsInRow, getCellsInColumn, getCellsInBo
 import { Group } from "./Group";
 
 /**
+ * Includes lower bounds for strategies difficulty ratings
+ * @enum
+ */
+enum DifficultyLowerBounds {
+    NAKED_SINGLE = 10,
+    HIDDEN_SINGLE = 20,
+    NAKED_PAIR = 40,
+    NAKED_TRIPLET = 60,
+    NAKED_QUADRUPLET = 90,
+    NAKED_QUINTUPLET = 140,
+    NAKED_SEXTUPLET = 200,
+    NAKED_SEPTUPLET = 300,
+    NAKED_OCTUPLET = 450
+}
+
+/**
+ * Includes upper bounds for strategies difficulty ratings
+ * @enum
+ */
+enum DifficultyUpperBounds {
+    NAKED_SINGLE = 10,
+    HIDDEN_SINGLE = 40,
+    NAKED_PAIR = 60,
+    NAKED_TRIPLET = 90,
+    NAKED_QUADRUPLET = 140,
+    NAKED_QUINTUPLET = 140,
+    NAKED_SEXTUPLET = 200,
+    NAKED_SEPTUPLET = 300,
+    NAKED_OCTUPLET = 450
+}
+
+/**
  * Constructed using 2d array of cells
  * Returns:
  * Whether or object constitutes specific strategies
