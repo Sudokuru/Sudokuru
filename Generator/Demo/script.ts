@@ -10,6 +10,12 @@ const NEXT_NOTES:string = "&notes=";
 const NEXT_NAKED_SINGLE:string = "&nakedSingle=";
 const NEXT_HIDDEN_SINGLE:string = "&hiddenSingle=";
 const NEXT_NAKED_PAIR:string = "&nakedPair=";
+const NEXT_NAKED_TRIPLET:string = "&nakedTriplet=";
+const NEXT_NAKED_QUADRUPLET:string = "&nakedQuadruplet=";
+const NEXT_NAKED_QUINTUPLET:string = "&nakedQuintuplet=";
+const NEXT_NAKED_SEXTUPLET:string = "&nakedSextuplet=";
+const NEXT_NAKED_SEPTUPLET:string = "&nakedSeptuplet=";
+const NEXT_NAKED_OCTUPLET:string = "&nakedOctuplet=";
 const CANDIDATES:string = "123456789";
 const EMPTY_CELL = "0";
 const SINGLE_NAKED_SINGLE = "439275618051896437876143592342687951185329746697451283928734165563912874714568329";
@@ -138,7 +144,6 @@ function getRedHighlight(value:string):string {
  * @param info - hint info
  * @param action - hint action
  * @param stepNumber - step number
- * @returns 
  */
 function updateTable(board:string[][], notes:string[][], info:string, action: string, 
     stepNumber:number):void {
@@ -280,6 +285,24 @@ function getStrategyOrder():string {
 
     algorithm += NEXT_NAKED_PAIR;
     algorithm += (<HTMLInputElement>document.getElementById("nakedPair")).value;
+
+    algorithm += NEXT_NAKED_TRIPLET;
+    algorithm += (<HTMLInputElement>document.getElementById("nakedTriplet")).value;
+
+    algorithm += NEXT_NAKED_QUADRUPLET;
+    algorithm += (<HTMLInputElement>document.getElementById("nakedQuadruplet")).value;
+
+    algorithm += NEXT_NAKED_QUINTUPLET;
+    algorithm += (<HTMLInputElement>document.getElementById("nakedQuintuplet")).value;
+
+    algorithm += NEXT_NAKED_SEXTUPLET;
+    algorithm += (<HTMLInputElement>document.getElementById("nakedSextuplet")).value;
+
+    algorithm += NEXT_NAKED_SEPTUPLET;
+    algorithm += (<HTMLInputElement>document.getElementById("nakedSeptuplet")).value;
+
+    algorithm += NEXT_NAKED_OCTUPLET;
+    algorithm += (<HTMLInputElement>document.getElementById("nakedOctuplet")).value;
 
     return algorithm;
 }

@@ -25,6 +25,24 @@ app.get('/solver/nextStep', (req, res) => {
         else if (Number(req.query.nakedPair) === i) {
             algorithm.push(StrategyEnum.NAKED_PAIR);
         }
+        else if (Number(req.query.nakedTriplet) === i) {
+            algorithm.push(StrategyEnum.NAKED_TRIPLET);
+        }
+        else if (Number(req.query.nakedQuadruplet) === i) {
+            algorithm.push(StrategyEnum.NAKED_QUADRUPLET);
+        }
+        else if (Number(req.query.nakedQuintuplet) === i) {
+            algorithm.push(StrategyEnum.NAKED_QUINTUPLET);
+        }
+        else if (Number(req.query.nakedSextuplet) === i) {
+            algorithm.push(StrategyEnum.NAKED_SEXTUPLET);
+        }
+        else if (Number(req.query.nakedSeptuplet) === i) {
+            algorithm.push(StrategyEnum.NAKED_SEPTUPLET);
+        }
+        else if (Number(req.query.nakedOctuplet) === i) {
+            algorithm.push(StrategyEnum.NAKED_OCTUPLET);
+        }
     }
     let notes: string[][];
     if (req.query.notes !== "undefined") {

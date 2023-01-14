@@ -33,6 +33,66 @@ export enum NAKED_PAIR {
 }
 
 /**
+ * Contains hint information for naked triplet strategy
+ * Contains what action hint is trying to get you to do
+ * @enum
+ */
+export enum NAKED_TRIPLET {
+    HINT_INFO = "Naked triplets are when you only have the same three numbers left as a possibility in three cells in the same row, column, or box",
+    HINT_ACTION = "When you see a naked triplet you can remove them from the notes of every other cell in the row, column, or box that they share"
+}
+
+/**
+ * Contains hint information for naked quadruplet strategy
+ * Contains what action hint is trying to get you to do
+ * @enum
+ */
+export enum NAKED_QUADRUPLET {
+    HINT_INFO = "Naked quadruplets are when you only have the same four numbers left as a possibility in four cells in the same row, column, or box",
+    HINT_ACTION = "When you see a naked quadruplet you can remove them from the notes of every other cell in the row, column, or box that they share"
+}
+
+/**
+ * Contains hint information for naked quintuplet strategy
+ * Contains what action hint is trying to get you to do
+ * @enum
+ */
+export enum NAKED_QUINTUPLET {
+    HINT_INFO = "Naked quintuplets are when you only have the same five numbers left as a possibility in five cells in the same row, column, or box",
+    HINT_ACTION = "When you see a naked quintuplet you can remove them from the notes of every other cell in the row, column, or box that they share"
+}
+
+/**
+ * Contains hint information for naked sextuplet strategy
+ * Contains what action hint is trying to get you to do
+ * @enum
+ */
+export enum NAKED_SEXTUPLET {
+    HINT_INFO = "Naked sextuplets are when you only have the same six numbers left as a possibility in six cells in the same row, column, or box",
+    HINT_ACTION = "When you see a naked sextuplet you can remove them from the notes of every other cell in the row, column, or box that they share"
+}
+
+/**
+ * Contains hint information for naked septuplet strategy
+ * Contains what action hint is trying to get you to do
+ * @enum
+ */
+export enum NAKED_SEPTUPLET {
+    HINT_INFO = "Naked septuplets are when you only have the same seven numbers left as a possibility in seven cells in the same row, column, or box",
+    HINT_ACTION = "When you see a naked septuplet you can remove them from the notes of every other cell in the row, column, or box that they share"
+}
+
+/**
+ * Contains hint information for naked octuplet strategy
+ * Contains what action hint is trying to get you to do
+ * @enum
+ */
+export enum NAKED_OCTUPLET {
+    HINT_INFO = "Naked octuplets are when you only have the same eight numbers left as a possibility in eight cells in the same row, column, or box",
+    HINT_ACTION = "When you see a naked octuplet you can remove them from the notes of every other cell in the row, column, or box that they share"
+}
+
+/**
  * Constructed using strategy object and info/action strings
  * Inherited by hint classes for specific strategies like NakedSingle
  * Returns:
@@ -132,5 +192,59 @@ export class HiddenSingleHint extends Hint {
 export class NakedPairHint extends Hint {
     constructor(strategy: Strategy) {
         super(strategy, NAKED_PAIR.HINT_INFO, NAKED_PAIR.HINT_ACTION);
+    }
+}
+
+/**
+ * Naked triplet strategy hint class
+ */
+export class NakedTripletHint extends Hint {
+    constructor(strategy: Strategy) {
+        super(strategy, NAKED_TRIPLET.HINT_INFO, NAKED_TRIPLET.HINT_ACTION);
+    }
+}
+
+/**
+ * Naked quadruplet strategy hint class
+ */
+export class NakedQuadrupletHint extends Hint {
+    constructor(strategy: Strategy) {
+        super(strategy, NAKED_QUADRUPLET.HINT_INFO, NAKED_QUADRUPLET.HINT_ACTION);
+    }
+}
+
+/**
+ * Naked quintuplet strategy hint class
+ */
+export class NakedQuintupletHint extends Hint {
+    constructor(strategy: Strategy) {
+        super(strategy, NAKED_QUINTUPLET.HINT_INFO, NAKED_QUINTUPLET.HINT_ACTION);
+    }
+}
+
+/**
+ * Naked sextuplet strategy hint class
+ */
+export class NakedSextupletHint extends Hint {
+    constructor(strategy: Strategy) {
+        super(strategy, NAKED_SEXTUPLET.HINT_INFO, NAKED_SEXTUPLET.HINT_ACTION);
+    }
+}
+
+/**
+ * Naked septuplet strategy hint class
+ */
+export class NakedSeptupletHint extends Hint {
+    constructor(strategy: Strategy) {
+        super(strategy, NAKED_SEPTUPLET.HINT_INFO, NAKED_SEPTUPLET.HINT_ACTION);
+    }
+}
+
+/**
+ * Naked octuplet strategy hint class
+ */
+export class NakedOctupletHint extends Hint {
+    constructor(strategy: Strategy) {
+        super(strategy, NAKED_OCTUPLET.HINT_INFO, NAKED_OCTUPLET.HINT_ACTION);
     }
 }

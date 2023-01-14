@@ -1,6 +1,7 @@
 import { Group } from "../../Group";
 import { CustomError, CustomErrorEnum } from "../../CustomError";
 import { getError } from "../testResources";
+import { SudokuEnum } from "../../Sudoku";
 
 describe("create Group object", () => {
     it('should insert some candidates', () => {
@@ -56,11 +57,27 @@ describe("create Group object", () => {
         let b:Group = new Group(false);
         b.insert(3);
         b.insert(6);
+
+        let c:Group = new Group(false);
+        c.insert(4);
+
+        let d:Group = new Group(false);
+        d.insert(a);
+        d.insert(4);
         
         expect(a.equals(b)).toBeTruthy;
+        expect(a.equals(a.clone())).toBeTruthy;
+        expect(d.equals(Group.union([a, c]))).toBeTruthy;
 
         a.insert(7);
 
         expect(b.equals(a)).toBeFalsy;
+    });
+    it('should return subsets', () => {
+        expect((Group.getSubset(1)).length).toBe(SudokuEnum.ROW_LENGTH);
+        expect((Group.getSubset(2)).length).toBe(36);
+        expect((Group.getSubset(3)).length).toBe(84);
+        expect((Group.getSubset(4)).length).toBe(126);
+        expect((Group.getSubset(9)).length).toBe(1);
     });
 });
