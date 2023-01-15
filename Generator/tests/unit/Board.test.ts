@@ -116,11 +116,25 @@ describe("create Board objects", () => {
     });
 });
 
+let singleNakedSingle:Board, onlyNakedSingles:Board, onlyNakedSinglesQuadruplets:Board;
+
 describe("solve Boards", () => {
+    beforeAll(() => {
+        singleNakedSingle = new Board(TestBoards.SINGLE_NAKED_SINGLE);
+        onlyNakedSingles = new Board(TestBoards.ONLY_NAKED_SINGLES);
+        let algorithm:StrategyEnum[] = new Array();
+        algorithm.push(StrategyEnum.NAKED_QUADRUPLET);
+        for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
+            if (strategy !== StrategyEnum.NAKED_QUADRUPLET) {
+                algorithm.push(strategy);
+            }
+        }
+        onlyNakedSinglesQuadruplets = new Board(TestBoards.ONLY_NAKED_SINGLES, algorithm);
+    });
+
     it('should solve single naked single', () => {
-        let board:Board = new Board(TestBoards.SINGLE_NAKED_SINGLE);
-        expect(board.getSolutionString()).toBe(TestBoards.SINGLE_NAKED_SINGLE_SOLUTION);
-        expect(board.getStrategyScore()).toBe(StrategyEnum.NAKED_SINGLE);
+        expect(singleNakedSingle.getSolutionString()).toBe(TestBoards.SINGLE_NAKED_SINGLE_SOLUTION);
+        expect(singleNakedSingle.getStrategyScore()).toBe(StrategyEnum.NAKED_SINGLE);
     });
 
     it('should solve single naked single using hidden single', () => {
@@ -132,9 +146,12 @@ describe("solve Boards", () => {
     });
 
     it('should solve naked singles only board', () => {
-        let board:Board = new Board(TestBoards.ONLY_NAKED_SINGLES);
-        expect(board.getSolutionString()).toBe(TestBoards.ONLY_NAKED_SINGLES_SOLUTION);
-        expect(board.getStrategyScore()).toBe(StrategyEnum.NAKED_SINGLE);
+        expect(onlyNakedSingles.getSolutionString()).toBe(TestBoards.ONLY_NAKED_SINGLES_SOLUTION);
+        expect(onlyNakedSingles.getStrategyScore()).toBe(StrategyEnum.NAKED_SINGLE);
+    });
+
+    it('should give higher difficulty rating to board with multiple naked singles than one with only one', () => {
+        expect(onlyNakedSingles.getDifficulty()).toBeGreaterThan(singleNakedSingle.getDifficulty());
     });
 
     it ('should solve row hidden single', () => {
@@ -181,16 +198,12 @@ describe("solve Boards", () => {
     });
 
     it('should solve naked quadruplet', () => {
-        let algorithm:StrategyEnum[] = new Array();
-        algorithm.push(StrategyEnum.NAKED_QUADRUPLET);
-        for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
-            if (strategy !== StrategyEnum.NAKED_QUADRUPLET) {
-                algorithm.push(strategy);
-            }
-        }
-        let board:Board = new Board(TestBoards.ONLY_NAKED_SINGLES, algorithm);
-        expect(board.getSolutionString()).toBe(TestBoards.ONLY_NAKED_SINGLES_SOLUTION);
-        expect(board.getStrategyScore()).toBe(StrategyEnum.NAKED_QUADRUPLET);
+        expect(onlyNakedSinglesQuadruplets.getSolutionString()).toBe(TestBoards.ONLY_NAKED_SINGLES_SOLUTION);
+        expect(onlyNakedSinglesQuadruplets.getStrategyScore()).toBe(StrategyEnum.NAKED_QUADRUPLET);
+    });
+
+    it('should give a higher difficulty score to solving same board with naked quadruplets than singles', () => {
+        expect(onlyNakedSinglesQuadruplets.getDifficulty()).toBeGreaterThan(onlyNakedSingles.getDifficulty());
     });
 
     it('should solve naked quintuplet', () => {

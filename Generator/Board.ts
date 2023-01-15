@@ -6,6 +6,8 @@ import { StrategyEnum } from "./Sudoku"
 import { Cell } from "./Cell";
 import { Group } from "./Group";
 
+const GAME_LENGTH_DIFFICULTY_MULTIPLIER: number = 0.02;
+
 /**
  * Constructed using board string
  * Throws exception if invalid board
@@ -21,6 +23,7 @@ export class Board{
     private solution: string[][];
     private solutionString: string;
     private mostDifficultStrategy: StrategyEnum;
+    private difficulty: number;
     private solver: Solver;
 
     /**
@@ -43,6 +46,7 @@ export class Board{
         this.board = getBoardArray(board);
 
         this.mostDifficultStrategy = -1;
+        this.difficulty = 0;
 
         if (algorithm === undefined) {
             this.solver = new Solver(this.board);
@@ -87,11 +91,22 @@ export class Board{
     }
 
     /**
+     * Get difficulty
+     * @returns difficulty
+     */
+    public getDifficulty():number {
+        return this.difficulty;
+    }
+
+    /**
      * Solves the puzzle and sets strategy and solution
      */
     private solve():void {
         let hint:Hint = this.solver.nextStep();
+        let stepCount:number = 0;
         while (hint !== null) {
+            this.difficulty += hint.getDifficulty();
+            stepCount++;
             if (hint.getStrategyType() > this.mostDifficultStrategy) {
                 this.mostDifficultStrategy = hint.getStrategyType();
             }
@@ -99,6 +114,8 @@ export class Board{
         }
         this.solution = this.solver.getSolution();
         this.setSolutionString();
+        this.difficulty /= stepCount;
+        this.difficulty = Math.ceil(this.difficulty * (1 + (stepCount * GAME_LENGTH_DIFFICULTY_MULTIPLIER)));
         return;
     }
 
