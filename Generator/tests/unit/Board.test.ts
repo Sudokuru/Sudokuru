@@ -135,6 +135,14 @@ describe("solve Boards", () => {
     it('should solve single naked single', () => {
         expect(singleNakedSingle.getSolutionString()).toBe(TestBoards.SINGLE_NAKED_SINGLE_SOLUTION);
         expect(singleNakedSingle.getStrategyScore()).toBe(StrategyEnum.NAKED_SINGLE);
+        for (let i:number = 0; i < StrategyEnum.COUNT; i++) {
+            if (i === StrategyEnum.NAKED_SINGLE) {
+                expect(singleNakedSingle.getStrategies()[i]).toBeTruthy;
+            }
+            else {
+                expect(singleNakedSingle.getStrategies()[i]).toBeFalsy;
+            }
+        }
     });
 
     it('should solve single naked single using hidden single', () => {
@@ -215,8 +223,16 @@ describe("solve Boards", () => {
             }
         }
         let board:Board = new Board(TestBoards.ONLY_NAKED_SINGLES, algorithm);
+        let strategies:boolean[] = board.getStrategies();
+        let strategyCount:number = 0;
+        for (let i:number = 0; i < StrategyEnum.COUNT; i++) {
+            if (strategies[i]) {
+                strategyCount++;
+            }
+        }
         expect(board.getSolutionString()).toBe(TestBoards.ONLY_NAKED_SINGLES_SOLUTION);
         expect(board.getStrategyScore()).toBe(StrategyEnum.NAKED_QUINTUPLET);
+        expect(strategyCount).toBe(5);
     });
 
     it('should solve naked sextuplet', () => {

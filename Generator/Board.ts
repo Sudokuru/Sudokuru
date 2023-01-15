@@ -23,6 +23,7 @@ export class Board{
     private solution: string[][];
     private solutionString: string;
     private mostDifficultStrategy: StrategyEnum;
+    private strategies: boolean[];
     private difficulty: number;
     private solver: Solver;
 
@@ -46,6 +47,7 @@ export class Board{
         this.board = getBoardArray(board);
 
         this.mostDifficultStrategy = -1;
+        this.strategies = new Array(StrategyEnum.COUNT).fill(false);
         this.difficulty = 0;
 
         if (algorithm === undefined) {
@@ -91,11 +93,56 @@ export class Board{
     }
 
     /**
+     * Get boolean array containing strategies used by Solver
+     * @returns strategies boolean array
+     */
+    public getStrategies():boolean[] {
+        return this.strategies;
+    }
+
+    /**
      * Get difficulty
      * @returns difficulty
      */
     public getDifficulty():number {
         return this.difficulty;
+    }
+
+    /**
+     * Given a strategy returns an array containing its prereqs
+     * @param strategy - strategy getting prereqs for
+     * @returns array of prereqs for the given strategy
+     */
+    private getPrereqs(strategy: StrategyEnum):StrategyEnum[] {
+        let prereqs:StrategyEnum[] = new Array();
+        if (strategy === StrategyEnum.NAKED_OCTUPLET) {
+            prereqs.push(StrategyEnum.NAKED_SEPTUPLET);
+            strategy = StrategyEnum.NAKED_SEPTUPLET;
+        }
+        if (strategy === StrategyEnum.NAKED_SEPTUPLET) {
+            prereqs.push(StrategyEnum.NAKED_SEXTUPLET);
+            strategy = StrategyEnum.NAKED_SEXTUPLET;
+        }
+        if (strategy === StrategyEnum.NAKED_SEXTUPLET) {
+            prereqs.push(StrategyEnum.NAKED_QUINTUPLET);
+            strategy = StrategyEnum.NAKED_QUINTUPLET;
+        }
+        if (strategy === StrategyEnum.NAKED_QUINTUPLET) {
+            prereqs.push(StrategyEnum.NAKED_QUADRUPLET);
+            strategy = StrategyEnum.NAKED_QUADRUPLET;
+        }
+        if (strategy === StrategyEnum.NAKED_QUADRUPLET) {
+            prereqs.push(StrategyEnum.NAKED_TRIPLET);
+            strategy = StrategyEnum.NAKED_TRIPLET;
+        }
+        if (strategy === StrategyEnum.NAKED_TRIPLET) {
+            prereqs.push(StrategyEnum.NAKED_PAIR);
+            strategy = StrategyEnum.NAKED_PAIR;
+        }
+        if (strategy === StrategyEnum.NAKED_PAIR || strategy === StrategyEnum.HIDDEN_SINGLE) {
+            prereqs.push(StrategyEnum.NAKED_SINGLE);
+        }
+        return prereqs;
     }
 
     /**
@@ -105,6 +152,7 @@ export class Board{
         let hint:Hint = this.solver.nextStep();
         let stepCount:number = 0;
         while (hint !== null) {
+            this.strategies[hint.getStrategyType()] = true;
             this.difficulty += hint.getDifficulty();
             stepCount++;
             if (hint.getStrategyType() > this.mostDifficultStrategy) {
@@ -114,6 +162,14 @@ export class Board{
         }
         this.solution = this.solver.getSolution();
         this.setSolutionString();
+        for (let i:number = 0; i < StrategyEnum.COUNT; i++) {
+            if (this.strategies[i]) {
+                let prereqs:StrategyEnum[] = this.getPrereqs(StrategyEnum[StrategyEnum[i]]);
+                for (let j:number = 0; j < prereqs.length; j++) {
+                    this.strategies[prereqs[j]] = true;
+                }
+            }
+        }
         this.difficulty /= stepCount;
         this.difficulty = Math.ceil(this.difficulty * (1 + (stepCount * GAME_LENGTH_DIFFICULTY_MULTIPLIER)));
         return;
