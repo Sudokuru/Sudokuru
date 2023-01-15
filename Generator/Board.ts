@@ -93,6 +93,14 @@ export class Board{
     }
 
     /**
+     * Get boolean array containing strategies used by Solver
+     * @returns strategies boolean array
+     */
+    public getStrategies():boolean[] {
+        return this.strategies;
+    }
+
+    /**
      * Get difficulty
      * @returns difficulty
      */
