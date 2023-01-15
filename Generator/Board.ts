@@ -23,6 +23,7 @@ export class Board{
     private solution: string[][];
     private solutionString: string;
     private mostDifficultStrategy: StrategyEnum;
+    private strategies: boolean[];
     private difficulty: number;
     private solver: Solver;
 
@@ -46,6 +47,7 @@ export class Board{
         this.board = getBoardArray(board);
 
         this.mostDifficultStrategy = -1;
+        this.strategies = new Array(StrategyEnum.COUNT).fill(false);
         this.difficulty = 0;
 
         if (algorithm === undefined) {
@@ -105,6 +107,7 @@ export class Board{
         let hint:Hint = this.solver.nextStep();
         let stepCount:number = 0;
         while (hint !== null) {
+            this.strategies[hint.getStrategyType()] = true;
             this.difficulty += hint.getDifficulty();
             stepCount++;
             if (hint.getStrategyType() > this.mostDifficultStrategy) {
