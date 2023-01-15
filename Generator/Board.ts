@@ -109,6 +109,43 @@ export class Board{
     }
 
     /**
+     * Given a strategy returns an array containing its prereqs
+     * @param strategy - strategy getting prereqs for
+     * @returns array of prereqs for the given strategy
+     */
+    private getPrereqs(strategy: StrategyEnum):StrategyEnum[] {
+        let prereqs:StrategyEnum[] = new Array();
+        if (strategy === StrategyEnum.NAKED_OCTUPLET) {
+            prereqs.push(StrategyEnum.NAKED_SEPTUPLET);
+            strategy = StrategyEnum.NAKED_SEPTUPLET;
+        }
+        if (strategy === StrategyEnum.NAKED_SEPTUPLET) {
+            prereqs.push(StrategyEnum.NAKED_SEXTUPLET);
+            strategy = StrategyEnum.NAKED_SEXTUPLET;
+        }
+        if (strategy === StrategyEnum.NAKED_SEXTUPLET) {
+            prereqs.push(StrategyEnum.NAKED_QUINTUPLET);
+            strategy = StrategyEnum.NAKED_QUINTUPLET;
+        }
+        if (strategy === StrategyEnum.NAKED_QUINTUPLET) {
+            prereqs.push(StrategyEnum.NAKED_QUADRUPLET);
+            strategy = StrategyEnum.NAKED_QUADRUPLET;
+        }
+        if (strategy === StrategyEnum.NAKED_QUADRUPLET) {
+            prereqs.push(StrategyEnum.NAKED_TRIPLET);
+            strategy = StrategyEnum.NAKED_TRIPLET;
+        }
+        if (strategy === StrategyEnum.NAKED_TRIPLET) {
+            prereqs.push(StrategyEnum.NAKED_PAIR);
+            strategy = StrategyEnum.NAKED_PAIR;
+        }
+        if (strategy === StrategyEnum.NAKED_PAIR || strategy === StrategyEnum.HIDDEN_SINGLE) {
+            prereqs.push(StrategyEnum.NAKED_SINGLE);
+        }
+        return prereqs;
+    }
+
+    /**
      * Solves the puzzle and sets strategy and solution
      */
     private solve():void {
