@@ -162,6 +162,14 @@ export class Board{
         }
         this.solution = this.solver.getSolution();
         this.setSolutionString();
+        for (let i:number = 0; i < StrategyEnum.COUNT; i++) {
+            if (this.strategies[i]) {
+                let prereqs:StrategyEnum[] = this.getPrereqs(StrategyEnum[StrategyEnum[i]]);
+                for (let j:number = 0; j < prereqs.length; j++) {
+                    this.strategies[prereqs[j]] = true;
+                }
+            }
+        }
         this.difficulty /= stepCount;
         this.difficulty = Math.ceil(this.difficulty * (1 + (stepCount * GAME_LENGTH_DIFFICULTY_MULTIPLIER)));
         return;
