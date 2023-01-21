@@ -149,19 +149,28 @@ export class Board{
      * Solves the puzzle and sets strategy and solution
      */
     private solve():void {
+        // Stores hint for current step
         let hint:Hint = this.solver.nextStep();
+        // Number of steps taken so far to solve the puzzle
         let stepCount:number = 0;
+        // Gets hint for each stop to solve puzzle (hint is null when board is finished being solved)
         while (hint !== null) {
+            // Records what strategy was used
             this.strategies[hint.getStrategyType()] = true;
+            // Updates difficulty rating based on how hard current step is
             this.difficulty += hint.getDifficulty();
             stepCount++;
+            // Updates most difficult strategy used
             if (hint.getStrategyType() > this.mostDifficultStrategy) {
                 this.mostDifficultStrategy = hint.getStrategyType();
             }
+            // Gets hint for next step
             hint = this.solver.nextStep();
         }
+        // Sets solution string
         this.solution = this.solver.getSolution();
         this.setSolutionString();
+        // Adds prereqs to strategies (strategies that current strategies could be reduced to)
         for (let i:number = 0; i < StrategyEnum.COUNT; i++) {
             if (this.strategies[i]) {
                 let prereqs:StrategyEnum[] = this.getPrereqs(StrategyEnum[StrategyEnum[i]]);
@@ -170,6 +179,7 @@ export class Board{
                 }
             }
         }
+        // Adjusts difficulty for game length
         this.difficulty /= stepCount;
         this.difficulty = Math.ceil(this.difficulty * (1 + (stepCount * GAME_LENGTH_DIFFICULTY_MULTIPLIER)));
         return;

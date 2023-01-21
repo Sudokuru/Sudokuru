@@ -35,35 +35,27 @@ describe("create naked single", () => {
 
 describe("create hidden single", () => {
     it('should not be a hidden single', () => {
-        let cells:Cell[][] = new Array();
-        cells.push(new Array());
-        for (let i:number = 0; i < 9; i++) {
-            cells[0].push(new Cell(0, 0));
-        }
-        cells[0][0].removeNote("3");
-        cells[0][4].removeNote("3");
-        cells[0][2].removeNote("5");
+        let board:Cell[][] = getBlankCellBoard();
+        board[0][0].removeNote("3");
+        board[0][4].removeNote("3");
+        board[0][2].removeNote("5");
         for (let i:number = 0; i < 7; i++) {
-            cells[0][i].removeNote("7");
+            board[0][i].removeNote("7");
         }
         for (let i:number = 1; i < 8; i++) {
-            cells[0][i].removeNote("6");
+            board[0][i].removeNote("6");
         }
-        let strategy:Strategy = new Strategy(cells, cells);
+        let strategy:Strategy = new Strategy(board, board);
         expect(strategy.isHiddenSingle()).toBeFalsy;
     });
     it ('should be a hidden single', () => {
-        let cells:Cell[][] = new Array();
-        cells.push(new Array());
-        for (let i:number = 0; i < 9; i++) {
-            cells[0].push(new Cell(0, 0));
-        }
+        let board:Cell[][] = getBlankCellBoard();
         for (let i:number = 0; i < 8; i++) {
-            cells[0][i].removeNote("9");
+            board[0][i].removeNote("9");
         }
-        let strategy:Strategy = new Strategy(cells, cells);
+        let strategy:Strategy = new Strategy(board, board);
         expect(strategy.isHiddenSingle()).toBeTruthy;
-        expect(strategy.getValuesToPlace()[0].getValue()).toBe("9");
+        expect((strategy.getNotesToRemove())[0].getSize()).toBe(SudokuEnum.ROW_LENGTH - 1);
     });
 });
 

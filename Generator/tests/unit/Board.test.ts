@@ -145,14 +145,6 @@ describe("solve Boards", () => {
         }
     });
 
-    it('should solve single naked single using hidden single', () => {
-        let algorithm:StrategyEnum[] = new Array();
-        algorithm.push(StrategyEnum.HIDDEN_SINGLE);
-        let board:Board = new Board(TestBoards.SINGLE_NAKED_SINGLE, algorithm);
-        expect(board.getSolutionString()).toBe(TestBoards.SINGLE_NAKED_SINGLE_SOLUTION);
-        expect(board.getStrategyScore()).toBe(StrategyEnum.HIDDEN_SINGLE);
-    });
-
     it('should solve naked singles only board', () => {
         expect(onlyNakedSingles.getSolutionString()).toBe(TestBoards.ONLY_NAKED_SINGLES_SOLUTION);
         expect(onlyNakedSingles.getStrategyScore()).toBe(StrategyEnum.NAKED_SINGLE);

@@ -264,7 +264,7 @@ export function getNextCellInBox(cells: Cell[][], cell: Cell, index?: number):Ce
     for (let i:number = 0; i < box.length; i++) {
         for (let j:number = 0; j < box[i].length; j++) {
             // Return first cell if cell is null otherwise returns next cell in box after cell
-            if (cell === null || (i > cell.getRow()) || ((i === cell.getRow()) && (j > cell.getColumn()))) {
+            if (cell === null || (i > cell.getRow()) || ((i === cell.getRow()) && (box[i][j].getColumn() > cell.getColumn()))) {
                 return box[i][j];
             }
         }
@@ -385,4 +385,20 @@ export function getCellsSubset(cells: Cell[], subset: Group, group: GroupEnum):G
         }
     }
     return cellsSubset;
+}
+
+/**
+ * Returns an array of cells in the given subset
+ * @param cells - cells array
+ * @param subset - subset of cells
+ * @returns array of cells representing the given subset of the given cells array
+ */
+export function getCellsInSubset(cells: Cell[], subset: Group):Cell[] {
+    let cellsInSubset:Cell[] = new Array();
+    for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
+        if (subset.contains(i)) {
+            cellsInSubset.push(cells[i]);
+        }
+    }
+    return cellsInSubset;
 }
