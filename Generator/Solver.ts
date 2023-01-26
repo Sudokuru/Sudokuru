@@ -88,32 +88,10 @@ export class Solver{
      */
     private setHint(cells: Cell[][]):void {
         // Attempts to use strategies in order specified by algorithm
+        let strategy:Strategy = new Strategy(this.board, cells);
         for (let i: number = 0; i < StrategyEnum.COUNT; i++) {
-            if (this.algorithm[i] === StrategyEnum.NAKED_SINGLE && this.setNakedSingle(cells)) {
-                return;
-            }
-            else if (this.algorithm[i] === StrategyEnum.HIDDEN_SINGLE && this.setHiddenSingle(cells)) {
-                return;
-            }
-            else if (this.algorithm[i] === StrategyEnum.NAKED_PAIR && this.setNakedPair(cells)) {
-                return;
-            }
-            else if (this.algorithm[i] === StrategyEnum.NAKED_TRIPLET && this.setNakedTriplet(cells)) {
-                return;
-            }
-            else if (this.algorithm[i] === StrategyEnum.NAKED_QUADRUPLET && this.setNakedQuadruplet(cells)) {
-                return;
-            }
-            else if (this.algorithm[i] === StrategyEnum.NAKED_QUINTUPLET && this.setNakedQuintuplet(cells)) {
-                return;
-            }
-            else if (this.algorithm[i] === StrategyEnum.NAKED_SEXTUPLET && this.setNakedSextuplet(cells)) {
-                return;
-            }
-            else if (this.algorithm[i] === StrategyEnum.NAKED_SEPTUPLET && this.setNakedSeptuplet(cells)) {
-                return;
-            }
-            else if (this.algorithm[i] === StrategyEnum.NAKED_OCTUPLET && this.setNakedOctuplet(cells)) {
+            if (strategy.setStrategyType(this.algorithm[i])) {
+                this.hint = new Hint(strategy);
                 return;
             }
         }
@@ -127,132 +105,6 @@ export class Solver{
     private applyHint():void {
         this.placeValues(this.hint.getEffectPlacements());
         this.removeNotes(this.hint.getEffectRemovals());
-    }
-
-    /**
-     * Returns true if puzzle has a hidden single and sets hint, otherwise returns false
-     * @param cells - empty cells
-     * @returns true if contains a hidden single
-     */
-    private setHiddenSingle(cells: Cell[][]):boolean {
-        let hiddenSingle: Strategy = new Strategy(this.board, cells);
-        if (hiddenSingle.setStrategyType(StrategyEnum.HIDDEN_SINGLE)) {
-            this.hint = new Hint(hiddenSingle);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Returns true if puzzle has a naked single and sets hint, otherwise returns false
-     * @param cells - empty cells
-     * @returns true if contains a naked single
-     */
-    private setNakedSingle(cells: Cell[][]):boolean {
-        let nakedSingle: Strategy = new Strategy(this.board, cells);
-        if (nakedSingle.setStrategyType(StrategyEnum.NAKED_SINGLE)) {
-            this.hint = new Hint(nakedSingle);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Returns true if puzzle has a naked pair and sets hint, otherwise returns false
-     * @param cells - empty cells
-     * @returns true if contains a naked pair
-     */
-    private setNakedPair(cells: Cell[][]):boolean {
-        let nakedPair: Strategy = new Strategy(this.board, cells);
-        if (nakedPair.setStrategyType(StrategyEnum.NAKED_PAIR)) {
-            this.hint = new Hint(nakedPair);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Returns true if puzzle has a naked triplet and sets hint, otherwise returns false
-     * @param cells - empty cells
-     * @returns true if contains a naked triplet
-     */
-    private setNakedTriplet(cells: Cell[][]):boolean {
-        let nakedTriplet: Strategy = new Strategy(this.board, cells);
-        if (nakedTriplet.setStrategyType(StrategyEnum.NAKED_TRIPLET)) {
-            this.hint = new Hint(nakedTriplet);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Returns true if puzzle has a naked quadruplet and sets hint, otherwise returns false
-     * @param cells - empty cells
-     * @returns true if contains a naked quadruplet
-     */
-    private setNakedQuadruplet(cells: Cell[][]):boolean {
-        let nakedQuadruplet: Strategy = new Strategy(this.board, cells);
-        if (nakedQuadruplet.setStrategyType(StrategyEnum.NAKED_QUADRUPLET)) {
-            this.hint = new Hint(nakedQuadruplet);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Returns true if puzzle has a naked quintuplet and sets hint, otherwise returns false
-     * @param cells - empty cells
-     * @returns true if contains a naked quintuplet
-     */
-    private setNakedQuintuplet(cells: Cell[][]):boolean {
-        let nakedQuintuplet: Strategy = new Strategy(this.board, cells);
-        if (nakedQuintuplet.setStrategyType(StrategyEnum.NAKED_QUINTUPLET)) {
-            this.hint = new Hint(nakedQuintuplet);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Returns true if puzzle has a naked sextuplet and sets hint, otherwise returns false
-     * @param cells - empty cells
-     * @returns true if contains a naked sextuplet
-     */
-    private setNakedSextuplet(cells: Cell[][]):boolean {
-        let nakedSextuplet: Strategy = new Strategy(this.board, cells);
-        if (nakedSextuplet.setStrategyType(StrategyEnum.NAKED_SEXTUPLET)) {
-            this.hint = new Hint(nakedSextuplet);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Returns true if puzzle has a naked septuplet and sets hint, otherwise returns false
-     * @param cells - empty cells
-     * @returns true if contains a naked septuplet
-     */
-    private setNakedSeptuplet(cells: Cell[][]):boolean {
-        let nakedSeptuplet: Strategy = new Strategy(this.board, cells);
-        if (nakedSeptuplet.setStrategyType(StrategyEnum.NAKED_SEPTUPLET)) {
-            this.hint = new Hint(nakedSeptuplet);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Returns true if puzzle has a naked octuplet and sets hint, otherwise returns false
-     * @param cells - empty cells
-     * @returns true if contains a naked octuplet
-     */
-    private setNakedOctuplet(cells: Cell[][]):boolean {
-        let nakedOctuplet: Strategy = new Strategy(this.board, cells);
-        if (nakedOctuplet.setStrategyType(StrategyEnum.NAKED_OCTUPLET)) {
-            this.hint = new Hint(nakedOctuplet);
-            return true;
-        }
-        return false;
     }
 
     /**
