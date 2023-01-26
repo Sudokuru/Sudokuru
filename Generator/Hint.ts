@@ -1,6 +1,7 @@
 import { Cell } from "./Cell";
 import { Group } from "./Group";
 import { Strategy } from "./Strategy";
+import { StrategyEnum } from "./Sudoku";
 
 /**
  * Contains hint information for naked single strategy
@@ -113,10 +114,47 @@ export class Hint{
      * @param info - Hint info
      * @param action - Hint action
      */
-    constructor(strategy: Strategy, info: string, action: string) {
+    constructor(strategy: Strategy) {
         this.strategy = strategy;
-        this.info = info;
-        this.action = action;
+        if (this.getStrategyType() === StrategyEnum.NAKED_SINGLE) {
+            this.info = NAKED_SINGLE.HINT_INFO;
+            this.action = NAKED_SINGLE.HINT_ACTION;
+        }
+        else if (this.getStrategyType() === StrategyEnum.NAKED_PAIR) {
+            this.info = NAKED_PAIR.HINT_INFO;
+            this.action = NAKED_PAIR.HINT_ACTION;
+        }
+        else if (this.getStrategyType() === StrategyEnum.NAKED_TRIPLET) {
+            this.info = NAKED_TRIPLET.HINT_INFO;
+            this.action = NAKED_TRIPLET.HINT_ACTION;
+        }
+        else if (this.getStrategyType() === StrategyEnum.NAKED_QUADRUPLET) {
+            this.info = NAKED_QUADRUPLET.HINT_INFO;
+            this.action = NAKED_QUADRUPLET.HINT_ACTION;
+        }
+        else if (this.getStrategyType() === StrategyEnum.NAKED_QUINTUPLET) {
+            this.info = NAKED_QUINTUPLET.HINT_INFO;
+            this.action = NAKED_QUINTUPLET.HINT_ACTION;
+        }
+        else if (this.getStrategyType() === StrategyEnum.NAKED_SEXTUPLET) {
+            this.info = NAKED_SEXTUPLET.HINT_INFO;
+            this.action = NAKED_SEXTUPLET.HINT_ACTION;
+        }
+        else if (this.getStrategyType() === StrategyEnum.NAKED_SEPTUPLET) {
+            this.info = NAKED_SEPTUPLET.HINT_INFO;
+            this.action = NAKED_SEPTUPLET.HINT_ACTION;
+        }
+        else if (this.getStrategyType() === StrategyEnum.NAKED_OCTUPLET) {
+            this.info = NAKED_OCTUPLET.HINT_INFO;
+            this.action = NAKED_OCTUPLET.HINT_ACTION;
+        }
+        else if (this.getStrategyType() === StrategyEnum.HIDDEN_SINGLE) {
+            this.info = HIDDEN_SINGLE.HINT_INFO;
+            this.action = HIDDEN_SINGLE.HINT_ACTION;
+        }
+        else {
+            throw new Error();
+        }
     }
 
     /**
@@ -173,86 +211,5 @@ export class Hint{
      */
     public getAction():string {
         return this.action;
-    }
-}
-
-/**
- * Naked single strategy hint class
- */
-export class NakedSingleHint extends Hint {
-    constructor(strategy: Strategy) {
-        super(strategy, NAKED_SINGLE.HINT_INFO, NAKED_SINGLE.HINT_ACTION);
-    }
-}
-
-/**
- * Hidden single strategy hint class
- */
-export class HiddenSingleHint extends Hint {
-    constructor(strategy: Strategy) {
-        super(strategy, HIDDEN_SINGLE.HINT_INFO, HIDDEN_SINGLE.HINT_ACTION);
-    }
-}
-
-/**
- * Naked pair strategy hint class
- */
-export class NakedPairHint extends Hint {
-    constructor(strategy: Strategy) {
-        super(strategy, NAKED_PAIR.HINT_INFO, NAKED_PAIR.HINT_ACTION);
-    }
-}
-
-/**
- * Naked triplet strategy hint class
- */
-export class NakedTripletHint extends Hint {
-    constructor(strategy: Strategy) {
-        super(strategy, NAKED_TRIPLET.HINT_INFO, NAKED_TRIPLET.HINT_ACTION);
-    }
-}
-
-/**
- * Naked quadruplet strategy hint class
- */
-export class NakedQuadrupletHint extends Hint {
-    constructor(strategy: Strategy) {
-        super(strategy, NAKED_QUADRUPLET.HINT_INFO, NAKED_QUADRUPLET.HINT_ACTION);
-    }
-}
-
-/**
- * Naked quintuplet strategy hint class
- */
-export class NakedQuintupletHint extends Hint {
-    constructor(strategy: Strategy) {
-        super(strategy, NAKED_QUINTUPLET.HINT_INFO, NAKED_QUINTUPLET.HINT_ACTION);
-    }
-}
-
-/**
- * Naked sextuplet strategy hint class
- */
-export class NakedSextupletHint extends Hint {
-    constructor(strategy: Strategy) {
-        super(strategy, NAKED_SEXTUPLET.HINT_INFO, NAKED_SEXTUPLET.HINT_ACTION);
-    }
-}
-
-/**
- * Naked septuplet strategy hint class
- */
-export class NakedSeptupletHint extends Hint {
-    constructor(strategy: Strategy) {
-        super(strategy, NAKED_SEPTUPLET.HINT_INFO, NAKED_SEPTUPLET.HINT_ACTION);
-    }
-}
-
-/**
- * Naked octuplet strategy hint class
- */
-export class NakedOctupletHint extends Hint {
-    constructor(strategy: Strategy) {
-        super(strategy, NAKED_OCTUPLET.HINT_INFO, NAKED_OCTUPLET.HINT_ACTION);
     }
 }

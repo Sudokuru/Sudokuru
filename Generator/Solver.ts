@@ -2,7 +2,7 @@ import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
 import { Strategy } from "./Strategy";
 import { SudokuEnum, StrategyEnum } from "./Sudoku";
-import { HiddenSingleHint, Hint, NakedPairHint, NakedSingleHint, NakedTripletHint, NakedQuadrupletHint, NakedQuintupletHint, NakedSextupletHint, NakedSeptupletHint, NakedOctupletHint } from "./Hint";
+import { Hint } from "./Hint";
 import { Group } from "./Group";
 
 /**
@@ -137,7 +137,7 @@ export class Solver{
     private setHiddenSingle(cells: Cell[][]):boolean {
         let hiddenSingle: Strategy = new Strategy(this.board, cells);
         if (hiddenSingle.setStrategyType(StrategyEnum.HIDDEN_SINGLE)) {
-            this.hint = new HiddenSingleHint(hiddenSingle);
+            this.hint = new Hint(hiddenSingle);
             return true;
         }
         return false;
@@ -151,7 +151,7 @@ export class Solver{
     private setNakedSingle(cells: Cell[][]):boolean {
         let nakedSingle: Strategy = new Strategy(this.board, cells);
         if (nakedSingle.setStrategyType(StrategyEnum.NAKED_SINGLE)) {
-            this.hint = new NakedSingleHint(nakedSingle);
+            this.hint = new Hint(nakedSingle);
             return true;
         }
         return false;
@@ -165,7 +165,7 @@ export class Solver{
     private setNakedPair(cells: Cell[][]):boolean {
         let nakedPair: Strategy = new Strategy(this.board, cells);
         if (nakedPair.setStrategyType(StrategyEnum.NAKED_PAIR)) {
-            this.hint = new NakedPairHint(nakedPair);
+            this.hint = new Hint(nakedPair);
             return true;
         }
         return false;
@@ -179,7 +179,7 @@ export class Solver{
     private setNakedTriplet(cells: Cell[][]):boolean {
         let nakedTriplet: Strategy = new Strategy(this.board, cells);
         if (nakedTriplet.setStrategyType(StrategyEnum.NAKED_TRIPLET)) {
-            this.hint = new NakedTripletHint(nakedTriplet);
+            this.hint = new Hint(nakedTriplet);
             return true;
         }
         return false;
@@ -193,7 +193,7 @@ export class Solver{
     private setNakedQuadruplet(cells: Cell[][]):boolean {
         let nakedQuadruplet: Strategy = new Strategy(this.board, cells);
         if (nakedQuadruplet.setStrategyType(StrategyEnum.NAKED_QUADRUPLET)) {
-            this.hint = new NakedQuadrupletHint(nakedQuadruplet);
+            this.hint = new Hint(nakedQuadruplet);
             return true;
         }
         return false;
@@ -207,7 +207,7 @@ export class Solver{
     private setNakedQuintuplet(cells: Cell[][]):boolean {
         let nakedQuintuplet: Strategy = new Strategy(this.board, cells);
         if (nakedQuintuplet.setStrategyType(StrategyEnum.NAKED_QUINTUPLET)) {
-            this.hint = new NakedQuintupletHint(nakedQuintuplet);
+            this.hint = new Hint(nakedQuintuplet);
             return true;
         }
         return false;
@@ -221,7 +221,7 @@ export class Solver{
     private setNakedSextuplet(cells: Cell[][]):boolean {
         let nakedSextuplet: Strategy = new Strategy(this.board, cells);
         if (nakedSextuplet.setStrategyType(StrategyEnum.NAKED_SEXTUPLET)) {
-            this.hint = new NakedSextupletHint(nakedSextuplet);
+            this.hint = new Hint(nakedSextuplet);
             return true;
         }
         return false;
@@ -235,7 +235,7 @@ export class Solver{
     private setNakedSeptuplet(cells: Cell[][]):boolean {
         let nakedSeptuplet: Strategy = new Strategy(this.board, cells);
         if (nakedSeptuplet.setStrategyType(StrategyEnum.NAKED_SEPTUPLET)) {
-            this.hint = new NakedSeptupletHint(nakedSeptuplet);
+            this.hint = new Hint(nakedSeptuplet);
             return true;
         }
         return false;
@@ -249,7 +249,7 @@ export class Solver{
     private setNakedOctuplet(cells: Cell[][]):boolean {
         let nakedOctuplet: Strategy = new Strategy(this.board, cells);
         if (nakedOctuplet.setStrategyType(StrategyEnum.NAKED_OCTUPLET)) {
-            this.hint = new NakedOctupletHint(nakedOctuplet);
+            this.hint = new Hint(nakedOctuplet);
             return true;
         }
         return false;
