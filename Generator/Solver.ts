@@ -136,7 +136,7 @@ export class Solver{
      */
     private setHiddenSingle(cells: Cell[][]):boolean {
         let hiddenSingle: Strategy = new Strategy(this.board, cells);
-        if (hiddenSingle.isHiddenSingle()) {
+        if (hiddenSingle.setStrategyType(StrategyEnum.HIDDEN_SINGLE)) {
             this.hint = new HiddenSingleHint(hiddenSingle);
             return true;
         }
@@ -150,7 +150,7 @@ export class Solver{
      */
     private setNakedSingle(cells: Cell[][]):boolean {
         let nakedSingle: Strategy = new Strategy(this.board, cells);
-        if (nakedSingle.isNakedSingle()) {
+        if (nakedSingle.setStrategyType(StrategyEnum.NAKED_SINGLE)) {
             this.hint = new NakedSingleHint(nakedSingle);
             return true;
         }
@@ -164,7 +164,7 @@ export class Solver{
      */
     private setNakedPair(cells: Cell[][]):boolean {
         let nakedPair: Strategy = new Strategy(this.board, cells);
-        if (nakedPair.isNakedPair()) {
+        if (nakedPair.setStrategyType(StrategyEnum.NAKED_PAIR)) {
             this.hint = new NakedPairHint(nakedPair);
             return true;
         }
@@ -178,7 +178,7 @@ export class Solver{
      */
     private setNakedTriplet(cells: Cell[][]):boolean {
         let nakedTriplet: Strategy = new Strategy(this.board, cells);
-        if (nakedTriplet.isNakedTriplet()) {
+        if (nakedTriplet.setStrategyType(StrategyEnum.NAKED_TRIPLET)) {
             this.hint = new NakedTripletHint(nakedTriplet);
             return true;
         }
@@ -192,7 +192,7 @@ export class Solver{
      */
     private setNakedQuadruplet(cells: Cell[][]):boolean {
         let nakedQuadruplet: Strategy = new Strategy(this.board, cells);
-        if (nakedQuadruplet.isNakedQuadruplet()) {
+        if (nakedQuadruplet.setStrategyType(StrategyEnum.NAKED_QUADRUPLET)) {
             this.hint = new NakedQuadrupletHint(nakedQuadruplet);
             return true;
         }
@@ -206,7 +206,7 @@ export class Solver{
      */
     private setNakedQuintuplet(cells: Cell[][]):boolean {
         let nakedQuintuplet: Strategy = new Strategy(this.board, cells);
-        if (nakedQuintuplet.isNakedQuintuplet()) {
+        if (nakedQuintuplet.setStrategyType(StrategyEnum.NAKED_QUINTUPLET)) {
             this.hint = new NakedQuintupletHint(nakedQuintuplet);
             return true;
         }
@@ -220,7 +220,7 @@ export class Solver{
      */
     private setNakedSextuplet(cells: Cell[][]):boolean {
         let nakedSextuplet: Strategy = new Strategy(this.board, cells);
-        if (nakedSextuplet.isNakedSextuplet()) {
+        if (nakedSextuplet.setStrategyType(StrategyEnum.NAKED_SEXTUPLET)) {
             this.hint = new NakedSextupletHint(nakedSextuplet);
             return true;
         }
@@ -234,7 +234,7 @@ export class Solver{
      */
     private setNakedSeptuplet(cells: Cell[][]):boolean {
         let nakedSeptuplet: Strategy = new Strategy(this.board, cells);
-        if (nakedSeptuplet.isNakedSeptuplet()) {
+        if (nakedSeptuplet.setStrategyType(StrategyEnum.NAKED_SEPTUPLET)) {
             this.hint = new NakedSeptupletHint(nakedSeptuplet);
             return true;
         }
@@ -248,7 +248,7 @@ export class Solver{
      */
     private setNakedOctuplet(cells: Cell[][]):boolean {
         let nakedOctuplet: Strategy = new Strategy(this.board, cells);
-        if (nakedOctuplet.isNakedOctuplet()) {
+        if (nakedOctuplet.setStrategyType(StrategyEnum.NAKED_OCTUPLET)) {
             this.hint = new NakedOctupletHint(nakedOctuplet);
             return true;
         }

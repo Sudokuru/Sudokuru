@@ -3,7 +3,7 @@ import { Cell } from '../../Cell';
 import { CustomError, CustomErrorEnum } from '../../CustomError';
 import { getBlankCellBoard, getError, getRowTuplet, removeNotesFromEach, removeTupleNotes } from '../testResources';
 import { Group } from '../../Group';
-import { SudokuEnum, TupleEnum } from '../../Sudoku';
+import { StrategyEnum, SudokuEnum, TupleEnum } from '../../Sudoku';
 
 describe("create naked single", () => {
     it('should throw strategy not identified error', async () => {
@@ -14,21 +14,17 @@ describe("create naked single", () => {
         expect(error).toHaveProperty('Error_Message', CustomErrorEnum.STRATEGY_NOT_IDENTIFIED);
     });
     it('should not be a naked single', () => {
-        let cells:Cell[][] = new Array();
-        let cell:Cell = new Cell(0, 0);
-        cells.push([cell]);
-        let strategy:Strategy = new Strategy(cells, cells);
-        expect(strategy.isNakedSingle).toBeFalsy;
+        let board:Cell[][] = getBlankCellBoard();
+        let strategy:Strategy = new Strategy(board, board);
+        expect(strategy.setStrategyType(StrategyEnum.NAKED_SINGLE)).toBeFalsy;
     });
     it('should be a naked single', () => {
-        let cells:Cell[][] = new Array();
-        let cell:Cell = new Cell(0, 0);
-        for (let i:number = 1; i < 9; i++) {
-            cell.removeNote(i.toString());
+        let board:Cell[][] = getBlankCellBoard();
+        for (let i:number = 1; i < SudokuEnum.COLUMN_LENGTH; i++) {
+            (board[0][0]).removeNote(i.toString());
         }
-        cells.push([cell]);
-        let strategy:Strategy = new Strategy(cells, cells);
-        expect(strategy.isNakedSingle()).toBeTruthy;
+        let strategy:Strategy = new Strategy(board, board);
+        expect(strategy.setStrategyType(StrategyEnum.NAKED_SINGLE)).toBeTruthy;
         expect(strategy.getValuesToPlace()[0].getValue()).toBe("9");
     });
 });
@@ -46,7 +42,7 @@ describe("create hidden single", () => {
             board[0][i].removeNote("6");
         }
         let strategy:Strategy = new Strategy(board, board);
-        expect(strategy.isHiddenSingle()).toBeFalsy;
+        expect(strategy.setStrategyType(StrategyEnum.HIDDEN_SINGLE)).toBeFalsy;
     });
     it ('should be a hidden single', () => {
         let board:Cell[][] = getBlankCellBoard();
@@ -54,7 +50,7 @@ describe("create hidden single", () => {
             board[0][i].removeNote("9");
         }
         let strategy:Strategy = new Strategy(board, board);
-        expect(strategy.isHiddenSingle()).toBeTruthy;
+        expect(strategy.setStrategyType(StrategyEnum.HIDDEN_SINGLE)).toBeTruthy;
         expect((strategy.getNotesToRemove())[0].getSize()).toBe(SudokuEnum.ROW_LENGTH - 1);
     });
 });
@@ -76,7 +72,7 @@ describe("create naked pair", () => {
 
         // Test that it isn't a naked pair
         let strategy:Strategy = new Strategy(board, board);
-        expect(strategy.isNakedPair()).toBeFalsy;
+        expect(strategy.setStrategyType(StrategyEnum.NAKED_PAIR)).toBeFalsy;
     });
     it("should be a naked pair", () => {
         // Create board
@@ -92,7 +88,7 @@ describe("create naked pair", () => {
 
         // Test that is naked pair and can remove notes from every cell in shared row and box except naked pair themself
         let strategy:Strategy = new Strategy(board, board);
-        expect(strategy.isNakedPair()).toBeTruthy;
+        expect(strategy.setStrategyType(StrategyEnum.NAKED_PAIR)).toBeTruthy;
         expect(strategy.getNotesToRemove().length).toBe(13);
     });
 });
@@ -112,7 +108,7 @@ describe("create naked triplet", () => {
 
         // Test that is naked triplet and can remove notes from every cell in shared row and box except naked triplet themself
         let strategy:Strategy = new Strategy(board, board);
-        expect(strategy.isNakedTriplet()).toBeTruthy;
+        expect(strategy.setStrategyType(StrategyEnum.NAKED_TRIPLET)).toBeTruthy;
         expect(strategy.getNotesToRemove().length).toBe(12);
     });
 });
@@ -134,7 +130,22 @@ describe("create naked quadruplet through octuplet", () => {
 
             // Test that is naked set and can remove notes from every cell in shared row and box except naked tuplet themself
             let strategy:Strategy = new Strategy(board, board);
-            expect(strategy.isNakedSet(tuple)).toBeTruthy;
+            //expect(strategy.setStrategyType()).toBeTruthy;
+            if (tuple === TupleEnum.QUADRUPLET) {
+                expect(strategy.setStrategyType(StrategyEnum.NAKED_QUADRUPLET));
+            }
+            else if (tuple === TupleEnum.QUINTUPLET) {
+                expect(strategy.setStrategyType(StrategyEnum.NAKED_QUINTUPLET));
+            }
+            else if (tuple === TupleEnum.SEXTUPLET) {
+                expect(strategy.setStrategyType(StrategyEnum.NAKED_SEXTUPLET));
+            }
+            else if (tuple === TupleEnum.SEPTUPLET) {
+                expect(strategy.setStrategyType(StrategyEnum.NAKED_SEPTUPLET));
+            }
+            else if (tuple === TupleEnum.OCTUPLET) {
+                expect(strategy.setStrategyType(StrategyEnum.NAKED_OCTUPLET));
+            }
             expect(strategy.getNotesToRemove().length).toBe(SudokuEnum.ROW_LENGTH - tuple);
         }
     });

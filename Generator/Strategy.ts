@@ -74,6 +74,43 @@ export class Strategy{
     }
 
     /**
+     * Checks if strategy is a given strategy type and if so sets values to place, notes to remove
+     * @returns true if strategy is strategyType
+     */
+    public setStrategyType(strategyType: StrategyEnum):boolean {
+        if (strategyType === StrategyEnum.NAKED_SINGLE) {
+            return this.isNakedSet(TupleEnum.SINGLE);
+        }
+        else if (strategyType === StrategyEnum.NAKED_PAIR) {
+            return this.isNakedSet(TupleEnum.PAIR);
+        }
+        else if (strategyType === StrategyEnum.NAKED_TRIPLET) {
+            return this.isNakedSet(TupleEnum.TRIPLET);
+        }
+        else if (strategyType === StrategyEnum.NAKED_QUADRUPLET) {
+            return this.isNakedSet(TupleEnum.QUADRUPLET);
+        }
+        else if (strategyType === StrategyEnum.NAKED_QUINTUPLET) {
+            return this.isNakedSet(TupleEnum.QUINTUPLET);
+        }
+        else if (strategyType === StrategyEnum.NAKED_SEXTUPLET) {
+            return this.isNakedSet(TupleEnum.SEXTUPLET);
+        }
+        else if (strategyType === StrategyEnum.NAKED_SEPTUPLET) {
+            return this.isNakedSet(TupleEnum.SEPTUPLET);
+        }
+        else if (strategyType === StrategyEnum.NAKED_OCTUPLET) {
+            return this.isNakedSet(TupleEnum.OCTUPLET);
+        }
+        else if (strategyType === StrategyEnum.HIDDEN_SINGLE) {
+            return this.isHiddenSet(TupleEnum.SINGLE);
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
      * Gets cells that "cause" strategy to be applicable
      * @returns cells
      * @throws {@link CustomError}
@@ -206,7 +243,7 @@ export class Strategy{
      * @param tuple - e.g. could be single or pair for naked single or naked pair respectively
      * @returns true if strategy is a naked tuple
      */
-    public isNakedSet(tuple: TupleEnum):boolean {
+    private isNakedSet(tuple: TupleEnum):boolean {
         // Checks if tuple exists by getting all cells (with note size <= tuple) in each group and trying to build tuple
         // Checks every subset (combination) of cells in each group (row/column/box)
         let subsets:Group[] = Group.getSubset(tuple);
@@ -325,19 +362,11 @@ export class Strategy{
     }
 
     /**
-     * Checks if strategy is a naked single and if so adds values that can be placed
-     * @returns true if strategy is a naked single
-     */
-    public isNakedSingle():boolean {
-        return this.isNakedSet(TupleEnum.SINGLE);
-    }
-
-    /**
      * Checks if strategy is a hidden set of given tuple and if so adds notes to remove
      * @param tuple - e.g. could be single or pair for hidden single or hidden pair respectively
      * @returns true if strategy is a hidden tuple
      */
-    public isHiddenSet(tuple: TupleEnum):boolean {
+    private isHiddenSet(tuple: TupleEnum):boolean {
         // Checks if tuple exists by getting all cells in each group and trying to build hidden tuple
         // Checks every subset (combination) of cells in each group (row/column/box)
         let subsets:Group[] = Group.getSubset(tuple);
@@ -398,70 +427,6 @@ export class Strategy{
             }
         }
         return this.identified;
-    }
-
-    /**
-     * Checks if strategy is a hidden single and if so adds values that can be placed
-     * @returns true if strategy is a hidden single
-     */
-    public isHiddenSingle():boolean {
-        return this.isHiddenSet(TupleEnum.SINGLE);
-    }
-
-    /**
-     * Checks if strategy is a naked pair and if so adds notes that can be removed
-     * @returns true if strategy is a naked pair
-     */
-    public isNakedPair():boolean {
-        return this.isNakedSet(TupleEnum.PAIR);
-    }
-
-    /**
-     * Checks if strategy is a naked triplet and if so adds notes that can be removed
-     * @returns true if strategy is a naked triplet
-     */
-    public isNakedTriplet():boolean {
-        return this.isNakedSet(TupleEnum.TRIPLET);
-    }
-
-    /**
-     * Checks if strategy is a naked quadruplet and if so adds notes that can be removed
-     * @returns true if strategy is a naked quadruplet
-     */
-    public isNakedQuadruplet():boolean {
-        return this.isNakedSet(TupleEnum.QUADRUPLET);
-    }
-
-    /**
-     * Checks if strategy is a naked quintuplet and if so adds notes that can be removed
-     * @returns true if strategy is a naked quintuplet
-     */
-    public isNakedQuintuplet():boolean {
-        return this.isNakedSet(TupleEnum.QUINTUPLET);
-    }
-
-    /**
-     * Checks if strategy is a naked sextuplet and if so adds notes that can be removed
-     * @returns true if strategy is a naked sextuplet
-     */
-    public isNakedSextuplet():boolean {
-        return this.isNakedSet(TupleEnum.SEXTUPLET);
-    }
-
-    /**
-     * Checks if strategy is a naked septuplet and if so adds notes that can be removed
-     * @returns true if strategy is a naked septuplet
-     */
-    public isNakedSeptuplet():boolean {
-        return this.isNakedSet(TupleEnum.SEPTUPLET);
-    }
-
-    /**
-     * Checks if strategy is a naked octuplet and if so adds notes that can be removed
-     * @returns true if strategy is a naked octuplet
-     */
-    public isNakedOctuplet():boolean {
-        return this.isNakedSet(TupleEnum.OCTUPLET);
     }
 
     /**
