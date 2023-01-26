@@ -137,10 +137,10 @@ describe("solve Boards", () => {
         expect(singleNakedSingle.getStrategyScore()).toBe(StrategyEnum.NAKED_SINGLE);
         for (let i:number = 0; i < StrategyEnum.COUNT; i++) {
             if (i === StrategyEnum.NAKED_SINGLE) {
-                expect(singleNakedSingle.getStrategies()[i]).toBeTruthy;
+                expect(singleNakedSingle.getStrategies()[i]).toBeTruthy();
             }
             else {
-                expect(singleNakedSingle.getStrategies()[i]).toBeFalsy;
+                expect(singleNakedSingle.getStrategies()[i]).toBeFalsy();
             }
         }
     });

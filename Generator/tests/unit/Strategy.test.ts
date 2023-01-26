@@ -16,7 +16,7 @@ describe("create naked single", () => {
     it('should not be a naked single', () => {
         let board:Cell[][] = getBlankCellBoard();
         let strategy:Strategy = new Strategy(board, board);
-        expect(strategy.setStrategyType(StrategyEnum.NAKED_SINGLE)).toBeFalsy;
+        expect(strategy.setStrategyType(StrategyEnum.NAKED_SINGLE)).toBeFalsy();
     });
     it('should be a naked single', () => {
         let board:Cell[][] = getBlankCellBoard();
@@ -24,7 +24,7 @@ describe("create naked single", () => {
             (board[0][0]).removeNote(i.toString());
         }
         let strategy:Strategy = new Strategy(board, board);
-        expect(strategy.setStrategyType(StrategyEnum.NAKED_SINGLE)).toBeTruthy;
+        expect(strategy.setStrategyType(StrategyEnum.NAKED_SINGLE)).toBeTruthy();
         expect(strategy.getValuesToPlace()[0].getValue()).toBe("9");
     });
 });
@@ -42,7 +42,7 @@ describe("create hidden single", () => {
             board[0][i].removeNote("6");
         }
         let strategy:Strategy = new Strategy(board, board);
-        expect(strategy.setStrategyType(StrategyEnum.HIDDEN_SINGLE)).toBeFalsy;
+        expect(strategy.setStrategyType(StrategyEnum.HIDDEN_SINGLE)).toBeFalsy();
     });
     it ('should be a hidden single', () => {
         let board:Cell[][] = getBlankCellBoard();
@@ -50,7 +50,7 @@ describe("create hidden single", () => {
             board[0][i].removeNote("9");
         }
         let strategy:Strategy = new Strategy(board, board);
-        expect(strategy.setStrategyType(StrategyEnum.HIDDEN_SINGLE)).toBeTruthy;
+        expect(strategy.setStrategyType(StrategyEnum.HIDDEN_SINGLE)).toBeTruthy();
         expect((strategy.getNotesToRemove())[0].getSize()).toBe(SudokuEnum.ROW_LENGTH - 1);
     });
 });
@@ -66,13 +66,12 @@ describe("create naked pair", () => {
         // Remove all but naked pair from one cell and remove naked pair plus one more note from other cell
         // Removing the extra note turns it into a naked single instead of a naked pair
         let notes:Group = new Group(true);
-        removeTupleNotes(TupleEnum.PAIR, notes);
-        removeNotesFromEach(notes, cells);
-        cells[0][1].removeNote("2");
+        removeTupleNotes(TupleEnum.TRIPLET, notes); // removes a triplet of candidates from the notes
+        removeNotesFromEach(notes, cells); // removes notes for all but the triplet of candidates from each cell
 
         // Test that it isn't a naked pair
         let strategy:Strategy = new Strategy(board, board);
-        expect(strategy.setStrategyType(StrategyEnum.NAKED_PAIR)).toBeFalsy;
+        expect(strategy.setStrategyType(StrategyEnum.NAKED_PAIR)).toBeFalsy();
     });
     it("should be a naked pair", () => {
         // Create board
@@ -88,7 +87,7 @@ describe("create naked pair", () => {
 
         // Test that is naked pair and can remove notes from every cell in shared row and box except naked pair themself
         let strategy:Strategy = new Strategy(board, board);
-        expect(strategy.setStrategyType(StrategyEnum.NAKED_PAIR)).toBeTruthy;
+        expect(strategy.setStrategyType(StrategyEnum.NAKED_PAIR)).toBeTruthy();
         expect(strategy.getNotesToRemove().length).toBe(13);
     });
 });
@@ -108,7 +107,7 @@ describe("create naked triplet", () => {
 
         // Test that is naked triplet and can remove notes from every cell in shared row and box except naked triplet themself
         let strategy:Strategy = new Strategy(board, board);
-        expect(strategy.setStrategyType(StrategyEnum.NAKED_TRIPLET)).toBeTruthy;
+        expect(strategy.setStrategyType(StrategyEnum.NAKED_TRIPLET)).toBeTruthy();
         expect(strategy.getNotesToRemove().length).toBe(12);
     });
 });
@@ -130,7 +129,7 @@ describe("create naked quadruplet through octuplet", () => {
 
             // Test that is naked set and can remove notes from every cell in shared row and box except naked tuplet themself
             let strategy:Strategy = new Strategy(board, board);
-            //expect(strategy.setStrategyType()).toBeTruthy;
+            //expect(strategy.setStrategyType()).toBeTruthy();
             if (tuple === TupleEnum.QUADRUPLET) {
                 expect(strategy.setStrategyType(StrategyEnum.NAKED_QUADRUPLET));
             }
