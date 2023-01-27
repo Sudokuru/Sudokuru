@@ -14,6 +14,8 @@ import { Group } from "./Group";
 export class Solver{
     // Stores representation of board being solved
     private board: Cell[][];
+    // Stores empty cells in board
+    private emptyCells: Cell[][];
     // Stores whether or not the board has been successfully solved
     private solved: boolean;
     // Stores a hint corresponding to a step
@@ -48,15 +50,15 @@ export class Solver{
      * Thrown if board is unsolvable
      */
     public nextStep():Hint {
-        let cells: Cell[][] = new Array();
-        this.initializeCellArray(cells, SudokuEnum.COLUMN_LENGTH);
-        this.addEveryEmptyCell(cells);
+        this.emptyCells = new Array();
+        this.initializeCellArray(this.emptyCells, SudokuEnum.COLUMN_LENGTH);
+        this.addEveryEmptyCell(this.emptyCells);
 
-        if (this.isFinished(cells)) {
+        if (this.isFinished(this.emptyCells)) {
             return null;
         }
 
-        this.setHint(cells);
+        this.setHint(this.emptyCells);
         if (this.hint !== null) {
             this.applyHint();
             return this.hint;
