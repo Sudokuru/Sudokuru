@@ -1,6 +1,6 @@
 import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
-import { SudokuEnum, StrategyEnum, getCellsInRow, getCellsInColumn, getCellsInBox, GroupEnum, getNextCellInGroup, TupleEnum, getCellsInGroup, getUnionOfSetNotes, inSubset, getCellsSubset } from "./Sudoku"
+import { SudokuEnum, StrategyEnum, getCellsInRow, getCellsInColumn, getCellsInBox, GroupEnum, getNextCellInGroup, TupleEnum, getCellsInGroup, getUnionOfSetNotes, inSubset, getCellsSubset, getCellsInSubset } from "./Sudoku"
 import { Group } from "./Group";
 
 /**
@@ -71,6 +71,43 @@ export class Strategy{
         this.identified = false;
         this.values = new Array();
         this.notes = new Array();
+    }
+
+    /**
+     * Checks if strategy is a given strategy type and if so sets values to place, notes to remove
+     * @returns true if strategy is strategyType
+     */
+    public setStrategyType(strategyType: StrategyEnum):boolean {
+        if (strategyType === StrategyEnum.NAKED_SINGLE) {
+            return this.isNakedSet(TupleEnum.SINGLE);
+        }
+        else if (strategyType === StrategyEnum.NAKED_PAIR) {
+            return this.isNakedSet(TupleEnum.PAIR);
+        }
+        else if (strategyType === StrategyEnum.NAKED_TRIPLET) {
+            return this.isNakedSet(TupleEnum.TRIPLET);
+        }
+        else if (strategyType === StrategyEnum.NAKED_QUADRUPLET) {
+            return this.isNakedSet(TupleEnum.QUADRUPLET);
+        }
+        else if (strategyType === StrategyEnum.NAKED_QUINTUPLET) {
+            return this.isNakedSet(TupleEnum.QUINTUPLET);
+        }
+        else if (strategyType === StrategyEnum.NAKED_SEXTUPLET) {
+            return this.isNakedSet(TupleEnum.SEXTUPLET);
+        }
+        else if (strategyType === StrategyEnum.NAKED_SEPTUPLET) {
+            return this.isNakedSet(TupleEnum.SEPTUPLET);
+        }
+        else if (strategyType === StrategyEnum.NAKED_OCTUPLET) {
+            return this.isNakedSet(TupleEnum.OCTUPLET);
+        }
+        else if (strategyType === StrategyEnum.HIDDEN_SINGLE) {
+            return this.isHiddenSet(TupleEnum.SINGLE);
+        }
+        else {
+            return false;
+        }
     }
 
     /**
@@ -202,11 +239,11 @@ export class Strategy{
     }
 
     /**
-     * Checks if strategy is a naked set of given tuple and if so adds values that can be placed
+     * Checks if strategy is a naked set of given tuple and if so adds values to be placed and notes to remove
      * @param tuple - e.g. could be single or pair for naked single or naked pair respectively
      * @returns true if strategy is a naked tuple
      */
-    public isNakedSet(tuple: TupleEnum):boolean {
+    private isNakedSet(tuple: TupleEnum):boolean {
         // Checks if tuple exists by getting all cells (with note size <= tuple) in each group and trying to build tuple
         // Checks every subset (combination) of cells in each group (row/column/box)
         let subsets:Group[] = Group.getSubset(tuple);
@@ -223,18 +260,13 @@ export class Strategy{
                     // Stores indexes of the cells that make up the naked set
                     let inNakedSet:Group = getCellsSubset(cells, subsets[j], group);
                     // Stores the cellls that make up the naked set
-                    let nakedSet:Cell[] = new Array();
-                    for (let k:number = 0; k < SudokuEnum.ROW_LENGTH; k++) {
-                        if (inNakedSet.contains(k)) {
-                            nakedSet.push(cells[k]);
-                        }
-                    }
+                    let nakedSet:Cell[] = getCellsInSubset(cells, inNakedSet);
                     // If naked set is correct size (i.e. every element in subset was in cells)
                     if (nakedSet.length === tuple) {
-                        // Calculates alll notes in naked set
+                        // Calculates all notes in naked set
                         let nakedSetCandidates:Group = getUnionOfSetNotes(nakedSet);
-                        // If naked set has correct number of notes
-                        if (nakedSetCandidates.getSize() <= tuple) {
+                        // Is naked set if it has correct number of notes
+                        if (nakedSetCandidates.getSize() === tuple) {
                             // If it is a naked single places value
                             if (tuple === TupleEnum.SINGLE) {
                                 let row:number = nakedSet[0].getRow();
@@ -330,122 +362,71 @@ export class Strategy{
     }
 
     /**
-     * Checks if strategy is a naked single and if so adds values that can be placed
-     * @returns true if strategy is a naked single
+     * Checks if strategy is a hidden set of given tuple and if so adds notes to remove
+     * @param tuple - e.g. could be single or pair for hidden single or hidden pair respectively
+     * @returns true if strategy is a hidden tuple
      */
-    public isNakedSingle():boolean {
-        return this.isNakedSet(TupleEnum.SINGLE);
-    }
-
-    /**
-     * Checks if strategy is a hidden single and if so adds values that can be placed
-     * @returns true if strategy is a hidden single
-     */
-    public isHiddenSingle():boolean {
-        // stores candidates found in the cells
-        let found:Group = new Group(false);
-        // stores possible hidden single for each candidate at their corresponding index
-        // initialized to null, set to cell with hidden single, reset to null if multiple cells with note found
-        let single:Cell[] = new Array(SudokuEnum.ROW_LENGTH).fill(null);
-        // Stores total number of notes in cells in the group to be used to calculate the difficulty
-        let noteCount:number = 0;
-
-        let notes:Group;
-        let row:number, column:number;
-        // Checks notes of every empty cell in group (row/column/box) provided
-        for (let i:number = 0; i < this.cells.length; i++) {
-            for (let j:number = 0; j < this.cells[i].length; j++) {
-                // Checks each note of the cell
-                notes = this.cells[i][j].getNotes();
-                noteCount += notes.getSize();
-                for (let note:number = 0; note < SudokuEnum.ROW_LENGTH; note++) {
-                    if (notes.contains(note)) {
-                        // Add cell to hidden single Cell if this note not found before, otherwise set to null
-                        if (found.insert(note)) {
-                            row = this.cells[i][j].getRow();
-                            column = this.cells[i][j].getColumn();
-                            single[note] = new Cell(row, column, (note+1).toString());
+    private isHiddenSet(tuple: TupleEnum):boolean {
+        // Checks if tuple exists by getting all cells in each group and trying to build hidden tuple
+        // Checks every subset (combination) of cells in each group (row/column/box)
+        let subsets:Group[] = Group.getSubset(tuple);
+        for (let group:GroupEnum = 0; group < GroupEnum.COUNT; group++) {
+            for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
+                // Contains cells in the same row, column, or box
+                let cells: Cell[] = getCellsInGroup(this.cells, group, i);
+                // Tries to build a hidden set of size tuple for each possible size tuple subset of candidates
+                // Is hidden single iff the number of candidates that don't exist outside of the hidden tuple
+                // is equal to the tuple (e.g. hidden pair if there are two numbers only in the pair in the row)
+                for (let j:number = 0; j < subsets.length; j++) {
+                    // Stores indexes of the cells that make up the hidden set
+                    let inHiddenSet:Group = getCellsSubset(cells, subsets[j], group);
+                    // Stores the cells that make up the hidden set
+                    let hiddenSet:Cell[] = getCellsInSubset(cells, inHiddenSet);
+                    // If hidden set is correct size (i.e. every element in subset was in cells)
+                    if (hiddenSet.length === tuple) {
+                        // Stores all of the cells in the hidden sets group (except the hidden set itself and non empty cells)
+                        let notHiddenSet:Cell[] = new Array();
+                        for (let k:number = 0; k < cells.length; k++) {
+                            if (!inHiddenSet.contains(k) && cells[k].isEmpty()) {
+                                notHiddenSet.push(cells[k]);
+                            }
                         }
-                        else {
-                            single[note] = null;
+                        // Calculates notes that aren't in the hidden set
+                        let notHiddenSetCandidates:Group = getUnionOfSetNotes(notHiddenSet);
+                        // Calculates notes that are in the hidden set
+                        let hiddenSetCandidates:Group = getUnionOfSetNotes(hiddenSet);
+                        // Is hidden set if correct number of candidates don't exist outside of the hidden set
+                        if ((hiddenSetCandidates.getSize() - (hiddenSetCandidates.intersection(notHiddenSetCandidates)).getSize()) === tuple) {
+                            // Remove candidates that aren't part of the hidden set from the hidden sets notes
+                            for (let k:number = 0; k < tuple; k++) {
+                                if ((hiddenSet[k].getNotes().intersection(notHiddenSetCandidates)).getSize() > 0) {
+                                    let notes:Group = new Group(false, hiddenSet[k].getRow(), hiddenSet[k].getColumn());
+                                    notes.insert(notHiddenSetCandidates);
+                                    this.notes.push(notes);
+                                    this.identified = true;
+                                }
+                            }
+                            // If notes were found you can remove as part of the hidden single then strategy identified
+                            if (this.identified) {
+                                // Calculate ratio of number of notes to possible number (more notes to obscure hidden set = higher difficulty)
+                                let noteCount:number = 0;
+                                for (let k:number = 0; k < tuple; k++) {
+                                    noteCount += (hiddenSet[k].getNotes()).getSize();
+                                }
+                                let noteRatio:number = noteCount / (SudokuEnum.ROW_LENGTH * SudokuEnum.ROW_LENGTH);
+                                if (tuple === TupleEnum.SINGLE) {
+                                    this.strategyType = StrategyEnum.HIDDEN_SINGLE;
+                                    this.difficulty = DifficultyLowerBounds.HIDDEN_SINGLE;
+                                    this.difficulty += Math.ceil(noteRatio * (DifficultyUpperBounds.HIDDEN_SINGLE - DifficultyLowerBounds.HIDDEN_SINGLE));
+                                }
+                                return this.identified;
+                            }
                         }
                     }
                 }
             }
         }
-
-        // Checks if a hidden single was found
-        for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
-            if (found.contains(i) && single[i] !== null) {
-                // Identify strategy, calculate difficulty, and return that it is a hidden single
-                this.values.push(single[i]);
-                this.strategyType = StrategyEnum.HIDDEN_SINGLE;
-                this.identified = true;
-                // Calculate ratio of noteCount to total possible note count in a group
-                let noteRatio:number = noteCount / (SudokuEnum.ROW_LENGTH * SudokuEnum.ROW_LENGTH);
-                // Set difficulty to hidden single lower bound adjusted upwards based on noteRatio
-                this.difficulty = DifficultyLowerBounds.HIDDEN_SINGLE;
-                this.difficulty += Math.ceil(noteRatio) * (DifficultyUpperBounds.HIDDEN_SINGLE - DifficultyLowerBounds.HIDDEN_SINGLE);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Checks if strategy is a naked pair and if so adds notes that can be removed
-     * @returns true if strategy is a naked pair
-     */
-    public isNakedPair():boolean {
-        return this.isNakedSet(TupleEnum.PAIR);
-    }
-
-    /**
-     * Checks if strategy is a naked triplet and if so adds notes that can be removed
-     * @returns true if strategy is a naked triplet
-     */
-    public isNakedTriplet():boolean {
-        return this.isNakedSet(TupleEnum.TRIPLET);
-    }
-
-    /**
-     * Checks if strategy is a naked quadruplet and if so adds notes that can be removed
-     * @returns true if strategy is a naked quadruplet
-     */
-    public isNakedQuadruplet():boolean {
-        return this.isNakedSet(TupleEnum.QUADRUPLET);
-    }
-
-    /**
-     * Checks if strategy is a naked quintuplet and if so adds notes that can be removed
-     * @returns true if strategy is a naked quintuplet
-     */
-    public isNakedQuintuplet():boolean {
-        return this.isNakedSet(TupleEnum.QUINTUPLET);
-    }
-
-    /**
-     * Checks if strategy is a naked sextuplet and if so adds notes that can be removed
-     * @returns true if strategy is a naked sextuplet
-     */
-    public isNakedSextuplet():boolean {
-        return this.isNakedSet(TupleEnum.SEXTUPLET);
-    }
-
-    /**
-     * Checks if strategy is a naked septuplet and if so adds notes that can be removed
-     * @returns true if strategy is a naked septuplet
-     */
-    public isNakedSeptuplet():boolean {
-        return this.isNakedSet(TupleEnum.SEPTUPLET);
-    }
-
-    /**
-     * Checks if strategy is a naked octuplet and if so adds notes that can be removed
-     * @returns true if strategy is a naked octuplet
-     */
-    public isNakedOctuplet():boolean {
-        return this.isNakedSet(TupleEnum.OCTUPLET);
+        return this.identified;
     }
 
     /**

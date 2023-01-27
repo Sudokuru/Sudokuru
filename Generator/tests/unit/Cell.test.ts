@@ -23,18 +23,18 @@ describe("create Cell object", () => {
     it('should remove notes', () => {
         let obj:Cell = new Cell(0, 0);
 
-        expect(obj.hasNote("1")).toBeTruthy;
+        expect(obj.hasNote("1")).toBeTruthy();
         obj.removeNote("1");
-        expect(obj.hasNote("1")).toBeFalsy;
+        expect(obj.hasNote("1")).toBeFalsy();
 
-        expect(obj.hasNote("2")).toBeTruthy;
-        expect(obj.hasNote("3")).toBeTruthy;
+        expect(obj.hasNote("2")).toBeTruthy();
+        expect(obj.hasNote("3")).toBeTruthy();
         let notes:Group = new Group(false);
         notes.insert("2");
         notes.insert("3");
         obj.removeNotes(notes);
-        expect(obj.hasNote("2")).toBeFalsy;
-        expect(obj.hasNote("3")).toBeFalsy;
+        expect(obj.hasNote("2")).toBeFalsy();
+        expect(obj.hasNote("3")).toBeFalsy();
     });
     it('should initialize box', () => {
         let a:Cell = new Cell(1, 1);

@@ -137,20 +137,12 @@ describe("solve Boards", () => {
         expect(singleNakedSingle.getStrategyScore()).toBe(StrategyEnum.NAKED_SINGLE);
         for (let i:number = 0; i < StrategyEnum.COUNT; i++) {
             if (i === StrategyEnum.NAKED_SINGLE) {
-                expect(singleNakedSingle.getStrategies()[i]).toBeTruthy;
+                expect(singleNakedSingle.getStrategies()[i]).toBeTruthy();
             }
             else {
-                expect(singleNakedSingle.getStrategies()[i]).toBeFalsy;
+                expect(singleNakedSingle.getStrategies()[i]).toBeFalsy();
             }
         }
-    });
-
-    it('should solve single naked single using hidden single', () => {
-        let algorithm:StrategyEnum[] = new Array();
-        algorithm.push(StrategyEnum.HIDDEN_SINGLE);
-        let board:Board = new Board(TestBoards.SINGLE_NAKED_SINGLE, algorithm);
-        expect(board.getSolutionString()).toBe(TestBoards.SINGLE_NAKED_SINGLE_SOLUTION);
-        expect(board.getStrategyScore()).toBe(StrategyEnum.HIDDEN_SINGLE);
     });
 
     it('should solve naked singles only board', () => {

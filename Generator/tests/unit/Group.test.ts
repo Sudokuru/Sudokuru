@@ -8,45 +8,45 @@ describe("create Group object", () => {
         let obj:Group = new Group(false);
         expect(obj.getSize()).toBe(0);
 
-        expect(obj.contains("1")).toBeFalsy;
-        expect(obj.contains(0)).toBeFalsy;
+        expect(obj.contains("1")).toBeFalsy();
+        expect(obj.contains(0)).toBeFalsy();
 
-        expect(obj.insert("1")).toBeTruthy;
+        expect(obj.insert("1")).toBeTruthy();
         expect(obj.getSize()).toBe(1);
-        expect(obj.insert(0)).toBeFalsy;
+        expect(obj.insert(0)).toBeFalsy();
         expect(obj.getSize()).toBe(1);
 
-        expect(obj.contains("1")).toBeTruthy;
-        expect(obj.contains(0)).toBeTruthy;
+        expect(obj.contains("1")).toBeTruthy();
+        expect(obj.contains(0)).toBeTruthy();
 
-        expect(obj.contains("3")).toBeFalsy;
-        expect(obj.insert(2)).toBeTruthy;
-        expect(obj.contains("3")).toBeTruthy;
+        expect(obj.contains("3")).toBeFalsy();
+        expect(obj.insert(2)).toBeTruthy();
+        expect(obj.contains("3")).toBeTruthy();
 
         let i:Group = new Group(true);
-        expect(obj.insert(i)).toBeTruthy;
+        expect(obj.insert(i)).toBeTruthy();
         expect(obj.getSize()).toBe(9);
     });
     it('should remove some candidates', () => {
         let obj:Group = new Group(true);
         expect(obj.getSize()).toBe(9);
 
-        expect(obj.contains("1")).toBeTruthy;
-        expect(obj.remove("1")).toBeTruthy;
+        expect(obj.contains("1")).toBeTruthy();
+        expect(obj.remove("1")).toBeTruthy();
         expect(obj.getSize()).toBe(8);
-        expect(obj.contains("1")).toBeFalsy;
-        expect(obj.remove("1")).toBeFalsy;
+        expect(obj.contains("1")).toBeFalsy();
+        expect(obj.remove("1")).toBeFalsy();
         expect(obj.getSize()).toBe(8);
 
-        expect(obj.remove(3)).toBeTruthy;
-        expect(obj.contains(3)).toBeFalsy;
+        expect(obj.remove(3)).toBeTruthy();
+        expect(obj.contains(3)).toBeFalsy();
 
         let r:Group = new Group(false);
-        expect(obj.remove(r)).toBeFalsy;
+        expect(obj.remove(r)).toBeFalsy();
         r.insert("1");
         r.insert(6);
         r.insert(7);
-        expect(obj.remove(r)).toBeTruthy;
+        expect(obj.remove(r)).toBeTruthy();
         expect(obj.getSize()).toBe(5);
     });
     it('should be equal then unequal', () => {
@@ -65,13 +65,13 @@ describe("create Group object", () => {
         d.insert(a);
         d.insert(4);
         
-        expect(a.equals(b)).toBeTruthy;
-        expect(a.equals(a.clone())).toBeTruthy;
-        expect(d.equals(Group.union([a, c]))).toBeTruthy;
+        expect(a.equals(b)).toBeTruthy();
+        expect(a.equals(a.clone())).toBeTruthy();
+        expect(d.equals(Group.union([a, c]))).toBeTruthy();
 
         a.insert(7);
 
-        expect(b.equals(a)).toBeFalsy;
+        expect(b.equals(a)).toBeFalsy();
     });
     it('should return subsets', () => {
         expect((Group.getSubset(1)).length).toBe(SudokuEnum.ROW_LENGTH);
