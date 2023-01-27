@@ -50,9 +50,7 @@ export class Solver{
      * Thrown if board is unsolvable
      */
     public nextStep():Hint {
-        this.emptyCells = new Array();
-        this.initializeCellArray(this.emptyCells, SudokuEnum.COLUMN_LENGTH);
-        this.addEveryEmptyCell(this.emptyCells);
+        this.setEmptyCells();
 
         if (this.isFinished(this.emptyCells)) {
             return null;
@@ -65,6 +63,16 @@ export class Solver{
         }
 
         throw new CustomError(CustomErrorEnum.UNSOLVABLE);
+    }
+
+    /**
+     * Sets emptyCells to be all of the empty cells in the board
+     */
+    private setEmptyCells():void {
+        this.emptyCells = new Array();
+        this.initializeCellArray(this.emptyCells, SudokuEnum.COLUMN_LENGTH);
+        this.addEveryEmptyCell(this.emptyCells);
+        return;
     }
 
     /**
