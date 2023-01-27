@@ -25,6 +25,7 @@ export class Board{
     private mostDifficultStrategy: StrategyEnum;
     private strategies: boolean[];
     private difficulty: number;
+    private drills: StrategyEnum[];
     private solver: Solver;
 
     /**
@@ -56,6 +57,8 @@ export class Board{
         else {
             this.solver = new Solver(this.board, algorithm);
         }
+
+        this.setDrills();
 
         this.solve();
     }
@@ -106,6 +109,26 @@ export class Board{
      */
     public getDifficulty():number {
         return this.difficulty;
+    }
+
+    /**
+     * Get drills
+     * @returns drills
+     */
+    public getDrills():StrategyEnum[] {
+        return this.drills;
+    }
+
+    /**
+     * Adds a StrategyEnum to drills for each strategy that can be used as the first step in solving this board
+     */
+    private setDrills():void {
+        let hints:Hint[] = this.solver.getAllHints();
+        this.drills = new Array();
+        for (let i:number = 0; i < hints.length; i++) {
+            this.drills.push(hints[i].getStrategyType());
+        }
+        return;
     }
 
     /**

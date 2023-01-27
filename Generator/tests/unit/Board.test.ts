@@ -135,6 +135,7 @@ describe("solve Boards", () => {
     it('should solve single naked single', () => {
         expect(singleNakedSingle.getSolutionString()).toBe(TestBoards.SINGLE_NAKED_SINGLE_SOLUTION);
         expect(singleNakedSingle.getStrategyScore()).toBe(StrategyEnum.NAKED_SINGLE);
+        expect((singleNakedSingle.getDrills()).length).toBe(1);
         for (let i:number = 0; i < StrategyEnum.COUNT; i++) {
             if (i === StrategyEnum.NAKED_SINGLE) {
                 expect(singleNakedSingle.getStrategies()[i]).toBeTruthy();
