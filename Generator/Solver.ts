@@ -41,6 +41,7 @@ export class Solver{
         else {
             this.setNotes(notes);
         }
+        this.setEmptyCells();
         this.solved = false;
         this.algorithm = algorithm;
     }
@@ -52,8 +53,6 @@ export class Solver{
      * Thrown if board is unsolvable
      */
     public nextStep():Hint {
-        this.setEmptyCells();
-
         if (this.isFinished(this.emptyCells)) {
             return null;
         }
@@ -63,6 +62,8 @@ export class Solver{
             this.applyHint();
             // Resets allHints so getAllHints doesn't return Hints from prior step
             this.allHints = undefined;
+            // Updates empty cells
+            this.setEmptyCells();
             return this.hint;
         }
 
