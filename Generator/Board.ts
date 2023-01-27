@@ -24,8 +24,8 @@ export class Board{
     private solutionString: string;
     private mostDifficultStrategy: StrategyEnum;
     private strategies: boolean[];
+    private drills: boolean[];
     private difficulty: number;
-    private drills: StrategyEnum[];
     private solver: Solver;
 
     /**
@@ -49,6 +49,7 @@ export class Board{
 
         this.mostDifficultStrategy = -1;
         this.strategies = new Array(StrategyEnum.COUNT).fill(false);
+        this.drills = new Array(StrategyEnum.COUNT).fill(false);
         this.difficulty = 0;
 
         if (algorithm === undefined) {
@@ -115,7 +116,7 @@ export class Board{
      * Get drills
      * @returns drills
      */
-    public getDrills():StrategyEnum[] {
+    public getDrills():boolean[] {
         return this.drills;
     }
 
@@ -126,7 +127,7 @@ export class Board{
         let hints:Hint[] = this.solver.getAllHints();
         this.drills = new Array();
         for (let i:number = 0; i < hints.length; i++) {
-            this.drills.push(hints[i].getStrategyType());
+            this.drills[hints[i].getStrategyType()] = true;
         }
         return;
     }
