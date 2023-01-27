@@ -121,13 +121,23 @@ export class Board{
     }
 
     /**
-     * Adds a StrategyEnum to drills for each strategy that can be used as the first step in solving this board
+     * Adds a StrategyEnum to drills for strategies that can be used as the first step in solving this board
+     * If a strategy is added than its prereqs are excluded in order to ensure good examples of strategies are used
+     * For example, if there is a naked pair made up of two naked singles only the naked single will be used as a drill
      */
     private setDrills():void {
         let hints:Hint[] = this.solver.getAllHints();
         this.drills = new Array();
         for (let i:number = 0; i < hints.length; i++) {
             this.drills[hints[i].getStrategyType()] = true;
+        }
+        for (let i:number = 0; i < this.drills.length; i++) {
+            if (this.drills[i]) {
+                let prereqs:StrategyEnum[] = this.getPrereqs(i);
+                for (let j:number = 0; j < prereqs.length; j++) {
+                    this.drills[prereqs[j]] = false;
+                }
+            }
         }
         return;
     }
