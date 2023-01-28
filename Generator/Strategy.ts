@@ -400,6 +400,16 @@ export class Strategy{
                         let notHiddenSetCandidates:Group = getUnionOfSetNotes(notHiddenSet);
                         // Calculates notes that are in the hidden set
                         let hiddenSetCandidates:Group = getUnionOfSetNotes(hiddenSet);
+                        // Get values that have already been placed in the group and remove them as candidates
+                        let used:Group = new Group(false);
+                        let groupCells: Cell[] = getCellsInGroup(this.board, group, i);
+                        for (let k:number = 0; k < groupCells.length; k++) {
+                            if (!groupCells[k].isEmpty()) {
+                                used.insert(groupCells[k].getValue());
+                            }
+                        }
+                        notHiddenSetCandidates.remove(used);
+                        hiddenSetCandidates.remove(used);
                         // Is hidden set if correct number of candidates don't exist outside of the hidden set
                         if ((hiddenSetCandidates.getSize() - (hiddenSetCandidates.intersection(notHiddenSetCandidates)).getSize()) === tuple) {
                             // Remove candidates that aren't part of the hidden set from the hidden sets notes
@@ -472,7 +482,7 @@ export class Strategy{
                 if ((notes.intersection(cell.getNotes())).getSize() > 0) {
                     let notesToRemove: Group = new Group(false, row, column);
                     notesToRemove.insert(notes);
-                    this.notes.push(notes);
+                    this.notes.push(notesToRemove);
                     this.identified = true;
                     this.strategyType = StrategyEnum.SIMPLIFY_NOTES;
                     this.difficulty = DifficultyLowerBounds.SIMPLIFY_NOTES;
