@@ -107,6 +107,9 @@ export class Strategy{
         else if (strategyType === StrategyEnum.HIDDEN_SINGLE) {
             return this.isHiddenSet(TupleEnum.SINGLE);
         }
+        else if (strategyType === StrategyEnum.SIMPLIFY_NOTES) {
+            return this.isSimplifyNotes();
+        }
         else {
             return false;
         }
@@ -437,7 +440,7 @@ export class Strategy{
      */
     private isSimplifyNotes():boolean {
         for (let i:number = 0; i < SudokuEnum.COLUMN_LENGTH; i++) {
-            for (let j:number = 0; this.cells[i].length; j++) {
+            for (let j:number = 0; j < this.cells[i].length; j++) {
                 let cell: Cell = this.cells[i][j];
                 let row: number = cell.getRow();
                 let column: number = cell.getColumn();
