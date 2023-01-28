@@ -24,6 +24,7 @@ export class Board{
     private solutionString: string;
     private mostDifficultStrategy: StrategyEnum;
     private strategies: boolean[];
+    private drills: boolean[];
     private difficulty: number;
     private solver: Solver;
 
@@ -48,6 +49,7 @@ export class Board{
 
         this.mostDifficultStrategy = -1;
         this.strategies = new Array(StrategyEnum.COUNT).fill(false);
+        this.drills = new Array(StrategyEnum.COUNT).fill(false);
         this.difficulty = 0;
 
         if (algorithm === undefined) {
@@ -56,6 +58,8 @@ export class Board{
         else {
             this.solver = new Solver(this.board, algorithm);
         }
+
+        this.setDrills();
 
         this.solve();
     }
@@ -106,6 +110,36 @@ export class Board{
      */
     public getDifficulty():number {
         return this.difficulty;
+    }
+
+    /**
+     * Get drills
+     * @returns drills
+     */
+    public getDrills():boolean[] {
+        return this.drills;
+    }
+
+    /**
+     * Adds a StrategyEnum to drills for strategies that can be used as the first step in solving this board
+     * If a strategy is added than its prereqs are excluded in order to ensure good examples of strategies are used
+     * For example, if there is a naked pair made up of two naked singles only the naked single will be used as a drill
+     */
+    private setDrills():void {
+        let hints:Hint[] = this.solver.getAllHints();
+        this.drills = new Array();
+        for (let i:number = 0; i < hints.length; i++) {
+            this.drills[hints[i].getStrategyType()] = true;
+        }
+        for (let i:number = 0; i < this.drills.length; i++) {
+            if (this.drills[i]) {
+                let prereqs:StrategyEnum[] = this.getPrereqs(i);
+                for (let j:number = 0; j < prereqs.length; j++) {
+                    this.drills[prereqs[j]] = false;
+                }
+            }
+        }
+        return;
     }
 
     /**

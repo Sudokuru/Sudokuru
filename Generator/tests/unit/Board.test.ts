@@ -135,6 +135,15 @@ describe("solve Boards", () => {
     it('should solve single naked single', () => {
         expect(singleNakedSingle.getSolutionString()).toBe(TestBoards.SINGLE_NAKED_SINGLE_SOLUTION);
         expect(singleNakedSingle.getStrategyScore()).toBe(StrategyEnum.NAKED_SINGLE);
+        let drills:boolean[] = singleNakedSingle.getDrills();
+        for (let i:StrategyEnum = (StrategyEnum.INVALID + 1); i < StrategyEnum.COUNT; i++) {
+            if (i === StrategyEnum.NAKED_SINGLE) {
+                expect(drills[i]).toBeTruthy();
+            }
+            else {
+                expect(drills[i]).toBeFalsy();
+            }
+        }
         for (let i:number = 0; i < StrategyEnum.COUNT; i++) {
             if (i === StrategyEnum.NAKED_SINGLE) {
                 expect(singleNakedSingle.getStrategies()[i]).toBeTruthy();
@@ -148,6 +157,15 @@ describe("solve Boards", () => {
     it('should solve naked singles only board', () => {
         expect(onlyNakedSingles.getSolutionString()).toBe(TestBoards.ONLY_NAKED_SINGLES_SOLUTION);
         expect(onlyNakedSingles.getStrategyScore()).toBe(StrategyEnum.NAKED_SINGLE);
+        let drills:boolean[] = onlyNakedSingles.getDrills();
+        for (let i:StrategyEnum = (StrategyEnum.INVALID + 1); i < StrategyEnum.COUNT; i++) {
+            if (i === StrategyEnum.HIDDEN_SINGLE || i === StrategyEnum.NAKED_SEXTUPLET) {
+                expect(drills[i]).toBeTruthy();
+            }
+            else {
+                expect(drills[i]).toBeFalsy();
+            }
+        }
     });
 
     it('should give higher difficulty rating to board with multiple naked singles than one with only one', () => {

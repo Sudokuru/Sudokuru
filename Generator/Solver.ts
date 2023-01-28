@@ -14,10 +14,14 @@ import { Group } from "./Group";
 export class Solver{
     // Stores representation of board being solved
     private board: Cell[][];
+    // Stores empty cells in board
+    private emptyCells: Cell[][];
     // Stores whether or not the board has been successfully solved
     private solved: boolean;
     // Stores a hint corresponding to a step
     private hint: Hint;
+    // Stores hints for all strategies that are applicable at this step
+    private allHints: Hint[];
     // Stores order in which the Solver uses strategies to solve the Sudoku board (modified for testing strategies)
     private algorithm: StrategyEnum[];
 
@@ -37,6 +41,7 @@ export class Solver{
         else {
             this.setNotes(notes);
         }
+        this.setEmptyCells();
         this.solved = false;
         this.algorithm = algorithm;
     }
@@ -48,21 +53,56 @@ export class Solver{
      * Thrown if board is unsolvable
      */
     public nextStep():Hint {
-        let cells: Cell[][] = new Array();
-        this.initializeCellArray(cells, SudokuEnum.COLUMN_LENGTH);
-        this.addEveryEmptyCell(cells);
-
-        if (this.isFinished(cells)) {
+        if (this.isFinished(this.emptyCells)) {
             return null;
         }
 
-        this.setHint(cells);
+        this.setHint(this.emptyCells);
         if (this.hint !== null) {
             this.applyHint();
+            // Resets allHints so getAllHints doesn't return Hints from prior step
+            this.allHints = undefined;
+            // Updates empty cells
+            this.setEmptyCells();
             return this.hint;
         }
 
         throw new CustomError(CustomErrorEnum.UNSOLVABLE);
+    }
+
+    /**
+     * Gets an array containing Hint objects for each strategy that can be used at this step
+     * @returns array of Hints for all applicable strategies at this step
+     */
+    public getAllHints():Hint[] {
+        if (this.allHints === undefined) {
+            this.setAllHints();
+        }
+        return this.allHints;
+    }
+
+    /**
+     * Creates a Hint object for each strategy that can be used at this step and adds it to allHints
+     */
+    private setAllHints():void {
+        this.allHints = new Array();
+        for (let strategy: StrategyEnum = (StrategyEnum.INVALID + 1); strategy < StrategyEnum.COUNT; strategy++) {
+            let strategyObj:Strategy = new Strategy(this.board, this.emptyCells);
+            if (strategyObj.setStrategyType(strategy)) {
+                this.allHints.push(new Hint(strategyObj));
+            }
+        }
+        return;
+    }
+
+    /**
+     * Sets emptyCells to be all of the empty cells in the board
+     */
+    private setEmptyCells():void {
+        this.emptyCells = new Array();
+        this.initializeCellArray(this.emptyCells, SudokuEnum.COLUMN_LENGTH);
+        this.addEveryEmptyCell(this.emptyCells);
+        return;
     }
 
     /**
