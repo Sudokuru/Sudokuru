@@ -94,6 +94,16 @@ export enum NAKED_OCTUPLET {
 }
 
 /**
+ * Contains hint information for simplify notes
+ * Contains what action hint is trying to get you to do
+ * @enum
+ */
+export enum SIMPLIFY_NOTES {
+    HINT_INFO = "You can simplify notes using values already placed in cells at the start of the game",
+    HINT_ACTION = "When there is a value already placed in a cell than it can be removed from all other cells notes in its row, column, and box"
+}
+
+/**
  * Constructed using strategy object and info/action strings
  * Inherited by hint classes for specific strategies like NakedSingle
  * Returns:
@@ -151,6 +161,10 @@ export class Hint{
         else if (this.getStrategyType() === StrategyEnum.HIDDEN_SINGLE) {
             this.info = HIDDEN_SINGLE.HINT_INFO;
             this.action = HIDDEN_SINGLE.HINT_ACTION;
+        }
+        else if (this.getStrategyType() === StrategyEnum.SIMPLIFY_NOTES) {
+            this.info = SIMPLIFY_NOTES.HINT_INFO;
+            this.action = SIMPLIFY_NOTES.HINT_ACTION;
         }
         else {
             throw new Error();
