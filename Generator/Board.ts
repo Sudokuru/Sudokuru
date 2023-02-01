@@ -126,8 +126,20 @@ export class Board{
      * For example, if there is a naked pair made up of two naked singles only the naked single will be used as a drill
      */
     private setDrills():void {
-        let hints:Hint[] = this.solver.getAllHints();
-        this.drills = new Array();
+        // Run through all of the simplify notes so drills that require notes to be removed can be added
+        let algorithm:StrategyEnum[] = new Array();
+        algorithm.push(StrategyEnum.SIMPLIFY_NOTES);
+        for (let i:number = (StrategyEnum.INVALID + 1); i < StrategyEnum.COUNT; i++) {
+            if (i !== StrategyEnum.SIMPLIFY_NOTES) {
+                algorithm.push(i);
+            }
+        }
+        let solver:Solver = new Solver(this.board, algorithm);
+        let hints:Hint[] = solver.getAllHints();
+        while ((solver.nextStep()).getStrategyType() === StrategyEnum.SIMPLIFY_NOTES) {
+            hints = solver.getAllHints();
+        }
+        this.drills = new Array(StrategyEnum.COUNT).fill(false);
         for (let i:number = 0; i < hints.length; i++) {
             this.drills[hints[i].getStrategyType()] = true;
         }
@@ -139,6 +151,7 @@ export class Board{
                 }
             }
         }
+        this.drills[StrategyEnum.SIMPLIFY_NOTES] = true;
         return;
     }
 
