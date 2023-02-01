@@ -121,7 +121,15 @@ let singleNakedSingle:Board, onlyNakedSingles:Board, onlyNakedSinglesQuadruplets
 describe("solve Boards", () => {
     beforeAll(() => {
         singleNakedSingle = new Board(TestBoards.SINGLE_NAKED_SINGLE);
-        onlyNakedSingles = new Board(TestBoards.ONLY_NAKED_SINGLES);
+        let nakedSingleAlgo:StrategyEnum[] = new Array();
+        nakedSingleAlgo.push(StrategyEnum.NAKED_SINGLE);
+        nakedSingleAlgo.push(StrategyEnum.SIMPLIFY_NOTES);
+        for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
+            if (strategy !== StrategyEnum.NAKED_SINGLE && strategy !== StrategyEnum.SIMPLIFY_NOTES) {
+                nakedSingleAlgo.push(strategy);
+            }
+        }
+        onlyNakedSingles = new Board(TestBoards.ONLY_NAKED_SINGLES, nakedSingleAlgo);
         let algorithm:StrategyEnum[] = new Array();
         algorithm.push(StrategyEnum.NAKED_QUADRUPLET);
         for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
@@ -134,10 +142,9 @@ describe("solve Boards", () => {
 
     it('should solve single naked single', () => {
         expect(singleNakedSingle.getSolutionString()).toBe(TestBoards.SINGLE_NAKED_SINGLE_SOLUTION);
-        expect(singleNakedSingle.getStrategyScore()).toBe(StrategyEnum.NAKED_SINGLE);
         let drills:boolean[] = singleNakedSingle.getDrills();
         for (let i:StrategyEnum = (StrategyEnum.INVALID + 1); i < StrategyEnum.COUNT; i++) {
-            if (i === StrategyEnum.NAKED_SINGLE) {
+            if (i === StrategyEnum.NAKED_SINGLE || i === StrategyEnum.SIMPLIFY_NOTES) {
                 expect(drills[i]).toBeTruthy();
             }
             else {
@@ -145,7 +152,7 @@ describe("solve Boards", () => {
             }
         }
         for (let i:number = 0; i < StrategyEnum.COUNT; i++) {
-            if (i === StrategyEnum.NAKED_SINGLE) {
+            if (i === StrategyEnum.NAKED_SINGLE || i === StrategyEnum.SIMPLIFY_NOTES) {
                 expect(singleNakedSingle.getStrategies()[i]).toBeTruthy();
             }
             else {
@@ -156,10 +163,18 @@ describe("solve Boards", () => {
 
     it('should solve naked singles only board', () => {
         expect(onlyNakedSingles.getSolutionString()).toBe(TestBoards.ONLY_NAKED_SINGLES_SOLUTION);
-        expect(onlyNakedSingles.getStrategyScore()).toBe(StrategyEnum.NAKED_SINGLE);
+        let strategies:boolean[] = onlyNakedSingles.getStrategies();
+        for (let i:number = 0; i < strategies.length; i++) {
+            if (i === StrategyEnum.NAKED_SINGLE || i === StrategyEnum.SIMPLIFY_NOTES) {
+                expect(strategies[i]).toBeTruthy();
+            }
+            else {
+                expect(strategies[i]).toBeFalsy();
+            }
+        }
         let drills:boolean[] = onlyNakedSingles.getDrills();
         for (let i:StrategyEnum = (StrategyEnum.INVALID + 1); i < StrategyEnum.COUNT; i++) {
-            if (i === StrategyEnum.HIDDEN_SINGLE || i === StrategyEnum.NAKED_SEXTUPLET) {
+            if (i === StrategyEnum.HIDDEN_SINGLE || i === StrategyEnum.NAKED_SEXTUPLET || i === StrategyEnum.SIMPLIFY_NOTES) {
                 expect(drills[i]).toBeTruthy();
             }
             else {
@@ -174,14 +189,16 @@ describe("solve Boards", () => {
 
     it ('should solve row hidden single', () => {
         let board:Board = new Board(TestBoards.ROW_HIDDEN_SINGLES);
+        let strategies:boolean[] = board.getStrategies();
         expect(board.getSolutionString()).toBe(TestBoards.ROW_HIDDEN_SINGLES_SOLUTION);
-        expect(board.getStrategyScore()).toBe(StrategyEnum.HIDDEN_SINGLE);
+        expect(strategies[StrategyEnum.HIDDEN_SINGLE]).toBeTruthy();
     });
 
     it ('should solve row column box hidden singles', () => {
         let board:Board = new Board(TestBoards.ROW_COLUMN_BOX_HIDDEN_SINGLES);
+        let strategies:boolean[] = board.getStrategies();
         expect(board.getSolutionString()).toBe(TestBoards.ROW_COLUMN_BOX_HIDDEN_SINGLES_SOLUTION);
-        expect(board.getStrategyScore()).toBe(StrategyEnum.HIDDEN_SINGLE);
+        expect(strategies[StrategyEnum.HIDDEN_SINGLE]).toBeTruthy();
     });
 
     it('should solve row naked pair', () => {
@@ -193,31 +210,36 @@ describe("solve Boards", () => {
             }
         }
         let board:Board = new Board(TestBoards.ROW_NAKED_PAIR, algorithm);
+        let strategies:boolean[] = board.getStrategies();
         expect(board.getSolutionString()).toBe(TestBoards.ROW_NAKED_PAIR_SOLUTION);
-        expect(board.getStrategyScore()).toBe(StrategyEnum.NAKED_PAIR);
+        expect(strategies[StrategyEnum.NAKED_PAIR]).toBeTruthy();
     });
 
     it('should solve column naked pair', () => {
         let board:Board = new Board(TestBoards.COLUMN_NAKED_PAIR);
+        let strategies:boolean[] = board.getStrategies();
         expect(board.getSolutionString()).toBe(TestBoards.COLUMN_NAKED_PAIR_SOLUTION);
-        expect(board.getStrategyScore()).toBe(StrategyEnum.NAKED_PAIR);
+        expect(strategies[StrategyEnum.NAKED_PAIR]).toBeTruthy();
     });
 
     it('should solve box naked pair', () => {
         let board:Board = new Board(TestBoards.BOX_NAKED_PAIR);
+        let strategies:boolean[] = board.getStrategies();
         expect(board.getSolutionString()).toBe(TestBoards.BOX_NAKED_PAIR_SOLUTION);
-        expect(board.getStrategyScore()).toBe(StrategyEnum.NAKED_PAIR);
+        expect(strategies[StrategyEnum.NAKED_PAIR]).toBeTruthy();
     });
 
     it('should solve naked triplet', () => {
         let board:Board = new Board(TestBoards.NAKED_TRIPLET);
+        let strategies:boolean[] = board.getStrategies();
         expect(board.getSolutionString()).toBe(TestBoards.NAKED_TRIPLET_SOLUTION);
-        expect(board.getStrategyScore()).toBe(StrategyEnum.NAKED_TRIPLET);
+        expect(strategies[StrategyEnum.NAKED_TRIPLET]).toBeTruthy();
     });
 
     it('should solve naked quadruplet', () => {
+        let strategies:boolean[] = onlyNakedSinglesQuadruplets.getStrategies();
         expect(onlyNakedSinglesQuadruplets.getSolutionString()).toBe(TestBoards.ONLY_NAKED_SINGLES_SOLUTION);
-        expect(onlyNakedSinglesQuadruplets.getStrategyScore()).toBe(StrategyEnum.NAKED_QUADRUPLET);
+        expect(strategies[StrategyEnum.NAKED_QUADRUPLET]).toBeTruthy();
     });
 
     it('should give a higher difficulty score to solving same board with naked quadruplets than singles', () => {
@@ -234,53 +256,52 @@ describe("solve Boards", () => {
         }
         let board:Board = new Board(TestBoards.ONLY_NAKED_SINGLES, algorithm);
         let strategies:boolean[] = board.getStrategies();
-        let strategyCount:number = 0;
-        for (let i:number = 0; i < StrategyEnum.COUNT; i++) {
-            if (strategies[i]) {
-                strategyCount++;
-            }
-        }
         expect(board.getSolutionString()).toBe(TestBoards.ONLY_NAKED_SINGLES_SOLUTION);
-        expect(board.getStrategyScore()).toBe(StrategyEnum.NAKED_QUINTUPLET);
-        expect(strategyCount).toBe(5);
+        expect(strategies[StrategyEnum.NAKED_QUINTUPLET]).toBeTruthy();
     });
 
     it('should solve naked sextuplet', () => {
         let algorithm:StrategyEnum[] = new Array();
+        algorithm.push(StrategyEnum.SIMPLIFY_NOTES);
         algorithm.push(StrategyEnum.NAKED_SEXTUPLET);
         for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
-            if (strategy !== StrategyEnum.NAKED_SEXTUPLET) {
+            if (strategy !== StrategyEnum.NAKED_SEXTUPLET && strategy !== StrategyEnum.SIMPLIFY_NOTES) {
                 algorithm.push(strategy);
             }
         }
         let board:Board = new Board(TestBoards.ONLY_NAKED_SINGLES, algorithm);
+        let strategies:boolean[] = board.getStrategies();
         expect(board.getSolutionString()).toBe(TestBoards.ONLY_NAKED_SINGLES_SOLUTION);
-        expect(board.getStrategyScore()).toBe(StrategyEnum.NAKED_SEXTUPLET);
+        expect(strategies[StrategyEnum.NAKED_SEXTUPLET]).toBeTruthy();
     });
 
     it('should solve naked septuplet', () => {
         let algorithm:StrategyEnum[] = new Array();
+        algorithm.push(StrategyEnum.SIMPLIFY_NOTES);
         algorithm.push(StrategyEnum.NAKED_SEPTUPLET);
         for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
-            if (strategy !== StrategyEnum.NAKED_SEPTUPLET) {
+            if (strategy !== StrategyEnum.NAKED_SEPTUPLET && strategy !== StrategyEnum.SIMPLIFY_NOTES) {
                 algorithm.push(strategy);
             }
         }
         let board:Board = new Board(TestBoards.COLUMN_NAKED_PAIR, algorithm);
+        let strategies:boolean[] = board.getStrategies();
         expect(board.getSolutionString()).toBe(TestBoards.COLUMN_NAKED_PAIR_SOLUTION);
-        expect(board.getStrategyScore()).toBe(StrategyEnum.NAKED_SEPTUPLET);
+        expect(strategies[StrategyEnum.NAKED_SEPTUPLET]).toBeTruthy();
     });
 
     it('should solve naked octuplet', () => {
         let algorithm:StrategyEnum[] = new Array();
+        algorithm.push(StrategyEnum.SIMPLIFY_NOTES);
         algorithm.push(StrategyEnum.NAKED_OCTUPLET);
         for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
-            if (strategy !== StrategyEnum.NAKED_OCTUPLET) {
+            if (strategy !== StrategyEnum.NAKED_OCTUPLET && strategy !== StrategyEnum.SIMPLIFY_NOTES) {
                 algorithm.push(strategy);
             }
         }
         let board:Board = new Board(TestBoards.NAKED_OCTUPLET, algorithm);
+        let strategies:boolean[] = board.getStrategies();
         expect(board.getSolutionString()).toBe(TestBoards.NAKED_OCTUPLET_SOLUTION);
-        expect(board.getStrategyScore()).toBe(StrategyEnum.NAKED_OCTUPLET);
+        expect(strategies[StrategyEnum.NAKED_OCTUPLET]).toBeTruthy();
     });
 });

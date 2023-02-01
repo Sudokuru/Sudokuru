@@ -22,7 +22,6 @@ export class Board{
     private board: string[][];
     private solution: string[][];
     private solutionString: string;
-    private mostDifficultStrategy: StrategyEnum;
     private strategies: boolean[];
     private drills: boolean[];
     private difficulty: number;
@@ -47,7 +46,6 @@ export class Board{
 
         this.board = getBoardArray(board);
 
-        this.mostDifficultStrategy = -1;
         this.strategies = new Array(StrategyEnum.COUNT).fill(false);
         this.drills = new Array(StrategyEnum.COUNT).fill(false);
         this.difficulty = 0;
@@ -86,14 +84,6 @@ export class Board{
      */
     public getSolutionString():string {
         return this.solutionString;
-    }
-
-    /**
-     * Get strategy score
-     * @returns strategy score
-     */
-    public getStrategyScore():number {
-        return this.mostDifficultStrategy;
     }
 
     /**
@@ -207,10 +197,6 @@ export class Board{
             // Updates difficulty rating based on how hard current step is
             this.difficulty += hint.getDifficulty();
             stepCount++;
-            // Updates most difficult strategy used
-            if (hint.getStrategyType() > this.mostDifficultStrategy) {
-                this.mostDifficultStrategy = hint.getStrategyType();
-            }
             // Gets hint for next step
             hint = this.solver.nextStep();
         }
