@@ -31,6 +31,7 @@ export enum StrategyEnum {
     NAKED_SEXTUPLET,
     NAKED_SEPTUPLET,
     NAKED_OCTUPLET,
+    SIMPLIFY_NOTES,
     COUNT
 }
 

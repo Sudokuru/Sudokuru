@@ -35,10 +35,7 @@ export class Solver{
         this.board = new Array();
         this.initializeCellArray(this.board, board.length);
         this.initializeBoard(board);
-        if (notes === undefined) {
-            this.simplifyAllNotes();
-        }
-        else {
+        if (notes !== undefined) {
             this.setNotes(notes);
         }
         this.setEmptyCells();
@@ -129,7 +126,7 @@ export class Solver{
     private setHint(cells: Cell[][]):void {
         // Attempts to use strategies in order specified by algorithm
         let strategy:Strategy = new Strategy(this.board, cells);
-        for (let i: number = 0; i < StrategyEnum.COUNT; i++) {
+        for (let i: number = 0; i < this.algorithm.length; i++) {
             if (strategy.setStrategyType(this.algorithm[i])) {
                 this.hint = new Hint(strategy);
                 return;
@@ -217,72 +214,6 @@ export class Solver{
     }
 
     /**
-     * Simplify notes by removing filled cells values from rest of their row/column/boxes
-     */
-    private simplifyAllNotes():void {
-        for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
-            for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
-                if (!this.board[row][column].isEmpty()) {
-                    this.simplifyNotes(this.board[row][column]);
-                }
-            }
-        }
-    }
-
-    /**
-     * Removes cell's value from all other cells in its row/column/box
-     * 
-     * @param cell - cell that has had value placed in it
-     */
-    private simplifyNotes(cell: Cell):void {
-        let value:string = cell.getValue();
-
-        this.simplifyRowNotes(value, cell.getRow());
-        this.simplifyColumnNotes(value, cell.getColumn());
-        this.simplifyBoxNotes(value, cell.getBoxRowStart(), cell.getBoxColumnStart());
-    }
-
-    /**
-     * Removes given value from each cell in given row
-     * 
-     * @param value - value to remove
-     * @param row - row to remove value from
-     */
-    private simplifyRowNotes(value:string, row:number):void {
-        for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
-            this.board[row][column].removeNote(value);
-        }
-        return;
-    }
-
-    /**
-     * Removes given value from each cell in given column
-     * 
-     * @param value - value to remove
-     * @param column - column to remove value from
-     */
-    private simplifyColumnNotes(value:string, column:number):void {
-        for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
-            this.board[row][column].removeNote(value);
-        }
-        return;
-    }
-
-    /**
-     * Removes given value from each cell in given box
-     * 
-     * @param value - value to remove
-     * @param box - box to remove value from
-     */
-    private simplifyBoxNotes(value:string, row:number, column:number):void {
-        for (let r:number = row; r < (row + SudokuEnum.BOX_LENGTH); r++) {
-            for (let c:number = column; c < (column + SudokuEnum.BOX_LENGTH); c++) {
-                this.board[r][c].removeNote(value);
-            }
-        }
-    }
-
-    /**
      * Initializes 2d cell array
      * @param cells - 2d array to intialize
      * @param rowCount - number of rows in array
@@ -331,7 +262,6 @@ export class Solver{
             row = cells[i].getRow();
             column = cells[i].getColumn();
             this.board[row][column].setValue(cells[i].getValue());
-            this.simplifyNotes(this.board[row][column]);
         }
         return;
     }

@@ -22,7 +22,6 @@ export class Board{
     private board: string[][];
     private solution: string[][];
     private solutionString: string;
-    private mostDifficultStrategy: StrategyEnum;
     private strategies: boolean[];
     private drills: boolean[];
     private difficulty: number;
@@ -47,7 +46,6 @@ export class Board{
 
         this.board = getBoardArray(board);
 
-        this.mostDifficultStrategy = -1;
         this.strategies = new Array(StrategyEnum.COUNT).fill(false);
         this.drills = new Array(StrategyEnum.COUNT).fill(false);
         this.difficulty = 0;
@@ -89,14 +87,6 @@ export class Board{
     }
 
     /**
-     * Get strategy score
-     * @returns strategy score
-     */
-    public getStrategyScore():number {
-        return this.mostDifficultStrategy;
-    }
-
-    /**
      * Get boolean array containing strategies used by Solver
      * @returns strategies boolean array
      */
@@ -126,8 +116,20 @@ export class Board{
      * For example, if there is a naked pair made up of two naked singles only the naked single will be used as a drill
      */
     private setDrills():void {
-        let hints:Hint[] = this.solver.getAllHints();
-        this.drills = new Array();
+        // Run through all of the simplify notes so drills that require notes to be removed can be added
+        let algorithm:StrategyEnum[] = new Array();
+        algorithm.push(StrategyEnum.SIMPLIFY_NOTES);
+        for (let i:number = (StrategyEnum.INVALID + 1); i < StrategyEnum.COUNT; i++) {
+            if (i !== StrategyEnum.SIMPLIFY_NOTES) {
+                algorithm.push(i);
+            }
+        }
+        let solver:Solver = new Solver(this.board, algorithm);
+        let hints:Hint[] = solver.getAllHints();
+        while ((solver.nextStep()).getStrategyType() === StrategyEnum.SIMPLIFY_NOTES) {
+            hints = solver.getAllHints();
+        }
+        this.drills = new Array(StrategyEnum.COUNT).fill(false);
         for (let i:number = 0; i < hints.length; i++) {
             this.drills[hints[i].getStrategyType()] = true;
         }
@@ -139,6 +141,7 @@ export class Board{
                 }
             }
         }
+        this.drills[StrategyEnum.SIMPLIFY_NOTES] = true;
         return;
     }
 
@@ -194,10 +197,6 @@ export class Board{
             // Updates difficulty rating based on how hard current step is
             this.difficulty += hint.getDifficulty();
             stepCount++;
-            // Updates most difficult strategy used
-            if (hint.getStrategyType() > this.mostDifficultStrategy) {
-                this.mostDifficultStrategy = hint.getStrategyType();
-            }
             // Gets hint for next step
             hint = this.solver.nextStep();
         }

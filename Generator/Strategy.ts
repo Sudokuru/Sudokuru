@@ -16,7 +16,8 @@ enum DifficultyLowerBounds {
     NAKED_QUINTUPLET = 140,
     NAKED_SEXTUPLET = 200,
     NAKED_SEPTUPLET = 300,
-    NAKED_OCTUPLET = 450
+    NAKED_OCTUPLET = 450,
+    SIMPLIFY_NOTES = 10
 }
 
 /**
@@ -32,7 +33,8 @@ enum DifficultyUpperBounds {
     NAKED_QUINTUPLET = 140,
     NAKED_SEXTUPLET = 200,
     NAKED_SEPTUPLET = 300,
-    NAKED_OCTUPLET = 450
+    NAKED_OCTUPLET = 450,
+    SIMPLIFY_NOTES = 10
 }
 
 /**
@@ -104,6 +106,9 @@ export class Strategy{
         }
         else if (strategyType === StrategyEnum.HIDDEN_SINGLE) {
             return this.isHiddenSet(TupleEnum.SINGLE);
+        }
+        else if (strategyType === StrategyEnum.SIMPLIFY_NOTES) {
+            return this.isSimplifyNotes();
         }
         else {
             return false;
@@ -395,6 +400,16 @@ export class Strategy{
                         let notHiddenSetCandidates:Group = getUnionOfSetNotes(notHiddenSet);
                         // Calculates notes that are in the hidden set
                         let hiddenSetCandidates:Group = getUnionOfSetNotes(hiddenSet);
+                        // Get values that have already been placed in the group and remove them as candidates
+                        let used:Group = new Group(false);
+                        let groupCells: Cell[] = getCellsInGroup(this.board, group, i);
+                        for (let k:number = 0; k < groupCells.length; k++) {
+                            if (!groupCells[k].isEmpty()) {
+                                used.insert(groupCells[k].getValue());
+                            }
+                        }
+                        notHiddenSetCandidates.remove(used);
+                        hiddenSetCandidates.remove(used);
                         // Is hidden set if correct number of candidates don't exist outside of the hidden set
                         if ((hiddenSetCandidates.getSize() - (hiddenSetCandidates.intersection(notHiddenSetCandidates)).getSize()) === tuple) {
                             // Remove candidates that aren't part of the hidden set from the hidden sets notes
@@ -423,6 +438,55 @@ export class Strategy{
                             }
                         }
                     }
+                }
+            }
+        }
+        return this.identified;
+    }
+
+    /**
+     * Checks if strategy is simplify notes and if so adds notes to remove from a cell
+     * @returns true if strategy is simplify notes
+     */
+    private isSimplifyNotes():boolean {
+        for (let i:number = 0; i < SudokuEnum.COLUMN_LENGTH; i++) {
+            for (let j:number = 0; j < this.cells[i].length; j++) {
+                let cell: Cell = this.cells[i][j];
+                let row: number = cell.getRow();
+                let column: number = cell.getColumn();
+                let box: number = cell.getBox();
+                let boxRowStart: number = Cell.getBoxRowStart(box);
+                let boxColumnStart: number = Cell.getBoxColumnStart(box);
+                let notes: Group = new Group(false);
+                // Add every placed value from given row
+                for (let k:number = 0; k < SudokuEnum.ROW_LENGTH; k++) {
+                    if (!this.board[row][k].isEmpty()) {
+                        notes.insert(this.board[row][k].getValue());
+                    }
+                }
+                // Add every placed value from given column
+                for (let k:number = 0; k < SudokuEnum.COLUMN_LENGTH; k++) {
+                    if (!this.board[k][column].isEmpty()) {
+                        notes.insert(this.board[k][column].getValue());
+                    }
+                }
+                // Add every placed value from given box
+                for (let r:number = boxRowStart; r < (boxRowStart + SudokuEnum.BOX_LENGTH); r++) {
+                    for (let c:number = boxColumnStart; c < (boxColumnStart + SudokuEnum.BOX_LENGTH); c++) {
+                        if (!this.board[r][c].isEmpty()) {
+                            notes.insert(this.board[r][c].getValue());
+                        }
+                    }
+                }
+                // If there are any notes to remove then strategy is identified
+                if ((notes.intersection(cell.getNotes())).getSize() > 0) {
+                    let notesToRemove: Group = new Group(false, row, column);
+                    notesToRemove.insert(notes);
+                    this.notes.push(notesToRemove);
+                    this.identified = true;
+                    this.strategyType = StrategyEnum.SIMPLIFY_NOTES;
+                    this.difficulty = DifficultyLowerBounds.SIMPLIFY_NOTES;
+                    return this.identified;
                 }
             }
         }
