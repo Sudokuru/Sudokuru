@@ -126,7 +126,7 @@ export class Solver{
     private setHint(cells: Cell[][]):void {
         // Attempts to use strategies in order specified by algorithm
         let strategy:Strategy = new Strategy(this.board, cells);
-        for (let i: number = 0; i < StrategyEnum.COUNT; i++) {
+        for (let i: number = 0; i < this.algorithm.length; i++) {
             if (strategy.setStrategyType(this.algorithm[i])) {
                 this.hint = new Hint(strategy);
                 return;
