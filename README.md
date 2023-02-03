@@ -5,7 +5,8 @@ update docs with npm run update-docs
 
 Run demo using npm start and then opening demo.html
 
-Generate file containing array of puzzle JSON objects using npm run generate --filepath=FILEPATH e.g. FILEPATH = file.txt
+Generate file containing array of puzzle JSON objects using npm run generate --filepath=FILEPATH
+e.g. FILEPATH = file.txt if file.txt is in the same directory as this file and contains puzzle strings.
 
 ## Documentation
 Documentation is auto-generated using Typedoc and hosted on GitHub pages here:<br>
