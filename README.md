@@ -5,6 +5,8 @@ update docs with npm run update-docs
 
 Run demo using npm start and then opening demo.html
 
+Generate file containing array of puzzle JSON objects using npm run generate --filepath=FILEPATH e.g. FILEPATH = file.txt
+
 ## Documentation
 Documentation is auto-generated using Typedoc and hosted on GitHub pages here:<br>
 https://sudokuru.github.io/SudokuPuzzleGenerator/
