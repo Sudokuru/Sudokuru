@@ -23,6 +23,7 @@ async function main(): Promise<void> {
                 first = false;
             }
             writer.write("{");
+            writer.write(`\"puzzle\":\"${board}\",`);
             writer.write("}");
         });
 
