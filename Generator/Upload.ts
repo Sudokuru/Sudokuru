@@ -13,7 +13,10 @@ async function main(): Promise<void> {
             let jsonPuzzleArray = JSON.parse(line);
             let res:Response = await fetch(endpoint, {
                 method: 'POST',
-                body: jsonPuzzleArray
+                body: jsonPuzzleArray,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             });
             let data = await res.json();
             console.log(data);
