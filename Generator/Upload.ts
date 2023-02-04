@@ -10,10 +10,9 @@ async function main(): Promise<void> {
         });
 
         rl.on('line', async (line) => {
-            let jsonPuzzleArray = JSON.parse(line);
             let res:Response = await fetch(endpoint, {
                 method: 'POST',
-                body: jsonPuzzleArray,
+                body: line,
                 headers: {
                     'Content-Type': 'application/json'
                 }
