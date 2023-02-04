@@ -1,4 +1,5 @@
 import {Board} from './Board';
+import { StrategyEnum } from './Sudoku';
 
 const events = require('events');
 const fs = require('fs');
@@ -27,6 +28,14 @@ async function main(): Promise<void> {
             writer.write("{");
             writer.write(`\"puzzle\":\"${line}\",`);
             writer.write(`\"puzzleSolution\":\"${board.getSolutionString()}\",`);
+            let strategies:boolean[] = board.getStrategies();
+            let puzzleStrategies:string[] = new Array();
+            for (let i:number = (StrategyEnum.INVALID + 1); i < StrategyEnum.COUNT; i++) {
+                if (strategies[i] && i !== StrategyEnum.SIMPLIFY_NOTES) {
+                    puzzleStrategies.push(StrategyEnum[i]);
+                }
+            }
+            writer.write(JSON.stringify(puzzleStrategies) + ",");
             writer.write("}");
         });
 
