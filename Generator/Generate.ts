@@ -28,8 +28,20 @@ function getEnd():number {
     return Number(process.argv[4]);
 }
 
+/**
+ * Returns the user specified batch size if there was one provided, otherwise returns one billion
+ * @returns batch size which determines how many puzzles per array (one array per line)
+ */
+function getBatchSize():number {
+    if (process.argv[5] === undefined) {
+        return 1_000_000_000;
+    }
+    return Number(process.argv[5]);
+}
+
 const start:number = getStart();
 const end:number = getEnd();
+const batchSize:number = getBatchSize();
 
 /**
  * Given a boolean array corresponding to strategies adds those strategy strings to array and returns it
@@ -54,13 +66,19 @@ async function main(): Promise<void> {
         });
 
         let writer = fs.createWriteStream('puzzles.txt', {'flags': 'a'});
-        writer.write("[");
 
         let index:number = 1;
+        let batchIndex:number = 0;
         rl.on('line', (line) => {
             if (index >= start && index <= end) {
                 let board:Board = new Board(line);
-                if (index !== start) {
+                if (batchIndex === 0) {
+                    if (index !== start) {
+                        writer.write("\n");
+                    }
+                    writer.write("[");
+                }
+                else if (index !== start) {
                     writer.write(",");
                 }
                 writer.write("{");
@@ -74,12 +92,19 @@ async function main(): Promise<void> {
                 drillStrategies[StrategyEnum.SIMPLIFY_NOTES] = false;
                 writer.write("\"drillStrategies\":" + JSON.stringify(getStrategyStringArray(drillStrategies)));
                 writer.write("}");
+                batchIndex++;
+                if (batchIndex === batchSize) {
+                    writer.write("]");
+                    batchIndex = 0;
+                }
             }
             index++;
         });
 
         await events.once(rl, 'close');
-        writer.write("]");
+        if (batchIndex !== batchSize) {
+            writer.write("]");
+        }
     } catch (err) {
         console.log(err);
     }
