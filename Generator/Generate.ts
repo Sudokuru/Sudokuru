@@ -6,6 +6,21 @@ const fs = require('fs');
 const readline = require('readline');
 const filepath:String = process.argv[2];
 
+/**
+ * Given a boolean array corresponding to strategies adds those strategy strings to array and returns it
+ * @param strategies - boolean array indicating which strategies to include
+ * @returns array of strategy strings
+ */
+function getStrategyStringArray(strategies: boolean[]):string[] {
+    let strategyStrings:string[] = new Array();
+    for (let i:number = (StrategyEnum.INVALID + 1); i < StrategyEnum.COUNT; i++) {
+        if (strategies[i]) {
+            strategyStrings.push(StrategyEnum[i]);
+        }
+    }
+    return strategyStrings;
+}
+
 async function main(): Promise<void> {
     try {
         const rl = readline.createInterface({
@@ -29,13 +44,8 @@ async function main(): Promise<void> {
             writer.write(`\"puzzle\":\"${line}\",`);
             writer.write(`\"puzzleSolution\":\"${board.getSolutionString()}\",`);
             let strategies:boolean[] = board.getStrategies();
-            let puzzleStrategies:string[] = new Array();
-            for (let i:number = (StrategyEnum.INVALID + 1); i < StrategyEnum.COUNT; i++) {
-                if (strategies[i] && i !== StrategyEnum.SIMPLIFY_NOTES) {
-                    puzzleStrategies.push(StrategyEnum[i]);
-                }
-            }
-            writer.write(JSON.stringify(puzzleStrategies) + ",");
+            strategies[StrategyEnum.SIMPLIFY_NOTES] = false;
+            writer.write(JSON.stringify(getStrategyStringArray(strategies)) + ",");
             writer.write((board.getDifficulty()).toString() + ",");
             writer.write("}");
         });
