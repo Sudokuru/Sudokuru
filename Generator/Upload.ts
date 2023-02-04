@@ -9,8 +9,14 @@ async function main(): Promise<void> {
             crlfDelay: Infinity
         });
 
-        rl.on('line', (line) => {
+        rl.on('line', async (line) => {
             let jsonPuzzleArray = JSON.parse(line);
+            let res:Response = await fetch(endpoint, {
+                method: 'POST',
+                body: jsonPuzzleArray
+            });
+            let data = await res.json();
+            console.log(data);
         });
     } catch(err) {
         console.log(err);
