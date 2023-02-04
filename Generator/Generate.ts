@@ -29,12 +29,12 @@ function getEnd():number {
 }
 
 /**
- * Returns the user specified batch size if there was one provided, otherwise returns one billion
+ * Returns the user specified batch size if there was one provided, otherwise returns one thousand
  * @returns batch size which determines how many puzzles per array (one array per line)
  */
 function getBatchSize():number {
     if (process.argv[5] === undefined) {
-        return 1_000_000_000;
+        return 1_000;
     }
     return Number(process.argv[5]);
 }
