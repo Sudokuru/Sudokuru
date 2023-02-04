@@ -47,6 +47,9 @@ async function main(): Promise<void> {
             strategies[StrategyEnum.SIMPLIFY_NOTES] = false;
             writer.write("\"strategies\":" + JSON.stringify(getStrategyStringArray(strategies)) + ",");
             writer.write(("\"difficulty\":" + board.getDifficulty()).toString() + ",");
+            let drillStrategies:boolean[] = board.getDrills();
+            drillStrategies[StrategyEnum.SIMPLIFY_NOTES] = false;
+            writer.write("\"drillStrategies\":" + JSON.stringify(getStrategyStringArray(drillStrategies)));
             writer.write("}");
         });
 
