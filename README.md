@@ -13,6 +13,32 @@ Start and end are both 1 indexed and inclusive e.g. 2 2 will run on just the 2nd
 Finally optional batch size which determines how many puzzles put in each array (one array per line).
 e.g. npm run generate file.txt 2 4 2 which place 2nd and 3rd puzzles in array on line 1 and 4th puzzle on array in second line.
 
+Upload generated json puzzle arrays file using npm run upload ENDPOINT
+e.g. ENDPOINT = http://localhost:3000/api/v1/puzzles/ i.e. any POST endpoint URL thats expecting JSON body that looks like the following example:
+[
+  {
+    puzzle: '310084002200150006570003010423708095760030000009562030050006070007000900000001500',
+    puzzleSolution: '316984752298157346574623819423718695765439128189562437851396274637245981942871563',
+    strategies: [ 'NAKED_SINGLE', 'HIDDEN_SINGLE', 'NAKED_PAIR', 'NAKED_TRIPLET' ],
+    difficulty: 44,
+    drillStrategies: [ 'HIDDEN_SINGLE', 'NAKED_SEXTUPLET' ]
+  },
+  {
+    puzzle: '603002001500000020901730006810400090060000000000690040350000004002070005000500108',
+    puzzleSolution: '683942751574816329921735486817453692469287513235691847358169274142378965796524138',
+    strategies: [
+      'NAKED_SINGLE',
+      'HIDDEN_SINGLE',
+      'NAKED_PAIR',
+      'NAKED_TRIPLET',
+      'NAKED_QUADRUPLET'
+    ],
+    difficulty: 60,
+    drillStrategies: [ 'HIDDEN_SINGLE', 'NAKED_SEPTUPLET' ]
+  }
+]
+Will do one POST request per array in puzzles.txt
+
 ## Documentation
 Documentation is auto-generated using Typedoc and hosted on GitHub pages here:<br>
 https://sudokuru.github.io/SudokuPuzzleGenerator/
