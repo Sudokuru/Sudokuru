@@ -102,7 +102,7 @@ async function main(): Promise<void> {
         });
 
         await events.once(rl, 'close');
-        if (batchIndex !== batchSize) {
+        if (batchIndex !== batchSize && batchIndex !== 0) {
             writer.write("]");
         }
     } catch (err) {
