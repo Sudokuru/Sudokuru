@@ -1,3 +1,5 @@
+import {Board} from './Board';
+
 const events = require('events');
 const fs = require('fs');
 const readline = require('readline');
@@ -15,7 +17,7 @@ async function main(): Promise<void> {
 
         let first:boolean = true;
         rl.on('line', (line) => {
-            let board:String = line;
+            let board:Board = new Board(line);
             if (!first) {
                 writer.write(",");
             }
@@ -23,7 +25,8 @@ async function main(): Promise<void> {
                 first = false;
             }
             writer.write("{");
-            writer.write(`\"puzzle\":\"${board}\",`);
+            writer.write(`\"puzzle\":\"${line}\",`);
+            writer.write(`\"puzzleSolution\":\"${board.getSolutionString()}\",`);
             writer.write("}");
         });
 
