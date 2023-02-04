@@ -46,7 +46,7 @@ async function main(): Promise<void> {
             let strategies:boolean[] = board.getStrategies();
             strategies[StrategyEnum.SIMPLIFY_NOTES] = false;
             writer.write("\"strategies\":" + JSON.stringify(getStrategyStringArray(strategies)) + ",");
-            writer.write((board.getDifficulty()).toString() + ",");
+            writer.write(("\"difficulty\":" + board.getDifficulty()).toString() + ",");
             writer.write("}");
         });
 
