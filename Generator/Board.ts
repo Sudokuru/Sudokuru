@@ -5,8 +5,11 @@ import { Hint } from "./Hint";
 import { StrategyEnum } from "./Sudoku"
 import { Cell } from "./Cell";
 import { Group } from "./Group";
+import { MAX_DIFFICULTY } from "./Strategy";
 
+const MAX_GAME_LENGTH_MODIFIER = 100;
 const GAME_LENGTH_DIFFICULTY_MULTIPLIER: number = 0.02;
+const MAX_GAME_DIFFICULTY = (MAX_DIFFICULTY * (1 + (MAX_GAME_LENGTH_MODIFIER * GAME_LENGTH_DIFFICULTY_MULTIPLIER)));
 
 /**
  * Constructed using board string
@@ -214,7 +217,9 @@ export class Board{
         }
         // Adjusts difficulty for game length
         this.difficulty /= stepCount;
-        this.difficulty = Math.ceil(this.difficulty * (1 + (stepCount * GAME_LENGTH_DIFFICULTY_MULTIPLIER)));
+        this.difficulty = Math.ceil(this.difficulty * (1 + (Math.min(stepCount, MAX_GAME_LENGTH_MODIFIER) * GAME_LENGTH_DIFFICULTY_MULTIPLIER)));
+        // Sets difficulty on 1-1000 scale
+        this.difficulty = Math.ceil(1000 * (this.difficulty / MAX_GAME_DIFFICULTY));
         return;
     }
 
