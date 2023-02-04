@@ -37,6 +37,10 @@ enum DifficultyUpperBounds {
     SIMPLIFY_NOTES = 10
 }
 
+/**
+ * Gets max difficulty
+ * @returns largest difficulty upper bound
+ */
 function getMaxDifficulty():number {
     const upperBounds = Object.values(DifficultyUpperBounds);
     let maxDifficulty:number = DifficultyUpperBounds.SIMPLIFY_NOTES;
