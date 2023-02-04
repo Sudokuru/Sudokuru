@@ -36,6 +36,7 @@ async function main(): Promise<void> {
                 }
             }
             writer.write(JSON.stringify(puzzleStrategies) + ",");
+            writer.write((board.getDifficulty()).toString() + ",");
             writer.write("}");
         });
 
