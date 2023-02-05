@@ -9,12 +9,11 @@ Run demo using npm start and then opening demo.html
 
 If we have a puzzle file like inputPuzzles.txt we can use that to upload puzzles to the database.<br>
 
-The command to generate the puzzles is ```npm run generate --filepath=inputPuzzles.txt```<br>
-Optional parameters can be run with:<br> ```npm run generate --filepath=inputPuzzles.txt --start=2 --end=4 --batchsize=100```<br>
+The command to generate the puzzles is:<br> ```npm run generate --filepath=inputPuzzles.txt --start=2 --end=4 --batchsize=100```<br>
 - filepath: Required, file of puzzles (only integers, newline indicates new puzzle)<br>
-- start: Optional, indicates what puzzle should be the start puzzle of the file (1 indexed, inclusive)<br> For example ```--start=2``` skips the first puzzle in input file.<br>
-- end: Optional, indicates what puzzle should be the end puzzle of the file. (1 indexed, inclusive)<br> For example ```--end=2``` means that the second puzzle is the last input puzzle.<br>
-- batchsize: Optional, indicates how many puzzles are sent in a single request. If the input values are larger than the batch size, multiple requests will be sent.<br>
+- start: Required, indicates what puzzle should be the start puzzle of the file (1 indexed, inclusive)<br> For example ```--start=2``` skips the first puzzle in input file.<br>
+- end: Required, indicates what puzzle should be the end puzzle of the file. (1 indexed, inclusive)<br> For example ```--end=2``` means that the second puzzle is the last input puzzle.<br>
+- batchsize: Required, indicates how many puzzles are sent in a single request. If the input values are larger than the batch size, multiple requests will be sent.<br>
 
 Upload generated json puzzle arrays file using ```npm run upload --endpoint=ENDPOINT```<br>
 e.g. ENDPOINT = http://localhost:3000/api/v1/puzzles/ i.e. any POST endpoint URL that's expecting JSON body that looks like the following example:<br>
