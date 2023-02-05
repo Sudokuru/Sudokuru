@@ -8,7 +8,9 @@
     "test:unit": "jest --testPathPattern=Generator/tests/unit",
     "test:integration": "jest --testPathPattern=Generator/tests/integration",
     "update-docs": "npx typedoc Generator/*.ts --name GeneratorDocs",
-    "start": "tsc Generator/Demo/script.ts && ts-node Generator/Demo/app.ts"
+    "start": "tsc Generator/Demo/script.ts && ts-node Generator/Demo/app.ts",
+    "generate": "cross-var npx ts-node ./Generator/Generate.ts $npm_config_filepath $npm_config_start $npm_config_end $npm_config_batchsize",
+    "upload": "cross-var npx ts-node ./Generator/Upload.ts $npm_config_endpoint"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +24,7 @@
   "devDependencies": {
     "@types/jest": "^29.2.2",
     "@types/node": "^18.11.9",
+    "cross-var": "^1.1.0",
     "jest": "^29.3.1",
     "ts-jest": "^29.0.3",
     "typescript": "^4.9.4",

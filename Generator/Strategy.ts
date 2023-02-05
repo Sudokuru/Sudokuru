@@ -38,6 +38,25 @@ enum DifficultyUpperBounds {
 }
 
 /**
+ * Gets max difficulty
+ * @returns largest difficulty upper bound
+ */
+function getMaxDifficulty():number {
+    const upperBounds = Object.values(DifficultyUpperBounds);
+    let maxDifficulty:number = DifficultyUpperBounds.SIMPLIFY_NOTES;
+    let temp:number;
+    for (let i:number = 0; i < upperBounds.length; i++) {
+        temp = Number(upperBounds[i]);
+        if (!Number.isNaN(temp)) {
+            maxDifficulty = Math.max(maxDifficulty, temp);
+        }
+    }
+    return maxDifficulty;
+}
+
+export const MAX_DIFFICULTY:number = getMaxDifficulty();
+
+/**
  * Constructed using 2d array of cells
  * Returns:
  * Whether or object constitutes specific strategies
