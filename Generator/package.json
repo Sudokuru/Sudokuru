@@ -1,0 +1,9 @@
+{
+    "name": "sudokuru",
+    "version": "1.0.0",
+    "description": "Sudoku Library",
+    "license": "GPL-3.0",
+    "scripts": {
+        "generate": "cross-var npx ts-node ./Generate.ts $npm_config_filepath $npm_config_start $npm_config_end $npm_config_batchsize"
+    }
+}
