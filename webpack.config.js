@@ -14,7 +14,9 @@ const config = {
     plugins: [
         new CopyWebpackPlugin({
             patterns: [
-                {from: './Generator/package.json', to: '../dist/package.json'}
+                {from: './Generator/package.json', to: '../dist/package.json'},
+                {from: './Generator/Generate.ts', to: '../dist/Generate.ts'},
+                {from: './Generator/Upload.ts', to: '../dist/Upload.ts'}
             ]
         })
     ],
