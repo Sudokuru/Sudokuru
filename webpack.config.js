@@ -1,16 +1,8 @@
-// Generated using webpack-cli https://github.com/webpack/webpack-cli
-
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-const isProduction = process.env.NODE_ENV == 'production';
-
-
 const config = {
     entry: './Generator/index.ts',
-    output: {
-        path: path.resolve(__dirname, 'dist'),
-    },
     plugins: [
         new CopyWebpackPlugin({
             patterns: [
@@ -30,10 +22,7 @@ const config = {
             {
                 test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
                 type: 'asset',
-            },
-
-            // Add your rules for custom modules here
-            // Learn more about loaders from https://webpack.js.org/loaders/
+            }
         ],
     },
     resolve: {
@@ -43,20 +32,15 @@ const config = {
         outputModule: true
     },
     output: {
+        path: path.resolve(__dirname, 'dist'),
         library: {
             type: "commonjs"
         },
-        filename: 'bundle.js'
+        filename: 'bundle.js',
+        clean: true
     }
 };
 
 module.exports = () => {
-    if (isProduction) {
-        config.mode = 'production';
-        
-        
-    } else {
-        config.mode = 'development';
-    }
     return config;
 };
