@@ -1,10 +1,13 @@
-import {Board} from './Board';
-import { StrategyEnum } from './Sudoku';
+// @ts-ignore
+import {Board} from './bundle.js';
+// @ts-ignore
+import {StrategyEnum} from './bundle.js';
 
-const events = require('events');
-const fs = require('fs');
-const readline = require('readline');
-const filepath:String = process.argv[2];
+import * as events from 'events';
+import * as fs from 'fs';
+import * as readline from 'readline';
+
+const filepath = process.argv[2];
 
 /**
  * Returns the user specified start index if there was one provided, otherwise returns 1

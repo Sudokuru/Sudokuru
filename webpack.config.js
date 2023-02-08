@@ -15,14 +15,14 @@ const config = {
         new CopyWebpackPlugin({
             patterns: [
                 {from: './Generator/package.json', to: '../dist/package.json'},
-                {from: './Generator/Generate.ts', to: '../dist/Generate.ts'},
-                {from: './Generator/Upload.ts', to: '../dist/Upload.ts'}
+                {from: './Generator/Generate.js', to: '../dist/Generate.js'},
+                {from: './inputPuzzles.txt', to: '../dist/inputPuzzles.txt'}
             ]
         })
     ],
     module: {
         rules: [
-            {
+            { 
                 test: /\.(ts|tsx)$/i,
                 loader: 'ts-loader',
                 exclude: ['/node_modules/'],
@@ -39,6 +39,15 @@ const config = {
     resolve: {
         extensions: ['.tsx', '.ts', '.jsx', '.js', '...'],
     },
+    experiments: {
+        outputModule: true
+    },
+    output: {
+        library: {
+            type: "commonjs"
+        },
+        filename: 'bundle.js'
+    }
 };
 
 module.exports = () => {

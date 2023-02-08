@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
+    "target": "ES2022",
     "removeComments": true,
     "preserveConstEnums": true,
     "outDir": "./dist",
@@ -11,5 +12,9 @@
   },
   "exclude":[
     "./node_modules", "**/*.test.ts"
-  ]
+  ],
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node"
+  }
 }

@@ -9,9 +9,8 @@
     "test:integration": "jest --testPathPattern=Generator/tests/integration",
     "update-docs": "npx typedoc Generator/*.ts --name GeneratorDocs",
     "start": "tsc Generator/Demo/script.ts && ts-node Generator/Demo/app.ts",
-    "generate": "cross-var npx ts-node ./Generator/Generate.ts $npm_config_filepath $npm_config_start $npm_config_end $npm_config_batchsize",
     "upload": "cross-var npx ts-node ./Generator/Upload.ts $npm_config_endpoint",
-    "build": "webpack"
+    "build": "tsc ./Generator/Generate.ts && webpack"
   },
   "keywords": [],
   "author": "",
