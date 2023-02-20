@@ -1,7 +1,7 @@
 {
-  "name": "sudokupuzzlegenerator",
+  "name": "sudokuru",
   "version": "1.0.0",
-  "description": "",
+  "description": "This is the Sudokuru package.",
   "main": "index.js",
   "scripts": {
     "test": "jest",
