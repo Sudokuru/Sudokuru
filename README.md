@@ -30,7 +30,7 @@ npm install sudokuru
 
 ```shell
 # Navigate to sudokuru package installation
-cd node_modules/sudokuru
+cd node_modules/sudokuru/dist
 
 # Install CLI dependencies
 npm install
