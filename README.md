@@ -1,80 +1,108 @@
-# Setup Instructions:
-Run npm i<br>
-test using npm test<br>
-update docs with npm run update-docs
+![Sudokuru Logo](https://sudokuru.s3.amazonaws.com/goldLogoText.png)
+# Sudoku Puzzle Generator
+[![NPM version](https://img.shields.io/npm/v/sudokuru.svg?style=flat)](https://npmjs.org/package/sudokuru)
+[![NPM downloads](https://img.shields.io/npm/dm/sudokuru.svg?style=flat)](https://npmjs.org/package/sudokuru)
+![NPM License](https://img.shields.io/npm/l/sudokuru)
 
-Run demo using npm start and then opening demo.html
+> Generate data about Sudoku puzzles and upload it via POST requests
 
-### How to upload puzzles from inputPuzzles.txt file
+# Table of Contents
 
-If we have a puzzle file like inputPuzzles.txt we can use that to upload puzzles to the database.<br>
+*   [Installation](#installation)
+    *   [Command Line Interface Installation](#command-line-interface-installation)
+*   [Usage](#usage)
+    *   [Command Line](#command-line)
+*   [Puzzle Object Properties](#puzzle-object-properties)
+    *   [puzzle](#puzzle)
+    *   [puzzleSolution](#puzzlesolution)
+    *   [strategies](#strategies)
+    *   [difficulty](#difficulty)
+    *   [drillStrategies](#drillstrategies)
+*   [Developer Tools](#developer-tools)
 
-The command to generate the puzzles is:<br> ```npm run generate --filepath=inputPuzzles.txt --start=2 --end=4 --batchsize=100```<br>
-- filepath: Required, file of puzzles (only integers, newline indicates new puzzle)<br>
-- start: Required, indicates what puzzle should be the start puzzle of the file (1 indexed, inclusive)<br> For example ```--start=2``` skips the first puzzle in input file.<br>
-- end: Required, indicates what puzzle should be the end puzzle of the file. (1 indexed, inclusive)<br> For example ```--end=2``` means that the second puzzle is the last input puzzle.<br>
-- batchsize: Required, indicates how many puzzles are sent in a single request. If the input values are larger than the batch size, multiple requests will be sent.<br>
+# Installation
 
-Upload generated json puzzle arrays file using ```npm run upload --endpoint=ENDPOINT```<br>
-e.g. ENDPOINT = http://localhost:3000/api/v1/puzzles/ i.e. any POST endpoint URL that's expecting JSON body that looks like the following example:<br>
+```shell
+npm install sudokuru
+```
+
+## Command Line Interface Installation
+
+```shell
+# Navigate to sudokuru package installation
+cd node_modules/sudokuru
+
+# Install CLI dependencies
+npm install
+```
+
+# Usage
+
+## Command Line
+
+```shell
+# Navigate to sudokuru package installation
+cd node_modules/sudokuru
+
+# Generate puzzles:
+# filepath: Gets puzzles from inputPuzzles.txt (only integers, newline indicates new puzzle)
+# start: Ignores puzzle strings until the 2nd puzzle (1 indexed) which it includes in output
+# end: Ignores all puzzle strings after 4th puzzle (1 indexed) which it includes in output
+# batchSize: Puts 2 puzzle JSON objects in each JSON array (1 per line) in puzzles.txt
+# Note: If number of puzzles is not evenly divisible by batchSize last array will have fewer puzzles
+npm run generate --filepath=inputPuzzles.txt --start=2 --end=4 --batchsize=2
+
+# Upload puzzles:
+# endpoint: For each line in puzzles.txt uploads JSON array as POST request to http://localhost:3000/api/v1/puzzles/
+npm run upload --endpoint=http://localhost:3000/api/v1/puzzles/
+```
+
+# Puzzle Object Properties
+
+## puzzle
 ```json
-[  
-  {  
-    "puzzle": 310084002200150006570003010423708095760030000009562030050006070007000900000001500,  
-    "puzzleSolution": 316984752298157346574623819423718695765439128189562437851396274637245981942871563,  
-    "strategies": [ "NAKED_SINGLE", "HIDDEN_SINGLE", "NAKED_PAIR", "NAKED_TRIPLET" ],  
-    "difficulty": 44,   
-    "drillStrategies": [ "HIDDEN_SINGLE", "NAKED_SEXTUPLET" ]  
-  },  
-  {  
-    "puzzle": "603002001500000020901730006810400090060000000000690040350000004002070005000500108",  
-    "puzzleSolution": 683942751574816329921735486817453692469287513235691847358169274142378965796524138,  
-    "strategies": [  
-      "NAKED_SINGLE",  
-      "HIDDEN_SINGLE",  
-      "NAKED_PAIR",  
-      "NAKED_TRIPLET",  
-      "NAKED_QUADRUPLET" 
-    ],  
-    "difficulty": 60,  
-    "drillStrategies": [ "HIDDEN_SINGLE", "NAKED_SEPTUPLET" ]  
-  }
-]
+310084002200150006570003010423708095760030000009562030050006070007000900000001500
 ```
-
-Will do one POST request per array in puzzles.txt<br>
-
-## Documentation
-Documentation is auto-generated using Typedoc and hosted on GitHub pages here:<br>
-https://sudokuru.github.io/SudokuPuzzleGenerator/
-
-```mermaid
-%%{init: {'theme': 'neutral', 'themeVariables': { 'fontSize': '32px', 'fontFamily': 'arial'}}}%%
-erDiagram
-    BOARD ||..|| SOLVER : uses
-    SOLVER }|..|{ CELL : contains
-    SOLVER }|..|{ STRATEGY : uses
-    STRATEGY }|..|{ CELL : contains
-    BOARD {
-        string_2D_array board
-        string_2D_array solution
-        string solutionString
-        StrategyEnum mostDifficultStrategy
-    }
-    SOLVER {
-        Cell_2D_array board
-        boolean solved
-    }
-    CELL {
-        number row
-        number column
-        number box
-        string value
-        map_string notes
-    }
-    STRATEGY {
-        Cell_2D_array board
-        Cell_array values
-        boolean identified
-    }
+Initial puzzle state, 81 numeric characters, zeroes represent empty cells
+## puzzleSolution
+```json
+316984752298157346574623819423718695765439128189562437851396274637245981942871563
 ```
+Final puzzle state, 81 numeric characters
+## strategies
+```json
+[ "NAKED_SINGLE", "HIDDEN_SINGLE", "NAKED_PAIR", "NAKED_TRIPLET" ]
+```
+Array of strings representing strategies the solver used to figure out puzzle solution
+## difficulty
+```json
+44
+```
+Integer representing difficulty of puzzle based on instances of strategies used and overall length of game
+## drillStrategies
+```json
+[ "HIDDEN_SINGLE", "NAKED_SEXTUPLET" ]
+```
+Array of strings representing strategies that can be used on the puzzle in its intial state
+# Developer Tools
+```shell
+# Clone Repository
+git clone https://github.com/SudoKuru/SudokuPuzzleGenerator.git
+
+# Install Developer Dependencies
+npm install
+
+# Run Tests
+npm test
+
+# Build dist Folder
+npm run build
+
+# Create Local TypeDoc Documentation
+npm run update-docs
+
+# Run Solver Demo (then open demo.html in browser)
+npm run start
+```
+Official TypeDoc Documentation is Hosted Here: https://sudokuru.github.io/SudokuPuzzleGenerator/
+
