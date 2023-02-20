@@ -6,5 +6,8 @@
     "scripts": {
         "generate": "cross-var npx node ./Generate.js $npm_config_filepath $npm_config_start $npm_config_end $npm_config_batchsize",
         "upload": "cross-var npx node ./Upload.js $npm_config_endpoint"
+    },
+    "dependencies": {
+        "cross-var": "^1.1.0"
     }
 }
