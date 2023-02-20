@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "types": ["node", "jest"],
     "module": "commonjs",
+    "target": "ES2022",
+    "removeComments": true,
+    "preserveConstEnums": true,
     "outDir": "./dist",
     "rootDir": "./Generator",
     "strict": false,
