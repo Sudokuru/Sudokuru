@@ -1,7 +1,7 @@
 {
     "name": "sudokupuzzlegenerator",
     "version": "1.0.0",
-    "description": "Sudoku Library",
+    "description": "",
     "license": "GPL-3.0",
     "scripts": {
         "generate": "cross-var npx node ./Generate.js $npm_config_filepath $npm_config_start $npm_config_end $npm_config_batchsize",
