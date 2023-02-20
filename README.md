@@ -42,7 +42,7 @@ npm install
 
 ```shell
 # Navigate to sudokuru package installation
-cd node_modules/sudokuru
+cd node_modules/sudokuru/dist
 
 # Generate puzzles:
 # filepath: Gets puzzles from inputPuzzles.txt (only integers, newline indicates new puzzle)
