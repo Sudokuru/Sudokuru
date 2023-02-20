@@ -104,6 +104,7 @@ async function main(): Promise<void> {
             index++;
         });
 
+        // @ts-ignore
         await events.once(rl, 'close');
         if (batchIndex !== batchSize && batchIndex !== 0) {
             writer.write("]");
