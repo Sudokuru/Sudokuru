@@ -10,7 +10,7 @@
     "update-docs": "npx typedoc Generator/*.ts --name GeneratorDocs",
     "start": "tsc Generator/Demo/script.ts && ts-node Generator/Demo/app.ts",
     "upload": "cross-var npx ts-node ./Generator/Upload.ts $npm_config_endpoint",
-    "build": "tsc ./Generator/Generate.ts && webpack"
+    "build": "tsc ./Generator/Generate.ts ./Generator/Upload.ts && webpack"
   },
   "keywords": [],
   "author": "",

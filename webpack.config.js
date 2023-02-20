@@ -8,6 +8,7 @@ const config = {
             patterns: [
                 {from: './Generator/package.json', to: '../dist/package.json'},
                 {from: './Generator/Generate.js', to: '../dist/Generate.js'},
+                {from: './Generator/Upload.js', to: '../dist/Upload.js'},
                 {from: './inputPuzzles.txt', to: '../dist/inputPuzzles.txt'}
             ]
         })
@@ -42,5 +43,6 @@ const config = {
 };
 
 module.exports = () => {
+    config.mode = 'production';
     return config;
 };
