@@ -72,33 +72,38 @@ async function main(): Promise<void> {
 
         let index:number = 1;
         let batchIndex:number = 0;
+        let unsolved:number = 0;
         rl.on('line', (line) => {
             if (index >= start && index <= end) {
-                let board:Board = new Board(line);
-                if (batchIndex === 0) {
+                try {
+                    let board:Board = new Board(line);
+                    if (batchIndex === 0) {
                     if (index !== start) {
                         writer.write("\n");
                     }
                     writer.write("[");
-                }
-                else if (index !== start) {
-                    writer.write(",");
-                }
-                writer.write("{");
-                writer.write(`\"puzzle\":\"${line}\",`);
-                writer.write(`\"puzzleSolution\":\"${board.getSolutionString()}\",`);
-                let strategies:boolean[] = board.getStrategies();
-                strategies[StrategyEnum.SIMPLIFY_NOTES] = false;
-                writer.write("\"strategies\":" + JSON.stringify(getStrategyStringArray(strategies)) + ",");
-                writer.write(("\"difficulty\":" + board.getDifficulty()).toString() + ",");
-                let drillStrategies:boolean[] = board.getDrills();
-                drillStrategies[StrategyEnum.SIMPLIFY_NOTES] = false;
-                writer.write("\"drillStrategies\":" + JSON.stringify(getStrategyStringArray(drillStrategies)));
-                writer.write("}");
-                batchIndex++;
-                if (batchIndex === batchSize) {
-                    writer.write("]");
-                    batchIndex = 0;
+                    }
+                    else if (index !== start) {
+                        writer.write(",");
+                    }
+                    writer.write("{");
+                    writer.write(`\"puzzle\":\"${line}\",`);
+                    writer.write(`\"puzzleSolution\":\"${board.getSolutionString()}\",`);
+                    let strategies:boolean[] = board.getStrategies();
+                    strategies[StrategyEnum.SIMPLIFY_NOTES] = false;
+                    writer.write("\"strategies\":" + JSON.stringify(getStrategyStringArray(strategies)) + ",");
+                    writer.write(("\"difficulty\":" + board.getDifficulty()).toString() + ",");
+                    let drillStrategies:boolean[] = board.getDrills();
+                    drillStrategies[StrategyEnum.SIMPLIFY_NOTES] = false;
+                    writer.write("\"drillStrategies\":" + JSON.stringify(getStrategyStringArray(drillStrategies)));
+                    writer.write("}");
+                    batchIndex++;
+                    if (batchIndex === batchSize) {
+                        writer.write("]");
+                        batchIndex = 0;
+                    }
+                } catch(error) {
+                    unsolved++;
                 }
             }
             index++;
@@ -109,6 +114,7 @@ async function main(): Promise<void> {
         if (batchIndex !== batchSize && batchIndex !== 0) {
             writer.write("]");
         }
+        console.log("Was unable to solve " + unsolved + " puzzles");
     } catch (err) {
         console.log(err);
     }
