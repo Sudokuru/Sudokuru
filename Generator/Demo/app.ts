@@ -64,6 +64,9 @@ app.get('/solver/nextStep', (req, res) => {
     }
 });
 
+app.get('/api/v1/user/newGame', (req, res) => {
+});
+
 app.use(errorHandler);
 
 app.listen(port, () => console.log(`Listening on: ${port}`));

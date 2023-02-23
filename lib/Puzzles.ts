@@ -1,4 +1,4 @@
-const START_GAME:string = "api/v1/user/activeGames/newGame";
+const START_GAME:string = "api/v1/user/newGame";
 
 /**
 * Functions to handle puzzle related operations
