@@ -213,6 +213,8 @@ npm run build
 # Create Local TypeDoc Documentation
 npm run update-docs
 
+# The following can also be done after installing the npm package by navigating to node_modules/sudokuru
+
 # Run Demo Server on http://localhost:3001/
 npm run start
 
