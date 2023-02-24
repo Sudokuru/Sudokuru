@@ -76,7 +76,7 @@ npm run upload --endpoint=http://localhost:3000/api/v1/puzzles/
 
 ### Import
 ```shell
-const sudokuru = require("./node_modules/sudokuru/bundle.js");
+const sudokuru = require("./node_modules/sudokuru/dist/bundle.js");
 ```
 
 ### Puzzles Class
@@ -212,6 +212,8 @@ npm run build
 
 # Create Local TypeDoc Documentation
 npm run update-docs
+
+# The following can also be done after installing the npm package by navigating to node_modules/sudokuru
 
 # Run Demo Server on http://localhost:3001/
 npm run start
