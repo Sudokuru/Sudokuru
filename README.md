@@ -76,7 +76,7 @@ npm run upload --endpoint=http://localhost:3000/api/v1/puzzles/
 
 ### Import
 ```shell
-const sudokuru = require("./node_modules/sudokuru/bundle.js");
+const sudokuru = require("./node_modules/sudokuru/dist/bundle.js");
 ```
 
 ### Puzzles Class
