@@ -13,7 +13,7 @@ export class Puzzles{
     * @param difficulty - difficulty number (between 0 and 1)
     * @param strategies - new game can have subset of these strategies
     * @param token - authentication token
-    * @returns puzzle JSON object
+    * @returns promise of puzzle JSON object
     */
     public static async startGame(url: string, difficulty: number, strategies: string[], token: string):Promise<JSON> {
         // If difficulty was put on the standard 1-1000 scale the top portion of the scale would contain strategies user doesn't know

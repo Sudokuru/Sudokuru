@@ -5,7 +5,6 @@
     "removeComments": true,
     "preserveConstEnums": true,
     "outDir": "./dist",
-    "rootDir": "./Generator",
     "strict": false,
     "moduleResolution": "node",
     "esModuleInterop": true,
