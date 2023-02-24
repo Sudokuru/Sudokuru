@@ -9,7 +9,12 @@ import { MAX_DIFFICULTY } from "./Strategy";
 
 const MAX_GAME_LENGTH_MODIFIER = 100;
 const GAME_LENGTH_DIFFICULTY_MULTIPLIER: number = 0.02;
-const MAX_GAME_DIFFICULTY = (MAX_DIFFICULTY * (1 + (MAX_GAME_LENGTH_MODIFIER * GAME_LENGTH_DIFFICULTY_MULTIPLIER)));
+
+export function getMaxGameDifficulty(hardestStrategyDifficulty: number):number {
+    return (hardestStrategyDifficulty * (1 + (MAX_GAME_LENGTH_MODIFIER * GAME_LENGTH_DIFFICULTY_MULTIPLIER)));
+}
+
+const MAX_GAME_DIFFICULTY = getMaxGameDifficulty(MAX_DIFFICULTY);
 
 /**
  * Constructed using board string

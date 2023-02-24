@@ -1,5 +1,7 @@
+import { getMaxGameDifficulty } from "../Generator/Board";
+import { Strategy } from "../Generator/Strategy";
+
 const START_GAME:string = "api/v1/user/newGame?difficulty=";
-const START_GAME_STRATEGIES:string = "&strategies=";
 
 /**
 * Functions to handle puzzle related operations
@@ -14,8 +16,13 @@ export class Puzzles{
     * @returns puzzle JSON object
     */
     public static async startGame(url: string, difficulty: number, strategies: string[], token: string):Promise<JSON> {
+        // If difficulty was put on the standard 1-1000 scale the top portion of the scale would contain strategies user doesn't know
+        // Therefore the following code sets difficulty on 1-HardestPossiblePuzzleWithOnlyGivenStrategies scale
+        let hardestStrategyDifficulty:number = Strategy.getHighestStrategyDifficultyBound(strategies);
+        let hardestGameWithStrategies:number = Math.ceil((getMaxGameDifficulty(hardestStrategyDifficulty)) / 1000);
+        difficulty = Math.ceil(difficulty * hardestGameWithStrategies);
         try {
-            let res:Response = await fetch(url + START_GAME + JSON.stringify(difficulty) + START_GAME_STRATEGIES + JSON.stringify(strategies), {
+            let res:Response = await fetch(url + START_GAME + JSON.stringify(difficulty), {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
