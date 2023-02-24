@@ -557,4 +557,17 @@ export class Strategy{
         }
         return algorithm;
     }
+
+    /**
+     * Given an array of strategy strings returns the highest difficulty upper bound of them
+     * @param strategies array of strategy strings
+     * @returns highest strategy upper bound of given strategies
+     */
+    public static getHighestStrategyDifficultyBound(strategies: string[]):number {
+        let bound:number = -1;
+        for (let i:number = 0; i < strategies.length; i++) {
+            bound = Math.max(bound, DifficultyUpperBounds[strategies[i]]);
+        }
+        return bound;
+    }
 }

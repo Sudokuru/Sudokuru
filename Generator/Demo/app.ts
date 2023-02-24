@@ -2,11 +2,48 @@ import errorHandler from "../HandleError";
 import { Solver } from "../Solver";
 import { StrategyEnum, getBoardArray } from "../Sudoku";
 import { Hint } from "../Hint";
+import * as fs from 'fs';
 
 const expressApp = require('express');
 const app = expressApp();
 const cors = require("cors");
 const port = 3001;
+
+const activeGame = {
+    userID: "",
+    puzzle: "003070040006002301089000000000107080517000006000400000271009005095000000000020000",
+    currentTime: 0,
+    moves: [{
+        puzzleCurrentState: "000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        puzzleCurrentNotesState: "111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    }],
+    numHintsAskedFor: 0,
+    numWrongCellsPlayed: 0,
+    numWrongCellsPlayedPerStrategy: {
+        NAKED_SINGLE: 0,
+        HIDDEN_SINGLE: 0,
+        NAKED_PAIR: 0,
+        NAKED_TRIPLET: 0,
+        NAKED_QUADRUPLET: 0,
+        NAKED_QUINTUPLET: 0,
+        NAKED_SEXTUPLET: 0,
+        NAKED_SEPTUPLET: 0,
+        NAKED_OCTUPLET: 0,
+        HIDDEN_PAIR: 0,
+        HIDDEN_TRIPLET: 0,
+        HIDDEN_QUADRUPLET: 0,
+        HIDDEN_QUINTUPLET: 0,
+        HIDDEN_SEXTUPLET: 0,
+        HIDDEN_SEPTUPLET: 0,
+        HIDDEN_OCTUPLET: 0,
+        POINTING_PAIR: 0,
+        POINTING_TRIPLET: 0,
+        BOX_LINE_REDUCTION: 0,
+        X_WING: 0,
+        SWORDFISH: 0,
+        SINGLES_CHAINING: 0
+    }
+};
 
 app.use(cors());
 app.use(expressApp.urlencoded({ extended: true }));
@@ -62,6 +99,18 @@ app.get('/solver/nextStep', (req, res) => {
     else {
         res.send({ board: solver.getBoard(), notes: null, info: null, action: null });
     }
+});
+
+app.get('/api/v1/user/newGame', (req, res) => {
+    // Overwrites activeGame.txt with activeGame constant and then returns it
+    try {
+        let writer = fs.createWriteStream('activeGame.txt');
+        writer.write(JSON.stringify(activeGame));
+        writer.end();
+    } catch(err) {
+        console.log(err);
+    }
+    res.send(activeGame);
 });
 
 app.use(errorHandler);
