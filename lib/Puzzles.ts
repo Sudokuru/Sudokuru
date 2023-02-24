@@ -13,19 +13,19 @@ export class Puzzles{
     * @param token - authentication token
     * @returns puzzle JSON object
     */
-   public static async startGame(url: string, difficulty: number, strategies: string[], token: string):Promise<JSON> {
-       try {
-           let res:Response = await fetch(url + START_GAME + JSON.stringify(difficulty) + START_GAME_STRATEGIES + JSON.stringify(strategies), {
-               method: 'GET',
-               headers: {
-                   'Content-Type': 'application/json',
-                   'Authorization': 'Bearer ' + token
-               }
-           });
-           let data:JSON = await res.json();
-           return data;
-       } catch(err) {
-           console.log(err);
-       }
-   }
+    public static async startGame(url: string, difficulty: number, strategies: string[], token: string):Promise<JSON> {
+        try {
+            let res:Response = await fetch(url + START_GAME + JSON.stringify(difficulty) + START_GAME_STRATEGIES + JSON.stringify(strategies), {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                }
+            });
+            let data:JSON = await res.json();
+            return data;
+        } catch(err) {
+            console.log(err);
+        }
+    }
 }
