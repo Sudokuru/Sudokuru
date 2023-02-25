@@ -241,6 +241,7 @@ npm run start
 
 # Demo Server provides the following fakes for Puzzle Class (use http://localhost:3001/ as url)
 # Puzzles.startGame(): Will overwrite text file with activeGame constant and return it to user
+# Puzzles.getGame(): Will return the activeGame from text file or return 404 error if the text file doesn't exist
 ```
 Official TypeDoc Documentation is Hosted Here: https://sudokuru.github.io/SudokuPuzzleGenerator/
 
