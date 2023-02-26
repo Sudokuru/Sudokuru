@@ -9,6 +9,11 @@ on:
       - main
       
 concurrency: main_workflow
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
     
 jobs:
   build:
@@ -32,4 +37,50 @@ jobs:
       with:
         name: JEST Tests            
         path: junit.xml    
-        reporter: jest-junit 
+        reporter: jest-junit
+
+  build_and_publish:
+    name: Publish Package
+    runs-on: ubuntu-latest
+    if: ${{ github.ref != 'refs/heads/main' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      - run: | 
+          npm i
+          npm run build
+          npm publish
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_API_KEY }}
+
+  deploy_documentation:
+    name: Deploy Documentation
+    runs-on: ubuntu-latest
+    # Temperary fix, this will prevent the job from running if the build workflow fails.
+    # preferably, we would want the demo_deploy workflow to not run at all.
+    if: ${{ github.ref != 'refs/heads/main' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      - run: npm i
+      - run: npm run update-docs
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: 'docs/'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
