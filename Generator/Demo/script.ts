@@ -2,7 +2,8 @@ interface nextStepResponse {
     board: string[][],
     notes: string[][],
     info: string,
-    action: string
+    action: string,
+    cause: number[][]
 }
 
 const NEXT_STEP_ENDPOINT:string = "http://localhost:3001/solver/nextStep?board=";
@@ -147,7 +148,7 @@ function getRedHighlight(value:string):string {
  * @param stepNumber - step number
  */
 function updateTable(board:string[][], notes:string[][], info:string, action: string, 
-    stepNumber:number):void {
+    stepNumber:number, cause:number[][]):void {
     // Change stepNumber if on first step so uses current board for oldBoard
     if (stepNumber === 0) {
         stepNumber = 1;
@@ -171,6 +172,7 @@ function updateTable(board:string[][], notes:string[][], info:string, action: st
     // updates table
     for (let row:number = 0; row < 9; row++) {
         for (let column:number = 0; column < 9; column++) {
+            (<HTMLTableElement>table).rows[row].cells[column].style.backgroundColor = "#FFFFFF";
             // Adds notes to the html table cell if cell is empty or had value placed this step
             if (board[row][column] === EMPTY_CELL || (board[row][column] !== oldBoard[row][column])) {
                 // sets font size for notes
@@ -213,6 +215,10 @@ function updateTable(board:string[][], notes:string[][], info:string, action: st
             noteIndex++;
         }
     }
+    // highlights cells that are causing the current strategy to be applicable
+    for (let i:number = 0; i < cause.length; i++) {
+        (<HTMLTableElement>table).rows[cause[i][0]].cells[cause[i][1]].style.backgroundColor = "#1976D2";
+    }
     // Update user input box with current board string
     let boardInput:HTMLInputElement = <HTMLInputElement>document.getElementById("board");
     boardInput.value = getBoardString(board);
@@ -242,8 +248,9 @@ function previousStep() {
     let notes:string[][] = JSON.parse(sessionStorage.getItem("notes" + stepNumber));
     let info:string = JSON.parse(sessionStorage.getItem("info" + stepNumber));
     let action:string = JSON.parse(sessionStorage.getItem("action" + stepNumber));
+    let cause:number[][] = JSON.parse(sessionStorage.getItem("cause" + stepNumber));
     // Update Sudoku html table
-    updateTable(board, notes, info, action, Number(stepNumber));
+    updateTable(board, notes, info, action, Number(stepNumber), cause);
     return;
 }
 
@@ -340,11 +347,12 @@ function getStepNumber():string {
  * @param info 
  * @param action 
  */
-function setBoardState(stepNumber:string, board:string[][], notes:string[][], info:string, action:string):void {
+function setBoardState(stepNumber:string, board:string[][], notes:string[][], info:string, action:string, cause:number[][]):void {
     sessionStorage.setItem("board" + stepNumber, JSON.stringify(board));
     sessionStorage.setItem("notes" + stepNumber, JSON.stringify(notes));
     sessionStorage.setItem("info" + stepNumber, JSON.stringify(info));
     sessionStorage.setItem("action" + stepNumber, JSON.stringify(action));
+    sessionStorage.setItem("cause" + stepNumber, JSON.stringify(cause));
     return;
 }
 
@@ -364,12 +372,13 @@ async function nextStep():Promise<void> {
     let notes:string[][] = data.notes;
     let info:string = data.info;
     let action:string = data.action;
+    let cause:number[][] = data.cause;
 
     // Get stepNumber if available, otherwise set stepNumber to 0
     let stepNumber:string = getStepNumber();
     
     // Add board, notes, and new stepNumber to sessionStorage
-    setBoardState(stepNumber, board, notes, info, action);
+    setBoardState(stepNumber, board, notes, info, action, cause);
 
     // stepNumber is set to the number of steps taken, board and notes above 0 indexed
     // so board0 set when stepNumber = 1 (first step), board1 when stepNumber = 2, ...
@@ -378,7 +387,7 @@ async function nextStep():Promise<void> {
 
     // Update Sudoku html table
     // called with 0-indexed step number i.e. correlates to board/notes for curr step
-    updateTable(board, notes, info, action, Number(stepNumber));
+    updateTable(board, notes, info, action, Number(stepNumber), cause);
     return;
 }
 
