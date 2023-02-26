@@ -395,7 +395,6 @@ export class Strategy{
                                                     let notes:Group = new Group(false, boxCells[k].getRow(), boxCells[k].getColumn());
                                                     notes.insert(nakedSetCandidates);
                                                     this.notes.push(notes);
-                                                    this.cause.push(new Cell(boxCells[k].getRow(), boxCells[k].getColumn()));
                                                     if (this.groups.length === 1) {
                                                         let boxGroup:number[] = new Array(2);
                                                         boxGroup[0] = GroupEnum.BOX;
