@@ -204,6 +204,14 @@ export class Hint{
     }
 
     /**
+     * Gets groups that cause strategy
+     * @returns strategy groups
+     */
+    public getGroups():number[][] {
+        return this.strategy.getGroups();
+    }
+
+    /**
      * Gets cells that have had values placed in them as result of strategy
      * @returns cells with values placed
      */
