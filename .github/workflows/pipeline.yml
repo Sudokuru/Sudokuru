@@ -42,6 +42,7 @@ jobs:
 
   build_and_publish:
     name: Publish Package
+    needs: Build
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/main' }}
     steps:
@@ -63,6 +64,7 @@ jobs:
 
   deploy_documentation:
     name: Deploy Documentation
+    needs: Build
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/main' }}
     steps:
