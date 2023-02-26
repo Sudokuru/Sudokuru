@@ -17,6 +17,7 @@
         *   [Puzzles Class](#puzzles-class)
             *   [Setup](#setup)
             *   [Puzzles.startGame()](#puzzlesstartgame)
+            *   [Puzzles.getGame()](#puzzlesgetgame)
 *   [Puzzle Object Properties](#puzzle-object-properties)
     *   [puzzle](#puzzle)
     *   [puzzleSolution](#puzzlesolution)
@@ -102,6 +103,24 @@ const Puzzles = sudokuru.Puzzles;
     - strategies: array of strategies that are allowed to be in returned puzzle e.g. [ "NAKED_SINGLE" ]
     - token: string authentication token
 4. Return Value: [activeGame](#activegame-object-properties) JSON object
+
+#### Puzzles.getGame()
+1. Description: Retrieves users active game if they have one, otherwise returns null
+2. Syntax
+    ```shell
+    Puzzles.getGame(url, token).then(game => {
+        if (game !== null) {
+            console.log(game);
+        }
+        else {
+            console.log("User doesn't have an activeGame");
+        }
+    });
+    ```
+3. Parameters:
+    - url: Server url e.g. "http://localhost:3001/"
+    - token: string authentication token
+4. Return Value: [activeGame](#activegame-object-properties) JSON object if user has an active game, otherwise null
 
 # Puzzle Object Properties
 
@@ -222,6 +241,7 @@ npm run start
 
 # Demo Server provides the following fakes for Puzzle Class (use http://localhost:3001/ as url)
 # Puzzles.startGame(): Will overwrite text file with activeGame constant and return it to user
+# Puzzles.getGame(): Will return the activeGame from text file or return 404 error if the text file doesn't exist
 ```
 Official TypeDoc Documentation is Hosted Here: https://sudokuru.github.io/SudokuPuzzleGenerator/
 

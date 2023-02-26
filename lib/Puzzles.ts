@@ -2,6 +2,7 @@ import { getMaxGameDifficulty } from "../Generator/Board";
 import { Strategy } from "../Generator/Strategy";
 
 const START_GAME:string = "api/v1/user/newGame?difficulty=";
+const GET_GAME:string = "api/v1/user/activeGames";
 
 /**
 * Functions to handle puzzle related operations
@@ -33,6 +34,34 @@ export class Puzzles{
             return data;
         } catch(err) {
             console.log(err);
+        }
+    }
+
+   /**
+    * Given an user auth token retrieves the users active game or returns null if the user doesn't have an active game
+    * @param url - server url e.g. http://localhost:3001/
+    * @param token - authentication token
+    * @returns promise of puzzle JSON object
+    */
+    public static async getGame(url: string, token: string):Promise<JSON> {
+        const res:Response = await fetch(url + GET_GAME, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            }
+        });
+
+        if (res.status === 200) {
+            const data:JSON = await res.json();
+            return data;
+        }
+        else if (res.status === 404) {
+            return null;
+        }
+        else {
+            console.log("Error: " + GET_GAME + " GET request has status " + res.status);
+            return null;
         }
     }
 }

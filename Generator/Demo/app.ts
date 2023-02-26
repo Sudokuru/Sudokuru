@@ -3,6 +3,7 @@ import { Solver } from "../Solver";
 import { StrategyEnum, getBoardArray } from "../Sudoku";
 import { Hint } from "../Hint";
 import * as fs from 'fs';
+import * as readline from 'readline';
 
 const expressApp = require('express');
 const app = expressApp();
@@ -111,6 +112,22 @@ app.get('/api/v1/user/newGame', (req, res) => {
         console.log(err);
     }
     res.send(activeGame);
+});
+
+app.get('/api/v1/user/activeGames', (req, res) => {
+    // Gets the current activeGame from activeGame.txt or throws 404 error if activeGame.txt doesn't exist
+    if (!fs.existsSync("activeGame.txt")) {
+        res.sendStatus(404);
+        return;
+    }
+
+    const rl = readline.createInterface({
+        input: fs.createReadStream("activeGame.txt"),
+        crlfDelay: Infinity
+    });
+    rl.on('line', (line) => {
+        res.send(JSON.parse(line));
+    });
 });
 
 app.use(errorHandler);
