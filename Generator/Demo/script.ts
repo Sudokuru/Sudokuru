@@ -3,7 +3,8 @@ interface nextStepResponse {
     notes: string[][],
     info: string,
     action: string,
-    cause: number[][]
+    cause: number[][],
+    groups: number[][]
 }
 
 const NEXT_STEP_ENDPOINT:string = "http://localhost:3001/solver/nextStep?board=";
@@ -148,7 +149,7 @@ function getRedHighlight(value:string):string {
  * @param stepNumber - step number
  */
 function updateTable(board:string[][], notes:string[][], info:string, action: string, 
-    stepNumber:number, cause:number[][]):void {
+    stepNumber:number, cause:number[][], groups:number[][]):void {
     // Change stepNumber if on first step so uses current board for oldBoard
     if (stepNumber === 0) {
         stepNumber = 1;
@@ -173,6 +174,7 @@ function updateTable(board:string[][], notes:string[][], info:string, action: st
     for (let row:number = 0; row < 9; row++) {
         for (let column:number = 0; column < 9; column++) {
             (<HTMLTableElement>table).rows[row].cells[column].style.backgroundColor = "#FFFFFF";
+            (<HTMLTableElement>table).rows[row].cells[column].style.border = "1px solid black";
             // Adds notes to the html table cell if cell is empty or had value placed this step
             if (board[row][column] === EMPTY_CELL || (board[row][column] !== oldBoard[row][column])) {
                 // sets font size for notes
@@ -219,6 +221,29 @@ function updateTable(board:string[][], notes:string[][], info:string, action: st
     for (let i:number = 0; i < cause.length; i++) {
         (<HTMLTableElement>table).rows[cause[i][0]].cells[cause[i][1]].style.backgroundColor = "#1976D2";
     }
+    // highlights cells in groups that cause the current strategy
+    for (let i:number = 0; i < groups.length; i++) {
+        if (groups[i][0] === 0) {
+            for (let column:number = 0; column < 9; column++) {
+                (<HTMLTableElement>table).rows[groups[i][1]].cells[column].style.border = "3px solid green";
+            }
+        }
+        else if (groups[i][0] === 1) {
+            for (let row:number = 0; row < 9; row++) {
+                (<HTMLTableElement>table).rows[row].cells[groups[i][1]].style.border = "3px solid green";
+            }
+        }
+        else {
+            let box:number = groups[i][1];
+            let boxRowStart:number = Math.floor(box / 3) * 3;
+            let boxColumnStart:number = (box % 3) * 3;
+            for (let row:number = boxRowStart; row < (boxRowStart + 3); row++) {
+                for (let column:number = boxColumnStart; column < (boxColumnStart + 3); column++) {
+                    (<HTMLTableElement>table).rows[row].cells[column].style.border = "3px solid green";
+                }
+            }
+        }
+    }
     // Update user input box with current board string
     let boardInput:HTMLInputElement = <HTMLInputElement>document.getElementById("board");
     boardInput.value = getBoardString(board);
@@ -249,8 +274,9 @@ function previousStep() {
     let info:string = JSON.parse(sessionStorage.getItem("info" + stepNumber));
     let action:string = JSON.parse(sessionStorage.getItem("action" + stepNumber));
     let cause:number[][] = JSON.parse(sessionStorage.getItem("cause" + stepNumber));
+    let groups:number[][] = JSON.parse(sessionStorage.getItem("groups" + stepNumber));
     // Update Sudoku html table
-    updateTable(board, notes, info, action, Number(stepNumber), cause);
+    updateTable(board, notes, info, action, Number(stepNumber), cause, groups);
     return;
 }
 
@@ -347,12 +373,13 @@ function getStepNumber():string {
  * @param info 
  * @param action 
  */
-function setBoardState(stepNumber:string, board:string[][], notes:string[][], info:string, action:string, cause:number[][]):void {
+function setBoardState(stepNumber:string, board:string[][], notes:string[][], info:string, action:string, cause:number[][], groups:number[][]):void {
     sessionStorage.setItem("board" + stepNumber, JSON.stringify(board));
     sessionStorage.setItem("notes" + stepNumber, JSON.stringify(notes));
     sessionStorage.setItem("info" + stepNumber, JSON.stringify(info));
     sessionStorage.setItem("action" + stepNumber, JSON.stringify(action));
     sessionStorage.setItem("cause" + stepNumber, JSON.stringify(cause));
+    sessionStorage.setItem("groups" + stepNumber, JSON.stringify(groups));
     return;
 }
 
@@ -373,12 +400,13 @@ async function nextStep():Promise<void> {
     let info:string = data.info;
     let action:string = data.action;
     let cause:number[][] = data.cause;
+    let groups:number[][] = data.groups;
 
     // Get stepNumber if available, otherwise set stepNumber to 0
     let stepNumber:string = getStepNumber();
     
     // Add board, notes, and new stepNumber to sessionStorage
-    setBoardState(stepNumber, board, notes, info, action, cause);
+    setBoardState(stepNumber, board, notes, info, action, cause, groups);
 
     // stepNumber is set to the number of steps taken, board and notes above 0 indexed
     // so board0 set when stepNumber = 1 (first step), board1 when stepNumber = 2, ...
@@ -387,7 +415,7 @@ async function nextStep():Promise<void> {
 
     // Update Sudoku html table
     // called with 0-indexed step number i.e. correlates to board/notes for curr step
-    updateTable(board, notes, info, action, Number(stepNumber), cause);
+    updateTable(board, notes, info, action, Number(stepNumber), cause, groups);
     return;
 }
 

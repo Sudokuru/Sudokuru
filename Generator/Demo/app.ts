@@ -95,10 +95,10 @@ app.get('/solver/nextStep', (req, res) => {
     let solver: Solver = new Solver(board, algorithm, notes);
     let hint: Hint = solver.nextStep();
     if (hint !== null) {
-        res.send({ board: solver.getBoard(), notes: solver.getNotes(), info: hint.getInfo(), action: hint.getAction(), cause: hint.getCause() });
+        res.send({ board: solver.getBoard(), notes: solver.getNotes(), info: hint.getInfo(), action: hint.getAction(), cause: hint.getCause(), groups: hint.getGroups() });
     }
     else {
-        res.send({ board: solver.getBoard(), notes: null, info: null, action: null, cause: null });
+        res.send({ board: solver.getBoard(), notes: null, info: null, action: null, cause: null, groups: null });
     }
 });
 
