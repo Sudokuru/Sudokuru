@@ -69,7 +69,9 @@ export class Strategy{
     // Contains representation of board being solved
     private board: Cell[][];
     // Contains cells that "cause" strategy to be applicable
-    private cells: Cell[][];
+    private cells: Cell[];
+    // Cells that don't have a value placed in them yet
+    private emptyCells: Cell[][];
     // Contains values that can be placed because of this Strategy
     private values: Cell[];
     // Contains notes that can be removed because of this Strategy
@@ -86,12 +88,13 @@ export class Strategy{
      * @constructor
      * @param cells - cells
      */
-    constructor(board: Cell[][], cells: Cell[][]) {
+    constructor(board: Cell[][], emptyCells: Cell[][]) {
         this.board = board;
-        this.cells = cells;
+        this.emptyCells = emptyCells;
         this.identified = false;
         this.values = new Array();
         this.notes = new Array();
+        this.cells = new Array();
     }
 
     /**
@@ -140,7 +143,7 @@ export class Strategy{
      * @throws {@link CustomError}
      * Thrown if strategy hasn't been identified
      */
-    public getCause():Cell[][] {
+    public getCause():Cell[] {
         this.verifyIdentified();
         return this.cells;
     }
@@ -277,7 +280,7 @@ export class Strategy{
         for (let group:GroupEnum = 0; group < GroupEnum.COUNT; group++) {
             for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
                 // Contains cells in the same row, column, or box
-                let cells: Cell[] = getCellsInGroup(this.cells, group, i);
+                let cells: Cell[] = getCellsInGroup(this.emptyCells, group, i);
                 // Tries to build a naked set of size tuple for each possible size tuple subset of candidates
                 // Is naked set iff union of all cells has notes size equal to tuple
                 for (let j:number = 0; j < subsets.length; j++) {
@@ -363,7 +366,7 @@ export class Strategy{
                                     }
                                     if (boxes.getSize() === 1) {
                                         // Since the naked set also all share the same box add to notes any notes you can remove from cells in the shared box
-                                        let boxCells: Cell[] = getCellsInGroup(this.cells, GroupEnum.BOX, box);
+                                        let boxCells: Cell[] = getCellsInGroup(this.emptyCells, GroupEnum.BOX, box);
                                         for (let k:number = 0; k < boxCells.length; k++) {
                                             if (boxCells[k].getRow() !== usedRow && boxCells[k].getColumn() !== usedColumn) {
                                                 if ((boxCells[k].getNotes().intersection(nakedSetCandidates)).getSize() > 0) {
@@ -397,7 +400,7 @@ export class Strategy{
         for (let group:GroupEnum = 0; group < GroupEnum.COUNT; group++) {
             for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
                 // Contains cells in the same row, column, or box
-                let cells: Cell[] = getCellsInGroup(this.cells, group, i);
+                let cells: Cell[] = getCellsInGroup(this.emptyCells, group, i);
                 // Tries to build a hidden set of size tuple for each possible size tuple subset of candidates
                 // Is hidden single iff the number of candidates that don't exist outside of the hidden tuple
                 // is equal to the tuple (e.g. hidden pair if there are two numbers only in the pair in the row)
@@ -469,8 +472,8 @@ export class Strategy{
      */
     private isSimplifyNotes():boolean {
         for (let i:number = 0; i < SudokuEnum.COLUMN_LENGTH; i++) {
-            for (let j:number = 0; j < this.cells[i].length; j++) {
-                let cell: Cell = this.cells[i][j];
+            for (let j:number = 0; j < this.emptyCells[i].length; j++) {
+                let cell: Cell = this.emptyCells[i][j];
                 let row: number = cell.getRow();
                 let column: number = cell.getColumn();
                 let box: number = cell.getBox();

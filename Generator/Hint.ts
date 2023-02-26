@@ -191,7 +191,7 @@ export class Hint{
      * Gets cells that "cause" strategy to be applicable
      * @returns cells "causing" strategy
      */
-     public getCause():Cell[][] {
+     public getCause():Cell[] {
         return this.strategy.getCause();
     }
 
