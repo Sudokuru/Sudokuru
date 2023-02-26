@@ -42,7 +42,7 @@ jobs:
   build_and_publish:
     name: Publish Package
     runs-on: ubuntu-latest
-    if: ${{ github.ref != 'refs/heads/main' }}
+    if: ${{ github.ref == 'refs/heads/main' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -63,9 +63,7 @@ jobs:
   deploy_documentation:
     name: Deploy Documentation
     runs-on: ubuntu-latest
-    # Temperary fix, this will prevent the job from running if the build workflow fails.
-    # preferably, we would want the demo_deploy workflow to not run at all.
-    if: ${{ github.ref != 'refs/heads/main' }}
+    if: ${{ github.ref == 'refs/heads/main' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
