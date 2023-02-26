@@ -305,6 +305,7 @@ export class Strategy{
                                     }
                                 }
                                 this.values.push(new Cell(row, column, single));
+                                this.cells.push(new Cell(row, column));
                                 this.strategyType = StrategyEnum.NAKED_SINGLE;
                                 this.identified = true;
                                 this.difficulty = DifficultyLowerBounds.NAKED_SINGLE;
@@ -324,6 +325,9 @@ export class Strategy{
                             if (this.notes.length > 0) {
                                 this.strategyType = StrategyEnum[StrategyEnum[tuple]];
                                 this.identified = true;
+                                for (let k:number = 0; k < nakedSet.length; k++) {
+                                    this.cells.push(new Cell(nakedSet[k].getRow(), nakedSet[k].getColumn()));
+                                }
                                 // Calculate difficulty based on how far apart the naked set cells are
                                 let distanceRatio:number;
                                 if (group === GroupEnum.ROW) {
@@ -445,6 +449,9 @@ export class Strategy{
                             }
                             // If notes were found you can remove as part of the hidden single then strategy identified
                             if (this.identified) {
+                                for (let k:number = 0; k < tuple; k++) {
+                                    this.cells.push(new Cell(hiddenSet[k].getRow(), hiddenSet[k].getColumn()));
+                                }
                                 // Calculate ratio of number of notes to possible number (more notes to obscure hidden set = higher difficulty)
                                 let noteCount:number = 0;
                                 for (let k:number = 0; k < tuple; k++) {
