@@ -26,6 +26,10 @@ describe("create naked single", () => {
         let strategy:Strategy = new Strategy(board, board);
         expect(strategy.setStrategyType(StrategyEnum.NAKED_SINGLE)).toBeTruthy();
         expect(strategy.getValuesToPlace()[0].getValue()).toBe("9");
+        let cause:Cell[] = strategy.getCause();
+        expect(cause.length).toBe(1);
+        expect(cause[0].getRow()).toBe(0);
+        expect(cause[0].getColumn()).toBe(0);
     });
 });
 
@@ -52,6 +56,10 @@ describe("create hidden single", () => {
         let strategy:Strategy = new Strategy(board, board);
         expect(strategy.setStrategyType(StrategyEnum.HIDDEN_SINGLE)).toBeTruthy();
         expect((strategy.getNotesToRemove())[0].getSize()).toBe(SudokuEnum.ROW_LENGTH - 1);
+        let cause:Cell[] = strategy.getCause();
+        expect(cause.length).toBe(1);
+        expect(cause[0].getRow()).toBe(0);
+        expect(cause[0].getColumn()).toBe(8);
     });
 });
 
@@ -89,6 +97,10 @@ describe("create naked pair", () => {
         let strategy:Strategy = new Strategy(board, board);
         expect(strategy.setStrategyType(StrategyEnum.NAKED_PAIR)).toBeTruthy();
         expect(strategy.getNotesToRemove().length).toBe(13);
+        let cause:Cell[] = strategy.getCause();
+        expect(cause.length).toBe(2);
+        expect(cause[0].getRow()+cause[1].getRow()+cause[0].getColumn()).toBe(0);
+        expect(cause[1].getColumn()).toBe(1);
     });
 });
 
