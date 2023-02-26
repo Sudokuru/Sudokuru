@@ -70,6 +70,8 @@ export class Strategy{
     private board: Cell[][];
     // Contains cells that "cause" strategy to be applicable
     private cause: Cell[];
+    // 2d array containing arrays with number representing GroupEnum and index or groups that cause strategy e.g. [[0, 1]] for 2nd row
+    private groups: number[][];
     // Cells that don't have a value placed in them yet
     private emptyCells: Cell[][];
     // Contains values that can be placed because of this Strategy
@@ -95,6 +97,7 @@ export class Strategy{
         this.values = new Array();
         this.notes = new Array();
         this.cause = new Array();
+        this.groups = new Array();
     }
 
     /**
@@ -146,6 +149,17 @@ export class Strategy{
     public getCause():Cell[] {
         this.verifyIdentified();
         return this.cause;
+    }
+
+    /**
+     * Gets groups that "cause" strategy to be applicable
+     * @returns 2d array containing arrays with number representing GroupEnum and index or groups that cause strategy e.g. [[0, 1]] for 2nd row
+     * @throws {@link CustomError}
+     * Thrown if strategy hasn't been identified
+     */
+    public getGroups():number[][] {
+        this.verifyIdentified();
+        return this.groups;
     }
 
     /**
@@ -328,6 +342,10 @@ export class Strategy{
                                 for (let k:number = 0; k < nakedSet.length; k++) {
                                     this.cause.push(new Cell(nakedSet[k].getRow(), nakedSet[k].getColumn()));
                                 }
+                                let groups:number[] = new Array(2);
+                                groups[0] = group;
+                                groups[1] = i;
+                                this.groups.push(groups);
                                 // Calculate difficulty based on how far apart the naked set cells are
                                 let distanceRatio:number;
                                 if (group === GroupEnum.ROW) {
@@ -377,6 +395,13 @@ export class Strategy{
                                                     let notes:Group = new Group(false, boxCells[k].getRow(), boxCells[k].getColumn());
                                                     notes.insert(nakedSetCandidates);
                                                     this.notes.push(notes);
+                                                    this.cause.push(new Cell(boxCells[k].getRow(), boxCells[k].getColumn()));
+                                                    if (this.groups.length === 1) {
+                                                        let boxGroup:number[] = new Array(2);
+                                                        boxGroup[0] = GroupEnum.BOX;
+                                                        boxGroup[1] = boxCells[k].getBox();
+                                                        this.groups.push(boxGroup);
+                                                    }
                                                 }
                                             }
                                         }
@@ -449,6 +474,10 @@ export class Strategy{
                             }
                             // If notes were found you can remove as part of the hidden single then strategy identified
                             if (this.identified) {
+                                let groups:number[] = new Array(2);
+                                groups[0] = group;
+                                groups[1] = i;
+                                this.groups.push(groups);
                                 for (let k:number = 0; k < notHiddenSet.length; k++) {
                                     this.cause.push(new Cell(notHiddenSet[k].getRow(), notHiddenSet[k].getColumn()));
                                 }
