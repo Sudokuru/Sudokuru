@@ -449,8 +449,8 @@ export class Strategy{
                             }
                             // If notes were found you can remove as part of the hidden single then strategy identified
                             if (this.identified) {
-                                for (let k:number = 0; k < tuple; k++) {
-                                    this.cells.push(new Cell(hiddenSet[k].getRow(), hiddenSet[k].getColumn()));
+                                for (let k:number = 0; k < notHiddenSet.length; k++) {
+                                    this.cells.push(new Cell(notHiddenSet[k].getRow(), notHiddenSet[k].getColumn()));
                                 }
                                 // Calculate ratio of number of notes to possible number (more notes to obscure hidden set = higher difficulty)
                                 let noteCount:number = 0;

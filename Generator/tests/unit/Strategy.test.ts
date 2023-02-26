@@ -57,9 +57,7 @@ describe("create hidden single", () => {
         expect(strategy.setStrategyType(StrategyEnum.HIDDEN_SINGLE)).toBeTruthy();
         expect((strategy.getNotesToRemove())[0].getSize()).toBe(SudokuEnum.ROW_LENGTH - 1);
         let cause:Cell[] = strategy.getCause();
-        expect(cause.length).toBe(1);
-        expect(cause[0].getRow()).toBe(0);
-        expect(cause[0].getColumn()).toBe(8);
+        expect(cause.length).toBe(8);
     });
 });
 
