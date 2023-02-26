@@ -489,26 +489,26 @@ export class Strategy{
                 let notes: Group = new Group(false);
                 // Add every placed value from given row
                 for (let k:number = 0; k < SudokuEnum.ROW_LENGTH; k++) {
-                    if (!this.board[row][k].isEmpty()) {
+                    if (!this.board[row][k].isEmpty() && (cell.getNotes()).contains(this.board[row][k].getValue())) {
                         notes.insert(this.board[row][k].getValue());
                     }
                 }
                 // Add every placed value from given column
                 for (let k:number = 0; k < SudokuEnum.COLUMN_LENGTH; k++) {
-                    if (!this.board[k][column].isEmpty()) {
+                    if (!this.board[k][column].isEmpty() && (cell.getNotes()).contains(this.board[k][column].getValue())) {
                         notes.insert(this.board[k][column].getValue());
                     }
                 }
                 // Add every placed value from given box
                 for (let r:number = boxRowStart; r < (boxRowStart + SudokuEnum.BOX_LENGTH); r++) {
                     for (let c:number = boxColumnStart; c < (boxColumnStart + SudokuEnum.BOX_LENGTH); c++) {
-                        if (!this.board[r][c].isEmpty()) {
+                        if (!this.board[r][c].isEmpty() && (cell.getNotes()).contains(this.board[r][c].getValue())) {
                             notes.insert(this.board[r][c].getValue());
                         }
                     }
                 }
                 // If there are any notes to remove then strategy is identified
-                if ((notes.intersection(cell.getNotes())).getSize() > 0) {
+                if (notes.getSize() > 0) {
                     let notesToRemove: Group = new Group(false, row, column);
                     notesToRemove.insert(notes);
                     this.notes.push(notesToRemove);
