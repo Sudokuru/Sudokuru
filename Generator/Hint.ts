@@ -188,11 +188,19 @@ export class Hint{
     }
 
     /**
-     * Gets cells that "cause" strategy to be applicable
+     * Gets coordinates of cells that "cause" strategy to be applicable
      * @returns cells "causing" strategy
      */
-     public getCause():Cell[] {
-        return this.strategy.getCause();
+     public getCause():number[][] {
+        let cause:number[][] = new Array();
+        let cells:Cell[] = this.strategy.getCause();
+        for (let i:number = 0; i < cells.length; i++) {
+            let cell:number[] = new Array(2);
+            cell[0] = cells[i].getRow();
+            cell[1] = cells[i].getColumn();
+            cause.push(cell);
+        }
+        return cause;
     }
 
     /**
