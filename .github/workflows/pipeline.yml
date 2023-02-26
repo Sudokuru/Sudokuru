@@ -51,13 +51,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16.x
+          registry-url: 'https://registry.npmjs.org'
 
       - run: | 
           npm i
           npm run build
           npm publish
         env:
-          NPM_TOKEN: ${{ secrets.NPM_API_KEY }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_API_KEY }}
 
   deploy_documentation:
     name: Deploy Documentation
