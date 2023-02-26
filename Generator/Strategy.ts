@@ -69,7 +69,7 @@ export class Strategy{
     // Contains representation of board being solved
     private board: Cell[][];
     // Contains cells that "cause" strategy to be applicable
-    private cells: Cell[];
+    private cause: Cell[];
     // Cells that don't have a value placed in them yet
     private emptyCells: Cell[][];
     // Contains values that can be placed because of this Strategy
@@ -94,7 +94,7 @@ export class Strategy{
         this.identified = false;
         this.values = new Array();
         this.notes = new Array();
-        this.cells = new Array();
+        this.cause = new Array();
     }
 
     /**
@@ -145,7 +145,7 @@ export class Strategy{
      */
     public getCause():Cell[] {
         this.verifyIdentified();
-        return this.cells;
+        return this.cause;
     }
 
     /**
@@ -305,7 +305,7 @@ export class Strategy{
                                     }
                                 }
                                 this.values.push(new Cell(row, column, single));
-                                this.cells.push(new Cell(row, column));
+                                this.cause.push(new Cell(row, column));
                                 this.strategyType = StrategyEnum.NAKED_SINGLE;
                                 this.identified = true;
                                 this.difficulty = DifficultyLowerBounds.NAKED_SINGLE;
@@ -326,7 +326,7 @@ export class Strategy{
                                 this.strategyType = StrategyEnum[StrategyEnum[tuple]];
                                 this.identified = true;
                                 for (let k:number = 0; k < nakedSet.length; k++) {
-                                    this.cells.push(new Cell(nakedSet[k].getRow(), nakedSet[k].getColumn()));
+                                    this.cause.push(new Cell(nakedSet[k].getRow(), nakedSet[k].getColumn()));
                                 }
                                 // Calculate difficulty based on how far apart the naked set cells are
                                 let distanceRatio:number;
@@ -450,7 +450,7 @@ export class Strategy{
                             // If notes were found you can remove as part of the hidden single then strategy identified
                             if (this.identified) {
                                 for (let k:number = 0; k < notHiddenSet.length; k++) {
-                                    this.cells.push(new Cell(notHiddenSet[k].getRow(), notHiddenSet[k].getColumn()));
+                                    this.cause.push(new Cell(notHiddenSet[k].getRow(), notHiddenSet[k].getColumn()));
                                 }
                                 // Calculate ratio of number of notes to possible number (more notes to obscure hidden set = higher difficulty)
                                 let noteCount:number = 0;
@@ -491,14 +491,14 @@ export class Strategy{
                 for (let k:number = 0; k < SudokuEnum.ROW_LENGTH; k++) {
                     if (!this.board[row][k].isEmpty() && (cell.getNotes()).contains(this.board[row][k].getValue())) {
                         notes.insert(this.board[row][k].getValue());
-                        this.cells.push(this.board[row][k]);
+                        this.cause.push(this.board[row][k]);
                     }
                 }
                 // Add every placed value from given column
                 for (let k:number = 0; k < SudokuEnum.COLUMN_LENGTH; k++) {
                     if (!this.board[k][column].isEmpty() && (cell.getNotes()).contains(this.board[k][column].getValue())) {
                         notes.insert(this.board[k][column].getValue());
-                        this.cells.push(this.board[k][column]);
+                        this.cause.push(this.board[k][column]);
                     }
                 }
                 // Add every placed value from given box
@@ -506,7 +506,7 @@ export class Strategy{
                     for (let c:number = boxColumnStart; c < (boxColumnStart + SudokuEnum.BOX_LENGTH); c++) {
                         if (!this.board[r][c].isEmpty() && (cell.getNotes()).contains(this.board[r][c].getValue())) {
                             notes.insert(this.board[r][c].getValue());
-                            this.cells.push(this.board[r][c]);
+                            this.cause.push(this.board[r][c]);
                         }
                     }
                 }
