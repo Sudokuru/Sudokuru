@@ -491,12 +491,14 @@ export class Strategy{
                 for (let k:number = 0; k < SudokuEnum.ROW_LENGTH; k++) {
                     if (!this.board[row][k].isEmpty() && (cell.getNotes()).contains(this.board[row][k].getValue())) {
                         notes.insert(this.board[row][k].getValue());
+                        this.cells.push(this.board[row][k]);
                     }
                 }
                 // Add every placed value from given column
                 for (let k:number = 0; k < SudokuEnum.COLUMN_LENGTH; k++) {
                     if (!this.board[k][column].isEmpty() && (cell.getNotes()).contains(this.board[k][column].getValue())) {
                         notes.insert(this.board[k][column].getValue());
+                        this.cells.push(this.board[k][column]);
                     }
                 }
                 // Add every placed value from given box
@@ -504,6 +506,7 @@ export class Strategy{
                     for (let c:number = boxColumnStart; c < (boxColumnStart + SudokuEnum.BOX_LENGTH); c++) {
                         if (!this.board[r][c].isEmpty() && (cell.getNotes()).contains(this.board[r][c].getValue())) {
                             notes.insert(this.board[r][c].getValue());
+                            this.cells.push(this.board[r][c]);
                         }
                     }
                 }
