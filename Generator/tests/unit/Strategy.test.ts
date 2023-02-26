@@ -3,7 +3,7 @@ import { Cell } from '../../Cell';
 import { CustomError, CustomErrorEnum } from '../../CustomError';
 import { getBlankCellBoard, getError, getRowTuplet, removeNotesFromEach, removeTupleNotes } from '../testResources';
 import { Group } from '../../Group';
-import { StrategyEnum, SudokuEnum, TupleEnum } from '../../Sudoku';
+import { GroupEnum, StrategyEnum, SudokuEnum, TupleEnum } from '../../Sudoku';
 
 describe("create naked single", () => {
     it('should throw strategy not identified error', async () => {
@@ -30,6 +30,7 @@ describe("create naked single", () => {
         expect(cause.length).toBe(1);
         expect(cause[0].getRow()).toBe(0);
         expect(cause[0].getColumn()).toBe(0);
+        expect((strategy.getGroups()).length).toBe(0);
     });
 });
 
@@ -58,6 +59,10 @@ describe("create hidden single", () => {
         expect((strategy.getNotesToRemove())[0].getSize()).toBe(SudokuEnum.ROW_LENGTH - 1);
         let cause:Cell[] = strategy.getCause();
         expect(cause.length).toBe(8);
+        let groups:number[][] = strategy.getGroups();
+        expect(groups.length).toBe(1);
+        expect(groups[0][0]).toBe(GroupEnum.ROW);
+        expect(groups[0][1]).toBe(0);
     });
 });
 
@@ -99,6 +104,12 @@ describe("create naked pair", () => {
         expect(cause.length).toBe(2);
         expect(cause[0].getRow()+cause[1].getRow()+cause[0].getColumn()).toBe(0);
         expect(cause[1].getColumn()).toBe(1);
+        let groups:number[][] = strategy.getGroups();
+        expect(groups.length).toBe(2);
+        expect(groups[0][0]).toBe(GroupEnum.ROW);
+        expect(groups[0][1]).toBe(0);
+        expect(groups[1][0]).toBe(GroupEnum.BOX);
+        expect(groups[1][1]).toBe(0);
     });
 });
 
