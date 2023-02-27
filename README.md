@@ -36,14 +36,23 @@
     *   [numWrongCellsPlayed](#numwrongcellsplayed)
     *   [numWrongCellsPlayedPerStrategy](#numwrongcellsplayedperstrategy)
 *   [hint Object Properties](#hint-object-properties)
-    *   [strategy](#strategy)
-    *   [cause](#cause)
-    *   [groups](#groups)
-    *   [placements](#placements)
-    *   [removals](#removals)
-    *   [info](#info)
-    *   [action](#action)
-*   [Developer Tools](#developer-tools)
+    *   [Example 1](#example-1)
+        *   [strategy](#strategy)
+        *   [cause](#cause)
+        *   [groups](#groups)
+        *   [placements](#placements)
+        *   [removals](#removals)
+        *   [info](#info)
+        *   [action](#action)
+    *   [Example 2](#example-2)
+        *   [strategy](#strategy-1)
+        *   [cause](#cause-1)
+        *   [groups](#groups-1)
+        *   [placements](#placements-1)
+        *   [removals](#removals-1)
+        *   [info](#info-1)
+        *   [action](#action-1)
+*   [Developer Tools](#developer-tools-1)
 
 # Installation
 
@@ -237,41 +246,43 @@ Number of times the user has entered the wrong number into a cell
 Number of times user has entered the wrong number when given strategies were the next available hints (approximates how much practice user needs per strategy)
 
 # hint Object Properties
-## strategy
+## Example 1
+![Example 1](https://sudokuru.s3.amazonaws.com/hintBoard1.png)
+### strategy
 ```json
 "SIMPLIFY_NOTES"
 ```
-Name of strategy used by the hint
-## cause
+Name of strategy used by the hint. In example 1 it is simplify notes strategy meaning it is using already placed numbers to remove notes from a cell that they share a row, column, or box with.
+### cause
 ```json
-[[ 0, 0 ], [ 0, 8 ]]
+[ [ 0, 0 ], [ 0, 8 ], [ 3, 2 ], [ 4, 2 ] ]
 ```
-Coordinates of cells that "cause" strategy to be applicable, format [[row, column], ...], 0-indexed
-## groups
+Coordinates of cells that "cause" strategy to be applicable. This is a 2d array so cause[0] is [0, 0] referring to the cell with the 7 highlighted in blue in the upper left corner of the example. cause[0][0] refers to it being in the 0th row and cause[0][1] refers to it being in the 0th column. Similarly the last cell cause[3] is the other highlighted seven right below the highlighted 5.
+### groups
 ```json
-[[0, 1]]
+[]
 ```
-Group type and index of groups that "cause strategy", 0=Row, 1=Column, 2=Box, so example is 2nd row, format [[groupType, groupIndex], ...]
-## placements
+Group type and index of groups that "cause strategy". This does not apply to this strategy.
+### placements
 ```json
-[[3, 2, 9]]
+[]
 ```
-Row, column, and values for cells that have had values placed in them as result of strategy, format [[row, column, value], ...], value on range 1-9 inclusive, row/column 0-indexed
-## removals
+Row, column, and values for cells that have had values placed in them as result of strategy. This does not apply to this strategy.
+### removals
 ```json
-[[0, 1, 1, 3, 6, 7, 9]]
+[ [ 0, 2, 5, 6, 7 ] ]
 ```
-Notes that can be removed from cells along with their row and columns, format [[row, column, noteA, noteB, ...], ...] with row/column 0-indexed and note values range 1-9 inclusive
-## info
+Notes that can be removed from cells along with their row and columns. The first two values represent the row and column respectively so removals[0][0] and removals[0][1] refer to the third cell in the first row (0-indexed so removals[0][0]=0=1st and removals[0][1]=2=third). The rest of the numbers in the subarray are the notes to be removed which are 5, 6, and 7 which are shown highlighted in red in the example 1 image.
+### info
 ```json
 "You can simplify notes using values already placed in cells at the start of the game"
 ```
-Info about the strategy being used by the hint
-## action
+Info about the strategy being used by the hint.
+### action
 ```json
 "When there is a value already placed in a cell than it can be removed from all other cells notes in its row, column, and box"
 ```
-Describes the action that the hint is suggesting
+Describes the action that the hint is suggesting.
 # Developer Tools
 ```shell
 # Clone Repository
