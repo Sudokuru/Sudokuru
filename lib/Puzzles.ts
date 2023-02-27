@@ -77,7 +77,7 @@ export class Puzzles{
         let solver:Solver = new Solver(board, undefined, notes);
         let hint:Hint = solver.nextStep();
         return <JSON><unknown>{
-            "strategyType": hint.getStrategy(),
+            "strategy": hint.getStrategy(),
             "cause": hint.getCause(),
             "groups": hint.getGroups(),
             "placements": hint.getPlacements(),
