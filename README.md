@@ -251,17 +251,17 @@ Coordinates of cells that "cause" strategy to be applicable, format [[row, colum
 ```json
 [[0, 1]]
 ```
-Group type and index of groups that "cause strategy", 0=Row, 1=Column, 2=Box, so example is 2nd row
+Group type and index of groups that "cause strategy", 0=Row, 1=Column, 2=Box, so example is 2nd row, format [[groupType, groupIndex], ...]
 ## placements
 ```json
 [[3, 2, 9]]
 ```
-Row, column, and values for cells that have had values placed in them as result of strategy, format [[row, column, value]], value on range 1-9 inclusive, row/column 0-indexed
+Row, column, and values for cells that have had values placed in them as result of strategy, format [[row, column, value], ...], value on range 1-9 inclusive, row/column 0-indexed
 ## removals
 ```json
 [[0, 1, 1, 3, 6, 7, 9]]
 ```
-Notes that can be removed from cells along with their row and columns, format [[row, column, noteA, noteB, ...]] with row/column 0-indexed and note values range 1-9 inclusive
+Notes that can be removed from cells along with their row and columns, format [[row, column, noteA, noteB, ...], ...] with row/column 0-indexed and note values range 1-9 inclusive
 ## info
 ```json
 "You can simplify notes using values already placed in cells at the start of the game"
