@@ -80,7 +80,7 @@ export class Puzzles{
             "strategyType": hint.getStrategyType(),
             "cause": hint.getCause(),
             "groups": hint.getGroups(),
-            "placements": hint.getEffectPlacements(),
+            "placements": hint.getPlacements(),
             "removals": hint.getEffectRemovals(),
             "info": hint.getInfo(),
             "action": hint.getAction()

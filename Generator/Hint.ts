@@ -220,6 +220,22 @@ export class Hint{
     }
 
     /**
+     * Gets row, column, and values for cells that have had values placed in them as result of strategy
+     * @returns cells with values placed
+     */
+    public getPlacements():number[][] {
+        let cells:Cell[] = this.strategy.getValuesToPlace();
+        let placements:number[][] = new Array();
+        for (let i:number = 0; i < cells.length; i++){
+            placements.push(new Array(3));
+            placements[i][0] = cells[i].getRow();
+            placements[i][1] = cells[i].getColumn();
+            placements[i][2] = Number(cells[i].getValue());
+        }
+        return placements;
+    }
+
+    /**
      * Gets notes that can be removed as result of strategy
      * @returns Groups containing notes to removed
      */
