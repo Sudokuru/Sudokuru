@@ -69,15 +69,15 @@ export class Puzzles{
 
     /**
      * Given the state of the board and notes return a hint
-     * @param board - 2d board array (9 arrays one for each row, each with 9 strings representing values or "0" if empty)
-     * @param notes - 2d notes array (81 arrays one for each cell containing each note that is left in it)
+     * @param board - 2d board array (9 arrays, one for each row, each with 9 strings representing values or "0" if empty)
+     * @param notes - 2d notes array (81 arrays, one for each cell containing each note that is left in it)
      * @returns JSON object containing hint data
      */
     public static getHint(board: string[][], notes: string[][]):JSON {
         let solver:Solver = new Solver(board, undefined, notes);
         let hint:Hint = solver.nextStep();
         return <JSON><unknown>{
-            "strategyType": hint.getStrategyType(),
+            "strategyType": hint.getStrategy(),
             "cause": hint.getCause(),
             "groups": hint.getGroups(),
             "placements": hint.getPlacements(),

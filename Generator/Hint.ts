@@ -180,6 +180,14 @@ export class Hint{
     }
 
     /**
+     * Gets strategy string
+     * @returns strategy string
+     */
+    public getStrategy():string {
+        return StrategyEnum[this.strategy.getStrategyType()];
+    }
+
+    /**
      * Gets strategy difficulty
      * @returns strategy difficulty
      */
