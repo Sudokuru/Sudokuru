@@ -1,7 +1,7 @@
 import { Cell } from "./Cell";
 import { Group } from "./Group";
 import { Strategy } from "./Strategy";
-import { StrategyEnum } from "./Sudoku";
+import { StrategyEnum, SudokuEnum } from "./Sudoku";
 
 /**
  * Contains hint information for naked single strategy
@@ -202,11 +202,18 @@ export class Hint{
      public getCause():number[][] {
         let cause:number[][] = new Array();
         let cells:Cell[] = this.strategy.getCause();
+        let addedCells:boolean[][] = new Array();
+        for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
+            addedCells.push(new Array(SudokuEnum.ROW_LENGTH));
+        }
         for (let i:number = 0; i < cells.length; i++) {
             let cell:number[] = new Array(2);
             cell[0] = cells[i].getRow();
             cell[1] = cells[i].getColumn();
-            cause.push(cell);
+            if (!addedCells[cell[0]][cell[1]]) {
+                cause.push(cell);
+                addedCells[cell[0]][cell[1]] = true;
+            }
         }
         return cause;
     }
