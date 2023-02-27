@@ -68,7 +68,7 @@ export const MAX_DIFFICULTY:number = getMaxDifficulty();
 export class Strategy{
     // Contains representation of board being solved
     private board: Cell[][];
-    // Contains cells that "cause" strategy to be applicable
+    // Contains cells that "cause" strategy to be applicable (may have same cell multiple times)
     private cause: Cell[];
     // 2d array containing arrays with number representing GroupEnum and index or groups that cause strategy e.g. [[0, 1]] for 2nd row
     private groups: number[][];
