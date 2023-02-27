@@ -221,7 +221,7 @@ export class Hint{
 
     /**
      * Gets row, column, and values for cells that have had values placed in them as result of strategy
-     * @returns 2d number array containing arrays of form [row, column, value] for placed values
+     * @returns 2d number array containing arrays of form [row, column, value] for placed values (1-indexed)
      */
     public getPlacements():number[][] {
         let cells:Cell[] = this.strategy.getValuesToPlace();
@@ -241,6 +241,26 @@ export class Hint{
      */
     public getEffectRemovals():Group[] {
         return this.strategy.getNotesToRemove();
+    }
+
+    /**
+     * Gets notes that can be removed from cells along with their row and columns
+     * @returns 2d number array containing arrays of form [row, column, noteA, noteB, ...] for removed notes (1-indexed)
+     */
+    public getRemovals():number[][] {
+        let groups:Group[] = this.strategy.getNotesToRemove();
+        let removals:number[][] = new Array();
+        for (let i:number = 0; i < groups.length; i++) {
+            removals.push(new Array(2));
+            removals[i][0] = groups[i].getRow();
+            removals[i][1] = groups[i].getColumn();
+            for (let j:number = 0; j < 9; j++) {
+                if (groups[i].contains(j)) {
+                    removals[i].push(j + 1);
+                }
+            }
+        }
+        return removals;
     }
 
     /**

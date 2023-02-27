@@ -81,7 +81,7 @@ export class Puzzles{
             "cause": hint.getCause(),
             "groups": hint.getGroups(),
             "placements": hint.getPlacements(),
-            "removals": hint.getEffectRemovals(),
+            "removals": hint.getRemovals(),
             "info": hint.getInfo(),
             "action": hint.getAction()
         };
