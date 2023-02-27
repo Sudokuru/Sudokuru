@@ -18,6 +18,7 @@
             *   [Setup](#setup)
             *   [Puzzles.startGame()](#puzzlesstartgame)
             *   [Puzzles.getGame()](#puzzlesgetgame)
+            *   [Puzzles.getHint()](#puzzlesgethint)
 *   [Puzzle Object Properties](#puzzle-object-properties)
     *   [puzzle](#puzzle)
     *   [puzzleSolution](#puzzlesolution)
@@ -34,6 +35,14 @@
     *   [numHintsAskedFor](#numhintsaskedfor)
     *   [numWrongCellsPlayed](#numwrongcellsplayed)
     *   [numWrongCellsPlayedPerStrategy](#numwrongcellsplayedperstrategy)
+*   [hint Object Properties](#hint-object-properties)
+    *   [strategy](#strategy)
+    *   [cause](#cause)
+    *   [groups](#groups)
+    *   [placements](#placements)
+    *   [removals](#removals)
+    *   [info](#info)
+    *   [action](#action)
 *   [Developer Tools](#developer-tools)
 
 # Installation
@@ -121,6 +130,17 @@ const Puzzles = sudokuru.Puzzles;
     - url: Server url e.g. "http://localhost:3001/"
     - token: string authentication token
 4. Return Value: [activeGame](#activegame-object-properties) JSON object if user has an active game, otherwise null
+
+#### Puzzles.getHint()
+1. Description: Returns a hint based on the puzzle and notes provided
+2. Syntax
+    ```shell
+    Puzzles.getHint(board, notes);
+    ```
+3. Parameters:
+    - board: 2d board array (9 arrays, one for each row, each with 9 strings representing values or "0" if empty)
+    - notes: 2d notes array (81 arrays, one for each cell containing each note that is left in it)
+4. Return Value: [hint](#hint-object-properties)
 
 # Puzzle Object Properties
 
@@ -215,6 +235,43 @@ Number of times the user has entered the wrong number into a cell
 "SINGLES_CHAINING": 0
 ```
 Number of times user has entered the wrong number when given strategies were the next available hints (approximates how much practice user needs per strategy)
+
+# hint Object Properties
+## strategy
+```json
+"SIMPLIFY_NOTES"
+```
+Name of strategy used by the hint
+## cause
+```json
+[[ 0, 0 ], [ 0, 8 ]]
+```
+Coordinates of cells that "cause" strategy to be applicable, format [[row, column], ...], 0-indexed
+## groups
+```json
+[[0, 1]]
+```
+Group type and index of groups that "cause strategy", 0=Row, 1=Column, 2=Box, so example is 2nd row
+## placements
+```json
+[[3, 2, 9]]
+```
+Row, column, and values for cells that have had values placed in them as result of strategy, format [[row, column, value]], value on range 1-9 inclusive, row/column 0-indexed
+## removals
+```json
+[[0, 1, 1, 3, 6, 7, 9]]
+```
+Notes that can be removed from cells along with their row and columns, format [[row, column, noteA, noteB, ...]] with row/column 0-indexed and note values range 1-9 inclusive
+## info
+```json
+"You can simplify notes using values already placed in cells at the start of the game"
+```
+Info about the strategy being used by the hint
+## action
+```json
+"When there is a value already placed in a cell than it can be removed from all other cells notes in its row, column, and box"
+```
+Describes the action that the hint is suggesting
 # Developer Tools
 ```shell
 # Clone Repository
