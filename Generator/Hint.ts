@@ -221,7 +221,7 @@ export class Hint{
 
     /**
      * Gets row, column, and values for cells that have had values placed in them as result of strategy
-     * @returns cells with values placed
+     * @returns 2d number array containing arrays of form [row, column, value] for placed values
      */
     public getPlacements():number[][] {
         let cells:Cell[] = this.strategy.getValuesToPlace();
