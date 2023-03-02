@@ -84,13 +84,15 @@ export class Strategy{
     private identified: boolean;
     // Stores number representing its difficulty rating (calculated to be in between the strategies upper/lower bounds)
     private difficulty: number;
+    // Stores solution board if provided, AmendNotes Strategy can use it to correct players who remove "correct" notes
+    private solution: string[][];
 
     /**
      * Cell object using cells the strategy acts on
      * @constructor
      * @param cells - cells
      */
-    constructor(board: Cell[][], emptyCells: Cell[][]) {
+    constructor(board: Cell[][], emptyCells: Cell[][], solution?: string[][]) {
         this.board = board;
         this.emptyCells = emptyCells;
         this.identified = false;
@@ -98,6 +100,9 @@ export class Strategy{
         this.notes = new Array();
         this.cause = new Array();
         this.groups = new Array();
+        if (solution !== undefined) {
+            this.solution = solution;
+        }
     }
 
     /**

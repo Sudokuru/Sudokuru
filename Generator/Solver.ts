@@ -24,6 +24,8 @@ export class Solver{
     private allHints: Hint[];
     // Stores order in which the Solver uses strategies to solve the Sudoku board (modified for testing strategies)
     private algorithm: StrategyEnum[];
+    // Stores solution board if provided, AmendNotes Strategy can use it to correct players who remove "correct" notes
+    private solution: string[][];
 
     /**
      * Creates solver object
@@ -31,7 +33,7 @@ export class Solver{
      * @param algorithm - optional parameter specifying order to apply strategies
      * @param notes - optional parameter specifying initial state of the notes (one array with an array for each cell in order)
      */
-    constructor(board: string[][], algorithm: StrategyEnum[] = Strategy.getDefaultAlgorithm(), notes?: string[][]) {
+    constructor(board: string[][], algorithm: StrategyEnum[] = Strategy.getDefaultAlgorithm(), notes?: string[][], solution?: string[][]) {
         this.board = new Array();
         this.initializeCellArray(this.board, board.length);
         this.initializeBoard(board);
@@ -41,6 +43,9 @@ export class Solver{
         this.setEmptyCells();
         this.solved = false;
         this.algorithm = algorithm;
+        if (solution !== undefined) {
+            this.solution = solution;
+        }
     }
 
     /**
@@ -84,7 +89,7 @@ export class Solver{
     private setAllHints():void {
         this.allHints = new Array();
         for (let strategy: StrategyEnum = (StrategyEnum.INVALID + 1); strategy < StrategyEnum.COUNT; strategy++) {
-            let strategyObj:Strategy = new Strategy(this.board, this.emptyCells);
+            let strategyObj:Strategy = new Strategy(this.board, this.emptyCells, this.solution);
             if (strategyObj.setStrategyType(strategy)) {
                 this.allHints.push(new Hint(strategyObj));
             }
@@ -125,7 +130,7 @@ export class Solver{
      */
     private setHint(cells: Cell[][]):void {
         // Attempts to use strategies in order specified by algorithm
-        let strategy:Strategy = new Strategy(this.board, cells);
+        let strategy:Strategy = new Strategy(this.board, cells, this.solution);
         for (let i: number = 0; i < this.algorithm.length; i++) {
             if (strategy.setStrategyType(this.algorithm[i])) {
                 this.hint = new Hint(strategy);
