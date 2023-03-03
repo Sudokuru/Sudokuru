@@ -4,6 +4,16 @@ import { Strategy } from "./Strategy";
 import { StrategyEnum, SudokuEnum } from "./Sudoku";
 
 /**
+ * Contains hint information for amend notes strategy
+ * Contains what action hint is trying to get you to do
+ * @enum
+ */
+export enum AMEND_NOTES {
+    HINT_INFO = "Amend notes are when you reset a cell's notes to contain every nonconflicting number",
+    HINT_ACTION = "When you see an amend notes you can remove all notes then add all nonconflicting numbers to its notes"
+}
+
+/**
  * Contains hint information for naked single strategy
  * Contains what action hint is trying to get you to do
  * @enum
@@ -126,7 +136,11 @@ export class Hint{
      */
     constructor(strategy: Strategy) {
         this.strategy = strategy;
-        if (this.getStrategyType() === StrategyEnum.NAKED_SINGLE) {
+        if (this.getStrategyType() === StrategyEnum.AMEND_NOTES) {
+            this.info = AMEND_NOTES.HINT_INFO;
+            this.action = AMEND_NOTES.HINT_ACTION;
+        }
+        else if (this.getStrategyType() === StrategyEnum.NAKED_SINGLE) {
             this.info = NAKED_SINGLE.HINT_INFO;
             this.action = NAKED_SINGLE.HINT_ACTION;
         }

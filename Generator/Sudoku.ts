@@ -22,6 +22,7 @@ export enum SudokuEnum {
  */
 export enum StrategyEnum {
     INVALID = -1,
+    AMEND_NOTES,
     NAKED_SINGLE,
     HIDDEN_SINGLE,
     NAKED_PAIR,

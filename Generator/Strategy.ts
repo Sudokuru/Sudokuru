@@ -8,6 +8,7 @@ import { Group } from "./Group";
  * @enum
  */
 enum DifficultyLowerBounds {
+    AMEND_NOTES = 10,
     NAKED_SINGLE = 10,
     HIDDEN_SINGLE = 20,
     NAKED_PAIR = 40,
@@ -25,6 +26,7 @@ enum DifficultyLowerBounds {
  * @enum
  */
 enum DifficultyUpperBounds {
+    AMEND_NOTES = 10,
     NAKED_SINGLE = 10,
     HIDDEN_SINGLE = 40,
     NAKED_PAIR = 60,
@@ -110,7 +112,10 @@ export class Strategy{
      * @returns true if strategy is strategyType
      */
     public setStrategyType(strategyType: StrategyEnum):boolean {
-        if (strategyType === StrategyEnum.NAKED_SINGLE) {
+        if (strategyType === StrategyEnum.AMEND_NOTES) {
+            return this.isAmendNotes();
+        }
+        else if (strategyType === StrategyEnum.NAKED_SINGLE) {
             return this.isNakedSet(TupleEnum.SINGLE);
         }
         else if (strategyType === StrategyEnum.NAKED_PAIR) {
@@ -552,6 +557,54 @@ export class Strategy{
                     this.strategyType = StrategyEnum.SIMPLIFY_NOTES;
                     this.difficulty = DifficultyLowerBounds.SIMPLIFY_NOTES;
                     return this.identified;
+                }
+            }
+        }
+        return this.identified;
+    }
+
+    /**
+     * Checks if strategy is amend notes and if so adds notes to remove from a cell (every note not removed should be added)
+     * @returns true if strategy is amend notes
+     */
+    private isAmendNotes():boolean {
+        for (let row:number = 0; row < this.emptyCells.length; row++) {
+            for (let column:number = 0; column < this.emptyCells[row].length; column++) {
+                if ((this.emptyCells[row][column].getNotes()).getSize() === 0) {
+                    // Add back in all notes then remove the ones that can be simplified away
+                    let cell:Cell = this.emptyCells[row][column];
+                    let box: number = cell.getBox();
+                    let boxRowStart: number = Cell.getBoxRowStart(box);
+                    let boxColumnStart: number = Cell.getBoxColumnStart(box);
+                    let notesToRemove: Group = new Group(false, cell.getRow(), cell.getColumn());
+                    // Add every placed value from given row
+                    for (let k:number = 0; k < SudokuEnum.ROW_LENGTH; k++) {
+                        if (!this.board[row][k].isEmpty() && (cell.getNotes()).contains(this.board[row][k].getValue())) {
+                            notesToRemove.insert(this.board[row][k].getValue());
+                        }
+                    }
+                    // Add every placed value from given column
+                    for (let k:number = 0; k < SudokuEnum.COLUMN_LENGTH; k++) {
+                        if (!this.board[k][column].isEmpty() && (cell.getNotes()).contains(this.board[k][column].getValue())) {
+                            notesToRemove.insert(this.board[k][column].getValue());
+                        }
+                    }
+                    // Add every placed value from given box
+                    for (let r:number = boxRowStart; r < (boxRowStart + SudokuEnum.BOX_LENGTH); r++) {
+                        for (let c:number = boxColumnStart; c < (boxColumnStart + SudokuEnum.BOX_LENGTH); c++) {
+                            if (!this.board[r][c].isEmpty() && (cell.getNotes()).contains(this.board[r][c].getValue())) {
+                                notesToRemove.insert(this.board[r][c].getValue());
+                            }
+                        }
+                    }
+                    // If there are notes to remove then return them
+                    if (notesToRemove.getSize() > 0) {
+                        this.notes.push(notesToRemove);
+                        this.identified = true;
+                        this.strategyType = StrategyEnum.AMEND_NOTES;
+                        this.difficulty = DifficultyLowerBounds.AMEND_NOTES;
+                        return this.identified;
+                    }
                 }
             }
         }
