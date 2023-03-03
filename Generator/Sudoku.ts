@@ -23,6 +23,7 @@ export enum SudokuEnum {
 export enum StrategyEnum {
     INVALID = -1,
     AMEND_NOTES,
+    SIMPLIFY_NOTES,
     NAKED_SINGLE,
     HIDDEN_SINGLE,
     NAKED_PAIR,
@@ -32,7 +33,6 @@ export enum StrategyEnum {
     NAKED_SEXTUPLET,
     NAKED_SEPTUPLET,
     NAKED_OCTUPLET,
-    SIMPLIFY_NOTES,
     COUNT
 }
 
