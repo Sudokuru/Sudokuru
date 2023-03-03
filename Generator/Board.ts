@@ -125,16 +125,9 @@ export class Board{
      */
     private setDrills():void {
         // Run through all of the simplify notes so drills that require notes to be removed can be added
-        let algorithm:StrategyEnum[] = new Array();
-        algorithm.push(StrategyEnum.SIMPLIFY_NOTES);
-        for (let i:number = (StrategyEnum.INVALID + 1); i < StrategyEnum.COUNT; i++) {
-            if (i !== StrategyEnum.SIMPLIFY_NOTES) {
-                algorithm.push(i);
-            }
-        }
-        let solver:Solver = new Solver(this.board, algorithm);
+        let solver:Solver = new Solver(this.board);
         let hints:Hint[] = solver.getAllHints();
-        while ((solver.nextStep()).getStrategyType() === StrategyEnum.SIMPLIFY_NOTES) {
+        while ((solver.nextStep()).getStrategyType() <= StrategyEnum.SIMPLIFY_NOTES) {
             hints = solver.getAllHints();
         }
         this.drills = new Array(StrategyEnum.COUNT).fill(false);
