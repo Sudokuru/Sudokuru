@@ -122,21 +122,15 @@ describe("solve Boards", () => {
     beforeAll(() => {
         singleNakedSingle = new Board(TestBoards.SINGLE_NAKED_SINGLE);
         let nakedSingleAlgo:StrategyEnum[] = new Array();
-        nakedSingleAlgo.push(StrategyEnum.NAKED_SINGLE);
+        nakedSingleAlgo.push(StrategyEnum.AMEND_NOTES);
         nakedSingleAlgo.push(StrategyEnum.SIMPLIFY_NOTES);
-        for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
-            if (strategy !== StrategyEnum.NAKED_SINGLE && strategy !== StrategyEnum.SIMPLIFY_NOTES) {
-                nakedSingleAlgo.push(strategy);
-            }
-        }
+        nakedSingleAlgo.push(StrategyEnum.NAKED_SINGLE);
         onlyNakedSingles = new Board(TestBoards.ONLY_NAKED_SINGLES, nakedSingleAlgo);
         let algorithm:StrategyEnum[] = new Array();
+        algorithm.push(StrategyEnum.AMEND_NOTES);
+        algorithm.push(StrategyEnum.SIMPLIFY_NOTES);
         algorithm.push(StrategyEnum.NAKED_QUADRUPLET);
-        for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
-            if (strategy !== StrategyEnum.NAKED_QUADRUPLET) {
-                algorithm.push(strategy);
-            }
-        }
+        algorithm.push(StrategyEnum.NAKED_SINGLE);
         onlyNakedSinglesQuadruplets = new Board(TestBoards.ONLY_NAKED_SINGLES, algorithm);
     });
 
