@@ -112,42 +112,51 @@ export class Strategy{
      * @returns true if strategy is strategyType
      */
     public setStrategyType(strategyType: StrategyEnum):boolean {
-        if (strategyType === StrategyEnum.AMEND_NOTES) {
-            return this.isAmendNotes();
+        if (strategyType === StrategyEnum.AMEND_NOTES && this.isAmendNotes()) {
+            this.strategyType = StrategyEnum.AMEND_NOTES;
+            return true;
         }
-        else if (strategyType === StrategyEnum.NAKED_SINGLE) {
-            return this.isNakedSet(TupleEnum.SINGLE);
+        else if (strategyType === StrategyEnum.NAKED_SINGLE && this.isNakedSet(TupleEnum.SINGLE)) {
+            this.strategyType = StrategyEnum.NAKED_SINGLE;
+            return true;
         }
-        else if (strategyType === StrategyEnum.NAKED_PAIR) {
-            return this.isNakedSet(TupleEnum.PAIR);
+        else if (strategyType === StrategyEnum.NAKED_PAIR && this.isNakedSet(TupleEnum.PAIR)) {
+            this.strategyType = StrategyEnum.NAKED_PAIR;
+            return true;
         }
-        else if (strategyType === StrategyEnum.NAKED_TRIPLET) {
-            return this.isNakedSet(TupleEnum.TRIPLET);
+        else if (strategyType === StrategyEnum.NAKED_TRIPLET && this.isNakedSet(TupleEnum.TRIPLET)) {
+            this.strategyType = StrategyEnum.NAKED_TRIPLET;
+            return true;
         }
-        else if (strategyType === StrategyEnum.NAKED_QUADRUPLET) {
-            return this.isNakedSet(TupleEnum.QUADRUPLET);
+        else if (strategyType === StrategyEnum.NAKED_QUADRUPLET && this.isNakedSet(TupleEnum.QUADRUPLET)) {
+            this.strategyType = StrategyEnum.NAKED_QUADRUPLET;
+            return true;
         }
-        else if (strategyType === StrategyEnum.NAKED_QUINTUPLET) {
-            return this.isNakedSet(TupleEnum.QUINTUPLET);
+        else if (strategyType === StrategyEnum.NAKED_QUINTUPLET && this.isNakedSet(TupleEnum.QUINTUPLET)) {
+            this.strategyType = StrategyEnum.NAKED_QUINTUPLET;
+            return true;
         }
-        else if (strategyType === StrategyEnum.NAKED_SEXTUPLET) {
-            return this.isNakedSet(TupleEnum.SEXTUPLET);
+        else if (strategyType === StrategyEnum.NAKED_SEXTUPLET && this.isNakedSet(TupleEnum.SEXTUPLET)) {
+            this.strategyType = StrategyEnum.NAKED_SEXTUPLET;
+            return true;
         }
-        else if (strategyType === StrategyEnum.NAKED_SEPTUPLET) {
-            return this.isNakedSet(TupleEnum.SEPTUPLET);
+        else if (strategyType === StrategyEnum.NAKED_SEPTUPLET && this.isNakedSet(TupleEnum.SEPTUPLET)) {
+            this.strategyType = StrategyEnum.NAKED_SEPTUPLET;
+            return true;
         }
-        else if (strategyType === StrategyEnum.NAKED_OCTUPLET) {
-            return this.isNakedSet(TupleEnum.OCTUPLET);
+        else if (strategyType === StrategyEnum.NAKED_OCTUPLET && this.isNakedSet(TupleEnum.OCTUPLET)) {
+            this.strategyType = StrategyEnum.NAKED_OCTUPLET
+            return true;
         }
-        else if (strategyType === StrategyEnum.HIDDEN_SINGLE) {
-            return this.isHiddenSet(TupleEnum.SINGLE);
+        else if (strategyType === StrategyEnum.HIDDEN_SINGLE && this.isHiddenSet(TupleEnum.SINGLE)) {
+            this.strategyType = StrategyEnum.HIDDEN_SINGLE;
+            return true;
         }
-        else if (strategyType === StrategyEnum.SIMPLIFY_NOTES) {
-            return this.isSimplifyNotes();
+        else if (strategyType === StrategyEnum.SIMPLIFY_NOTES && this.isSimplifyNotes()) {
+            this.strategyType = StrategyEnum.SIMPLIFY_NOTES;
+            return true;
         }
-        else {
-            return false;
-        }
+        return false;
     }
 
     /**
@@ -330,7 +339,6 @@ export class Strategy{
                                 }
                                 this.values.push(new Cell(row, column, single));
                                 this.cause.push(new Cell(row, column));
-                                this.strategyType = StrategyEnum.NAKED_SINGLE;
                                 this.identified = true;
                                 this.difficulty = DifficultyLowerBounds.NAKED_SINGLE;
                                 return true;
@@ -347,7 +355,6 @@ export class Strategy{
                             }
                             // If notes can be removed as result of naked set then it is a valid strategy
                             if (this.notes.length > 0) {
-                                this.strategyType = StrategyEnum[StrategyEnum[tuple]];
                                 this.identified = true;
                                 for (let k:number = 0; k < nakedSet.length; k++) {
                                     this.cause.push(new Cell(nakedSet[k].getRow(), nakedSet[k].getColumn()));
@@ -497,7 +504,6 @@ export class Strategy{
                                 }
                                 let noteRatio:number = noteCount / (SudokuEnum.ROW_LENGTH * SudokuEnum.ROW_LENGTH);
                                 if (tuple === TupleEnum.SINGLE) {
-                                    this.strategyType = StrategyEnum.HIDDEN_SINGLE;
                                     this.difficulty = DifficultyLowerBounds.HIDDEN_SINGLE;
                                     this.difficulty += Math.ceil(noteRatio * (DifficultyUpperBounds.HIDDEN_SINGLE - DifficultyLowerBounds.HIDDEN_SINGLE));
                                 }
@@ -554,7 +560,6 @@ export class Strategy{
                     notesToRemove.insert(notes);
                     this.notes.push(notesToRemove);
                     this.identified = true;
-                    this.strategyType = StrategyEnum.SIMPLIFY_NOTES;
                     this.difficulty = DifficultyLowerBounds.SIMPLIFY_NOTES;
                     return this.identified;
                 }
@@ -601,7 +606,6 @@ export class Strategy{
                     if (notesToRemove.getSize() > 0) {
                         this.notes.push(notesToRemove);
                         this.identified = true;
-                        this.strategyType = StrategyEnum.AMEND_NOTES;
                         this.difficulty = DifficultyLowerBounds.AMEND_NOTES;
                         return this.identified;
                     }
