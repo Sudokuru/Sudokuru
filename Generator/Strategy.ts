@@ -584,20 +584,20 @@ export class Strategy{
                     let notesToRemove: Group = new Group(false, cell.getRow(), cell.getColumn());
                     // Add every placed value from given row
                     for (let k:number = 0; k < SudokuEnum.ROW_LENGTH; k++) {
-                        if (!this.board[row][k].isEmpty() && (cell.getNotes()).contains(this.board[row][k].getValue())) {
+                        if (!this.board[row][k].isEmpty()) {
                             notesToRemove.insert(this.board[row][k].getValue());
                         }
                     }
                     // Add every placed value from given column
                     for (let k:number = 0; k < SudokuEnum.COLUMN_LENGTH; k++) {
-                        if (!this.board[k][column].isEmpty() && (cell.getNotes()).contains(this.board[k][column].getValue())) {
+                        if (!this.board[k][column].isEmpty()) {
                             notesToRemove.insert(this.board[k][column].getValue());
                         }
                     }
                     // Add every placed value from given box
                     for (let r:number = boxRowStart; r < (boxRowStart + SudokuEnum.BOX_LENGTH); r++) {
                         for (let c:number = boxColumnStart; c < (boxColumnStart + SudokuEnum.BOX_LENGTH); c++) {
-                            if (!this.board[r][c].isEmpty() && (cell.getNotes()).contains(this.board[r][c].getValue())) {
+                            if (!this.board[r][c].isEmpty()) {
                                 notesToRemove.insert(this.board[r][c].getValue());
                             }
                         }
