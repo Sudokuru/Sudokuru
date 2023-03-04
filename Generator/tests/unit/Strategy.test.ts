@@ -13,12 +13,10 @@ describe("create amend notes", () => {
     });
     it('should be an amend notes', () => {
         let board:Cell[][] = getBlankCellBoard();
-        // Remove all notes from second cell in board (will be used as amend notes cell)
-        board[0][1].removeNotes(new Group(true));
-        // Insert values into same group as amend notes cell
+        // Insert values into same group as amend notes cell (which will be row 0 and column 0)
         board[0][8].setValue("1");
-        board[1][0].setValue("2");
-        board[8][1].setValue("3");
+        board[1][1].setValue("2");
+        board[8][0].setValue("3");
         // Insert value that doesn't share group
         board[8][8].setValue("4");
         let strategy:Strategy = new Strategy(board, board);
@@ -45,6 +43,11 @@ describe("create naked single", () => {
     });
     it('should be a naked single', () => {
         let board:Cell[][] = getBlankCellBoard();
+        for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+            for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                board[row][column].resetNotes();
+            }
+        }
         for (let i:number = 1; i < SudokuEnum.COLUMN_LENGTH; i++) {
             (board[0][0]).removeNote(i.toString());
         }
@@ -76,6 +79,11 @@ describe("create hidden single", () => {
     });
     it ('should be a hidden single', () => {
         let board:Cell[][] = getBlankCellBoard();
+        for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+            for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                board[row][column].resetNotes();
+            }
+        }
         for (let i:number = 0; i < 8; i++) {
             board[0][i].removeNote("9");
         }
@@ -112,6 +120,11 @@ describe("create naked pair", () => {
     it("should be a naked pair", () => {
         // Create board
         let board:Cell[][] = getBlankCellBoard();
+        for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+            for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                board[row][column].resetNotes();
+            }
+        }
 
         // Create pair
         let cells:Cell[][] = getRowTuplet(TupleEnum.PAIR, board);
@@ -142,6 +155,11 @@ describe("create naked triplet", () => {
     it("should be a naked triplet", () => {
         // Create board
         let board:Cell[][] = getBlankCellBoard();
+        for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+            for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                board[row][column].resetNotes();
+            }
+        }
 
         // Create triplet
         let cells:Cell[][] = getRowTuplet(TupleEnum.TRIPLET, board);
@@ -163,6 +181,11 @@ describe("create naked quadruplet through octuplet", () => {
         for (let tuple:TupleEnum = TupleEnum.QUADRUPLET; tuple <= TupleEnum.OCTUPLET; tuple++) {
             // Create board
             let board:Cell[][] = getBlankCellBoard();
+            for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+                for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                    board[row][column].resetNotes();
+                }
+            }
 
             // Create tuplet
             let cells:Cell[][] = getRowTuplet(tuple, board);
