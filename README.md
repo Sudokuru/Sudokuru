@@ -144,11 +144,13 @@ const Puzzles = sudokuru.Puzzles;
 1. Description: Returns a hint based on the puzzle and notes provided
 2. Syntax
     ```shell
-    Puzzles.getHint(board, notes);
+    Puzzles.getHint(board, notes, strategies, solution);
     ```
 3. Parameters:
     - board: 2d board array (9 arrays, one for each row, each with 9 strings representing values or "0" if empty)
     - notes: 2d notes array (81 arrays, one for each cell containing each note that is left in it)
+    - strategies: optional parameter specifying which strategies are allowed to be used in the hint
+    - solution: optional parameter specifying boards solution so that amend notes hints can correct users mistakes
 4. Return Value: [hint](#hint-object-properties)
 
 # Puzzle Object Properties
