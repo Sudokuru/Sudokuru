@@ -22,6 +22,7 @@ describe("create Cell object", () => {
     });
     it('should remove notes', () => {
         let obj:Cell = new Cell(0, 0);
+        obj.resetNotes();
 
         expect(obj.hasNote("1")).toBeTruthy();
         obj.removeNote("1");
