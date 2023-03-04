@@ -41,7 +41,7 @@ export class Cell{
         else {
             this.value = SudokuEnum.EMPTY_CELL;
         }
-        this.notes = new Group(true);
+        this.notes = new Group(false);
     }
 
     /**
