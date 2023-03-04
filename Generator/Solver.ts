@@ -146,7 +146,7 @@ export class Solver{
      */
     private applyHint():void {
         this.placeValues(this.hint.getEffectPlacements());
-        this.removeNotes(this.hint.getEffectRemovals());
+        this.removeNotes(this.hint.getEffectRemovals(), this.hint.getStrategyType() === StrategyEnum.AMEND_NOTES);
     }
 
     /**
@@ -274,12 +274,16 @@ export class Solver{
     /**
      * Removes given notes from board
      * @param notes - Groups containing notes to remove
+     * @param amend - If true than cell notes are amended by adding all possible notes to cell before removing any
      */
-    private removeNotes(notes: Group[]):void {
+    private removeNotes(notes: Group[], amend: boolean):void {
         let row:number, column:number;
         for (let i:number = 0; i < notes.length; i++) {
             row = notes[i].getRow();
             column = notes[i].getColumn();
+            if (amend) {
+                this.board[row][column].resetNotes();
+            }
             this.board[row][column].removeNotes(notes[i]);
         }
     }

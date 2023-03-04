@@ -168,6 +168,16 @@ export class Cell{
     }
 
     /**
+     * Resets notes to contain all possible notes
+     */
+    public resetNotes():void {
+        for (let note:number = 0; note < SudokuEnum.ROW_LENGTH; note++) {
+            this.notes.insert(note);
+        }
+        return;
+    }
+
+    /**
      * Calculates box cell is in and sets it
      */
     private initializeBox():void {
