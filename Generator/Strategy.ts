@@ -573,15 +573,17 @@ export class Strategy{
      * @returns true if strategy is amend notes
      */
     private isAmendNotes():boolean {
-        for (let row:number = 0; row < this.emptyCells.length; row++) {
-            for (let column:number = 0; column < this.emptyCells[row].length; column++) {
-                if ((this.emptyCells[row][column].getNotes()).getSize() === 0) {
+        for (let r:number = 0; r < this.emptyCells.length; r++) {
+            for (let c:number = 0; c < this.emptyCells[r].length; c++) {
+                if ((this.emptyCells[r][c].getNotes()).getSize() === 0) {
                     // Add back in all notes then remove the ones that can be simplified away
-                    let cell:Cell = this.emptyCells[row][column];
+                    let cell:Cell = this.emptyCells[r][c];
+                    let row:number = cell.getRow();
+                    let column:number = cell.getColumn();
                     let box: number = cell.getBox();
                     let boxRowStart: number = Cell.getBoxRowStart(box);
                     let boxColumnStart: number = Cell.getBoxColumnStart(box);
-                    let notesToRemove: Group = new Group(false, cell.getRow(), cell.getColumn());
+                    let notesToRemove: Group = new Group(false, row, column);
                     // Add every placed value from given row
                     for (let k:number = 0; k < SudokuEnum.ROW_LENGTH; k++) {
                         if (!this.board[row][k].isEmpty()) {
