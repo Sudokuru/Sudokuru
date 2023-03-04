@@ -1,3 +1,4 @@
+import { StrategyEnum } from "../Generator";
 import { getMaxGameDifficulty } from "../Generator/Board";
 import { Hint } from "../Generator/Hint";
 import { Solver } from "../Generator/Solver";
@@ -71,10 +72,23 @@ export class Puzzles{
      * Given the state of the board and notes return a hint
      * @param board - 2d board array (9 arrays, one for each row, each with 9 strings representing values or "0" if empty)
      * @param notes - 2d notes array (81 arrays, one for each cell containing each note that is left in it)
+     * @param strategies - optional parameter specifying which strategies to use
      * @returns JSON object containing hint data
      */
-    public static getHint(board: string[][], notes: string[][]):JSON {
-        let solver:Solver = new Solver(board, undefined, notes);
+    public static getHint(board: string[][], notes: string[][], strategies?: string[]):JSON {
+        let algorithm:number[];
+        if (strategies !== undefined) {
+            algorithm = new Array();
+            for (let i:number = (StrategyEnum.INVALID + 1); i < StrategyEnum.COUNT; i++) {
+                for (let j:number = 0; j < strategies.length; j++) {
+                    if (StrategyEnum[i] === strategies[j]) {
+                        algorithm.push(i);
+                        j = strategies.length;
+                    }
+                }
+            }
+        }
+        let solver:Solver = new Solver(board, algorithm, notes);
         let hint:Hint = solver.nextStep();
         return <JSON><unknown>{
             "strategy": hint.getStrategy(),
