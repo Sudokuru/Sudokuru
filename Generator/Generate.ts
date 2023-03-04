@@ -90,10 +90,12 @@ async function main(): Promise<void> {
                     writer.write(`\"puzzle\":\"${line}\",`);
                     writer.write(`\"puzzleSolution\":\"${board.getSolutionString()}\",`);
                     let strategies:boolean[] = board.getStrategies();
+                    strategies[StrategyEnum.AMEND_NOTES] = false;
                     strategies[StrategyEnum.SIMPLIFY_NOTES] = false;
                     writer.write("\"strategies\":" + JSON.stringify(getStrategyStringArray(strategies)) + ",");
                     writer.write(("\"difficulty\":" + board.getDifficulty()).toString() + ",");
                     let drillStrategies:boolean[] = board.getDrills();
+                    drillStrategies[StrategyEnum.AMEND_NOTES] = false;
                     drillStrategies[StrategyEnum.SIMPLIFY_NOTES] = false;
                     writer.write("\"drillStrategies\":" + JSON.stringify(getStrategyStringArray(drillStrategies)));
                     writer.write("}");
