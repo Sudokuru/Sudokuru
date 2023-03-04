@@ -434,6 +434,26 @@ async function play():Promise<void> {
 }
 
 /**
+ * Runs nextStep every tenth second for one second or until puzzle is solved
+ */
+async function fastForward10():Promise<void> {
+    for (let step:number = 0; !(<HTMLButtonElement>document.getElementById("nextStep")).disabled && step < 10; step++) {
+        nextStep();
+        await new Promise(f => setTimeout(f, 100));
+    }
+}
+
+/**
+ * Runs previousStep every tenth second for one second or until puzzle is at beginning
+ */
+async function rewind10():Promise<void> {
+    for (let step:number = 0; !(<HTMLButtonElement>document.getElementById("previousStep")).disabled && step < 10; step++) {
+        previousStep();
+        await new Promise(f => setTimeout(f, 100));
+    }
+}
+
+/**
  * Loads puzzle chosen from puzzle bank selector element
  */
 function loadPuzzle():void {
