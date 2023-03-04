@@ -5,6 +5,31 @@ import { getBlankCellBoard, getError, getRowTuplet, removeNotesFromEach, removeT
 import { Group } from '../../Group';
 import { GroupEnum, StrategyEnum, SudokuEnum, TupleEnum } from '../../Sudoku';
 
+describe("create amend notes", () => {
+    it('should not be an amend notes', () => {
+        let board:Cell[][] = getBlankCellBoard();
+        let strategy:Strategy = new Strategy(board, board);
+        expect(strategy.setStrategyType(StrategyEnum.AMEND_NOTES)).toBeFalsy();
+    });
+    it('should be an amend notes', () => {
+        let board:Cell[][] = getBlankCellBoard();
+        // Remove all notes from second cell in board (will be used as amend notes cell)
+        board[0][1].removeNotes(new Group(true));
+        // Insert values into same group as amend notes cell
+        board[0][8].setValue("1");
+        board[1][0].setValue("2");
+        board[8][1].setValue("3");
+        // Insert value that doesn't share group
+        board[8][8].setValue("4");
+        let strategy:Strategy = new Strategy(board, board);
+        expect(strategy.setStrategyType(StrategyEnum.AMEND_NOTES)).toBeTruthy();
+        expect((strategy.getNotesToRemove())[0].getSize()).toBe(3);
+        expect((strategy.getNotesToRemove()[0].contains("1"))).toBeTruthy();
+        expect((strategy.getNotesToRemove()[0].contains("2"))).toBeTruthy();
+        expect((strategy.getNotesToRemove()[0].contains("3"))).toBeTruthy();
+    });
+});
+
 describe("create naked single", () => {
     it('should throw strategy not identified error', async () => {
         let cells:Cell[][] = new Array();
