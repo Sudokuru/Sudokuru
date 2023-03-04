@@ -334,7 +334,7 @@ export function getNextCell(cells: Cell[][], cell: Cell):Cell {
 }
 
 /**
- * Given a set of cells returns a group containing the union of the notes of all the cells in the set
+ * Given a set of cells returns a group containing the union of the notes of all the cells in the set (if a cell has no notes its considered to have all notes)
  * @param set - set of cells containing notes being unioned
  * @returns union of all notes in the set
  */
@@ -342,7 +342,12 @@ export function getUnionOfSetNotes(set: Cell[]):Group {
     // Stores notes contained by cells in naked set
     let setNotes:Group[] = new Array();
     for (let k:number = 0; k < set.length; k++) {
-        setNotes.push(set[k].getNotes());
+        if ((set[k].getNotes()).getSize() > 0) {
+            setNotes.push(set[k].getNotes());
+        }
+        else {
+            return new Group(true);
+        }
     }
     return Group.union(setNotes);
 }
