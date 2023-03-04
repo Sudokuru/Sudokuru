@@ -54,7 +54,10 @@ app.get('/solver/nextStep', (req, res) => {
     let board: string[][] = getBoardArray(req.query.board);
     let algorithm: StrategyEnum[] = new Array();
     for (let i: number = 1; i <= StrategyEnum.COUNT; i++) {
-        if (Number(req.query.nakedSingle) === i) {
+        if (Number(req.query.amendNotes) === i) {
+            algorithm.push(StrategyEnum.AMEND_NOTES);
+        }
+        else if (Number(req.query.nakedSingle) === i) {
             algorithm.push(StrategyEnum.NAKED_SINGLE);
         }
         else if (Number(req.query.hiddenSingle) === i) {
