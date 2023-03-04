@@ -138,7 +138,7 @@ describe("solve Boards", () => {
         expect(singleNakedSingle.getSolutionString()).toBe(TestBoards.SINGLE_NAKED_SINGLE_SOLUTION);
         let drills:boolean[] = singleNakedSingle.getDrills();
         for (let i:StrategyEnum = (StrategyEnum.INVALID + 1); i < StrategyEnum.COUNT; i++) {
-            if (i === StrategyEnum.NAKED_SINGLE || i === StrategyEnum.SIMPLIFY_NOTES) {
+            if (i === StrategyEnum.NAKED_SINGLE) {
                 expect(drills[i]).toBeTruthy();
             }
             else {
@@ -168,7 +168,7 @@ describe("solve Boards", () => {
         }
         let drills:boolean[] = onlyNakedSingles.getDrills();
         for (let i:StrategyEnum = (StrategyEnum.INVALID + 1); i < StrategyEnum.COUNT; i++) {
-            if (i === StrategyEnum.HIDDEN_SINGLE || i === StrategyEnum.NAKED_SEXTUPLET || i === StrategyEnum.SIMPLIFY_NOTES) {
+            if (i === StrategyEnum.NAKED_SINGLE) {
                 expect(drills[i]).toBeTruthy();
             }
             else {

@@ -142,7 +142,7 @@ export class Board{
             if (this.drills[i]) {
                 let prereqs:StrategyEnum[] = this.getPrereqs(i);
                 for (let j:number = 0; j < prereqs.length; j++) {
-                    if (this.drills[prereqs[i]]) {
+                    if (this.drills[prereqs[j]]) {
                         this.drills[i] = false;
                         j = prereqs.length;
                     }
