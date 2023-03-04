@@ -575,11 +575,15 @@ export class Strategy{
     private isAmendNotes():boolean {
         for (let r:number = 0; r < this.emptyCells.length; r++) {
             for (let c:number = 0; c < this.emptyCells[r].length; c++) {
-                if ((this.emptyCells[r][c].getNotes()).getSize() === 0) {
+                let cell:Cell = this.emptyCells[r][c];
+                let row:number = cell.getRow();
+                let column:number = cell.getColumn();
+                // Checks if correct number has been wrongly removed from a cell and if so removes all notes from it so it is amended in next if
+                if (this.solution !== undefined && !(cell.getNotes()).contains(this.solution[row][column])) {
+                    cell.removeNotes(new Group(true));
+                }
+                if ((cell.getNotes()).getSize() === 0) {
                     // Add back in all notes then remove the ones that can be simplified away
-                    let cell:Cell = this.emptyCells[r][c];
-                    let row:number = cell.getRow();
-                    let column:number = cell.getColumn();
                     let box: number = cell.getBox();
                     let boxRowStart: number = Cell.getBoxRowStart(box);
                     let boxColumnStart: number = Cell.getBoxColumnStart(box);

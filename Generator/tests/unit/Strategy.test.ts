@@ -26,6 +26,28 @@ describe("create amend notes", () => {
         expect((strategy.getNotesToRemove()[0].contains("2"))).toBeTruthy();
         expect((strategy.getNotesToRemove()[0].contains("3"))).toBeTruthy();
     });
+    it('should be a corrective amend notes', () => {
+        let board:Cell[][] = getBlankCellBoard();
+        // Create a solution that has the first cell as a 1
+        let solution:string[][] = new Array();
+        for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+            solution.push(new Array());
+            for (let column:number = 1; column <= SudokuEnum.ROW_LENGTH; column++) {
+                solution[row].push(column.toString());
+            }
+        }
+        // Add a value in the same group as the first cell so amend notes has something to remove
+        board[0][1].setValue("2");
+        // Remove 1 from the first cells notes even though it must be a one
+        board[0][0].resetNotes();
+        board[0][0].removeNote("1");
+        // Should now be an amend notes on the first cell such that the 1 is added back in and the 2 is removed
+        let strategy:Strategy = new Strategy(board, board, solution);
+        expect(strategy.setStrategyType(StrategyEnum.AMEND_NOTES)).toBeTruthy();
+        expect(strategy.getNotesToRemove()[0].getRow()).toBe(0);
+        expect(strategy.getNotesToRemove()[0].getColumn()).toBe(0);
+        expect(strategy.getNotesToRemove()[0].contains("2")).toBeTruthy();
+    });
 });
 
 describe("create naked single", () => {
