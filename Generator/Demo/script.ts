@@ -477,3 +477,24 @@ function loadPuzzle():void {
     sessionStorage.clear();
     nextStep();
 }
+
+/**
+ * Displays Puzzles.getHint() for current board state
+ */
+async function getHint():Promise<void> {
+    // Get input board from user input box and create request url
+    let url:string = "http://localhost:3001/getHint?board=";
+    let stepNumber:string = (Number(getStepNumber()) - 1).toString();
+    url += sessionStorage.getItem("board" + stepNumber);
+    url += "&boardString=";
+    url += getBoardString(JSON.parse(sessionStorage.getItem("board" + stepNumber)));
+    url += "&notes=";
+    url += sessionStorage.getItem("notes" + stepNumber);
+
+    // Call and await Solvers response
+    let res:Response = await fetch(url);
+    let data = await res.json();
+
+    //@ts-ignore
+    document.getElementById("puzzlesGetHint").value = JSON.stringify(data);
+}
