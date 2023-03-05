@@ -36,7 +36,7 @@
     *   [numWrongCellsPlayed](#numwrongcellsplayed)
     *   [numWrongCellsPlayedPerStrategy](#numwrongcellsplayedperstrategy)
 *   [hint Object Properties](#hint-object-properties)
-    *   [Example 1](#example-1)
+    *   [Example 1: Amend Notes](#example-1-amend-notes)
         *   [strategy](#strategy)
         *   [cause](#cause)
         *   [groups](#groups)
