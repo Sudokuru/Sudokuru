@@ -286,7 +286,7 @@ Info about the strategy being used by the hint.
 ```
 Describes the action that the hint is suggesting.
 ## Example 2: Simplify Notes
-![Example 2](https://sudokuru.s3.amazonaws.com/hintExample2-V1.png)
+![Example 2](https://sudokuru.s3.amazonaws.com/hintExample2-V2.png)
 ### strategy
 ```json
 "SIMPLIFY_NOTES"
