@@ -41,7 +41,7 @@ export class Cell{
         else {
             this.value = SudokuEnum.EMPTY_CELL;
         }
-        this.notes = new Group(true);
+        this.notes = new Group(false);
     }
 
     /**
@@ -163,6 +163,16 @@ export class Cell{
             if (notes.contains(note)) {
                 this.notes.remove(note);
             }
+        }
+        return;
+    }
+
+    /**
+     * Resets notes to contain all possible notes
+     */
+    public resetNotes():void {
+        for (let note:number = 0; note < SudokuEnum.ROW_LENGTH; note++) {
+            this.notes.insert(note);
         }
         return;
     }

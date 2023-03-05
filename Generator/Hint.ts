@@ -1,7 +1,17 @@
 import { Cell } from "./Cell";
 import { Group } from "./Group";
 import { Strategy } from "./Strategy";
-import { StrategyEnum } from "./Sudoku";
+import { StrategyEnum, SudokuEnum } from "./Sudoku";
+
+/**
+ * Contains hint information for amend notes strategy
+ * Contains what action hint is trying to get you to do
+ * @enum
+ */
+export enum AMEND_NOTES {
+    HINT_INFO = "Amend notes are when you reset a cell's notes to contain every nonconflicting number",
+    HINT_ACTION = "When you see an amend notes you can remove all notes then add all nonconflicting numbers to its notes"
+}
 
 /**
  * Contains hint information for naked single strategy
@@ -126,7 +136,11 @@ export class Hint{
      */
     constructor(strategy: Strategy) {
         this.strategy = strategy;
-        if (this.getStrategyType() === StrategyEnum.NAKED_SINGLE) {
+        if (this.getStrategyType() === StrategyEnum.AMEND_NOTES) {
+            this.info = AMEND_NOTES.HINT_INFO;
+            this.action = AMEND_NOTES.HINT_ACTION;
+        }
+        else if (this.getStrategyType() === StrategyEnum.NAKED_SINGLE) {
             this.info = NAKED_SINGLE.HINT_INFO;
             this.action = NAKED_SINGLE.HINT_ACTION;
         }
@@ -180,6 +194,14 @@ export class Hint{
     }
 
     /**
+     * Gets strategy string
+     * @returns strategy string
+     */
+    public getStrategy():string {
+        return StrategyEnum[this.strategy.getStrategyType()];
+    }
+
+    /**
      * Gets strategy difficulty
      * @returns strategy difficulty
      */
@@ -188,11 +210,34 @@ export class Hint{
     }
 
     /**
-     * Gets cells that "cause" strategy to be applicable
+     * Gets coordinates of cells that "cause" strategy to be applicable
      * @returns cells "causing" strategy
      */
-     public getCause():Cell[][] {
-        return this.strategy.getCause();
+     public getCause():number[][] {
+        let cause:number[][] = new Array();
+        let cells:Cell[] = this.strategy.getCause();
+        let addedCells:boolean[][] = new Array();
+        for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
+            addedCells.push(new Array(SudokuEnum.ROW_LENGTH));
+        }
+        for (let i:number = 0; i < cells.length; i++) {
+            let cell:number[] = new Array(2);
+            cell[0] = cells[i].getRow();
+            cell[1] = cells[i].getColumn();
+            if (!addedCells[cell[0]][cell[1]]) {
+                cause.push(cell);
+                addedCells[cell[0]][cell[1]] = true;
+            }
+        }
+        return cause;
+    }
+
+    /**
+     * Gets groups that cause strategy
+     * @returns strategy groups
+     */
+    public getGroups():number[][] {
+        return this.strategy.getGroups();
     }
 
     /**
@@ -204,11 +249,47 @@ export class Hint{
     }
 
     /**
+     * Gets row, column, and values for cells that have had values placed in them as result of strategy
+     * @returns 2d number array containing arrays of form [row, column, value] for placed values (1-indexed)
+     */
+    public getPlacements():number[][] {
+        let cells:Cell[] = this.strategy.getValuesToPlace();
+        let placements:number[][] = new Array();
+        for (let i:number = 0; i < cells.length; i++){
+            placements.push(new Array(3));
+            placements[i][0] = cells[i].getRow();
+            placements[i][1] = cells[i].getColumn();
+            placements[i][2] = Number(cells[i].getValue());
+        }
+        return placements;
+    }
+
+    /**
      * Gets notes that can be removed as result of strategy
      * @returns Groups containing notes to removed
      */
     public getEffectRemovals():Group[] {
         return this.strategy.getNotesToRemove();
+    }
+
+    /**
+     * Gets notes that can be removed from cells along with their row and columns
+     * @returns 2d number array containing arrays of form [row, column, noteA, noteB, ...] for removed notes (1-indexed)
+     */
+    public getRemovals():number[][] {
+        let groups:Group[] = this.strategy.getNotesToRemove();
+        let removals:number[][] = new Array();
+        for (let i:number = 0; i < groups.length; i++) {
+            removals.push(new Array(2));
+            removals[i][0] = groups[i].getRow();
+            removals[i][1] = groups[i].getColumn();
+            for (let j:number = 0; j < 9; j++) {
+                if (groups[i].contains(j)) {
+                    removals[i].push(j + 1);
+                }
+            }
+        }
+        return removals;
     }
 
     /**

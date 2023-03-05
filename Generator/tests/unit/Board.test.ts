@@ -122,21 +122,15 @@ describe("solve Boards", () => {
     beforeAll(() => {
         singleNakedSingle = new Board(TestBoards.SINGLE_NAKED_SINGLE);
         let nakedSingleAlgo:StrategyEnum[] = new Array();
-        nakedSingleAlgo.push(StrategyEnum.NAKED_SINGLE);
+        nakedSingleAlgo.push(StrategyEnum.AMEND_NOTES);
         nakedSingleAlgo.push(StrategyEnum.SIMPLIFY_NOTES);
-        for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
-            if (strategy !== StrategyEnum.NAKED_SINGLE && strategy !== StrategyEnum.SIMPLIFY_NOTES) {
-                nakedSingleAlgo.push(strategy);
-            }
-        }
+        nakedSingleAlgo.push(StrategyEnum.NAKED_SINGLE);
         onlyNakedSingles = new Board(TestBoards.ONLY_NAKED_SINGLES, nakedSingleAlgo);
         let algorithm:StrategyEnum[] = new Array();
+        algorithm.push(StrategyEnum.AMEND_NOTES);
+        algorithm.push(StrategyEnum.SIMPLIFY_NOTES);
         algorithm.push(StrategyEnum.NAKED_QUADRUPLET);
-        for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
-            if (strategy !== StrategyEnum.NAKED_QUADRUPLET) {
-                algorithm.push(strategy);
-            }
-        }
+        algorithm.push(StrategyEnum.NAKED_SINGLE);
         onlyNakedSinglesQuadruplets = new Board(TestBoards.ONLY_NAKED_SINGLES, algorithm);
     });
 
@@ -144,7 +138,7 @@ describe("solve Boards", () => {
         expect(singleNakedSingle.getSolutionString()).toBe(TestBoards.SINGLE_NAKED_SINGLE_SOLUTION);
         let drills:boolean[] = singleNakedSingle.getDrills();
         for (let i:StrategyEnum = (StrategyEnum.INVALID + 1); i < StrategyEnum.COUNT; i++) {
-            if (i === StrategyEnum.NAKED_SINGLE || i === StrategyEnum.SIMPLIFY_NOTES) {
+            if (i === StrategyEnum.NAKED_SINGLE) {
                 expect(drills[i]).toBeTruthy();
             }
             else {
@@ -152,7 +146,7 @@ describe("solve Boards", () => {
             }
         }
         for (let i:number = 0; i < StrategyEnum.COUNT; i++) {
-            if (i === StrategyEnum.NAKED_SINGLE || i === StrategyEnum.SIMPLIFY_NOTES) {
+            if (i === StrategyEnum.NAKED_SINGLE || i === StrategyEnum.AMEND_NOTES) {
                 expect(singleNakedSingle.getStrategies()[i]).toBeTruthy();
             }
             else {
@@ -165,7 +159,7 @@ describe("solve Boards", () => {
         expect(onlyNakedSingles.getSolutionString()).toBe(TestBoards.ONLY_NAKED_SINGLES_SOLUTION);
         let strategies:boolean[] = onlyNakedSingles.getStrategies();
         for (let i:number = 0; i < strategies.length; i++) {
-            if (i === StrategyEnum.NAKED_SINGLE || i === StrategyEnum.SIMPLIFY_NOTES) {
+            if (i === StrategyEnum.NAKED_SINGLE || i === StrategyEnum.SIMPLIFY_NOTES || i === StrategyEnum.AMEND_NOTES) {
                 expect(strategies[i]).toBeTruthy();
             }
             else {
@@ -174,7 +168,7 @@ describe("solve Boards", () => {
         }
         let drills:boolean[] = onlyNakedSingles.getDrills();
         for (let i:StrategyEnum = (StrategyEnum.INVALID + 1); i < StrategyEnum.COUNT; i++) {
-            if (i === StrategyEnum.HIDDEN_SINGLE || i === StrategyEnum.NAKED_SEXTUPLET || i === StrategyEnum.SIMPLIFY_NOTES) {
+            if (i === StrategyEnum.NAKED_SINGLE) {
                 expect(drills[i]).toBeTruthy();
             }
             else {
@@ -203,9 +197,10 @@ describe("solve Boards", () => {
 
     it('should solve row naked pair', () => {
         let algorithm:StrategyEnum[] = new Array();
+        algorithm.push(StrategyEnum.AMEND_NOTES);
         algorithm.push(StrategyEnum.NAKED_PAIR);
         for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
-            if (strategy !== StrategyEnum.NAKED_PAIR) {
+            if (strategy !== StrategyEnum.NAKED_PAIR && strategy !== StrategyEnum.AMEND_NOTES) {
                 algorithm.push(strategy);
             }
         }
@@ -248,9 +243,10 @@ describe("solve Boards", () => {
 
     it('should solve naked quintuplet', () => {
         let algorithm:StrategyEnum[] = new Array();
+        algorithm.push(StrategyEnum.AMEND_NOTES);
         algorithm.push(StrategyEnum.NAKED_QUINTUPLET);
         for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
-            if (strategy !== StrategyEnum.NAKED_QUINTUPLET) {
+            if (strategy !== StrategyEnum.NAKED_QUINTUPLET && strategy !== StrategyEnum.AMEND_NOTES) {
                 algorithm.push(strategy);
             }
         }
@@ -262,10 +258,11 @@ describe("solve Boards", () => {
 
     it('should solve naked sextuplet', () => {
         let algorithm:StrategyEnum[] = new Array();
+        algorithm.push(StrategyEnum.AMEND_NOTES);
         algorithm.push(StrategyEnum.SIMPLIFY_NOTES);
         algorithm.push(StrategyEnum.NAKED_SEXTUPLET);
         for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
-            if (strategy !== StrategyEnum.NAKED_SEXTUPLET && strategy !== StrategyEnum.SIMPLIFY_NOTES) {
+            if (strategy !== StrategyEnum.NAKED_SEXTUPLET && strategy !== StrategyEnum.SIMPLIFY_NOTES && strategy !== StrategyEnum.AMEND_NOTES) {
                 algorithm.push(strategy);
             }
         }
@@ -277,10 +274,11 @@ describe("solve Boards", () => {
 
     it('should solve naked septuplet', () => {
         let algorithm:StrategyEnum[] = new Array();
+        algorithm.push(StrategyEnum.AMEND_NOTES);
         algorithm.push(StrategyEnum.SIMPLIFY_NOTES);
         algorithm.push(StrategyEnum.NAKED_SEPTUPLET);
         for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
-            if (strategy !== StrategyEnum.NAKED_SEPTUPLET && strategy !== StrategyEnum.SIMPLIFY_NOTES) {
+            if (strategy !== StrategyEnum.NAKED_SEPTUPLET && strategy !== StrategyEnum.SIMPLIFY_NOTES && strategy !== StrategyEnum.AMEND_NOTES) {
                 algorithm.push(strategy);
             }
         }
@@ -292,10 +290,11 @@ describe("solve Boards", () => {
 
     it('should solve naked octuplet', () => {
         let algorithm:StrategyEnum[] = new Array();
+        algorithm.push(StrategyEnum.AMEND_NOTES);
         algorithm.push(StrategyEnum.SIMPLIFY_NOTES);
         algorithm.push(StrategyEnum.NAKED_OCTUPLET);
         for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
-            if (strategy !== StrategyEnum.NAKED_OCTUPLET && strategy !== StrategyEnum.SIMPLIFY_NOTES) {
+            if (strategy !== StrategyEnum.NAKED_OCTUPLET && strategy !== StrategyEnum.SIMPLIFY_NOTES && strategy !== StrategyEnum.AMEND_NOTES) {
                 algorithm.push(strategy);
             }
         }

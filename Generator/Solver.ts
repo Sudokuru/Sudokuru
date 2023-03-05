@@ -24,6 +24,8 @@ export class Solver{
     private allHints: Hint[];
     // Stores order in which the Solver uses strategies to solve the Sudoku board (modified for testing strategies)
     private algorithm: StrategyEnum[];
+    // Stores solution board if provided, AmendNotes Strategy can use it to correct players who remove "correct" notes
+    private solution: string[][];
 
     /**
      * Creates solver object
@@ -31,7 +33,7 @@ export class Solver{
      * @param algorithm - optional parameter specifying order to apply strategies
      * @param notes - optional parameter specifying initial state of the notes (one array with an array for each cell in order)
      */
-    constructor(board: string[][], algorithm: StrategyEnum[] = Strategy.getDefaultAlgorithm(), notes?: string[][]) {
+    constructor(board: string[][], algorithm: StrategyEnum[] = Strategy.getDefaultAlgorithm(), notes?: string[][], solution?: string[][]) {
         this.board = new Array();
         this.initializeCellArray(this.board, board.length);
         this.initializeBoard(board);
@@ -41,6 +43,9 @@ export class Solver{
         this.setEmptyCells();
         this.solved = false;
         this.algorithm = algorithm;
+        if (solution !== undefined) {
+            this.solution = solution;
+        }
     }
 
     /**
@@ -84,7 +89,7 @@ export class Solver{
     private setAllHints():void {
         this.allHints = new Array();
         for (let strategy: StrategyEnum = (StrategyEnum.INVALID + 1); strategy < StrategyEnum.COUNT; strategy++) {
-            let strategyObj:Strategy = new Strategy(this.board, this.emptyCells);
+            let strategyObj:Strategy = new Strategy(this.board, this.emptyCells, this.solution);
             if (strategyObj.setStrategyType(strategy)) {
                 this.allHints.push(new Hint(strategyObj));
             }
@@ -125,7 +130,7 @@ export class Solver{
      */
     private setHint(cells: Cell[][]):void {
         // Attempts to use strategies in order specified by algorithm
-        let strategy:Strategy = new Strategy(this.board, cells);
+        let strategy:Strategy = new Strategy(this.board, cells, this.solution);
         for (let i: number = 0; i < this.algorithm.length; i++) {
             if (strategy.setStrategyType(this.algorithm[i])) {
                 this.hint = new Hint(strategy);
@@ -141,7 +146,7 @@ export class Solver{
      */
     private applyHint():void {
         this.placeValues(this.hint.getEffectPlacements());
-        this.removeNotes(this.hint.getEffectRemovals());
+        this.removeNotes(this.hint.getEffectRemovals(), this.hint.getStrategyType() === StrategyEnum.AMEND_NOTES);
     }
 
     /**
@@ -202,6 +207,8 @@ export class Solver{
         let index:number;
         for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
             for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                // Add every possible note to cell
+                this.board[row][column].resetNotes();
                 // Remove every note except ones provided
                 let removedNotes:Group = new Group(true);
                 index = (row * SudokuEnum.COLUMN_LENGTH) + column;
@@ -269,12 +276,16 @@ export class Solver{
     /**
      * Removes given notes from board
      * @param notes - Groups containing notes to remove
+     * @param amend - If true than cell notes are amended by adding all possible notes to cell before removing any
      */
-    private removeNotes(notes: Group[]):void {
+    private removeNotes(notes: Group[], amend: boolean):void {
         let row:number, column:number;
         for (let i:number = 0; i < notes.length; i++) {
             row = notes[i].getRow();
             column = notes[i].getColumn();
+            if (amend) {
+                this.board[row][column].resetNotes();
+            }
             this.board[row][column].removeNotes(notes[i]);
         }
     }

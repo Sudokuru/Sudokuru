@@ -69,6 +69,10 @@ async function main(): Promise<void> {
         });
 
         let writer = fs.createWriteStream('puzzles.txt', {'flags': 'a'});
+        let version = (require('./package.json')).version;
+        writer.write("/*\n");
+        writer.write("This file was generated using version " + version + " of the Sudokuru CLI available at https://www.npmjs.com/package/sudokuru");
+        writer.write("\n*/\n");
 
         let index:number = 1;
         let batchIndex:number = 0;
@@ -90,10 +94,12 @@ async function main(): Promise<void> {
                     writer.write(`\"puzzle\":\"${line}\",`);
                     writer.write(`\"puzzleSolution\":\"${board.getSolutionString()}\",`);
                     let strategies:boolean[] = board.getStrategies();
+                    strategies[StrategyEnum.AMEND_NOTES] = false;
                     strategies[StrategyEnum.SIMPLIFY_NOTES] = false;
                     writer.write("\"strategies\":" + JSON.stringify(getStrategyStringArray(strategies)) + ",");
                     writer.write(("\"difficulty\":" + board.getDifficulty()).toString() + ",");
                     let drillStrategies:boolean[] = board.getDrills();
+                    drillStrategies[StrategyEnum.AMEND_NOTES] = false;
                     drillStrategies[StrategyEnum.SIMPLIFY_NOTES] = false;
                     writer.write("\"drillStrategies\":" + JSON.stringify(getStrategyStringArray(drillStrategies)));
                     writer.write("}");

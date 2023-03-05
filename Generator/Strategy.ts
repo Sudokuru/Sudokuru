@@ -8,6 +8,7 @@ import { Group } from "./Group";
  * @enum
  */
 enum DifficultyLowerBounds {
+    AMEND_NOTES = 10,
     NAKED_SINGLE = 10,
     HIDDEN_SINGLE = 20,
     NAKED_PAIR = 40,
@@ -25,6 +26,7 @@ enum DifficultyLowerBounds {
  * @enum
  */
 enum DifficultyUpperBounds {
+    AMEND_NOTES = 10,
     NAKED_SINGLE = 10,
     HIDDEN_SINGLE = 40,
     NAKED_PAIR = 60,
@@ -68,8 +70,12 @@ export const MAX_DIFFICULTY:number = getMaxDifficulty();
 export class Strategy{
     // Contains representation of board being solved
     private board: Cell[][];
-    // Contains cells that "cause" strategy to be applicable
-    private cells: Cell[][];
+    // Contains cells that "cause" strategy to be applicable (may have same cell multiple times)
+    private cause: Cell[];
+    // 2d array containing arrays with number representing GroupEnum and index or groups that cause strategy e.g. [[0, 1]] for 2nd row
+    private groups: number[][];
+    // Cells that don't have a value placed in them yet
+    private emptyCells: Cell[][];
     // Contains values that can be placed because of this Strategy
     private values: Cell[];
     // Contains notes that can be removed because of this Strategy
@@ -80,18 +86,25 @@ export class Strategy{
     private identified: boolean;
     // Stores number representing its difficulty rating (calculated to be in between the strategies upper/lower bounds)
     private difficulty: number;
+    // Stores solution board if provided, AmendNotes Strategy can use it to correct players who remove "correct" notes
+    private solution: string[][];
 
     /**
      * Cell object using cells the strategy acts on
      * @constructor
      * @param cells - cells
      */
-    constructor(board: Cell[][], cells: Cell[][]) {
+    constructor(board: Cell[][], emptyCells: Cell[][], solution?: string[][]) {
         this.board = board;
-        this.cells = cells;
+        this.emptyCells = emptyCells;
         this.identified = false;
         this.values = new Array();
         this.notes = new Array();
+        this.cause = new Array();
+        this.groups = new Array();
+        if (solution !== undefined) {
+            this.solution = solution;
+        }
     }
 
     /**
@@ -99,39 +112,51 @@ export class Strategy{
      * @returns true if strategy is strategyType
      */
     public setStrategyType(strategyType: StrategyEnum):boolean {
-        if (strategyType === StrategyEnum.NAKED_SINGLE) {
-            return this.isNakedSet(TupleEnum.SINGLE);
+        if (strategyType === StrategyEnum.AMEND_NOTES && this.isAmendNotes()) {
+            this.strategyType = StrategyEnum.AMEND_NOTES;
+            return true;
         }
-        else if (strategyType === StrategyEnum.NAKED_PAIR) {
-            return this.isNakedSet(TupleEnum.PAIR);
+        else if (strategyType === StrategyEnum.NAKED_SINGLE && this.isNakedSet(TupleEnum.SINGLE)) {
+            this.strategyType = StrategyEnum.NAKED_SINGLE;
+            return true;
         }
-        else if (strategyType === StrategyEnum.NAKED_TRIPLET) {
-            return this.isNakedSet(TupleEnum.TRIPLET);
+        else if (strategyType === StrategyEnum.NAKED_PAIR && this.isNakedSet(TupleEnum.PAIR)) {
+            this.strategyType = StrategyEnum.NAKED_PAIR;
+            return true;
         }
-        else if (strategyType === StrategyEnum.NAKED_QUADRUPLET) {
-            return this.isNakedSet(TupleEnum.QUADRUPLET);
+        else if (strategyType === StrategyEnum.NAKED_TRIPLET && this.isNakedSet(TupleEnum.TRIPLET)) {
+            this.strategyType = StrategyEnum.NAKED_TRIPLET;
+            return true;
         }
-        else if (strategyType === StrategyEnum.NAKED_QUINTUPLET) {
-            return this.isNakedSet(TupleEnum.QUINTUPLET);
+        else if (strategyType === StrategyEnum.NAKED_QUADRUPLET && this.isNakedSet(TupleEnum.QUADRUPLET)) {
+            this.strategyType = StrategyEnum.NAKED_QUADRUPLET;
+            return true;
         }
-        else if (strategyType === StrategyEnum.NAKED_SEXTUPLET) {
-            return this.isNakedSet(TupleEnum.SEXTUPLET);
+        else if (strategyType === StrategyEnum.NAKED_QUINTUPLET && this.isNakedSet(TupleEnum.QUINTUPLET)) {
+            this.strategyType = StrategyEnum.NAKED_QUINTUPLET;
+            return true;
         }
-        else if (strategyType === StrategyEnum.NAKED_SEPTUPLET) {
-            return this.isNakedSet(TupleEnum.SEPTUPLET);
+        else if (strategyType === StrategyEnum.NAKED_SEXTUPLET && this.isNakedSet(TupleEnum.SEXTUPLET)) {
+            this.strategyType = StrategyEnum.NAKED_SEXTUPLET;
+            return true;
         }
-        else if (strategyType === StrategyEnum.NAKED_OCTUPLET) {
-            return this.isNakedSet(TupleEnum.OCTUPLET);
+        else if (strategyType === StrategyEnum.NAKED_SEPTUPLET && this.isNakedSet(TupleEnum.SEPTUPLET)) {
+            this.strategyType = StrategyEnum.NAKED_SEPTUPLET;
+            return true;
         }
-        else if (strategyType === StrategyEnum.HIDDEN_SINGLE) {
-            return this.isHiddenSet(TupleEnum.SINGLE);
+        else if (strategyType === StrategyEnum.NAKED_OCTUPLET && this.isNakedSet(TupleEnum.OCTUPLET)) {
+            this.strategyType = StrategyEnum.NAKED_OCTUPLET
+            return true;
         }
-        else if (strategyType === StrategyEnum.SIMPLIFY_NOTES) {
-            return this.isSimplifyNotes();
+        else if (strategyType === StrategyEnum.HIDDEN_SINGLE && this.isHiddenSet(TupleEnum.SINGLE)) {
+            this.strategyType = StrategyEnum.HIDDEN_SINGLE;
+            return true;
         }
-        else {
-            return false;
+        else if (strategyType === StrategyEnum.SIMPLIFY_NOTES && this.isSimplifyNotes()) {
+            this.strategyType = StrategyEnum.SIMPLIFY_NOTES;
+            return true;
         }
+        return false;
     }
 
     /**
@@ -140,9 +165,20 @@ export class Strategy{
      * @throws {@link CustomError}
      * Thrown if strategy hasn't been identified
      */
-    public getCause():Cell[][] {
+    public getCause():Cell[] {
         this.verifyIdentified();
-        return this.cells;
+        return this.cause;
+    }
+
+    /**
+     * Gets groups that "cause" strategy to be applicable
+     * @returns 2d array containing arrays with number representing GroupEnum and index or groups that cause strategy e.g. [[0, 1]] for 2nd row
+     * @throws {@link CustomError}
+     * Thrown if strategy hasn't been identified
+     */
+    public getGroups():number[][] {
+        this.verifyIdentified();
+        return this.groups;
     }
 
     /**
@@ -277,7 +313,7 @@ export class Strategy{
         for (let group:GroupEnum = 0; group < GroupEnum.COUNT; group++) {
             for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
                 // Contains cells in the same row, column, or box
-                let cells: Cell[] = getCellsInGroup(this.cells, group, i);
+                let cells: Cell[] = getCellsInGroup(this.emptyCells, group, i);
                 // Tries to build a naked set of size tuple for each possible size tuple subset of candidates
                 // Is naked set iff union of all cells has notes size equal to tuple
                 for (let j:number = 0; j < subsets.length; j++) {
@@ -302,7 +338,7 @@ export class Strategy{
                                     }
                                 }
                                 this.values.push(new Cell(row, column, single));
-                                this.strategyType = StrategyEnum.NAKED_SINGLE;
+                                this.cause.push(new Cell(row, column));
                                 this.identified = true;
                                 this.difficulty = DifficultyLowerBounds.NAKED_SINGLE;
                                 return true;
@@ -319,8 +355,14 @@ export class Strategy{
                             }
                             // If notes can be removed as result of naked set then it is a valid strategy
                             if (this.notes.length > 0) {
-                                this.strategyType = StrategyEnum[StrategyEnum[tuple]];
                                 this.identified = true;
+                                for (let k:number = 0; k < nakedSet.length; k++) {
+                                    this.cause.push(new Cell(nakedSet[k].getRow(), nakedSet[k].getColumn()));
+                                }
+                                let groups:number[] = new Array(2);
+                                groups[0] = group;
+                                groups[1] = i;
+                                this.groups.push(groups);
                                 // Calculate difficulty based on how far apart the naked set cells are
                                 let distanceRatio:number;
                                 if (group === GroupEnum.ROW) {
@@ -363,13 +405,19 @@ export class Strategy{
                                     }
                                     if (boxes.getSize() === 1) {
                                         // Since the naked set also all share the same box add to notes any notes you can remove from cells in the shared box
-                                        let boxCells: Cell[] = getCellsInGroup(this.cells, GroupEnum.BOX, box);
+                                        let boxCells: Cell[] = getCellsInGroup(this.emptyCells, GroupEnum.BOX, box);
                                         for (let k:number = 0; k < boxCells.length; k++) {
                                             if (boxCells[k].getRow() !== usedRow && boxCells[k].getColumn() !== usedColumn) {
                                                 if ((boxCells[k].getNotes().intersection(nakedSetCandidates)).getSize() > 0) {
                                                     let notes:Group = new Group(false, boxCells[k].getRow(), boxCells[k].getColumn());
                                                     notes.insert(nakedSetCandidates);
                                                     this.notes.push(notes);
+                                                    if (this.groups.length === 1) {
+                                                        let boxGroup:number[] = new Array(2);
+                                                        boxGroup[0] = GroupEnum.BOX;
+                                                        boxGroup[1] = boxCells[k].getBox();
+                                                        this.groups.push(boxGroup);
+                                                    }
                                                 }
                                             }
                                         }
@@ -397,7 +445,7 @@ export class Strategy{
         for (let group:GroupEnum = 0; group < GroupEnum.COUNT; group++) {
             for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
                 // Contains cells in the same row, column, or box
-                let cells: Cell[] = getCellsInGroup(this.cells, group, i);
+                let cells: Cell[] = getCellsInGroup(this.emptyCells, group, i);
                 // Tries to build a hidden set of size tuple for each possible size tuple subset of candidates
                 // Is hidden single iff the number of candidates that don't exist outside of the hidden tuple
                 // is equal to the tuple (e.g. hidden pair if there are two numbers only in the pair in the row)
@@ -442,6 +490,13 @@ export class Strategy{
                             }
                             // If notes were found you can remove as part of the hidden single then strategy identified
                             if (this.identified) {
+                                let groups:number[] = new Array(2);
+                                groups[0] = group;
+                                groups[1] = i;
+                                this.groups.push(groups);
+                                for (let k:number = 0; k < notHiddenSet.length; k++) {
+                                    this.cause.push(new Cell(notHiddenSet[k].getRow(), notHiddenSet[k].getColumn()));
+                                }
                                 // Calculate ratio of number of notes to possible number (more notes to obscure hidden set = higher difficulty)
                                 let noteCount:number = 0;
                                 for (let k:number = 0; k < tuple; k++) {
@@ -449,7 +504,6 @@ export class Strategy{
                                 }
                                 let noteRatio:number = noteCount / (SudokuEnum.ROW_LENGTH * SudokuEnum.ROW_LENGTH);
                                 if (tuple === TupleEnum.SINGLE) {
-                                    this.strategyType = StrategyEnum.HIDDEN_SINGLE;
                                     this.difficulty = DifficultyLowerBounds.HIDDEN_SINGLE;
                                     this.difficulty += Math.ceil(noteRatio * (DifficultyUpperBounds.HIDDEN_SINGLE - DifficultyLowerBounds.HIDDEN_SINGLE));
                                 }
@@ -469,8 +523,8 @@ export class Strategy{
      */
     private isSimplifyNotes():boolean {
         for (let i:number = 0; i < SudokuEnum.COLUMN_LENGTH; i++) {
-            for (let j:number = 0; j < this.cells[i].length; j++) {
-                let cell: Cell = this.cells[i][j];
+            for (let j:number = 0; j < this.emptyCells[i].length; j++) {
+                let cell: Cell = this.emptyCells[i][j];
                 let row: number = cell.getRow();
                 let column: number = cell.getColumn();
                 let box: number = cell.getBox();
@@ -478,34 +532,114 @@ export class Strategy{
                 let boxColumnStart: number = Cell.getBoxColumnStart(box);
                 let notes: Group = new Group(false);
                 // Add every placed value from given row
-                for (let k:number = 0; k < SudokuEnum.ROW_LENGTH; k++) {
-                    if (!this.board[row][k].isEmpty()) {
+                for (let k:number = 0; notes.getSize() === 0 && k < SudokuEnum.ROW_LENGTH; k++) {
+                    if (!this.board[row][k].isEmpty() && (cell.getNotes()).contains(this.board[row][k].getValue())) {
                         notes.insert(this.board[row][k].getValue());
+                        this.cause.push(this.board[row][k]);
+                        this.groups.push([GroupEnum.ROW, row]);
                     }
                 }
                 // Add every placed value from given column
-                for (let k:number = 0; k < SudokuEnum.COLUMN_LENGTH; k++) {
-                    if (!this.board[k][column].isEmpty()) {
+                for (let k:number = 0; notes.getSize() === 0 && k < SudokuEnum.COLUMN_LENGTH; k++) {
+                    if (!this.board[k][column].isEmpty() && (cell.getNotes()).contains(this.board[k][column].getValue())) {
                         notes.insert(this.board[k][column].getValue());
+                        this.cause.push(this.board[k][column]);
+                        this.groups.push([GroupEnum.COLUMN, column]);
                     }
                 }
                 // Add every placed value from given box
                 for (let r:number = boxRowStart; r < (boxRowStart + SudokuEnum.BOX_LENGTH); r++) {
-                    for (let c:number = boxColumnStart; c < (boxColumnStart + SudokuEnum.BOX_LENGTH); c++) {
-                        if (!this.board[r][c].isEmpty()) {
+                    for (let c:number = boxColumnStart; notes.getSize() === 0 && c < (boxColumnStart + SudokuEnum.BOX_LENGTH); c++) {
+                        if (!this.board[r][c].isEmpty() && (cell.getNotes()).contains(this.board[r][c].getValue())) {
                             notes.insert(this.board[r][c].getValue());
+                            this.cause.push(this.board[r][c]);
+                            this.groups.push([GroupEnum.BOX, this.board[r][c].getBox()]);
                         }
                     }
                 }
                 // If there are any notes to remove then strategy is identified
-                if ((notes.intersection(cell.getNotes())).getSize() > 0) {
+                if (notes.getSize() > 0) {
                     let notesToRemove: Group = new Group(false, row, column);
                     notesToRemove.insert(notes);
                     this.notes.push(notesToRemove);
                     this.identified = true;
-                    this.strategyType = StrategyEnum.SIMPLIFY_NOTES;
                     this.difficulty = DifficultyLowerBounds.SIMPLIFY_NOTES;
                     return this.identified;
+                }
+            }
+        }
+        return this.identified;
+    }
+
+    /**
+     * Checks if strategy is amend notes and if so adds notes to remove from a cell (every note not removed should be added)
+     * @returns true if strategy is amend notes
+     */
+    private isAmendNotes():boolean {
+        for (let r:number = 0; r < this.emptyCells.length; r++) {
+            for (let c:number = 0; c < this.emptyCells[r].length; c++) {
+                let cell:Cell = this.emptyCells[r][c];
+                let row:number = cell.getRow();
+                let column:number = cell.getColumn();
+                // Checks if correct number has been wrongly removed from a cell and if so removes all notes from it so it is amended in next if
+                if (this.solution !== undefined && !(cell.getNotes()).contains(this.solution[row][column])) {
+                    cell.removeNotes(new Group(true));
+                }
+                if ((cell.getNotes()).getSize() === 0) {
+                    // Add back in all notes then remove the ones that can be simplified away
+                    let box: number = cell.getBox();
+                    let boxRowStart: number = Cell.getBoxRowStart(box);
+                    let boxColumnStart: number = Cell.getBoxColumnStart(box);
+                    let notesToRemove: Group = new Group(false, row, column);
+                    let usedGroup:boolean = false;
+                    // Add every placed value from given row
+                    for (let k:number = 0; k < SudokuEnum.ROW_LENGTH; k++) {
+                        if (!this.board[row][k].isEmpty()) {
+                            notesToRemove.insert(this.board[row][k].getValue());
+                            this.cause.push(this.board[row][k]);
+                            if (!usedGroup) {
+                                this.groups.push([GroupEnum.ROW, row]);
+                                usedGroup = true;
+                            }
+                        }
+                    }
+                    usedGroup = false;
+                    // Add every placed value from given column
+                    for (let k:number = 0; k < SudokuEnum.COLUMN_LENGTH; k++) {
+                        if (!this.board[k][column].isEmpty()) {
+                            if (!notesToRemove.contains(this.board[k][column].getValue())) {
+                                notesToRemove.insert(this.board[k][column].getValue());
+                                this.cause.push(this.board[k][column]);
+                                if (!usedGroup) {
+                                    this.groups.push([GroupEnum.COLUMN, column]);
+                                    usedGroup = true;
+                                }
+                            }
+                        }
+                    }
+                    usedGroup = false;
+                    // Add every placed value from given box
+                    for (let r:number = boxRowStart; r < (boxRowStart + SudokuEnum.BOX_LENGTH); r++) {
+                        for (let c:number = boxColumnStart; c < (boxColumnStart + SudokuEnum.BOX_LENGTH); c++) {
+                            if (!this.board[r][c].isEmpty()) {
+                                if (!notesToRemove.contains(this.board[r][c].getValue())) {
+                                    notesToRemove.insert(this.board[r][c].getValue());
+                                    this.cause.push(this.board[r][c]);
+                                    if (!usedGroup) {
+                                        this.groups.push([GroupEnum.BOX, this.board[r][c].getBox()]);
+                                        usedGroup = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    // If there are notes to remove then return them
+                    if (notesToRemove.getSize() > 0) {
+                        this.notes.push(notesToRemove);
+                        this.identified = true;
+                        this.difficulty = DifficultyLowerBounds.AMEND_NOTES;
+                        return this.identified;
+                    }
                 }
             }
         }

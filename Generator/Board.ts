@@ -120,36 +120,35 @@ export class Board{
 
     /**
      * Adds a StrategyEnum to drills for strategies that can be used as the first step in solving this board
-     * If a strategy is added than its prereqs are excluded in order to ensure good examples of strategies are used
+     * If a strategies prereqs are included then it is excluded in order to ensure good examples of strategies are used
      * For example, if there is a naked pair made up of two naked singles only the naked single will be used as a drill
+     * Amend and simplify notes are excluded as they don't make very helpful drills, better to leave them as lessons
      */
     private setDrills():void {
         // Run through all of the simplify notes so drills that require notes to be removed can be added
-        let algorithm:StrategyEnum[] = new Array();
-        algorithm.push(StrategyEnum.SIMPLIFY_NOTES);
-        for (let i:number = (StrategyEnum.INVALID + 1); i < StrategyEnum.COUNT; i++) {
-            if (i !== StrategyEnum.SIMPLIFY_NOTES) {
-                algorithm.push(i);
-            }
-        }
-        let solver:Solver = new Solver(this.board, algorithm);
+        let solver:Solver = new Solver(this.board);
         let hints:Hint[] = solver.getAllHints();
-        while ((solver.nextStep()).getStrategyType() === StrategyEnum.SIMPLIFY_NOTES) {
+        // Excludes amend and simplify strategies from hints as they are highest priority
+        while ((solver.nextStep()).getStrategyType() <= StrategyEnum.SIMPLIFY_NOTES) {
             hints = solver.getAllHints();
         }
+        // Adds drills
         this.drills = new Array(StrategyEnum.COUNT).fill(false);
         for (let i:number = 0; i < hints.length; i++) {
             this.drills[hints[i].getStrategyType()] = true;
         }
+        // Removes strategies whose prereqs are included
         for (let i:number = 0; i < this.drills.length; i++) {
             if (this.drills[i]) {
                 let prereqs:StrategyEnum[] = this.getPrereqs(i);
                 for (let j:number = 0; j < prereqs.length; j++) {
-                    this.drills[prereqs[j]] = false;
+                    if (this.drills[prereqs[j]]) {
+                        this.drills[i] = false;
+                        j = prereqs.length;
+                    }
                 }
             }
         }
-        this.drills[StrategyEnum.SIMPLIFY_NOTES] = true;
         return;
     }
 

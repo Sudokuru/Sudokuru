@@ -4,6 +4,8 @@ import { StrategyEnum, getBoardArray } from "../Sudoku";
 import { Hint } from "../Hint";
 import * as fs from 'fs';
 import * as readline from 'readline';
+import { Puzzles } from "../../lib/Puzzles";
+import { Board } from "../Board";
 
 const expressApp = require('express');
 const app = expressApp();
@@ -54,7 +56,10 @@ app.get('/solver/nextStep', (req, res) => {
     let board: string[][] = getBoardArray(req.query.board);
     let algorithm: StrategyEnum[] = new Array();
     for (let i: number = 1; i <= StrategyEnum.COUNT; i++) {
-        if (Number(req.query.nakedSingle) === i) {
+        if (Number(req.query.amendNotes) === i) {
+            algorithm.push(StrategyEnum.AMEND_NOTES);
+        }
+        else if (Number(req.query.nakedSingle) === i) {
             algorithm.push(StrategyEnum.NAKED_SINGLE);
         }
         else if (Number(req.query.hiddenSingle) === i) {
@@ -95,11 +100,16 @@ app.get('/solver/nextStep', (req, res) => {
     let solver: Solver = new Solver(board, algorithm, notes);
     let hint: Hint = solver.nextStep();
     if (hint !== null) {
-        res.send({ board: solver.getBoard(), notes: solver.getNotes(), info: hint.getInfo(), action: hint.getAction() });
+        res.send({ board: solver.getBoard(), notes: solver.getNotes(), info: hint.getInfo(), action: hint.getAction(), cause: hint.getCause(), groups: hint.getGroups() });
     }
     else {
-        res.send({ board: solver.getBoard(), notes: null, info: null, action: null });
+        res.send({ board: solver.getBoard(), notes: null, info: null, action: null, cause: null, groups: null });
     }
+});
+
+app.get('/getHint', (req, res) => {
+    let solution:string[][] = (new Board(req.query.boardString)).getSolution();
+    res.send(Puzzles.getHint(JSON.parse(req.query.board), JSON.parse(req.query.notes), undefined, solution));
 });
 
 app.get('/api/v1/user/newGame', (req, res) => {

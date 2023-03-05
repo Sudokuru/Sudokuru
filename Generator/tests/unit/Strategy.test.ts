@@ -3,7 +3,52 @@ import { Cell } from '../../Cell';
 import { CustomError, CustomErrorEnum } from '../../CustomError';
 import { getBlankCellBoard, getError, getRowTuplet, removeNotesFromEach, removeTupleNotes } from '../testResources';
 import { Group } from '../../Group';
-import { StrategyEnum, SudokuEnum, TupleEnum } from '../../Sudoku';
+import { GroupEnum, StrategyEnum, SudokuEnum, TupleEnum } from '../../Sudoku';
+
+describe("create amend notes", () => {
+    it('should not be an amend notes', () => {
+        let board:Cell[][] = getBlankCellBoard();
+        let strategy:Strategy = new Strategy(board, board);
+        expect(strategy.setStrategyType(StrategyEnum.AMEND_NOTES)).toBeFalsy();
+    });
+    it('should be an amend notes', () => {
+        let board:Cell[][] = getBlankCellBoard();
+        // Insert values into same group as amend notes cell (which will be row 0 and column 0)
+        board[0][8].setValue("1");
+        board[1][1].setValue("2");
+        board[8][0].setValue("3");
+        // Insert value that doesn't share group
+        board[8][8].setValue("4");
+        let strategy:Strategy = new Strategy(board, board);
+        expect(strategy.setStrategyType(StrategyEnum.AMEND_NOTES)).toBeTruthy();
+        expect((strategy.getNotesToRemove())[0].getSize()).toBe(3);
+        expect((strategy.getNotesToRemove()[0].contains("1"))).toBeTruthy();
+        expect((strategy.getNotesToRemove()[0].contains("2"))).toBeTruthy();
+        expect((strategy.getNotesToRemove()[0].contains("3"))).toBeTruthy();
+    });
+    it('should be a corrective amend notes', () => {
+        let board:Cell[][] = getBlankCellBoard();
+        // Create a solution that has the first cell as a 1
+        let solution:string[][] = new Array();
+        for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+            solution.push(new Array());
+            for (let column:number = 1; column <= SudokuEnum.ROW_LENGTH; column++) {
+                solution[row].push(column.toString());
+            }
+        }
+        // Add a value in the same group as the first cell so amend notes has something to remove
+        board[0][1].setValue("2");
+        // Remove 1 from the first cells notes even though it must be a one
+        board[0][0].resetNotes();
+        board[0][0].removeNote("1");
+        // Should now be an amend notes on the first cell such that the 1 is added back in and the 2 is removed
+        let strategy:Strategy = new Strategy(board, board, solution);
+        expect(strategy.setStrategyType(StrategyEnum.AMEND_NOTES)).toBeTruthy();
+        expect(strategy.getNotesToRemove()[0].getRow()).toBe(0);
+        expect(strategy.getNotesToRemove()[0].getColumn()).toBe(0);
+        expect(strategy.getNotesToRemove()[0].contains("2")).toBeTruthy();
+    });
+});
 
 describe("create naked single", () => {
     it('should throw strategy not identified error', async () => {
@@ -20,12 +65,22 @@ describe("create naked single", () => {
     });
     it('should be a naked single', () => {
         let board:Cell[][] = getBlankCellBoard();
+        for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+            for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                board[row][column].resetNotes();
+            }
+        }
         for (let i:number = 1; i < SudokuEnum.COLUMN_LENGTH; i++) {
             (board[0][0]).removeNote(i.toString());
         }
         let strategy:Strategy = new Strategy(board, board);
         expect(strategy.setStrategyType(StrategyEnum.NAKED_SINGLE)).toBeTruthy();
         expect(strategy.getValuesToPlace()[0].getValue()).toBe("9");
+        let cause:Cell[] = strategy.getCause();
+        expect(cause.length).toBe(1);
+        expect(cause[0].getRow()).toBe(0);
+        expect(cause[0].getColumn()).toBe(0);
+        expect((strategy.getGroups()).length).toBe(0);
     });
 });
 
@@ -46,12 +101,23 @@ describe("create hidden single", () => {
     });
     it ('should be a hidden single', () => {
         let board:Cell[][] = getBlankCellBoard();
+        for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+            for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                board[row][column].resetNotes();
+            }
+        }
         for (let i:number = 0; i < 8; i++) {
             board[0][i].removeNote("9");
         }
         let strategy:Strategy = new Strategy(board, board);
         expect(strategy.setStrategyType(StrategyEnum.HIDDEN_SINGLE)).toBeTruthy();
         expect((strategy.getNotesToRemove())[0].getSize()).toBe(SudokuEnum.ROW_LENGTH - 1);
+        let cause:Cell[] = strategy.getCause();
+        expect(cause.length).toBe(8);
+        let groups:number[][] = strategy.getGroups();
+        expect(groups.length).toBe(1);
+        expect(groups[0][0]).toBe(GroupEnum.ROW);
+        expect(groups[0][1]).toBe(0);
     });
 });
 
@@ -76,6 +142,11 @@ describe("create naked pair", () => {
     it("should be a naked pair", () => {
         // Create board
         let board:Cell[][] = getBlankCellBoard();
+        for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+            for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                board[row][column].resetNotes();
+            }
+        }
 
         // Create pair
         let cells:Cell[][] = getRowTuplet(TupleEnum.PAIR, board);
@@ -89,6 +160,16 @@ describe("create naked pair", () => {
         let strategy:Strategy = new Strategy(board, board);
         expect(strategy.setStrategyType(StrategyEnum.NAKED_PAIR)).toBeTruthy();
         expect(strategy.getNotesToRemove().length).toBe(13);
+        let cause:Cell[] = strategy.getCause();
+        expect(cause.length).toBe(2);
+        expect(cause[0].getRow()+cause[1].getRow()+cause[0].getColumn()).toBe(0);
+        expect(cause[1].getColumn()).toBe(1);
+        let groups:number[][] = strategy.getGroups();
+        expect(groups.length).toBe(2);
+        expect(groups[0][0]).toBe(GroupEnum.ROW);
+        expect(groups[0][1]).toBe(0);
+        expect(groups[1][0]).toBe(GroupEnum.BOX);
+        expect(groups[1][1]).toBe(0);
     });
 });
 
@@ -96,6 +177,11 @@ describe("create naked triplet", () => {
     it("should be a naked triplet", () => {
         // Create board
         let board:Cell[][] = getBlankCellBoard();
+        for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+            for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                board[row][column].resetNotes();
+            }
+        }
 
         // Create triplet
         let cells:Cell[][] = getRowTuplet(TupleEnum.TRIPLET, board);
@@ -117,6 +203,11 @@ describe("create naked quadruplet through octuplet", () => {
         for (let tuple:TupleEnum = TupleEnum.QUADRUPLET; tuple <= TupleEnum.OCTUPLET; tuple++) {
             // Create board
             let board:Cell[][] = getBlankCellBoard();
+            for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+                for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                    board[row][column].resetNotes();
+                }
+            }
 
             // Create tuplet
             let cells:Cell[][] = getRowTuplet(tuple, board);
