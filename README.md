@@ -44,7 +44,7 @@
         *   [removals](#removals)
         *   [info](#info)
         *   [action](#action)
-    *   [Example 2](#example-2)
+    *   [Example 2: Simplify Notes](#example-2-simplify-notes)
         *   [strategy](#strategy-1)
         *   [cause](#cause-1)
         *   [groups](#groups-1)
@@ -283,6 +283,43 @@ Info about the strategy being used by the hint.
 ### action
 ```json
 "When you see an amend notes you can remove all notes then add all nonconflicting numbers to its notes"
+```
+Describes the action that the hint is suggesting.
+## Example 2: Simplify Notes
+![Example 2](https://sudokuru.s3.amazonaws.com/hintExample2-V1.png)
+### strategy
+```json
+"SIMPLIFY_NOTES"
+```
+Name of strategy used by the hint. Simplify notes works by using a cell with a placed value (the blue highlighted 8) to remove a note of the same value from a cell sharing a group (the red 8 note in a cell in the same column).
+### cause
+```json
+[[7,0]]
+```
+Coordinates of cells that "cause" strategy to be applicable. This is a 2d array so cause[0] is [7, 0] referring to the cell with the 8 highlighted in blue in the next to last row (rows and columns are zero-indexed). cause[0][0] refers to it being in the 8th row and cause[0][1] refers to it being in the 1st column.
+### groups
+```json
+[]
+```
+Group type and index of groups that "cause strategy". This does not apply to this strategy.
+### placements
+```json
+[]
+```
+Row, column, and values for cells that have had values placed in them as result of strategy. This does not apply to this strategy.
+### removals
+```json
+[[1,0,8]]
+```
+Notes that can be removed from cells along with their row and columns. The first two values represent the row and column respectively so removals[0][0] and removals[0][1] refer to the 1st cell in the 2nd row. The rest of the numbers in the subarray are the notes to be removed which is just 8.
+### info
+```json
+"You can simplify notes using values already placed in cells at the start of the game"
+```
+Info about the strategy being used by the hint.
+### action
+```json
+"When there is a value already placed in a cell than it can be removed from all other cells notes in its row, column, and box"
 ```
 Describes the action that the hint is suggesting.
 # Developer Tools
