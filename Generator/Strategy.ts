@@ -536,6 +536,7 @@ export class Strategy{
                     if (!this.board[row][k].isEmpty() && (cell.getNotes()).contains(this.board[row][k].getValue())) {
                         notes.insert(this.board[row][k].getValue());
                         this.cause.push(this.board[row][k]);
+                        this.groups.push([GroupEnum.ROW, row]);
                     }
                 }
                 // Add every placed value from given column
@@ -543,6 +544,7 @@ export class Strategy{
                     if (!this.board[k][column].isEmpty() && (cell.getNotes()).contains(this.board[k][column].getValue())) {
                         notes.insert(this.board[k][column].getValue());
                         this.cause.push(this.board[k][column]);
+                        this.groups.push([GroupEnum.COLUMN, column]);
                     }
                 }
                 // Add every placed value from given box
@@ -551,6 +553,7 @@ export class Strategy{
                         if (!this.board[r][c].isEmpty() && (cell.getNotes()).contains(this.board[r][c].getValue())) {
                             notes.insert(this.board[r][c].getValue());
                             this.cause.push(this.board[r][c]);
+                            this.groups.push([GroupEnum.BOX, this.board[r][c].getBox()]);
                         }
                     }
                 }
