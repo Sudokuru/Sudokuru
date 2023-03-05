@@ -248,18 +248,18 @@ Number of times the user has entered the wrong number into a cell
 Number of times user has entered the wrong number when given strategies were the next available hints (approximates how much practice user needs per strategy)
 
 # hint Object Properties
-## Example 1
-![Example 1](https://sudokuru.s3.amazonaws.com/hintBoard1.png)
+## Example 1: Amend Notes
+![Example 1](https://sudokuru.s3.amazonaws.com/hintExample1-V1.png)
 ### strategy
 ```json
-"SIMPLIFY_NOTES"
+"AMEND_NOTES"
 ```
-Name of strategy used by the hint. In example 1 it is simplify notes strategy meaning it is using already placed numbers to remove notes from a cell that they share a row, column, or box with.
+Name of strategy used by the hint. Amend notes works removing all notes from a cell then adding back in just the ones that don't conflict with placed values in the same row, column, and box as the cell. In the picture the cell with the red border was previously empty and amend notes was able to add in the 2 and 8 only as the others conflicted with the highlighted cells.
 ### cause
 ```json
-[ [ 0, 0 ], [ 0, 8 ], [ 3, 2 ], [ 4, 2 ] ]
+[[7,4],[7,5],[7,6],[7,8],[4,2],[8,0],[8,1]]
 ```
-Coordinates of cells that "cause" strategy to be applicable. This is a 2d array so cause[0] is [0, 0] referring to the cell with the 7 highlighted in blue in the upper left corner of the example. cause[0][0] refers to it being in the 0th row and cause[0][1] refers to it being in the 0th column. Similarly the last cell cause[3] is the other highlighted seven right below the highlighted 5.
+Coordinates of cells that "cause" strategy to be applicable. This is a 2d array so cause[0] is [7, 4] referring to the cell with the 9 highlighted in blue in the next to last row (rows and columns are zero-indexed). cause[0][0] refers to it being in the 8th row and cause[0][1] refers to it being in the 5th column. Similarly the last cell cause[6] is the highlighted 3 that it shares a box with.
 ### groups
 ```json
 []
@@ -272,17 +272,17 @@ Group type and index of groups that "cause strategy". This does not apply to thi
 Row, column, and values for cells that have had values placed in them as result of strategy. This does not apply to this strategy.
 ### removals
 ```json
-[ [ 0, 2, 5, 6, 7 ] ]
+[[7,2,1,3,4,5,6,7,9]]
 ```
-Notes that can be removed from cells along with their row and columns. The first two values represent the row and column respectively so removals[0][0] and removals[0][1] refer to the third cell in the first row (0-indexed so removals[0][0]=0=1st and removals[0][1]=2=third). The rest of the numbers in the subarray are the notes to be removed which are 5, 6, and 7 which are shown highlighted in red in the example 1 image.
+Notes that can be removed from cells along with their row and columns. The first two values represent the row and column respectively so removals[0][0] and removals[0][1] refer to the 3rd cell in the 8th row. The rest of the numbers in the subarray are the notes to be removed which is every number but 2 and 8. Amend notes is unique in that every note that shouldn't be removed should be added back in (2 and 8 in this example). In this example the cell had no notes in it before amend notes.
 ### info
 ```json
-"You can simplify notes using values already placed in cells at the start of the game"
+"Amend notes are when you reset a cell's notes to contain every nonconflicting number"
 ```
 Info about the strategy being used by the hint.
 ### action
 ```json
-"When there is a value already placed in a cell than it can be removed from all other cells notes in its row, column, and box"
+"When you see an amend notes you can remove all notes then add all nonconflicting numbers to its notes"
 ```
 Describes the action that the hint is suggesting.
 # Developer Tools
