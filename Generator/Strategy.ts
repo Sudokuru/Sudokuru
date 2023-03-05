@@ -598,16 +598,20 @@ export class Strategy{
                     // Add every placed value from given column
                     for (let k:number = 0; k < SudokuEnum.COLUMN_LENGTH; k++) {
                         if (!this.board[k][column].isEmpty()) {
-                            notesToRemove.insert(this.board[k][column].getValue());
-                            this.cause.push(this.board[k][column]);
+                            if (!notesToRemove.contains(this.board[k][column].getValue())) {
+                                notesToRemove.insert(this.board[k][column].getValue());
+                                this.cause.push(this.board[k][column]);
+                            }
                         }
                     }
                     // Add every placed value from given box
                     for (let r:number = boxRowStart; r < (boxRowStart + SudokuEnum.BOX_LENGTH); r++) {
                         for (let c:number = boxColumnStart; c < (boxColumnStart + SudokuEnum.BOX_LENGTH); c++) {
                             if (!this.board[r][c].isEmpty()) {
-                                notesToRemove.insert(this.board[r][c].getValue());
-                                this.cause.push(this.board[r][c]);
+                                if (!notesToRemove.contains(this.board[r][c].getValue())) {
+                                    notesToRemove.insert(this.board[r][c].getValue());
+                                    this.cause.push(this.board[r][c]);
+                                }
                             }
                         }
                     }
