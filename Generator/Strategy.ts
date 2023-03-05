@@ -593,6 +593,7 @@ export class Strategy{
                         if (!this.board[row][k].isEmpty()) {
                             notesToRemove.insert(this.board[row][k].getValue());
                             this.cause.push(this.board[row][k]);
+                            this.groups.push([GroupEnum.ROW, row]);
                         }
                     }
                     // Add every placed value from given column
@@ -601,6 +602,7 @@ export class Strategy{
                             if (!notesToRemove.contains(this.board[k][column].getValue())) {
                                 notesToRemove.insert(this.board[k][column].getValue());
                                 this.cause.push(this.board[k][column]);
+                                this.groups.push([GroupEnum.COLUMN, column]);
                             }
                         }
                     }
@@ -611,6 +613,7 @@ export class Strategy{
                                 if (!notesToRemove.contains(this.board[r][c].getValue())) {
                                     notesToRemove.insert(this.board[r][c].getValue());
                                     this.cause.push(this.board[r][c]);
+                                    this.groups.push([GroupEnum.BOX, this.board[r][c].getBox()]);
                                 }
                             }
                         }
