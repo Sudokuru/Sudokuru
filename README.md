@@ -52,7 +52,15 @@
         *   [removals](#removals-1)
         *   [info](#info-1)
         *   [action](#action-1)
-*   [Developer Tools](#developer-tools-1)
+    *   [Example 3: Naked Single](#example-3-naked-single)
+        *   [strategy](#strategy-2)
+        *   [cause](#cause-2)
+        *   [groups](#groups-2)
+        *   [placements](#placements-2)
+        *   [removals](#removals-2)
+        *   [info](#info-2)
+        *   [action](#action-2)
+*   [Developer Tools](#developer-tools-2)
 
 # Installation
 
@@ -301,7 +309,7 @@ Coordinates of cells that "cause" strategy to be applicable. This is a 2d array 
 ```json
 [[1,0]]
 ```
-Group type and index of groups that "cause strategy". This does not apply to this strategy. This is a 2d array so group[0] is [1, 0] referring to the first column with green borders. group[0][0] refers to the group type (0 = row, 1 = column, 2 = box) and group[0][1] refers to it being the 1st row.
+Group type and index of groups that "cause strategy". This is a 2d array so group[0] is [1, 0] referring to the first column with green borders. group[0][0] refers to the group type (0 = row, 1 = column, 2 = box) and group[0][1] refers to it being the 1st row.
 ### placements
 ```json
 []
@@ -320,6 +328,43 @@ Info about the strategy being used by the hint.
 ### action
 ```json
 "When there is a value already placed in a cell than it can be removed from all other cells notes in its row, column, and box"
+```
+Describes the action that the hint is suggesting.
+## Example 3: Naked Single
+![Example 3](https://sudokuru.s3.amazonaws.com/hintExample3-V1.png)
+### strategy
+```json
+"NAKED_SINGLE"
+```
+Name of strategy used by the hint. Naked single works by placing a value in a cell where it is the only remaining possibility. In the example the green highlighted 2 is the last remaining possibility in the blue highlighted cell.
+### cause
+```json
+[[7,2]]
+```
+Coordinates of cells that "cause" strategy to be applicable. This is a 2d array so cause[0] is [7, 2] referring to the 3rd cell in the next to last row (rows and columns are zero-indexed). cause[0][0] refers to it being in the 8th row and cause[0][1] refers to it being in the 3rd column.
+### groups
+```json
+[]
+```
+Group type and index of groups that "cause strategy". This does not apply to this strategy.
+### placements
+```json
+[[7,2,2]]
+```
+Row, column, and values for cells that have had values placed in them as result of strategy. This is a 2d array so placements[0] refers to the first value that needs to be placed. The first value in the subarray refers to the cells row, the next value is the column, and the final value is the value to be placed ("2" in this case).
+### removals
+```json
+[]
+```
+Notes that can be removed from cells along with their row and columns. This does not apply to this strategy.
+### info
+```json
+"Naked singles are when you only have one number left as a possibility in a cell"
+```
+Info about the strategy being used by the hint.
+### action
+```json
+"When you see a naked single you can fill it in with its last remaining possibility"
 ```
 Describes the action that the hint is suggesting.
 # Developer Tools
