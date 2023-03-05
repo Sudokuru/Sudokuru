@@ -75,6 +75,14 @@
         *   [strategy](#strategy-8)
         *   [strategy](#strategy-9)
         *   [strategy](#strategy-10)
+    *   [Example 6: Hidden Single](#example-6-hidden-single)
+        *   [strategy](#strategy-11)
+        *   [cause](#cause-4)
+        *   [groups](#groups-4)
+        *   [placements](#placements-4)
+        *   [removals](#removals-4)
+        *   [info](#info-4)
+        *   [action](#action-4)
 *   [Developer Tools](#developer-tools)
 
 # Installation
@@ -445,6 +453,43 @@ Describes the action that the hint is suggesting.
 "NAKED_OCTUPLET"
 ```
 Name of strategy used by the hint. Naked triplets through octuplets are scaled up versions of naked pairs except instead of using two cells and notes they share 3-8. Note: while cells in say a naked quadruplet must share the same 4 notes the 4 cells don't have to individually have all 4 notes they just can't have any other notes.
+## Example 6: Hidden Single
+![Example 6](https://sudokuru.s3.amazonaws.com/hintExample5-V1.png)
+### strategy
+```json
+"HIDDEN_SINGLE"
+```
+Name of strategy used by the hint. Hidden single works by having only one cell in a group that still has a number as a possibility in which case all other notes can be removed from it. This is shown by the 8 naked single which in the only 8 note in the box with the green border. Therefore, the other notes highlighted in red can be removed.
+### cause
+```json
+[[3,8],[4,8],[5,6],[5,8]]
+```
+Coordinates of cells that "cause" strategy to be applicable. This is a 2d array so cause[0] is [3, 8] referring to the 9th cell in the 4th row (rows and columns are zero-indexed). cause[0][0] refers to it being in the 4th row and cause[0][1] refers to it being in the 9th column.
+### groups
+```json
+[[2,5]]
+```
+Group type and index of groups that "cause strategy". This is a 2d array so group[0] is [2, 5] referring to the 6th box with green borders (boxes are zero-indexed starting with the top left and going left to right top to bottom). group[0][0] refers to the group type (0 = row, 1 = column, 2 = box) and group[0][1] refers to it being the 6th box.
+### placements
+```json
+[]
+```
+Row, column, and values for cells that have had values placed in them as result of strategy. This does not apply to this strategy.
+### removals
+```json
+[[3,6,1,2,3,9]]
+```
+Notes that can be removed from cells along with their row and columns. The first two values in each subarray represent the row and column respectively so removals[0][0] and removals[0][1] refer to the 7th cell in the 4th row. The rest of the numbers in the subarray are the notes to be removed which is 1, 2, 3, and 9 (although only 1 and 3 are present and are highlighted in red).
+### info
+```json
+"Hidden singles are when you only have one cell left still containing a specific value in a row, column, or box"
+```
+Info about the strategy being used by the hint.
+### action
+```json
+"When you see a hidden single you can fill it in with its unique possibility"
+```
+Describes the action that the hint is suggesting.
 # Developer Tools
 ```shell
 # Clone Repository
