@@ -249,7 +249,7 @@ Number of times user has entered the wrong number when given strategies were the
 
 # hint Object Properties
 ## Example 1: Amend Notes
-![Example 1](https://sudokuru.s3.amazonaws.com/hintExample1-V1.png)
+![Example 1](https://sudokuru.s3.amazonaws.com/hintExample1-V2.png)
 ### strategy
 ```json
 "AMEND_NOTES"
