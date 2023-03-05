@@ -68,7 +68,14 @@
         *   [removals](#removals-3)
         *   [info](#info-3)
         *   [action](#action-3)
-*   [Developer Tools](#developer-tools-3)
+    *   [Example 5: Other Naked Sets](#example-5-other-naked-sets)
+        *   [strategy](#strategy-5)
+        *   [strategy](#strategy-6)
+        *   [strategy](#strategy-7)
+        *   [strategy](#strategy-8)
+        *   [strategy](#strategy-9)
+        *   [strategy](#strategy-10)
+*   [Developer Tools](#developer-tools)
 
 # Installation
 
@@ -412,6 +419,32 @@ Info about the strategy being used by the hint.
 "When you see a naked pair you can remove them from the notes of every other cell in the row, column, or box that they share"
 ```
 Describes the action that the hint is suggesting.
+## Example 5: Other Naked Sets
+### strategy
+```json
+"NAKED_TRIPLET"
+```
+### strategy
+```json
+"NAKED_QUADRUPLET"
+```
+### strategy
+```json
+"NAKED_QUINTUPLET"
+```
+### strategy
+```json
+"NAKED_SEXTUPLET"
+```
+### strategy
+```json
+"NAKED_SEPTUPLET"
+```
+### strategy
+```json
+"NAKED_OCTUPLET"
+```
+Name of strategy used by the hint. Naked triplets through octuplets are scaled up versions of naked pairs except instead of using two cells and notes they share 3-8. Note: while cells in say a naked quadruplet must share the same 4 notes the 4 cells don't have to individually have all 4 notes they just can't have any other notes.
 # Developer Tools
 ```shell
 # Clone Repository
