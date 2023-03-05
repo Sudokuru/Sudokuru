@@ -262,9 +262,9 @@ Name of strategy used by the hint. Amend notes works removing all notes from a c
 Coordinates of cells that "cause" strategy to be applicable. This is a 2d array so cause[0] is [7, 4] referring to the cell with the 9 highlighted in blue in the next to last row (rows and columns are zero-indexed). cause[0][0] refers to it being in the 8th row and cause[0][1] refers to it being in the 5th column. Similarly the last cell cause[6] is the highlighted 3 that it shares a box with.
 ### groups
 ```json
-[]
+[[0,7],[1,2],[2,6]]
 ```
-Group type and index of groups that "cause strategy". This does not apply to this strategy.
+Group type and index of groups that "cause strategy". This is a 2d array so group[0] is [0, 7] referring to the next to next to last row with green borders. group[0][0] refers to the group type (0 = row, 1 = column, 2 = box) and group[0][1] refers to it being the 8th row. Similarly the last group group[2] is the bottom left box whose cells also have green borders.
 ### placements
 ```json
 []
