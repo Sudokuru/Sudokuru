@@ -60,7 +60,15 @@
         *   [removals](#removals-2)
         *   [info](#info-2)
         *   [action](#action-2)
-*   [Developer Tools](#developer-tools-2)
+    *   [Example 4: Naked Pair](#example-4-naked-pair)
+        *   [strategy](#strategy-3)
+        *   [cause](#cause-3)
+        *   [groups](#groups-3)
+        *   [placements](#placements-3)
+        *   [removals](#removals-3)
+        *   [info](#info-3)
+        *   [action](#action-3)
+*   [Developer Tools](#developer-tools-3)
 
 # Installation
 
@@ -309,7 +317,7 @@ Coordinates of cells that "cause" strategy to be applicable. This is a 2d array 
 ```json
 [[1,0]]
 ```
-Group type and index of groups that "cause strategy". This is a 2d array so group[0] is [1, 0] referring to the first column with green borders. group[0][0] refers to the group type (0 = row, 1 = column, 2 = box) and group[0][1] refers to it being the 1st row.
+Group type and index of groups that "cause strategy". This is a 2d array so group[0] is [1, 0] referring to the first column with green borders. group[0][0] refers to the group type (0 = row, 1 = column, 2 = box) and group[0][1] refers to it being the 1st column.
 ### placements
 ```json
 []
@@ -365,6 +373,43 @@ Info about the strategy being used by the hint.
 ### action
 ```json
 "When you see a naked single you can fill it in with its last remaining possibility"
+```
+Describes the action that the hint is suggesting.
+## Example 4: Naked Pair
+![Example 4](https://sudokuru.s3.amazonaws.com/hintExample4-V1.png)
+### strategy
+```json
+"NAKED_PAIR"
+```
+Name of strategy used by the hint. Naked pair works using two cells that share a group and only have the same two notes left as possibilities to eliminate those notes from other cells in the group. In the example 7 and 8 are the last remaining possibilities in the blue highlighted cells which are used to remove all the other 7 and 8s in the column shown highlighted in red.
+### cause
+```json
+[[1,8],[6,8]]
+```
+Coordinates of cells that "cause" strategy to be applicable. This is a 2d array so cause[0] is [1, 8] referring to the 9th cell in the second row (rows and columns are zero-indexed). cause[0][0] refers to it being in the 2nd row and cause[0][1] refers to it being in the 9th column.
+### groups
+```json
+[[1,8]]
+```
+Group type and index of groups that "cause strategy". This is a 2d array so group[0] is [1, 8] referring to the last column with green borders. group[0][0] refers to the group type (0 = row, 1 = column, 2 = box) and group[0][1] refers to it being the 9th column.
+### placements
+```json
+[]
+```
+Row, column, and values for cells that have had values placed in them as result of strategy. This does not apply to this strategy.
+### removals
+```json
+[[3,8,7,8],[4,8,7,8]]
+```
+Notes that can be removed from cells along with their row and columns. The first two values in each subarray represent the row and column respectively so removals[0][0] and removals[0][1] refer to the 9th cell in the 4th row. The rest of the numbers in the subarray are the notes to be removed which is 7 and 8 (although only 8 is there to begin with and is highlighted in red).
+### info
+```json
+"Naked pairs are when you only have the same two numbers left as a possibility in two cells in the same row, column, or box"
+```
+Info about the strategy being used by the hint.
+### action
+```json
+"When you see a naked pair you can remove them from the notes of every other cell in the row, column, or box that they share"
 ```
 Describes the action that the hint is suggesting.
 # Developer Tools
