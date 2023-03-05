@@ -69,6 +69,10 @@ async function main(): Promise<void> {
         });
 
         let writer = fs.createWriteStream('puzzles.txt', {'flags': 'a'});
+        let version = (require('./package.json')).version;
+        writer.write("/*\n");
+        writer.write("This file was generated using version " + version + " of the Sudokuru CLI available at https://www.npmjs.com/package/sudokuru");
+        writer.write("\n*/\n");
 
         let index:number = 1;
         let batchIndex:number = 0;

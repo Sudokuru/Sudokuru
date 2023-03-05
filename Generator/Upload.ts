@@ -9,16 +9,25 @@ async function main(): Promise<void> {
             crlfDelay: Infinity
         });
 
+        let inComment:boolean = false;
         rl.on('line', async (line) => {
-            let res:Response = await fetch(endpoint, {
-                method: 'POST',
-                body: line,
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            let data = await res.json();
-            console.log(data);
+            if (line[0] === '/' && line[1] === '*') {
+                inComment = true;
+            }
+            else if (!inComment) {
+                let res:Response = await fetch(endpoint, {
+                    method: 'POST',
+                    body: line,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                let data = await res.json();
+                console.log(data);
+            }
+            else if (line[0] === '*' && line[1] === '/') {
+                inComment = false;
+            }
         });
     } catch(err) {
         console.log(err);
