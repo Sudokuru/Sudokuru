@@ -588,24 +588,33 @@ export class Strategy{
                     let boxRowStart: number = Cell.getBoxRowStart(box);
                     let boxColumnStart: number = Cell.getBoxColumnStart(box);
                     let notesToRemove: Group = new Group(false, row, column);
+                    let usedGroup:boolean = false;
                     // Add every placed value from given row
                     for (let k:number = 0; k < SudokuEnum.ROW_LENGTH; k++) {
                         if (!this.board[row][k].isEmpty()) {
                             notesToRemove.insert(this.board[row][k].getValue());
                             this.cause.push(this.board[row][k]);
-                            this.groups.push([GroupEnum.ROW, row]);
+                            if (!usedGroup) {
+                                this.groups.push([GroupEnum.ROW, row]);
+                                usedGroup = true;
+                            }
                         }
                     }
+                    usedGroup = false;
                     // Add every placed value from given column
                     for (let k:number = 0; k < SudokuEnum.COLUMN_LENGTH; k++) {
                         if (!this.board[k][column].isEmpty()) {
                             if (!notesToRemove.contains(this.board[k][column].getValue())) {
                                 notesToRemove.insert(this.board[k][column].getValue());
                                 this.cause.push(this.board[k][column]);
-                                this.groups.push([GroupEnum.COLUMN, column]);
+                                if (!usedGroup) {
+                                    this.groups.push([GroupEnum.COLUMN, column]);
+                                    usedGroup = true;
+                                }
                             }
                         }
                     }
+                    usedGroup = false;
                     // Add every placed value from given box
                     for (let r:number = boxRowStart; r < (boxRowStart + SudokuEnum.BOX_LENGTH); r++) {
                         for (let c:number = boxColumnStart; c < (boxColumnStart + SudokuEnum.BOX_LENGTH); c++) {
@@ -613,7 +622,10 @@ export class Strategy{
                                 if (!notesToRemove.contains(this.board[r][c].getValue())) {
                                     notesToRemove.insert(this.board[r][c].getValue());
                                     this.cause.push(this.board[r][c]);
-                                    this.groups.push([GroupEnum.BOX, this.board[r][c].getBox()]);
+                                    if (!usedGroup) {
+                                        this.groups.push([GroupEnum.BOX, this.board[r][c].getBox()]);
+                                        usedGroup = true;
+                                    }
                                 }
                             }
                         }
