@@ -119,7 +119,8 @@ npm run generate --filepath=inputPuzzles.txt --start=2 --end=4 --batchsize=2
 
 # Upload puzzles:
 # endpoint: For each line in puzzles.txt uploads JSON array as POST request to http://localhost:3000/api/v1/puzzles/
-npm run upload --endpoint=http://localhost:3000/api/v1/puzzles/
+# token: Authentication token
+npm run upload --endpoint=http://localhost:3000/api/v1/puzzles/ --token=PDQ88b2060B
 ```
 
 ## JavaScript

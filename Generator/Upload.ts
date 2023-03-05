@@ -1,6 +1,7 @@
 const fs = require('fs');
 const readline = require('readline');
 const endpoint = process.argv[2];
+const token = process.argv[3];
 
 async function main(): Promise<void> {
     try {
@@ -19,7 +20,8 @@ async function main(): Promise<void> {
                     method: 'POST',
                     body: line,
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
                     }
                 });
                 let data = await res.json();
