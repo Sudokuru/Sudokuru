@@ -299,9 +299,9 @@ Name of strategy used by the hint. Simplify notes works by using a cell with a p
 Coordinates of cells that "cause" strategy to be applicable. This is a 2d array so cause[0] is [7, 0] referring to the cell with the 8 highlighted in blue in the next to last row (rows and columns are zero-indexed). cause[0][0] refers to it being in the 8th row and cause[0][1] refers to it being in the 1st column.
 ### groups
 ```json
-[]
+[[1,0]]
 ```
-Group type and index of groups that "cause strategy". This does not apply to this strategy.
+Group type and index of groups that "cause strategy". This does not apply to this strategy. This is a 2d array so group[0] is [1, 0] referring to the first column with green borders. group[0][0] refers to the group type (0 = row, 1 = column, 2 = box) and group[0][1] refers to it being the 1st row.
 ### placements
 ```json
 []
