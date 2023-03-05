@@ -497,4 +497,7 @@ async function getHint():Promise<void> {
 
     //@ts-ignore
     document.getElementById("puzzlesGetHint").value = JSON.stringify(data);
+
+    // Go to the next step which reflects the hint given
+    nextStep();
 }
