@@ -19,6 +19,8 @@
             *   [Puzzles.startGame()](#puzzlesstartgame)
             *   [Puzzles.getGame()](#puzzlesgetgame)
             *   [Puzzles.getHint()](#puzzlesgethint)
+        *   [Drills Class](#drills-class)
+            *   [Setup](#setup-1)
 *   [Puzzle Object Properties](#puzzle-object-properties)
     *   [puzzle](#puzzle)
     *   [puzzleSolution](#puzzlesolution)
@@ -184,6 +186,13 @@ const Puzzles = sudokuru.Puzzles;
     - strategies: optional parameter specifying which strategies are allowed to be used in the hint
     - solution: optional parameter specifying boards solution so that amend notes hints can correct users mistakes
 4. Return Value: [hint](#hint-object-properties)
+
+### Drills Class
+
+#### Setup
+```shell
+const Drills = sudokuru.Drills;
+```
 
 # Puzzle Object Properties
 
