@@ -200,6 +200,27 @@ export class Solver{
     }
 
     /**
+     * Returns current notes stored by the Solver
+     * @returns string of notes for each cell going left to right and top to bottom, "0"=note not in cell, "1"=note in cell
+     */
+    public getNotesString():string {
+        let notes:string = "";
+        for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+            for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                for (let note:number = 0; note < SudokuEnum.ROW_LENGTH; note++) {
+                    if ((this.board[row][column].getNotes()).contains(note)) {
+                        notes += "1";
+                    }
+                    else {
+                        notes += "0";
+                    }
+                }
+            }
+        }
+        return notes;
+    }
+
+    /**
      * Sets boards notes to given notes
      * @param notes - array of notes arrays in order (one array with an array for each cell)
      */

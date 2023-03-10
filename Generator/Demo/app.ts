@@ -140,6 +140,10 @@ app.get('/api/v1/user/activeGames', (req, res) => {
     });
 });
 
+app.get('/api/v1/user/drill', (req, res) => {
+    res.send({ puzzle: "003070040006002301089000000000107080517000006000400000271009005095000000000020000" });
+});
+
 app.use(errorHandler);
 
 app.listen(port, () => console.log(`Listening on: ${port}`));

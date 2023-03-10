@@ -21,6 +21,7 @@
             *   [Puzzles.getHint()](#puzzlesgethint)
         *   [Drills Class](#drills-class)
             *   [Setup](#setup-1)
+            *   [Drills.getDrillGame()](#drillsgetdrillgame)
 *   [Puzzle Object Properties](#puzzle-object-properties)
     *   [puzzle](#puzzle)
     *   [puzzleSolution](#puzzlesolution)
@@ -122,7 +123,7 @@ npm run generate --filepath=inputPuzzles.txt --start=2 --end=4 --batchsize=2
 # Upload puzzles:
 # endpoint: For each line in puzzles.txt uploads JSON array as POST request to http://localhost:3000/api/v1/puzzles/
 # token: Authentication token
-npm run upload --endpoint=http://localhost:3000/api/v1/puzzles/ --token=PDQ88b2060B
+npm run upload --endpoint=http://localhost:3000/api/v1/puzzles/ --token=PDQ88b2060B01189998819991197253
 ```
 
 ## JavaScript
@@ -189,6 +190,25 @@ const Puzzles = sudokuru.Puzzles;
 
 ### Drills Class
 
+#### Drills.getDrillGame()
+1. Description: Returns board and notes state for a drill of the given strategy type if there is one
+2. Syntax
+    ```shell
+    Drills.getDrillGame(url, strategy, token).then(drill => {
+        if (drill !== null) {
+            console.log(drill);
+        }
+        else {
+            console.log("No drill was found for the given strategy type");
+        }
+    });
+    ```
+3. Parameters:
+    - url: Server url e.g. "http://localhost:3001/"
+    - strategy: string representing strategy type, can be any from Drills.getDrillStrategies()
+    - token: string authentication token
+4. Return Value: JSON object containing puzzleCurrentState and puzzleCurrentNotesState as described in [activeGame](#activegame-object-properties) if drill found, otherwise null
+
 #### Setup
 ```shell
 const Drills = sudokuru.Drills;
@@ -226,7 +246,7 @@ Array of strings representing strategies that can be used on the puzzle in its i
 Stores data for game that user is playing or has paused.
 ## userID
 ```json
-"P7JS989SM4DS058"
+"P7JS989SM4DS058KAZ2Y5CNK80Q3"
 ```
 Unique string representing the user (who this game belongs to)
 ## puzzle
@@ -527,6 +547,7 @@ npm run start
 # Demo Server provides the following fakes for Puzzle Class (use http://localhost:3001/ as url)
 # Puzzles.startGame(): Will overwrite text file with activeGame constant and return it to user
 # Puzzles.getGame(): Will return the activeGame from text file or return 404 error if the text file doesn't exist
+# Drills.getDrillGame(): Will return a puzzle string constant
 ```
 Official TypeDoc Documentation is Hosted Here: https://sudokuru.github.io/SudokuPuzzleGenerator/
 
