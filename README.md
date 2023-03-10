@@ -190,11 +190,11 @@ const Puzzles = sudokuru.Puzzles;
 
 ### Drills Class
 
-#### Drills.getDrillGame()
+#### Drills.getGame()
 1. Description: Returns board and notes state for a drill of the given strategy type if there is one
 2. Syntax
     ```shell
-    Drills.getDrillGame(url, strategy, token).then(drill => {
+    Drills.getGame(url, strategy, token).then(drill => {
         if (drill !== null) {
             console.log(drill);
         }
@@ -547,7 +547,7 @@ npm run start
 # Demo Server provides the following fakes for Puzzle Class (use http://localhost:3001/ as url)
 # Puzzles.startGame(): Will overwrite text file with activeGame constant and return it to user
 # Puzzles.getGame(): Will return the activeGame from text file or return 404 error if the text file doesn't exist
-# Drills.getDrillGame(): Will return a puzzle string constant
+# Drills.getGame(): Will return a puzzle string constant
 ```
 Official TypeDoc Documentation is Hosted Here: https://sudokuru.github.io/SudokuPuzzleGenerator/
 

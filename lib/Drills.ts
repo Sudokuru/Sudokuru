@@ -11,7 +11,7 @@ interface getDrillGameResponse {
  * Functions to handle requesting drills
  */
 export class Drills{
-    public static async getDrillGame(url: string, strategy: string, token: string):Promise<JSON> {
+    public static async getGame(url: string, strategy: string, token: string):Promise<JSON> {
         const res:Response = await fetch(url + GET_DRILL_GAME + strategy, {
             method: 'GET',
             headers: {
