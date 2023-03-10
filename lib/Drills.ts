@@ -11,6 +11,11 @@ interface getDrillGameResponse {
  * Functions to handle requesting drills
  */
 export class Drills{
+    public static strategies:string[][] = [
+        ["NAKED_SET", "NAKED_SINGLE", "NAKED_PAIR", "NAKED_TRIPLET", "NAKED_QUADRUPLET", "NAKED_QUINTUPLET", "NAKED_SEXTUPLET", "NAKED_SEPTUPLET", "NAKED_OCTUPLET"],
+        ["HIDDEN_SET", "HIDDEN_SINGLE"]
+    ];
+
     public static async getGame(url: string, strategy: string, token: string):Promise<JSON> {
         const res:Response = await fetch(url + GET_DRILL_GAME + strategy, {
             method: 'GET',

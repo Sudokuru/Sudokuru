@@ -21,6 +21,7 @@
             *   [Puzzles.getHint()](#puzzlesgethint)
         *   [Drills Class](#drills-class)
             *   [Setup](#setup-1)
+            *   [Drills.strategies](#drillsstrategies)
             *   [Drills.getDrillGame()](#drillsgetdrillgame)
 *   [Puzzle Object Properties](#puzzle-object-properties)
     *   [puzzle](#puzzle)
@@ -189,6 +190,9 @@ const Puzzles = sudokuru.Puzzles;
 4. Return Value: [hint](#hint-object-properties)
 
 ### Drills Class
+
+#### Drills.strategies
+1. Description: 2d array, subarrays contain strategy strings that drills are available for, the first element in each subarray with more than one element is the name of the group of strategies e.g. [["NAKED_SET", "NAKED_SINGLE", "NAKED_PAIR", ...]].
 
 #### Drills.getGame()
 1. Description: Returns board and notes state for a drill of the given strategy type if there is one
