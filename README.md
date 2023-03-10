@@ -192,6 +192,11 @@ const Puzzles = sudokuru.Puzzles;
 
 ### Drills Class
 
+#### Setup
+```shell
+const Drills = sudokuru.Drills;
+```
+
 #### Drills.strategies
 1. Description: 2d array, subarrays contain strategy strings that drills are available for, the first element in each subarray with more than one element is the name of the group of strategies e.g. [["NAKED_SET", "NAKED_SINGLE", "NAKED_PAIR", ...]].
 
@@ -216,11 +221,6 @@ const Puzzles = sudokuru.Puzzles;
 
 #### How to Use Drills
 Once you get a drill game using Drills.getGame() and one of the supported strategies from Drills.strategies you just need to get a hint. To do that you can use [Puzzles.getHint()](#puzzlesgethint) using the board and notes from Drills.getGame() and the strategy you are using put inside of an array.
-
-#### Setup
-```shell
-const Drills = sudokuru.Drills;
-```
 
 # Puzzle Object Properties
 
