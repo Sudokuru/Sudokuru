@@ -22,7 +22,8 @@
         *   [Drills Class](#drills-class)
             *   [Setup](#setup-1)
             *   [Drills.strategies](#drillsstrategies)
-            *   [Drills.getDrillGame()](#drillsgetdrillgame)
+            *   [Drills.getGame()](#drillsgetgame)
+            *   [How to Use Drills](#how-to-use-drills)
 *   [Puzzle Object Properties](#puzzle-object-properties)
     *   [puzzle](#puzzle)
     *   [puzzleSolution](#puzzlesolution)
@@ -212,6 +213,9 @@ const Puzzles = sudokuru.Puzzles;
     - strategy: string representing strategy type, can be any from Drills.getDrillStrategies()
     - token: string authentication token
 4. Return Value: JSON object containing puzzleCurrentState and puzzleCurrentNotesState as described in [activeGame](#activegame-object-properties) if drill found, otherwise null
+
+#### How to Use Drills
+Once you get a drill game using Drills.getGame() and one of the supported strategies from Drills.strategies you just need to get a hint. To do that you can use [Puzzles.getHint()](#puzzlesgethint) using the board and notes from Drills.getGame() and the strategy you are using put inside of an array.
 
 #### Setup
 ```shell
