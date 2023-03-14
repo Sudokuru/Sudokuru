@@ -140,6 +140,53 @@ app.get('/api/v1/user/activeGames', (req, res) => {
     });
 });
 
+app.patch('/api/v1/user/activeGames', (req, res) => {
+    // Returns failure if there isn't an active game to save progress to
+    if (!fs.existsSync("activeGame.txt")) {
+        res.sendStatus(404);
+        return;
+    }
+
+    // Reads in current active game
+    const rl = readline.createInterface({
+        input: fs.createReadStream("activeGame.txt"),
+        crlfDelay: Infinity
+    });
+    let activeGame:JSON;
+    rl.on('line', (line) => {
+        activeGame = JSON.parse(line);
+        // Update activeGame
+        Object.keys(req.body).forEach(function(key) {
+            activeGame[key] = req.body[key];
+        });
+
+        // Saves changes to active game
+        try {
+            let writer = fs.createWriteStream('activeGame.txt');
+            writer.write(JSON.stringify(activeGame));
+            writer.end();
+        } catch(err) {
+            console.log(err);
+            console.log(JSON.stringify(activeGame));
+            res.sendStatus(500);
+            return;
+        }
+        res.sendStatus(200);
+        return;
+    });
+});
+
+app.delete('/api/v1/user/activeGames', (req, res) => {
+    try {
+        fs.unlinkSync("activeGame.txt");
+    } catch(err) {
+        res.sendStatus(500);
+        return;
+    }
+    res.sendStatus(200);
+    return;
+});
+
 app.get('/api/v1/user/drill', (req, res) => {
     res.send({ puzzle: "003070040006002301089000000000107080517000006000400000271009005095000000000020000" });
 });
