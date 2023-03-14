@@ -7,6 +7,7 @@ import { Strategy } from "../Generator/Strategy";
 const START_GAME:string = "api/v1/user/newGame?difficulty=";
 const GET_GAME:string = "api/v1/user/activeGames";
 const SAVE_GAME:string = GET_GAME;
+const FINISH_GAME:string = GET_GAME;
 // HTTP Status Codes
 const SUCCESS:number = 200;
 const NOT_FOUND:number = 404;
@@ -86,6 +87,24 @@ export class Puzzles{
                 'Authorization': 'Bearer ' + token
             },
             body: JSON.stringify(game)
+        });
+
+        return res.status === SUCCESS;
+    }
+
+    /**
+    * Given an user auth token deletes the users active game and returns if successful
+    * @param url - server url e.g. http://localhost:3001/
+    * @param token - authentication token
+    * @returns promise of puzzle JSON object
+     */
+    public static async finishGame(url: string, token: string):Promise<boolean> {
+        const res:Response = await fetch(url + FINISH_GAME, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            }
         });
 
         return res.status === SUCCESS;

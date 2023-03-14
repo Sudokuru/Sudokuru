@@ -174,8 +174,17 @@ app.patch('/api/v1/user/activeGames', (req, res) => {
         res.sendStatus(200);
         return;
     });
+});
 
-    
+app.delete('/api/v1/user/activeGames', (req, res) => {
+    try {
+        fs.unlinkSync("activeGame.txt");
+    } catch(err) {
+        res.sendStatus(500);
+        return;
+    }
+    res.sendStatus(200);
+    return;
 });
 
 app.get('/api/v1/user/drill', (req, res) => {
