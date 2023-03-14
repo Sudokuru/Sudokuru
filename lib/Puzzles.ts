@@ -6,6 +6,10 @@ import { Strategy } from "../Generator/Strategy";
 
 const START_GAME:string = "api/v1/user/newGame?difficulty=";
 const GET_GAME:string = "api/v1/user/activeGames";
+const SAVE_GAME:string = GET_GAME;
+// HTTP Status Codes
+const SUCCESS:number = 200;
+const NOT_FOUND:number = 404;
 
 /**
 * Functions to handle puzzle related operations
@@ -55,17 +59,36 @@ export class Puzzles{
             }
         });
 
-        if (res.status === 200) {
+        if (res.status === SUCCESS) {
             const data:JSON = await res.json();
             return data;
         }
-        else if (res.status === 404) {
+        else if (res.status === NOT_FOUND) {
             return null;
         }
         else {
             console.log("Error: " + GET_GAME + " GET request has status " + res.status);
             return null;
         }
+    }
+
+    /**
+     * Given a game saves it to users account and returns true if successful
+     * @param url - server url e.g. http://localhost:3001/
+     * @param game - activeGame JSON object
+     * @param token - authentication token
+     */
+    public static async saveGame(url: string, game: JSON, token: string):Promise<boolean> {
+        const res:Response = await fetch(url + SAVE_GAME, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify(game)
+        });
+
+        return res.status === SUCCESS;
     }
 
     /**
