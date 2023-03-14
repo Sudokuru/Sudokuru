@@ -18,6 +18,7 @@
             *   [Setup](#setup)
             *   [Puzzles.startGame()](#puzzlesstartgame)
             *   [Puzzles.getGame()](#puzzlesgetgame)
+            *   [Puzzles.saveGame()](#puzzlessavegame)
             *   [Puzzles.getHint()](#puzzlesgethint)
         *   [Drills Class](#drills-class)
             *   [Setup](#setup-1)
@@ -176,6 +177,22 @@ const Puzzles = sudokuru.Puzzles;
     - url: Server url e.g. "http://localhost:3001/"
     - token: string authentication token
 4. Return Value: [activeGame](#activegame-object-properties) JSON object if user has an active game, otherwise null
+
+#### Puzzles.saveGame()
+1. Description: Saves changes to users active game and returns true if successful
+2. Syntax
+    ```shell
+    Puzzles.saveGame(url, activeGame, token).then(res => {
+        if (res) {
+            console.log("Game progress was saved successfully");
+        }
+    });
+    ```
+3. Parameters:
+    - url: Server url e.g. "http://localhost:3001/"
+    - activeGame: [activeGame](#activegame-object-properties) JSON object containing only properties that are being updated
+    - token: string authentication token
+4. Return Value: true if game was saved successfully
 
 #### Puzzles.getHint()
 1. Description: Returns a hint based on the puzzle and notes provided
@@ -555,6 +572,7 @@ npm run start
 # Demo Server provides the following fakes for Puzzle Class (use http://localhost:3001/ as url)
 # Puzzles.startGame(): Will overwrite text file with activeGame constant and return it to user
 # Puzzles.getGame(): Will return the activeGame from text file or return 404 error if the text file doesn't exist
+# Puzzles.saveGame(): Attempts to save changes to activeGame stored locally in a text file and returns true if successful
 # Drills.getGame(): Will return a puzzle string constant
 ```
 Official TypeDoc Documentation is Hosted Here: https://sudokuru.github.io/SudokuPuzzleGenerator/
