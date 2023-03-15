@@ -109,10 +109,11 @@ export class Strategy{
 
     /**
      * Checks if strategy is a given strategy type and if so sets values to place, notes to remove
+     * @param strategyType - strategy type that is being checked for
      * @returns true if strategy is strategyType
      */
     public setStrategyType(strategyType: StrategyEnum):boolean {
-        if (strategyType === StrategyEnum.AMEND_NOTES && this.isAmendNotes()) {
+        if (strategyType === StrategyEnum.AMEND_NOTES && this.isStrategy(StrategyEnum.AMEND_NOTES)) {
             this.strategyType = StrategyEnum.AMEND_NOTES;
             return true;
         }
@@ -155,6 +156,24 @@ export class Strategy{
         else if (strategyType === StrategyEnum.SIMPLIFY_NOTES && this.isSimplifyNotes()) {
             this.strategyType = StrategyEnum.SIMPLIFY_NOTES;
             return true;
+        }
+        return false;
+    }
+
+    /**
+     * Checks if strategy is a given strategy type and if so sets values to place, notes to remove
+     * @param strategyType - strategy type that is being checked for
+     * @returns true if strategy is strategyType 
+     */
+    public isStrategy(strategyType: StrategyEnum):boolean {
+        if (strategyType === StrategyEnum.AMEND_NOTES) {
+            for (let r:number = 0; r < this.emptyCells.length; r++) {
+                for (let c:number = 0; c < this.emptyCells[r].length; c++) {
+                    if (this.isAmendNotes(r, c)) {
+                        return true;
+                    }
+                }
+            }
         }
         return false;
     }
@@ -573,74 +592,72 @@ export class Strategy{
 
     /**
      * Checks if strategy is amend notes and if so adds notes to remove from a cell (every note not removed should be added)
+     * @param r - corresponds to an array in empty cells
+     * @param c - corresponds to an index in an array in emptyCells
      * @returns true if strategy is amend notes
      */
-    private isAmendNotes():boolean {
-        for (let r:number = 0; r < this.emptyCells.length; r++) {
-            for (let c:number = 0; c < this.emptyCells[r].length; c++) {
-                let cell:Cell = this.emptyCells[r][c];
-                let row:number = cell.getRow();
-                let column:number = cell.getColumn();
-                // Checks if correct number has been wrongly removed from a cell and if so removes all notes from it so it is amended in next if
-                if (this.solution !== undefined && !(cell.getNotes()).contains(this.solution[row][column])) {
-                    cell.removeNotes(new Group(true));
+    private isAmendNotes(r: number, c: number):boolean {
+        let cell:Cell = this.emptyCells[r][c];
+        let row:number = cell.getRow();
+        let column:number = cell.getColumn();
+        // Checks if correct number has been wrongly removed from a cell and if so removes all notes from it so it is amended in next if
+        if (this.solution !== undefined && !(cell.getNotes()).contains(this.solution[row][column])) {
+            cell.removeNotes(new Group(true));
+        }
+        if ((cell.getNotes()).getSize() === 0) {
+            // Add back in all notes then remove the ones that can be simplified away
+            let box: number = cell.getBox();
+            let boxRowStart: number = Cell.getBoxRowStart(box);
+            let boxColumnStart: number = Cell.getBoxColumnStart(box);
+            let notesToRemove: Group = new Group(false, row, column);
+            let usedGroup:boolean = false;
+            // Add every placed value from given row
+            for (let k:number = 0; k < SudokuEnum.ROW_LENGTH; k++) {
+                if (!this.board[row][k].isEmpty()) {
+                    notesToRemove.insert(this.board[row][k].getValue());
+                    this.cause.push(this.board[row][k]);
+                    if (!usedGroup) {
+                        this.groups.push([GroupEnum.ROW, row]);
+                        usedGroup = true;
+                    }
                 }
-                if ((cell.getNotes()).getSize() === 0) {
-                    // Add back in all notes then remove the ones that can be simplified away
-                    let box: number = cell.getBox();
-                    let boxRowStart: number = Cell.getBoxRowStart(box);
-                    let boxColumnStart: number = Cell.getBoxColumnStart(box);
-                    let notesToRemove: Group = new Group(false, row, column);
-                    let usedGroup:boolean = false;
-                    // Add every placed value from given row
-                    for (let k:number = 0; k < SudokuEnum.ROW_LENGTH; k++) {
-                        if (!this.board[row][k].isEmpty()) {
-                            notesToRemove.insert(this.board[row][k].getValue());
-                            this.cause.push(this.board[row][k]);
+            }
+            usedGroup = false;
+            // Add every placed value from given column
+            for (let k:number = 0; k < SudokuEnum.COLUMN_LENGTH; k++) {
+                if (!this.board[k][column].isEmpty()) {
+                    if (!notesToRemove.contains(this.board[k][column].getValue())) {
+                        notesToRemove.insert(this.board[k][column].getValue());
+                        this.cause.push(this.board[k][column]);
+                        if (!usedGroup) {
+                            this.groups.push([GroupEnum.COLUMN, column]);
+                            usedGroup = true;
+                        }
+                    }
+                }
+            }
+            usedGroup = false;
+            // Add every placed value from given box
+            for (let r:number = boxRowStart; r < (boxRowStart + SudokuEnum.BOX_LENGTH); r++) {
+                for (let c:number = boxColumnStart; c < (boxColumnStart + SudokuEnum.BOX_LENGTH); c++) {
+                    if (!this.board[r][c].isEmpty()) {
+                        if (!notesToRemove.contains(this.board[r][c].getValue())) {
+                            notesToRemove.insert(this.board[r][c].getValue());
+                            this.cause.push(this.board[r][c]);
                             if (!usedGroup) {
-                                this.groups.push([GroupEnum.ROW, row]);
+                                this.groups.push([GroupEnum.BOX, this.board[r][c].getBox()]);
                                 usedGroup = true;
                             }
                         }
                     }
-                    usedGroup = false;
-                    // Add every placed value from given column
-                    for (let k:number = 0; k < SudokuEnum.COLUMN_LENGTH; k++) {
-                        if (!this.board[k][column].isEmpty()) {
-                            if (!notesToRemove.contains(this.board[k][column].getValue())) {
-                                notesToRemove.insert(this.board[k][column].getValue());
-                                this.cause.push(this.board[k][column]);
-                                if (!usedGroup) {
-                                    this.groups.push([GroupEnum.COLUMN, column]);
-                                    usedGroup = true;
-                                }
-                            }
-                        }
-                    }
-                    usedGroup = false;
-                    // Add every placed value from given box
-                    for (let r:number = boxRowStart; r < (boxRowStart + SudokuEnum.BOX_LENGTH); r++) {
-                        for (let c:number = boxColumnStart; c < (boxColumnStart + SudokuEnum.BOX_LENGTH); c++) {
-                            if (!this.board[r][c].isEmpty()) {
-                                if (!notesToRemove.contains(this.board[r][c].getValue())) {
-                                    notesToRemove.insert(this.board[r][c].getValue());
-                                    this.cause.push(this.board[r][c]);
-                                    if (!usedGroup) {
-                                        this.groups.push([GroupEnum.BOX, this.board[r][c].getBox()]);
-                                        usedGroup = true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    // If there are notes to remove then return them
-                    if (notesToRemove.getSize() > 0) {
-                        this.notes.push(notesToRemove);
-                        this.identified = true;
-                        this.difficulty = DifficultyLowerBounds.AMEND_NOTES;
-                        return this.identified;
-                    }
                 }
+            }
+            // If there are notes to remove then return them
+            if (notesToRemove.getSize() > 0) {
+                this.notes.push(notesToRemove);
+                this.identified = true;
+                this.difficulty = DifficultyLowerBounds.AMEND_NOTES;
+                return this.identified;
             }
         }
         return this.identified;
