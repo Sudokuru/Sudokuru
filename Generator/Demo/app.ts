@@ -10,7 +10,7 @@ import { Board } from "../Board";
 const expressApp = require('express');
 const app = expressApp();
 const cors = require("cors");
-const port = 3001;
+const port = 3100;
 
 const activeGame = {
     userID: "",
