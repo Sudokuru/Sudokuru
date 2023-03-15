@@ -26,6 +26,10 @@
             *   [Drills.strategies](#drillsstrategies)
             *   [Drills.getGame()](#drillsgetgame)
             *   [How to Use Drills](#how-to-use-drills)
+        *   [Lessons Class](#lessons-class)
+            *   [Setup](#setup-2)
+            *   [Lessons.strategies](#lessonsstrategies)
+            *   [Lessons.getSteps()](#lessonsgetsteps)
 *   [Puzzle Object Properties](#puzzle-object-properties)
     *   [puzzle](#puzzle)
     *   [puzzleSolution](#puzzlesolution)
@@ -254,6 +258,26 @@ const Drills = sudokuru.Drills;
 
 #### How to Use Drills
 Once you get a drill game using Drills.getGame() and one of the supported strategies from Drills.strategies you just need to get a hint. To do that you can use [Puzzles.getHint()](#puzzlesgethint) using the board and notes from Drills.getGame() and the strategy you are using put inside of an array.
+
+### Lessons Class
+
+#### Setup
+```shell
+const Lessons = sudokuru.Lessons;
+```
+
+#### Lessons.strategies
+1. Description: array containing strategy strings that lessons are available for, e.g. ["AMEND_NOTES", "SIMPLIFY_NOTES", "NAKED_SET", ...].
+
+#### Lessons.getSteps()
+1. Description: Returns a 2d array containing "steps" which are arrays containing two strings, the first of which is text describing the image which is linked to by the url which is the second string in the subarray.
+2. Syntax
+    ```shell
+    Lessons.getSteps(strategy);
+    ```
+3. Parameters:
+    - strategy: string representing type, can be any from Lessons.strategies
+4. Return Value: 2d array e.g. [["Here is an example of the simplify notes strategy", "https://sudokuru.s3.amazonaws.com/hintExample2-V2.png"]].
 
 # Puzzle Object Properties
 
