@@ -664,39 +664,6 @@ export class Strategy{
     }
 
     /**
-     * Creates a Strategy object centered around the nth row in the given board
-     * @param cells - cells in a board
-     * @param n - row creating strategy around
-     * @returns strategy using given row
-     */
-    public static getRowStrategy(board: Cell[][], cells: Cell[][], n: number):Strategy {
-        let row: Cell[][] = getCellsInRow(cells, n);
-        return new Strategy(board, row);
-    }
-
-    /**
-     * Creates a Strategy object centered around the nth column in the given board
-     * @param cells - cells in a board
-     * @param n - column creating strategy around
-     * @returns strategy using given column
-     */
-    public static getColumnStrategy(board: Cell[][], cells: Cell[][], n: number):Strategy {
-        let column: Cell[][] = getCellsInColumn(cells, n);
-        return new Strategy(board, column);
-    }
-
-    /**
-     * Creates a Strategy object centered around the nth box in the given board
-     * @param cells - cells in a board
-     * @param n - box creating strategy around
-     * @returns strategy using given box
-     */
-    public static getBoxStrategy(board: Cell[][], cells: Cell[][], n: number):Strategy {
-        let box: Cell[][] = getCellsInBox(cells, n);
-        return new Strategy(board, box);
-    }
-
-    /**
      * Returns algorithm which includes all of the strategies in order of least to most complex
      * @returns default algorithm
      */
