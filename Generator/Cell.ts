@@ -181,8 +181,13 @@ export class Cell{
      * Calculates box cell is in and sets it
      */
     private initializeBox():void {
-        this.box = Math.floor(this.column / SudokuEnum.BOX_LENGTH);
-        this.box += Math.floor(this.row / SudokuEnum.BOX_LENGTH) * SudokuEnum.BOX_LENGTH;
+        this.box = Cell.calculateBox(this.row, this.column);
         return;
+    }
+
+    public static calculateBox(row: number, column: number):number {
+        let box:number = Math.floor(column / SudokuEnum.BOX_LENGTH);
+        box += Math.floor(row / SudokuEnum.BOX_LENGTH) * SudokuEnum.BOX_LENGTH;
+        return box;
     }
 }
