@@ -2,6 +2,7 @@ import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
 import { SudokuEnum, StrategyEnum, getCellsInRow, getCellsInColumn, getCellsInBox, GroupEnum, getNextCellInGroup, TupleEnum, getCellsInGroup, getUnionOfSetNotes, inSubset, getCellsSubset, getCellsInSubset } from "./Sudoku"
 import { Group } from "./Group";
+import { CellBoard } from "./CellBoard";
 
 /**
  * Includes lower bounds for strategies difficulty ratings
@@ -68,6 +69,8 @@ export const MAX_DIFFICULTY:number = getMaxDifficulty();
  * What strategy type this is (correlates to StrategyEnum)
  */
 export class Strategy{
+    // Contains representation of board being solved and maintains metadata about it
+    private cellBoard: CellBoard;
     // Contains representation of board being solved
     private board: Cell[][];
     // Contains cells that "cause" strategy to be applicable (may have same cell multiple times)
@@ -94,7 +97,8 @@ export class Strategy{
      * @constructor
      * @param cells - cells
      */
-    constructor(board: Cell[][], emptyCells: Cell[][], solution?: string[][]) {
+    constructor(cellBoard: CellBoard, board: Cell[][], emptyCells: Cell[][], solution?: string[][]) {
+        this.cellBoard = cellBoard;
         this.board = board;
         this.emptyCells = emptyCells;
         this.identified = false;
