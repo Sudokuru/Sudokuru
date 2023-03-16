@@ -293,7 +293,7 @@ export class Solver{
         for (let i:number = 0; i < cells.length; i++) {
             row = cells[i].getRow();
             column = cells[i].getColumn();
-            this.board[row][column].setValue(cells[i].getValue());
+            this.cellBoard.setValue(row, column, cells[i].getValue());
         }
         return;
     }

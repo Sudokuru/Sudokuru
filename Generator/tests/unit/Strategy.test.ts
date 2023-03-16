@@ -15,12 +15,13 @@ describe("create amend notes", () => {
     it('should be an amend notes', () => {
         let board:Cell[][] = getBlankCellBoard();
         // Insert values into same group as amend notes cell (which will be row 0 and column 0)
-        board[0][8].setValue("1");
-        board[1][1].setValue("2");
-        board[8][0].setValue("3");
+        let cellBoard:CellBoard = new CellBoard(board);
+        cellBoard.setValue(0, 8, "1");
+        cellBoard.setValue(1, 1, "2");
+        cellBoard.setValue(8, 0, "3");
         // Insert value that doesn't share group
-        board[8][8].setValue("4");
-        let strategy:Strategy = new Strategy(new CellBoard(board), board, board);
+        cellBoard.setValue(8, 8, "4");
+        let strategy:Strategy = new Strategy(cellBoard, board, board);
         expect(strategy.setStrategyType(StrategyEnum.AMEND_NOTES)).toBeTruthy();
         expect((strategy.getNotesToRemove())[0].getSize()).toBe(3);
         expect((strategy.getNotesToRemove()[0].contains("1"))).toBeTruthy();
@@ -38,12 +39,13 @@ describe("create amend notes", () => {
             }
         }
         // Add a value in the same group as the first cell so amend notes has something to remove
-        board[0][1].setValue("2");
+        let cellBoard:CellBoard = new CellBoard(board);
+        cellBoard.setValue(0, 1, "2");
         // Remove 1 from the first cells notes even though it must be a one
         board[0][0].resetNotes();
         board[0][0].removeNote("1");
         // Should now be an amend notes on the first cell such that the 1 is added back in and the 2 is removed
-        let strategy:Strategy = new Strategy(new CellBoard(board), board, board, solution);
+        let strategy:Strategy = new Strategy(cellBoard, board, board, solution);
         expect(strategy.setStrategyType(StrategyEnum.AMEND_NOTES)).toBeTruthy();
         expect(strategy.getNotesToRemove()[0].getRow()).toBe(0);
         expect(strategy.getNotesToRemove()[0].getColumn()).toBe(0);
