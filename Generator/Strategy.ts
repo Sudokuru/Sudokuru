@@ -474,6 +474,10 @@ export class Strategy{
         let subsets:Group[] = Group.getSubset(tuple);
         for (let group:GroupEnum = 0; group < GroupEnum.COUNT; group++) {
             for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
+                // Skips over groups where there aren't enough unfilled cells left to form set
+                if (this.cellBoard.getValuesPlaced(group, i).getSize() > (SudokuEnum.ROW_LENGTH - tuple)) {
+                    continue;
+                }
                 // Contains cells in the same row, column, or box
                 let cells: Cell[] = getCellsInGroup(this.emptyCells, group, i);
                 // Tries to build a hidden set of size tuple for each possible size tuple subset of candidates
