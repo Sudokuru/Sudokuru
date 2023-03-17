@@ -157,7 +157,7 @@ export class Strategy{
             this.strategyType = StrategyEnum.HIDDEN_SINGLE;
             return true;
         }
-        else if (strategyType === StrategyEnum.SIMPLIFY_NOTES && this.isSimplifyNotes()) {
+        else if (strategyType === StrategyEnum.SIMPLIFY_NOTES && this.isStrategy(StrategyEnum.SIMPLIFY_NOTES)) {
             this.strategyType = StrategyEnum.SIMPLIFY_NOTES;
             return true;
         }
@@ -170,10 +170,13 @@ export class Strategy{
      * @returns true if strategy is strategyType 
      */
     public isStrategy(strategyType: StrategyEnum):boolean {
-        if (strategyType === StrategyEnum.AMEND_NOTES) {
+        if (strategyType === StrategyEnum.AMEND_NOTES || strategyType === StrategyEnum.SIMPLIFY_NOTES) {
             for (let r:number = 0; r < this.emptyCells.length; r++) {
                 for (let c:number = 0; c < this.emptyCells[r].length; c++) {
-                    if (this.isAmendNotes(r, c)) {
+                    if (strategyType === StrategyEnum.AMEND_NOTES && this.isAmendNotes(r, c)) {
+                        return true;
+                    }
+                    else if (strategyType === StrategyEnum.SIMPLIFY_NOTES && this.isSimplifyNotes(r, c)) {
                         return true;
                     }
                 }
@@ -542,54 +545,52 @@ export class Strategy{
 
     /**
      * Checks if strategy is simplify notes and if so adds notes to remove from a cell
+     * @param i - corresponds to an array in empty cells
+     * @param j - corresponds to an index in an array in emptyCells
      * @returns true if strategy is simplify notes
      */
-    private isSimplifyNotes():boolean {
-        for (let i:number = 0; i < SudokuEnum.COLUMN_LENGTH; i++) {
-            for (let j:number = 0; j < this.emptyCells[i].length; j++) {
-                let cell: Cell = this.emptyCells[i][j];
-                let row: number = cell.getRow();
-                let column: number = cell.getColumn();
-                let box: number = cell.getBox();
-                let boxRowStart: number = Cell.getBoxRowStart(box);
-                let boxColumnStart: number = Cell.getBoxColumnStart(box);
-                let notes: Group = new Group(false);
-                // Add every placed value from given row
-                for (let k:number = 0; notes.getSize() === 0 && k < SudokuEnum.ROW_LENGTH; k++) {
-                    if (!this.board[row][k].isEmpty() && (cell.getNotes()).contains(this.board[row][k].getValue())) {
-                        notes.insert(this.board[row][k].getValue());
-                        this.cause.push(this.board[row][k]);
-                        this.groups.push([GroupEnum.ROW, row]);
-                    }
-                }
-                // Add every placed value from given column
-                for (let k:number = 0; notes.getSize() === 0 && k < SudokuEnum.COLUMN_LENGTH; k++) {
-                    if (!this.board[k][column].isEmpty() && (cell.getNotes()).contains(this.board[k][column].getValue())) {
-                        notes.insert(this.board[k][column].getValue());
-                        this.cause.push(this.board[k][column]);
-                        this.groups.push([GroupEnum.COLUMN, column]);
-                    }
-                }
-                // Add every placed value from given box
-                for (let r:number = boxRowStart; r < (boxRowStart + SudokuEnum.BOX_LENGTH); r++) {
-                    for (let c:number = boxColumnStart; notes.getSize() === 0 && c < (boxColumnStart + SudokuEnum.BOX_LENGTH); c++) {
-                        if (!this.board[r][c].isEmpty() && (cell.getNotes()).contains(this.board[r][c].getValue())) {
-                            notes.insert(this.board[r][c].getValue());
-                            this.cause.push(this.board[r][c]);
-                            this.groups.push([GroupEnum.BOX, this.board[r][c].getBox()]);
-                        }
-                    }
-                }
-                // If there are any notes to remove then strategy is identified
-                if (notes.getSize() > 0) {
-                    let notesToRemove: Group = new Group(false, row, column);
-                    notesToRemove.insert(notes);
-                    this.notes.push(notesToRemove);
-                    this.identified = true;
-                    this.difficulty = DifficultyLowerBounds.SIMPLIFY_NOTES;
-                    return this.identified;
+    private isSimplifyNotes(i: number, j: number):boolean {
+        let cell: Cell = this.emptyCells[i][j];
+        let row: number = cell.getRow();
+        let column: number = cell.getColumn();
+        let box: number = cell.getBox();
+        let boxRowStart: number = Cell.getBoxRowStart(box);
+        let boxColumnStart: number = Cell.getBoxColumnStart(box);
+        let notes: Group = new Group(false);
+        // Add every placed value from given row
+        for (let k:number = 0; notes.getSize() === 0 && k < SudokuEnum.ROW_LENGTH; k++) {
+            if (!this.board[row][k].isEmpty() && (cell.getNotes()).contains(this.board[row][k].getValue())) {
+                notes.insert(this.board[row][k].getValue());
+                this.cause.push(this.board[row][k]);
+                this.groups.push([GroupEnum.ROW, row]);
+            }
+        }
+        // Add every placed value from given column
+        for (let k:number = 0; notes.getSize() === 0 && k < SudokuEnum.COLUMN_LENGTH; k++) {
+            if (!this.board[k][column].isEmpty() && (cell.getNotes()).contains(this.board[k][column].getValue())) {
+                notes.insert(this.board[k][column].getValue());
+                this.cause.push(this.board[k][column]);
+                this.groups.push([GroupEnum.COLUMN, column]);
+            }
+        }
+        // Add every placed value from given box
+        for (let r:number = boxRowStart; r < (boxRowStart + SudokuEnum.BOX_LENGTH); r++) {
+            for (let c:number = boxColumnStart; notes.getSize() === 0 && c < (boxColumnStart + SudokuEnum.BOX_LENGTH); c++) {
+                if (!this.board[r][c].isEmpty() && (cell.getNotes()).contains(this.board[r][c].getValue())) {
+                    notes.insert(this.board[r][c].getValue());
+                    this.cause.push(this.board[r][c]);
+                    this.groups.push([GroupEnum.BOX, this.board[r][c].getBox()]);
                 }
             }
+        }
+        // If there are any notes to remove then strategy is identified
+        if (notes.getSize() > 0) {
+            let notesToRemove: Group = new Group(false, row, column);
+            notesToRemove.insert(notes);
+            this.notes.push(notesToRemove);
+            this.identified = true;
+            this.difficulty = DifficultyLowerBounds.SIMPLIFY_NOTES;
+            return this.identified;
         }
         return this.identified;
     }
