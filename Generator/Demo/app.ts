@@ -140,7 +140,7 @@ app.get('/api/v1/user/activeGames', (req, res) => {
     });
 });
 
-app.patch('/api/v1/user/activeGames', (req, res) => {
+app.patch('/api/v1/activeGames', (req, res) => {
     // Returns failure if there isn't an active game to save progress to
     if (!fs.existsSync("activeGame.txt")) {
         res.sendStatus(404);
@@ -176,7 +176,7 @@ app.patch('/api/v1/user/activeGames', (req, res) => {
     });
 });
 
-app.delete('/api/v1/user/activeGames', (req, res) => {
+app.delete('/api/v1/activeGames', (req, res) => {
     try {
         fs.unlinkSync("activeGame.txt");
     } catch(err) {
