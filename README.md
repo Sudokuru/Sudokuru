@@ -187,7 +187,7 @@ const Puzzles = sudokuru.Puzzles;
 1. Description: Saves changes to users active game and returns true if successful
 2. Syntax
     ```shell
-    Puzzles.saveGame(url, activeGame, token).then(res => {
+    Puzzles.saveGame(url, activeGame, puzzle, token).then(res => {
         if (res) {
             console.log("Game progress was saved successfully");
         }
@@ -196,6 +196,7 @@ const Puzzles = sudokuru.Puzzles;
 3. Parameters:
     - url: Server url e.g. "http://localhost:3001/"
     - activeGame: [activeGame](#activegame-object-properties) JSON object containing only properties that are being updated
+    - puzzle: a string containing the initial puzzle state
     - token: string authentication token
 4. Return Value: true if game was saved successfully
 
@@ -203,7 +204,7 @@ const Puzzles = sudokuru.Puzzles;
 1. Description: Deletes users active game and returns true if successful
 2. Syntax
     ```shell
-    Puzzles.finishGame(url, token).then(res => {
+    Puzzles.finishGame(url, puzzle, token).then(res => {
         if (res) {
             console.log("Game was deleted successfully");
         }
@@ -211,6 +212,7 @@ const Puzzles = sudokuru.Puzzles;
     ```
 3. Parameters:
     - url: Server url e.g. "http://localhost:3001/"
+    - puzzle: a string containing the initial puzzle state
     - token: string authentication token
 4. Return Value: true if game was deleted successfully
 
@@ -319,6 +321,11 @@ Unique string representing the user (who this game belongs to)
 "003070040006002301089000000000107080517000006000400000271009005095000000000020000"
 ```
 Initial puzzle state, 81 numeric characters, zeroes represent empty cells
+## puzzleSolution
+```json
+"123675948456982371789314562964157283517238496832496157271849635395761824648523719"
+```
+Solved puzzle state, 81 numeric characters
 ## currentTime
 ```json
 774
