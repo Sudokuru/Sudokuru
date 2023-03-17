@@ -18,7 +18,7 @@ const NOT_FOUND:number = 404;
 export class Puzzles{
    /**
     * Given a difficulty and an user auth token retrieves a random puzzle close to the difficulty that the user hasn't solved before
-    * @param url - server url e.g. http://localhost:3001/
+    * @param url - server url e.g. http://localhost:3100/
     * @param difficulty - difficulty number (between 0 and 1)
     * @param strategies - new game can have subset of these strategies
     * @param token - authentication token
@@ -47,7 +47,7 @@ export class Puzzles{
 
    /**
     * Given an user auth token retrieves the users active game or returns null if the user doesn't have an active game
-    * @param url - server url e.g. http://localhost:3001/
+    * @param url - server url e.g. http://localhost:3100/
     * @param token - authentication token
     * @returns promise of puzzle JSON object
     */
@@ -75,7 +75,7 @@ export class Puzzles{
 
     /**
      * Given a game saves it to users account and returns true if successful
-     * @param url - server url e.g. http://localhost:3001/
+     * @param url - server url e.g. http://localhost:3100/
      * @param game - activeGame JSON object
      * @param puzzle activeGame puzzle string
      * @param token - authentication token
@@ -95,7 +95,7 @@ export class Puzzles{
 
     /**
      * Given an user auth token deletes the users active game and returns if successful
-     * @param url - server url e.g. http://localhost:3001/
+     * @param url - server url e.g. http://localhost:3100/
      * @param puzzle activeGame puzzle string
      * @param token - authentication token
      * @returns promise of puzzle JSON object

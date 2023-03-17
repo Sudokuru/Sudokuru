@@ -159,7 +159,7 @@ const Puzzles = sudokuru.Puzzles;
     });
     ```
 3. Parameters
-    - url: Server url e.g. "http://localhost:3001/"
+    - url: Server url e.g. "http://localhost:3100/"
     - difficulty: number between 0 and 1 where 0 is lowest difficulty and 1 is highest
     - strategies: array of strategies that are allowed to be in returned puzzle e.g. [ "NAKED_SINGLE" ]
     - token: string authentication token
@@ -179,7 +179,7 @@ const Puzzles = sudokuru.Puzzles;
     });
     ```
 3. Parameters:
-    - url: Server url e.g. "http://localhost:3001/"
+    - url: Server url e.g. "http://localhost:3100/"
     - token: string authentication token
 4. Return Value: [activeGame](#activegame-object-properties) JSON object if user has an active game, otherwise null
 
@@ -194,7 +194,7 @@ const Puzzles = sudokuru.Puzzles;
     });
     ```
 3. Parameters:
-    - url: Server url e.g. "http://localhost:3001/"
+    - url: Server url e.g. "http://localhost:3100/"
     - activeGame: [activeGame](#activegame-object-properties) JSON object containing only properties that are being updated
     - puzzle: a string containing the initial puzzle state
     - token: string authentication token
@@ -211,7 +211,7 @@ const Puzzles = sudokuru.Puzzles;
     });
     ```
 3. Parameters:
-    - url: Server url e.g. "http://localhost:3001/"
+    - url: Server url e.g. "http://localhost:3100/"
     - puzzle: a string containing the initial puzzle state
     - token: string authentication token
 4. Return Value: true if game was deleted successfully
@@ -253,7 +253,7 @@ const Drills = sudokuru.Drills;
     });
     ```
 3. Parameters:
-    - url: Server url e.g. "http://localhost:3001/"
+    - url: Server url e.g. "http://localhost:3100/"
     - strategy: string representing strategy type, can be any from Drills.getDrillStrategies()
     - token: string authentication token
 4. Return Value: JSON object containing puzzleCurrentState and puzzleCurrentNotesState as described in [activeGame](#activegame-object-properties) if drill found, otherwise null
@@ -611,12 +611,12 @@ npm run update-docs
 
 # The following can also be done after installing the npm package by navigating to node_modules/sudokuru
 
-# Run Demo Server on http://localhost:3001/
+# Run Demo Server on http://localhost:3100/
 npm run start
 
 # Can open interactive Solver Demo in browser while Demo Server is running (Generator/Demo/demo.html)
 
-# Demo Server provides the following fakes for Puzzle Class (use http://localhost:3001/ as url)
+# Demo Server provides the following fakes for Puzzle Class (use http://localhost:3100/ as url)
 # Puzzles.startGame(): Will overwrite text file with activeGame constant and return it to user
 # Puzzles.getGame(): Will return the activeGame from text file or return 404 error if the text file doesn't exist
 # Puzzles.saveGame(): Attempts to save changes to activeGame stored locally in a text file and returns true if successful
