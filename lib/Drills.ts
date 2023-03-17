@@ -1,7 +1,7 @@
 import { Solver } from "../Generator/Solver";
 import { StrategyEnum, getBoardArray } from "../Generator/Sudoku";
 
-const GET_DRILL_GAME:string = "api/v1/user/drill?strategy=";
+const GET_DRILL_GAME:string = "api/v1/drillGames?drillStrategies[]=";
 
 interface getDrillGameResponse {
     puzzle: string

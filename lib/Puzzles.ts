@@ -6,8 +6,8 @@ import { Strategy } from "../Generator/Strategy";
 
 const START_GAME:string = "api/v1/user/newGame?difficulty=";
 const GET_GAME:string = "api/v1/user/activeGames";
-const SAVE_GAME:string = GET_GAME;
-const FINISH_GAME:string = GET_GAME;
+const SAVE_GAME:string = "api/v1/activeGames?puzzle=";
+const FINISH_GAME:string = "api/v1/activeGames?puzzle=";
 // HTTP Status Codes
 const SUCCESS:number = 200;
 const NOT_FOUND:number = 404;
@@ -18,7 +18,7 @@ const NOT_FOUND:number = 404;
 export class Puzzles{
    /**
     * Given a difficulty and an user auth token retrieves a random puzzle close to the difficulty that the user hasn't solved before
-    * @param url - server url e.g. http://localhost:3001/
+    * @param url - server url e.g. http://localhost:3100/
     * @param difficulty - difficulty number (between 0 and 1)
     * @param strategies - new game can have subset of these strategies
     * @param token - authentication token
@@ -47,7 +47,7 @@ export class Puzzles{
 
    /**
     * Given an user auth token retrieves the users active game or returns null if the user doesn't have an active game
-    * @param url - server url e.g. http://localhost:3001/
+    * @param url - server url e.g. http://localhost:3100/
     * @param token - authentication token
     * @returns promise of puzzle JSON object
     */
@@ -75,12 +75,13 @@ export class Puzzles{
 
     /**
      * Given a game saves it to users account and returns true if successful
-     * @param url - server url e.g. http://localhost:3001/
+     * @param url - server url e.g. http://localhost:3100/
      * @param game - activeGame JSON object
+     * @param puzzle activeGame puzzle string
      * @param token - authentication token
      */
-    public static async saveGame(url: string, game: JSON, token: string):Promise<boolean> {
-        const res:Response = await fetch(url + SAVE_GAME, {
+    public static async saveGame(url: string, game: JSON, puzzle: string, token: string):Promise<boolean> {
+        const res:Response = await fetch(url + SAVE_GAME + JSON.stringify(puzzle), {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -93,13 +94,14 @@ export class Puzzles{
     }
 
     /**
-    * Given an user auth token deletes the users active game and returns if successful
-    * @param url - server url e.g. http://localhost:3001/
-    * @param token - authentication token
-    * @returns promise of puzzle JSON object
+     * Given an user auth token deletes the users active game and returns if successful
+     * @param url - server url e.g. http://localhost:3100/
+     * @param puzzle activeGame puzzle string
+     * @param token - authentication token
+     * @returns promise of puzzle JSON object
      */
-    public static async finishGame(url: string, token: string):Promise<boolean> {
-        const res:Response = await fetch(url + FINISH_GAME, {
+    public static async finishGame(url: string, puzzle: string, token: string):Promise<boolean> {
+        const res:Response = await fetch(url + FINISH_GAME + JSON.stringify(puzzle), {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',

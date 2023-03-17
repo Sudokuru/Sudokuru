@@ -7,7 +7,7 @@ interface nextStepResponse {
     groups: number[][]
 }
 
-const NEXT_STEP_ENDPOINT:string = "http://localhost:3001/solver/nextStep?board=";
+const NEXT_STEP_ENDPOINT:string = "http://localhost:3100/solver/nextStep?board=";
 const NEXT_NOTES:string = "&notes=";
 const NEXT_NAKED_SINGLE:string = "&nakedSingle=";
 const NEXT_HIDDEN_SINGLE:string = "&hiddenSingle=";
@@ -483,7 +483,7 @@ function loadPuzzle():void {
  */
 async function getHint():Promise<void> {
     // Get input board from user input box and create request url
-    let url:string = "http://localhost:3001/getHint?board=";
+    let url:string = "http://localhost:3100/getHint?board=";
     let stepNumber:string = (Number(getStepNumber()) - 1).toString();
     url += sessionStorage.getItem("board" + stepNumber);
     url += "&boardString=";
