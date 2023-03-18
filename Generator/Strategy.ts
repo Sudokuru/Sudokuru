@@ -375,6 +375,8 @@ export class Strategy{
      * Checks if strategy is a naked set of given tuple and if so adds values to be placed and notes to remove
      * @param tuple - e.g. could be single or pair for naked single or naked pair respectively
      * @param subsets - every possible combination of cells in a given group
+     * @param group - group type being check for a naked set e.g. row
+     * @param i - index of group being checked e.g. 3 for 4th group e.g. 4th row
      * @returns true if strategy is a naked tuple
      */
     private isNakedSet(tuple: TupleEnum, subsets: Group[], group: GroupEnum, i: number):boolean {
