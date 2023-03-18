@@ -1,6 +1,6 @@
 import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
-import { SudokuEnum, StrategyEnum, getCellsInRow, getCellsInColumn, getCellsInBox, GroupEnum, getNextCellInGroup, TupleEnum, getCellsInGroup, getUnionOfSetNotes, inSubset, getCellsSubset, getCellsInSubset } from "./Sudoku"
+import { SudokuEnum, StrategyEnum, getCellsInRow, getCellsInColumn, getCellsInBox, GroupEnum, getNextCellInGroup, TupleEnum, getCellsInGroup, getUnionOfSetNotes, getSubsetOfCells } from "./Sudoku"
 import { Group } from "./Group";
 import { CellBoard } from "./CellBoard";
 
@@ -348,9 +348,9 @@ export class Strategy{
                 // Is naked set iff union of all cells has notes size equal to tuple
                 for (let j:number = 0; j < subsets.length; j++) {
                     // Stores indexes of the cells that make up the naked set
-                    let inNakedSet:Group = getCellsSubset(cells, subsets[j], group);
+                    let inNakedSet:Group = subsets[j];
                     // Stores the cellls that make up the naked set
-                    let nakedSet:Cell[] = getCellsInSubset(cells, inNakedSet);
+                    let nakedSet:Cell[] = getSubsetOfCells(cells, inNakedSet);
                     // If naked set is correct size (i.e. every element in subset was in cells)
                     if (nakedSet.length === tuple) {
                         // Calculates all notes in naked set
@@ -485,9 +485,9 @@ export class Strategy{
                 // is equal to the tuple (e.g. hidden pair if there are two numbers only in the pair in the row)
                 for (let j:number = 0; j < subsets.length; j++) {
                     // Stores indexes of the cells that make up the hidden set
-                    let inHiddenSet:Group = getCellsSubset(cells, subsets[j], group);
+                    let inHiddenSet:Group = subsets[j];
                     // Stores the cells that make up the hidden set
-                    let hiddenSet:Cell[] = getCellsInSubset(cells, inHiddenSet);
+                    let hiddenSet:Cell[] = getSubsetOfCells(cells, inHiddenSet);
                     // If hidden set is correct size (i.e. every element in subset was in cells)
                     if (hiddenSet.length === tuple) {
                         // Stores all of the cells in the hidden sets group (except the hidden set itself and non empty cells)

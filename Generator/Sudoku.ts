@@ -353,59 +353,17 @@ export function getUnionOfSetNotes(set: Cell[]):Group {
 }
 
 /**
- * Given a cell and a group type and a subset returns whether or not the cell is in the part of the group designated by the subset
- * For example if the group is ROW and the subset contains 1 and 3 then returns whether or not the cell is in the 2nd or 4th column of the row
- * @param subset - contains some candidates in group
- * @param cell - cell in group
- * @param group - group e.g. row, column, or box
- * @returns if cell is in subset of group
- */
-export function inSubset(subset: Group, cell: Cell, group: GroupEnum):boolean {
-    if (group === GroupEnum.ROW) {
-        return subset.contains(cell.getColumn());
-    }
-    else if (group === GroupEnum.COLUMN) {
-        return subset.contains(cell.getRow());
-    }
-    else {
-        let boxRowStart:number = Cell.getBoxRowStart(cell.getBox());
-        let boxColumnStart:number = Cell.getBoxColumnStart(cell.getBox());
-        let boxIndex:number = (cell.getRow() - boxRowStart) * 3;
-        boxIndex += cell.getColumn() - boxColumnStart;
-        return subset.contains(boxIndex);
-    }
-}
-
-/**
- * Returns a group containing indexes of given cells that appear in the given subset of the given group
+ * Returns a subset of given cells based on given subset G
  * @param cells - cells array
- * @param subset - subset of a group
- * @param group - row, column, or box
- * @returns group containing indexes of cells from cells that appear in the subset
+ * @param subset - Group obj representing subset
+ * @returns subset of cells reflective of subset Group
  */
-export function getCellsSubset(cells: Cell[], subset: Group, group: GroupEnum):Group {
-    let cellsSubset:Group = new Group(false);
-    // Adds each cell in cells that is part of the subset to cellsSubset
-    for (let k:number = 0; k < cells.length; k++) {
-        if (inSubset(subset, cells[k], group)) { 
-            cellsSubset.insert(k);
-        }
-    }
-    return cellsSubset;
-}
-
-/**
- * Returns an array of cells in the given subset
- * @param cells - cells array
- * @param subset - subset of cells
- * @returns array of cells representing the given subset of the given cells array
- */
-export function getCellsInSubset(cells: Cell[], subset: Group):Cell[] {
-    let cellsInSubset:Cell[] = new Array();
-    for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
+export function getSubsetOfCells(cells: Cell[], subset: Group):Cell[] {
+    let cellSubset:Cell[] = new Array();
+    for (let i:number = 0; i < cells.length; i++) {
         if (subset.contains(i)) {
-            cellsInSubset.push(cells[i]);
+            cellSubset.push(cells[i]);
         }
     }
-    return cellsInSubset;
+    return cellSubset;
 }
