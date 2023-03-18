@@ -117,48 +117,8 @@ export class Strategy{
      * @returns true if strategy is strategyType
      */
     public setStrategyType(strategyType: StrategyEnum):boolean {
-        if (strategyType === StrategyEnum.AMEND_NOTES && this.isStrategy(StrategyEnum.AMEND_NOTES)) {
-            this.strategyType = StrategyEnum.AMEND_NOTES;
-            return true;
-        }
-        else if (strategyType === StrategyEnum.NAKED_SINGLE && this.isStrategy(StrategyEnum.NAKED_SINGLE)) {
-            this.strategyType = StrategyEnum.NAKED_SINGLE;
-            return true;
-        }
-        else if (strategyType === StrategyEnum.NAKED_PAIR && this.isStrategy(StrategyEnum.NAKED_PAIR)) {
-            this.strategyType = StrategyEnum.NAKED_PAIR;
-            return true;
-        }
-        else if (strategyType === StrategyEnum.NAKED_TRIPLET && this.isStrategy(StrategyEnum.NAKED_TRIPLET)) {
-            this.strategyType = StrategyEnum.NAKED_TRIPLET;
-            return true;
-        }
-        else if (strategyType === StrategyEnum.NAKED_QUADRUPLET && this.isStrategy(StrategyEnum.NAKED_QUADRUPLET)) {
-            this.strategyType = StrategyEnum.NAKED_QUADRUPLET;
-            return true;
-        }
-        else if (strategyType === StrategyEnum.NAKED_QUINTUPLET && this.isStrategy(StrategyEnum.NAKED_QUINTUPLET)) {
-            this.strategyType = StrategyEnum.NAKED_QUINTUPLET;
-            return true;
-        }
-        else if (strategyType === StrategyEnum.NAKED_SEXTUPLET && this.isStrategy(StrategyEnum.NAKED_SEXTUPLET)) {
-            this.strategyType = StrategyEnum.NAKED_SEXTUPLET;
-            return true;
-        }
-        else if (strategyType === StrategyEnum.NAKED_SEPTUPLET && this.isStrategy(StrategyEnum.NAKED_SEPTUPLET)) {
-            this.strategyType = StrategyEnum.NAKED_SEPTUPLET;
-            return true;
-        }
-        else if (strategyType === StrategyEnum.NAKED_OCTUPLET && this.isStrategy(StrategyEnum.NAKED_OCTUPLET)) {
-            this.strategyType = StrategyEnum.NAKED_OCTUPLET
-            return true;
-        }
-        else if (strategyType === StrategyEnum.HIDDEN_SINGLE && this.isStrategy(StrategyEnum.HIDDEN_SINGLE)) {
-            this.strategyType = StrategyEnum.HIDDEN_SINGLE;
-            return true;
-        }
-        else if (strategyType === StrategyEnum.SIMPLIFY_NOTES && this.isStrategy(StrategyEnum.SIMPLIFY_NOTES)) {
-            this.strategyType = StrategyEnum.SIMPLIFY_NOTES;
+        if (this.isStrategy(strategyType)) {
+            this.strategyType = strategyType;
             return true;
         }
         return false;
