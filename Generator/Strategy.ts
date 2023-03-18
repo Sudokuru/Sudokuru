@@ -121,35 +121,35 @@ export class Strategy{
             this.strategyType = StrategyEnum.AMEND_NOTES;
             return true;
         }
-        else if (strategyType === StrategyEnum.NAKED_SINGLE && this.isNakedSet(TupleEnum.SINGLE)) {
+        else if (strategyType === StrategyEnum.NAKED_SINGLE && this.isStrategy(StrategyEnum.NAKED_SINGLE)) {
             this.strategyType = StrategyEnum.NAKED_SINGLE;
             return true;
         }
-        else if (strategyType === StrategyEnum.NAKED_PAIR && this.isNakedSet(TupleEnum.PAIR)) {
+        else if (strategyType === StrategyEnum.NAKED_PAIR && this.isStrategy(StrategyEnum.NAKED_PAIR)) {
             this.strategyType = StrategyEnum.NAKED_PAIR;
             return true;
         }
-        else if (strategyType === StrategyEnum.NAKED_TRIPLET && this.isNakedSet(TupleEnum.TRIPLET)) {
+        else if (strategyType === StrategyEnum.NAKED_TRIPLET && this.isStrategy(StrategyEnum.NAKED_TRIPLET)) {
             this.strategyType = StrategyEnum.NAKED_TRIPLET;
             return true;
         }
-        else if (strategyType === StrategyEnum.NAKED_QUADRUPLET && this.isNakedSet(TupleEnum.QUADRUPLET)) {
+        else if (strategyType === StrategyEnum.NAKED_QUADRUPLET && this.isStrategy(StrategyEnum.NAKED_QUADRUPLET)) {
             this.strategyType = StrategyEnum.NAKED_QUADRUPLET;
             return true;
         }
-        else if (strategyType === StrategyEnum.NAKED_QUINTUPLET && this.isNakedSet(TupleEnum.QUINTUPLET)) {
+        else if (strategyType === StrategyEnum.NAKED_QUINTUPLET && this.isStrategy(StrategyEnum.NAKED_QUINTUPLET)) {
             this.strategyType = StrategyEnum.NAKED_QUINTUPLET;
             return true;
         }
-        else if (strategyType === StrategyEnum.NAKED_SEXTUPLET && this.isNakedSet(TupleEnum.SEXTUPLET)) {
+        else if (strategyType === StrategyEnum.NAKED_SEXTUPLET && this.isStrategy(StrategyEnum.NAKED_SEXTUPLET)) {
             this.strategyType = StrategyEnum.NAKED_SEXTUPLET;
             return true;
         }
-        else if (strategyType === StrategyEnum.NAKED_SEPTUPLET && this.isNakedSet(TupleEnum.SEPTUPLET)) {
+        else if (strategyType === StrategyEnum.NAKED_SEPTUPLET && this.isStrategy(StrategyEnum.NAKED_SEPTUPLET)) {
             this.strategyType = StrategyEnum.NAKED_SEPTUPLET;
             return true;
         }
-        else if (strategyType === StrategyEnum.NAKED_OCTUPLET && this.isNakedSet(TupleEnum.OCTUPLET)) {
+        else if (strategyType === StrategyEnum.NAKED_OCTUPLET && this.isStrategy(StrategyEnum.NAKED_OCTUPLET)) {
             this.strategyType = StrategyEnum.NAKED_OCTUPLET
             return true;
         }
@@ -162,6 +162,38 @@ export class Strategy{
             return true;
         }
         return false;
+    }
+
+    /**
+     * Given a strategy type returns its tuple type e.g naked triplet returns triplet
+     * @param strategyType - strategy type
+     * @returns tuple type for given strategy type
+     */
+    public getStrategyTuple(strategyType: StrategyEnum):TupleEnum {
+        if (strategyType === StrategyEnum.NAKED_SINGLE) {
+            return TupleEnum.SINGLE;
+        }
+        else if (strategyType === StrategyEnum.NAKED_PAIR) {
+            return TupleEnum.PAIR;
+        }
+        else if (strategyType === StrategyEnum.NAKED_TRIPLET) {
+            return TupleEnum.TRIPLET;
+        }
+        else if (strategyType === StrategyEnum.NAKED_QUADRUPLET) {
+            return TupleEnum.QUADRUPLET;
+        }
+        else if (strategyType === StrategyEnum.NAKED_QUINTUPLET) {
+            return TupleEnum.QUINTUPLET;
+        }
+        else if (strategyType === StrategyEnum.NAKED_SEXTUPLET) {
+            return TupleEnum.SEXTUPLET;
+        }
+        else if (strategyType === StrategyEnum.NAKED_SEPTUPLET) {
+            return TupleEnum.SEPTUPLET;
+        }
+        else if (strategyType === StrategyEnum.NAKED_OCTUPLET) {
+            return TupleEnum.OCTUPLET;
+        }
     }
 
     /**
@@ -181,6 +213,12 @@ export class Strategy{
                     }
                 }
             }
+        }
+        else if (strategyType === StrategyEnum.NAKED_SINGLE || strategyType === StrategyEnum.NAKED_PAIR || 
+                 strategyType === StrategyEnum.NAKED_TRIPLET || strategyType === StrategyEnum.NAKED_QUADRUPLET || 
+                 strategyType === StrategyEnum.NAKED_QUINTUPLET || strategyType === StrategyEnum.NAKED_SEXTUPLET || 
+                 strategyType === StrategyEnum.NAKED_SEPTUPLET || strategyType === StrategyEnum.NAKED_OCTUPLET) {
+            return this.isNakedSet(this.getStrategyTuple(strategyType));
         }
         return false;
     }
