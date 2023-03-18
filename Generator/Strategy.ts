@@ -187,10 +187,17 @@ export class Strategy{
                     }
                 }
             }
-            return false;
         }
         else if (strategyType === StrategyEnum.HIDDEN_SINGLE) {
-            return this.isHiddenSet(this.getStrategyTuple(strategyType));
+            let tuple:TupleEnum = this.getStrategyTuple(strategyType);
+            let subsets:Group[] = Group.getSubset(tuple);
+            for (let group:GroupEnum = 0; group < GroupEnum.COUNT; group++) {
+                for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
+                    if (this.isHiddenSet(tuple, subsets, group, i)) {
+                        return true;
+                    }
+                }
+            }
         }
         return false;
     }
@@ -472,84 +479,81 @@ export class Strategy{
     /**
      * Checks if strategy is a hidden set of given tuple and if so adds notes to remove
      * @param tuple - e.g. could be single or pair for hidden single or hidden pair respectively
+     * @param subsets - every possible combination of cells in a given group
+     * @param group - group type being check for a naked set e.g. row
+     * @param i - index of group being checked e.g. 3 for 4th group e.g. 4th row
      * @returns true if strategy is a hidden tuple
      */
-    private isHiddenSet(tuple: TupleEnum):boolean {
+    private isHiddenSet(tuple: TupleEnum, subsets:Group[], group: GroupEnum, i: number):boolean {
         // Checks if tuple exists by getting all cells in each group and trying to build hidden tuple
-        // Checks every subset (combination) of cells in each group (row/column/box)
-        let subsets:Group[] = Group.getSubset(tuple);
-        for (let group:GroupEnum = 0; group < GroupEnum.COUNT; group++) {
-            for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
-                // Skips over groups where there aren't enough unfilled cells left to form set
-                if (this.cellBoard.getValuesPlaced(group, i).getSize() > (SudokuEnum.ROW_LENGTH - tuple)) {
-                    continue;
+        // Skips over groups where there aren't enough unfilled cells left to form set
+        if (this.cellBoard.getValuesPlaced(group, i).getSize() > (SudokuEnum.ROW_LENGTH - tuple)) {
+            return false;
+        }
+        // Contains cells in the same row, column, or box
+        let cells: Cell[] = getCellsInGroup(this.emptyCells, group, i);
+        // Tries to build a hidden set of size tuple for each possible size tuple subset of candidates
+        // Is hidden single iff the number of candidates that don't exist outside of the hidden tuple
+        // is equal to the tuple (e.g. hidden pair if there are two numbers only in the pair in the row)
+        for (let j:number = 0; j < subsets.length; j++) {
+            // Stores indexes of the cells that make up the hidden set
+            let inHiddenSet:Group = subsets[j];
+            // Stores the cells that make up the hidden set
+            let hiddenSet:Cell[] = getSubsetOfCells(cells, inHiddenSet);
+            // If hidden set is correct size (i.e. every element in subset was in cells)
+            if (hiddenSet.length === tuple) {
+                // Stores all of the cells in the hidden sets group (except the hidden set itself and non empty cells)
+                let notHiddenSet:Cell[] = new Array();
+                for (let k:number = 0; k < cells.length; k++) {
+                    if (!inHiddenSet.contains(k) && cells[k].isEmpty()) {
+                        notHiddenSet.push(cells[k]);
+                    }
                 }
-                // Contains cells in the same row, column, or box
-                let cells: Cell[] = getCellsInGroup(this.emptyCells, group, i);
-                // Tries to build a hidden set of size tuple for each possible size tuple subset of candidates
-                // Is hidden single iff the number of candidates that don't exist outside of the hidden tuple
-                // is equal to the tuple (e.g. hidden pair if there are two numbers only in the pair in the row)
-                for (let j:number = 0; j < subsets.length; j++) {
-                    // Stores indexes of the cells that make up the hidden set
-                    let inHiddenSet:Group = subsets[j];
-                    // Stores the cells that make up the hidden set
-                    let hiddenSet:Cell[] = getSubsetOfCells(cells, inHiddenSet);
-                    // If hidden set is correct size (i.e. every element in subset was in cells)
-                    if (hiddenSet.length === tuple) {
-                        // Stores all of the cells in the hidden sets group (except the hidden set itself and non empty cells)
-                        let notHiddenSet:Cell[] = new Array();
-                        for (let k:number = 0; k < cells.length; k++) {
-                            if (!inHiddenSet.contains(k) && cells[k].isEmpty()) {
-                                notHiddenSet.push(cells[k]);
-                            }
+                // Calculates notes that aren't in the hidden set
+                let notHiddenSetCandidates:Group = getUnionOfSetNotes(notHiddenSet);
+                // Calculates notes that are in the hidden set
+                let hiddenSetCandidates:Group = getUnionOfSetNotes(hiddenSet);
+                // Get values that have already been placed in the group and remove them as candidates
+                let used:Group = new Group(false);
+                let groupCells: Cell[] = getCellsInGroup(this.board, group, i);
+                for (let k:number = 0; k < groupCells.length; k++) {
+                    if (!groupCells[k].isEmpty()) {
+                        used.insert(groupCells[k].getValue());
+                    }
+                }
+                notHiddenSetCandidates.remove(used);
+                hiddenSetCandidates.remove(used);
+                // Is hidden set if correct number of candidates don't exist outside of the hidden set
+                if ((hiddenSetCandidates.getSize() - (hiddenSetCandidates.intersection(notHiddenSetCandidates)).getSize()) === tuple) {
+                    // Remove candidates that aren't part of the hidden set from the hidden sets notes
+                    for (let k:number = 0; k < tuple; k++) {
+                        if ((hiddenSet[k].getNotes().intersection(notHiddenSetCandidates)).getSize() > 0) {
+                            let notes:Group = new Group(false, hiddenSet[k].getRow(), hiddenSet[k].getColumn());
+                            notes.insert(notHiddenSetCandidates);
+                            this.notes.push(notes);
+                            this.identified = true;
                         }
-                        // Calculates notes that aren't in the hidden set
-                        let notHiddenSetCandidates:Group = getUnionOfSetNotes(notHiddenSet);
-                        // Calculates notes that are in the hidden set
-                        let hiddenSetCandidates:Group = getUnionOfSetNotes(hiddenSet);
-                        // Get values that have already been placed in the group and remove them as candidates
-                        let used:Group = new Group(false);
-                        let groupCells: Cell[] = getCellsInGroup(this.board, group, i);
-                        for (let k:number = 0; k < groupCells.length; k++) {
-                            if (!groupCells[k].isEmpty()) {
-                                used.insert(groupCells[k].getValue());
-                            }
+                    }
+                    // If notes were found you can remove as part of the hidden single then strategy identified
+                    if (this.identified) {
+                        let groups:number[] = new Array(2);
+                        groups[0] = group;
+                        groups[1] = i;
+                        this.groups.push(groups);
+                        for (let k:number = 0; k < notHiddenSet.length; k++) {
+                            this.cause.push(new Cell(notHiddenSet[k].getRow(), notHiddenSet[k].getColumn()));
                         }
-                        notHiddenSetCandidates.remove(used);
-                        hiddenSetCandidates.remove(used);
-                        // Is hidden set if correct number of candidates don't exist outside of the hidden set
-                        if ((hiddenSetCandidates.getSize() - (hiddenSetCandidates.intersection(notHiddenSetCandidates)).getSize()) === tuple) {
-                            // Remove candidates that aren't part of the hidden set from the hidden sets notes
-                            for (let k:number = 0; k < tuple; k++) {
-                                if ((hiddenSet[k].getNotes().intersection(notHiddenSetCandidates)).getSize() > 0) {
-                                    let notes:Group = new Group(false, hiddenSet[k].getRow(), hiddenSet[k].getColumn());
-                                    notes.insert(notHiddenSetCandidates);
-                                    this.notes.push(notes);
-                                    this.identified = true;
-                                }
-                            }
-                            // If notes were found you can remove as part of the hidden single then strategy identified
-                            if (this.identified) {
-                                let groups:number[] = new Array(2);
-                                groups[0] = group;
-                                groups[1] = i;
-                                this.groups.push(groups);
-                                for (let k:number = 0; k < notHiddenSet.length; k++) {
-                                    this.cause.push(new Cell(notHiddenSet[k].getRow(), notHiddenSet[k].getColumn()));
-                                }
-                                // Calculate ratio of number of notes to possible number (more notes to obscure hidden set = higher difficulty)
-                                let noteCount:number = 0;
-                                for (let k:number = 0; k < tuple; k++) {
-                                    noteCount += (hiddenSet[k].getNotes()).getSize();
-                                }
-                                let noteRatio:number = noteCount / (SudokuEnum.ROW_LENGTH * SudokuEnum.ROW_LENGTH);
-                                if (tuple === TupleEnum.SINGLE) {
-                                    this.difficulty = DifficultyLowerBounds.HIDDEN_SINGLE;
-                                    this.difficulty += Math.ceil(noteRatio * (DifficultyUpperBounds.HIDDEN_SINGLE - DifficultyLowerBounds.HIDDEN_SINGLE));
-                                }
-                                return this.identified;
-                            }
+                        // Calculate ratio of number of notes to possible number (more notes to obscure hidden set = higher difficulty)
+                        let noteCount:number = 0;
+                        for (let k:number = 0; k < tuple; k++) {
+                            noteCount += (hiddenSet[k].getNotes()).getSize();
                         }
+                        let noteRatio:number = noteCount / (SudokuEnum.ROW_LENGTH * SudokuEnum.ROW_LENGTH);
+                        if (tuple === TupleEnum.SINGLE) {
+                            this.difficulty = DifficultyLowerBounds.HIDDEN_SINGLE;
+                            this.difficulty += Math.ceil(noteRatio * (DifficultyUpperBounds.HIDDEN_SINGLE - DifficultyLowerBounds.HIDDEN_SINGLE));
+                        }
+                        return this.identified;
                     }
                 }
             }
