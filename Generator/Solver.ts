@@ -94,8 +94,8 @@ export class Solver{
         this.allHints = new Array();
         for (let strategy: StrategyEnum = (StrategyEnum.INVALID + 1); strategy < StrategyEnum.COUNT; strategy++) {
             let strategyObj:Strategy = new Strategy(this.cellBoard, this.board, this.emptyCells, this.solution);
-            if (strategyObj.setStrategyType(strategy)) {
-                this.allHints.push(new Hint(strategyObj));
+            if (strategyObj.setStrategyType(strategy, true)) {
+                this.allHints.push(strategyObj.getDrillHint());
             }
         }
         return;

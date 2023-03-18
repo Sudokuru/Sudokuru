@@ -1,8 +1,9 @@
 import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
-import { SudokuEnum, StrategyEnum, getCellsInRow, getCellsInColumn, getCellsInBox, GroupEnum, getNextCellInGroup, TupleEnum, getCellsInGroup, getUnionOfSetNotes, getSubsetOfCells } from "./Sudoku"
+import { SudokuEnum, StrategyEnum, getCellsInRow, getCellsInColumn, getCellsInBox, GroupEnum, getNextCellInGroup, TupleEnum, getCellsInGroup, getUnionOfSetNotes, getSubsetOfCells, cellsEqual } from "./Sudoku"
 import { Group } from "./Group";
 import { CellBoard } from "./CellBoard";
+import { Hint } from "./Hint";
 
 /**
  * Includes lower bounds for strategies difficulty ratings
@@ -91,6 +92,8 @@ export class Strategy{
     private difficulty: number;
     // Stores solution board if provided, AmendNotes Strategy can use it to correct players who remove "correct" notes
     private solution: string[][];
+    // Stores drill hint
+    private drillHint: Hint;
 
     /**
      * Cell object using cells the strategy acts on
@@ -132,6 +135,7 @@ export class Strategy{
     public setStrategyType(strategyType: StrategyEnum, drill: boolean = false):boolean {
         if (this.isStrategy(strategyType, drill)) {
             this.strategyType = strategyType;
+            this.identified = true;
             return true;
         }
         return false;
@@ -176,6 +180,7 @@ export class Strategy{
      * @returns true if strategy is strategyType 
      */
     public isStrategy(strategyType: StrategyEnum, drill: boolean = false):boolean {
+        // keeps track of strategies found already so can filter out drills that could be confusing due to multiple instances of same strategy
         let used:boolean = false;
         if (strategyType === StrategyEnum.AMEND_NOTES || strategyType === StrategyEnum.SIMPLIFY_NOTES) {
             for (let r:number = 0; r < this.emptyCells.length; r++) {
@@ -185,9 +190,13 @@ export class Strategy{
                             return true;
                         }
                         else if (drill && used) {
-                            return false;
+                            if (!cellsEqual(this.cause, this.drillHint.getCellsCause())) {
+                                return false;
+                            }
                         }
                         else {
+                            this.strategyType = strategyType;
+                            this.drillHint = new Hint(this);
                             this.reset();
                             used = true;
                         }
@@ -197,9 +206,13 @@ export class Strategy{
                             return true;
                         }
                         else if (drill && used) {
-                            return false;
+                            if (!cellsEqual(this.cause, this.drillHint.getCellsCause())) {
+                                return false;
+                            }
                         }
                         else {
+                            this.strategyType = strategyType;
+                            this.drillHint = new Hint(this);
                             this.reset();
                             used = true;
                         }
@@ -220,9 +233,13 @@ export class Strategy{
                             return true;
                         }
                         else if (drill && used) {
-                            return false;
+                            if (!cellsEqual(this.cause, this.drillHint.getCellsCause())) {
+                                return false;
+                            }
                         }
                         else {
+                            this.strategyType = strategyType;
+                            this.drillHint = new Hint(this);
                             this.reset();
                             used = true;
                         }
@@ -240,9 +257,13 @@ export class Strategy{
                             return true;
                         }
                         else if (drill && used) {
-                            return false;
+                            if (!cellsEqual(this.cause, this.drillHint.getCellsCause())) {
+                                return false;
+                            }
                         }
                         else {
+                            this.strategyType = strategyType;
+                            this.drillHint = new Hint(this);
                             this.reset();
                             used = true;
                         }
@@ -254,6 +275,14 @@ export class Strategy{
             return true;
         }
         return false;
+    }
+
+    /**
+     * Gets drill hint
+     * @returns drill hint object
+     */
+    public getDrillHint():Hint {
+        return this.drillHint;
     }
 
     /**
