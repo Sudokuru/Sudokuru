@@ -367,3 +367,37 @@ export function getSubsetOfCells(cells: Cell[], subset: Group):Cell[] {
     }
     return cellSubset;
 }
+
+/**
+ * Returns true if cells contains cell
+ * @param cells - cells array
+ * @param cell - cell object
+ * @returns true if cells contains cell
+ */
+export function cellsContainCell(cells: Cell[], cell: Cell) {
+    for (let i:number = 0; i < cells.length; i++) {
+        if (cells[i].getRow() === cell.getRow() &&
+            cells[i].getColumn() === cell.getColumn()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * Returns true if a has same cells as b
+ * @param a - cells array a
+ * @param b - cells array b
+ * @returns true if a has the same cells as b
+ */
+export function cellsEqual(a: Cell[], b: Cell[]):boolean {
+    if (a.length !== b.length) {
+        return false;
+    }
+    for (let i:number = 0; i < a.length; i++) {
+        if (!cellsContainCell(b, a[i])) {
+            return false;
+        }
+    }
+    return true;
+}
