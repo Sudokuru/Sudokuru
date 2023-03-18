@@ -233,6 +233,14 @@ export class Hint{
     }
 
     /**
+     * Gets cells that "cause" strategy to be applicable
+     * @returns cells "causing" strategy
+     */
+    public getCellsCause():Cell[] {
+        return this.strategy.getCause();
+    }
+
+    /**
      * Gets groups that cause strategy
      * @returns strategy groups
      */
