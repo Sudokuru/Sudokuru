@@ -153,7 +153,7 @@ export class Strategy{
             this.strategyType = StrategyEnum.NAKED_OCTUPLET
             return true;
         }
-        else if (strategyType === StrategyEnum.HIDDEN_SINGLE && this.isHiddenSet(TupleEnum.SINGLE)) {
+        else if (strategyType === StrategyEnum.HIDDEN_SINGLE && this.isStrategy(StrategyEnum.HIDDEN_SINGLE)) {
             this.strategyType = StrategyEnum.HIDDEN_SINGLE;
             return true;
         }
@@ -170,7 +170,7 @@ export class Strategy{
      * @returns tuple type for given strategy type
      */
     public getStrategyTuple(strategyType: StrategyEnum):TupleEnum {
-        if (strategyType === StrategyEnum.NAKED_SINGLE) {
+        if (strategyType === StrategyEnum.NAKED_SINGLE || strategyType === StrategyEnum.HIDDEN_SINGLE) {
             return TupleEnum.SINGLE;
         }
         else if (strategyType === StrategyEnum.NAKED_PAIR) {
@@ -228,6 +228,9 @@ export class Strategy{
                 }
             }
             return false;
+        }
+        else if (strategyType === StrategyEnum.HIDDEN_SINGLE) {
+            return this.isHiddenSet(this.getStrategyTuple(strategyType));
         }
         return false;
     }
