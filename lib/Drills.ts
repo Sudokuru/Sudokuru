@@ -27,7 +27,7 @@ export class Drills{
 
         if (res.status === 200) {
             let data:getDrillGameResponse = await res.json();
-            let boardString:string = data.puzzle;
+            let boardString:string = data[0].puzzle;
             let solver:Solver = new Solver(getBoardArray(boardString));
             let notes:string = solver.getNotesString();
             // Simplifies notes
