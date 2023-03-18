@@ -112,12 +112,25 @@ export class Strategy{
     }
 
     /**
+     * Resets Strategy object fields to initial state
+     */
+    public reset():void {
+        this.cause = new Array();
+        this.groups = new Array();
+        this.values = new Array();
+        this.notes = new Array();
+        this.strategyType = undefined;
+        this.identified = false;
+        this.difficulty = undefined;
+    }
+
+    /**
      * Checks if strategy is a given strategy type and if so sets values to place, notes to remove
      * @param strategyType - strategy type that is being checked for
      * @returns true if strategy is strategyType
      */
-    public setStrategyType(strategyType: StrategyEnum):boolean {
-        if (this.isStrategy(strategyType)) {
+    public setStrategyType(strategyType: StrategyEnum, drill: boolean = false):boolean {
+        if (this.isStrategy(strategyType, drill)) {
             this.strategyType = strategyType;
             return true;
         }
@@ -159,17 +172,37 @@ export class Strategy{
     /**
      * Checks if strategy is a given strategy type and if so sets values to place, notes to remove
      * @param strategyType - strategy type that is being checked for
+     * @param drill - true if checking if strategy if valid for drill which requires there to be exactly one instance of given strategy
      * @returns true if strategy is strategyType 
      */
-    public isStrategy(strategyType: StrategyEnum):boolean {
+    public isStrategy(strategyType: StrategyEnum, drill: boolean = false):boolean {
+        let used:boolean = false;
         if (strategyType === StrategyEnum.AMEND_NOTES || strategyType === StrategyEnum.SIMPLIFY_NOTES) {
             for (let r:number = 0; r < this.emptyCells.length; r++) {
                 for (let c:number = 0; c < this.emptyCells[r].length; c++) {
                     if (strategyType === StrategyEnum.AMEND_NOTES && this.isAmendNotes(r, c)) {
-                        return true;
+                        if (!drill) {
+                            return true;
+                        }
+                        else if (drill && used) {
+                            return false;
+                        }
+                        else {
+                            this.reset();
+                            used = true;
+                        }
                     }
                     else if (strategyType === StrategyEnum.SIMPLIFY_NOTES && this.isSimplifyNotes(r, c)) {
-                        return true;
+                        if (!drill) {
+                            return true;
+                        }
+                        else if (drill && used) {
+                            return false;
+                        }
+                        else {
+                            this.reset();
+                            used = true;
+                        }
                     }
                 }
             }
@@ -183,7 +216,16 @@ export class Strategy{
             for (let group:GroupEnum = 0; group < GroupEnum.COUNT; group++) {
                 for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
                     if (this.isNakedSet(tuple, subsets, group, i)) {
-                        return true;
+                        if (!drill) {
+                            return true;
+                        }
+                        else if (drill && used) {
+                            return false;
+                        }
+                        else {
+                            this.reset();
+                            used = true;
+                        }
                     }
                 }
             }
@@ -194,10 +236,22 @@ export class Strategy{
             for (let group:GroupEnum = 0; group < GroupEnum.COUNT; group++) {
                 for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
                     if (this.isHiddenSet(tuple, subsets, group, i)) {
-                        return true;
+                        if (!drill) {
+                            return true;
+                        }
+                        else if (drill && used) {
+                            return false;
+                        }
+                        else {
+                            this.reset();
+                            used = true;
+                        }
                     }
                 }
             }
+        }
+        if (drill && used) {
+            return true;
         }
         return false;
     }
