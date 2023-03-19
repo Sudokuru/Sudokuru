@@ -185,23 +185,8 @@ export class Strategy{
         if (strategyType === StrategyEnum.AMEND_NOTES || strategyType === StrategyEnum.SIMPLIFY_NOTES) {
             for (let r:number = 0; r < this.emptyCells.length; r++) {
                 for (let c:number = 0; c < this.emptyCells[r].length; c++) {
-                    if (strategyType === StrategyEnum.AMEND_NOTES && this.isAmendNotes(r, c)) {
-                        if (!drill) {
-                            return true;
-                        }
-                        else if (drill && used) {
-                            if (!cellsEqual(this.cause, this.drillHint.getCellsCause())) {
-                                return false;
-                            }
-                        }
-                        else {
-                            this.strategyType = strategyType;
-                            this.drillHint = new Hint(this);
-                            this.reset();
-                            used = true;
-                        }
-                    }
-                    else if (strategyType === StrategyEnum.SIMPLIFY_NOTES && this.isSimplifyNotes(r, c)) {
+                    if ((strategyType === StrategyEnum.AMEND_NOTES && this.isAmendNotes(r, c)) ||
+                        (strategyType === StrategyEnum.SIMPLIFY_NOTES && this.isSimplifyNotes(r, c))) {
                         if (!drill) {
                             return true;
                         }
