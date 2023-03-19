@@ -151,189 +151,6 @@ export function getCandidateIndex(candidate: unknown):number {
 }
 
 /**
- * Given a 2d board cell array and a number n returns a 2d array containing only cells in the nth row
- * @param cells - 2d board cell array
- * @param n - row getting cells from
- * @return array of cells in nth row
- */
-export function getCellsInRow(cells: Cell[][], n: number):Cell[][] {
-    let row: Cell[][] = getEmptyCellBoard();
-    for (let column: number = 0; column < cells[n].length; column++) {
-        row[n].push(cells[n][column]);
-    }
-    return row;
-}
-
-/**
- * Given a 2d board cell array and a number n returns a 2d array containing only cells in the nth column
- * @param cells - 2d board cell array
- * @param n - column getting cells from
- * @return array of cells in nth column
- */
-export function getCellsInColumn(cells: Cell[][], n: number):Cell[][] {
-    let column: Cell[][] = getEmptyCellBoard();
-    for (let i:number = 0; i < cells.length; i++) {
-        for (let j:number = 0; j < cells[i].length; j++) {
-            if (cells[i][j].getColumn() === n) {
-                column[cells[i][j].getRow()].push(cells[i][j]);
-                j = cells[i].length;
-            }
-        }
-    }
-    return column;
-}
-
-/**
- * Given a 2d board cell array and a number n returns a 2d array containing only cells in the nth box
- * @param cells - 2d board cell array
- * @param n - box getting cells from
- * @return array of cells in nth box
- */
-export function getCellsInBox(cells: Cell[][], n: number):Cell[][] {
-    let box: Cell[][] = getEmptyCellBoard();
-    for (let i:number = 0; i < cells.length; i++) {
-         for (let j:number = 0; j < cells[i].length; j++) {
-            if (cells[i][j].getBox() === n) {
-                box[cells[i][j].getRow()].push(cells[i][j]);
-            }
-        }
-    }
-    return box;
-}
-
-/**
- * Given cell array and cell returns next cell in same row iterating left to right, if there is none returns null
- * If given cell is null then returns first cell in row
- * @param cells - 2d cell array
- * @param cell - current cell or null if getting first cell
- * @param index - optional param used when cell is null to specify what row/column/box to get first cell from
- * @returns next cell in cells in same row if there is one, otherwise null
- */
-export function getNextCellInRow(cells: Cell[][], cell: Cell, index?: number):Cell {
-    // Set index if cell is provided
-    if (cell !== null) {
-        index = cell.getRow();
-    }
-    let row: Cell[][] = getCellsInRow(cells, index);
-    for (let i:number = 0; i < row[index].length; i++) {
-        // Return first cell if cell is null otherwise returns next cell in column after cell
-        if (cell === null || row[cell.getRow()][i].getColumn() > cell.getColumn()) {
-            return row[index][i];
-        }
-    }
-    return null;
-}
-
-/**
- * Given cell array and cell returns next cell in same column iterating top to bottom, if there is none returns null
- * If given cell is null then returns first cell in column
- * @param cells - 2d cell array
- * @param cell - current cell or null if getting first cell
- * @param index - optional param used when cell is null to specify what column to get first cell from
- * @returns next cell in cells in same column if there is one, otherwise null
- */
-export function getNextCellInColumn(cells: Cell[][], cell: Cell, index?: number):Cell {
-    // Set index if cell is provided
-    if (cell !== null) {
-        index = cell.getColumn();
-    }
-    let column: Cell[][] = getCellsInColumn(cells, index);
-    for (let i:number = 0; i < column.length; i++) {
-        for (let j:number = 0; j < column[i].length; j++) {
-            // Return first cell if cell is null otherwise returns next cell in row after cell
-            if (cell === null || column[i][j].getRow() > cell.getRow()) {
-                return column[i][j];
-            }
-        }
-    }
-    return null;
-}
-
-/**
- * Given cell array and cell returns next cell in same box iterating left to right, top to bottom, if there is none returns null
- * If given cell is null then returns first cell in box
- * @param cells - 2d cell array
- * @param cell - current cell or null if getting first cell
- * @param index - optional param used when cell is null to specify what box to get first cell from
- * @returns next cell in cells in same box if there is one, otherwise null
- */
-export function getNextCellInBox(cells: Cell[][], cell: Cell, index?: number):Cell {
-    // Set index if cell is proivded
-    if (cell !== null) {
-        index = cell.getBox();
-    }
-    let box: Cell[][] = getCellsInBox(cells, index);
-    for (let i:number = 0; i < box.length; i++) {
-        for (let j:number = 0; j < box[i].length; j++) {
-            // Return first cell if cell is null otherwise returns next cell in box after cell
-            if (cell === null || (i > cell.getRow()) || ((i === cell.getRow()) && (box[i][j].getColumn() > cell.getColumn()))) {
-                return box[i][j];
-            }
-        }
-    }
-    return null;
-}
-
-/**
- * Given cell array, cell, and group type returns next cell in group if there is one, otherwise null (left to right, top down)
- * If null passed for cell will return first cell in group
- * @param cells - 2d cell array
- * @param cell - current cell or null if getting first cell in group
- * @param group - group type
- * @param index - optional param used when cell is null to specify what row/column/box to get first cell from
- * @returns next cell in cells same group if there is one, otherwise null
- */
-export function getNextCellInGroup(cells: Cell[][], cell: Cell, group: GroupEnum, index?: number):Cell {
-    if (group === GroupEnum.ROW) {
-        return getNextCellInRow(cells, cell, index);
-    }
-    else if (group === GroupEnum.COLUMN) {
-        return getNextCellInColumn(cells, cell, index);
-    }
-    else {
-        return getNextCellInBox(cells, cell, index);
-    }
-}
-
-/**
- * Given a cell board array and a group and index returns all cells in the indexth group in the board
- * @param cells - 2d cell board array
- * @param group - row, column, or box
- * @param index - index of row, column, or box
- * @returns all cells in the indexth group e.g. all cells in 5th row
- */
-export function getCellsInGroup(cells: Cell[][], group: GroupEnum, index: number):Cell[] {
-    // Contains cells in the same row, column, or box
-    let groupCells: Cell[] = new Array();
-    // Gets first cell in group
-    let nextCell:Cell = getNextCellInGroup(cells, null, group, index);
-    // Adds every cell in same row, column, or box to cells
-    while (nextCell !== null) {
-        groupCells.push(nextCell);
-        nextCell = getNextCellInGroup(cells, groupCells[groupCells.length - 1], group);
-    }
-    return groupCells;
-}
-
-/**
- * Given a 2d cell array and a cell, returns the next cell iterating left to right, top to bottom, if there is none returns null
- * @param cells - 2d cell array
- * @param cell - current cell
- * @returns next cell in cells if there is one, otherwise null
- */
-export function getNextCell(cells: Cell[][], cell: Cell):Cell {
-    for (let i:number = 0; i < cells.length; i++) {
-        for (let j:number = 0; j < cells[i].length; j++) {
-            if (cells[i][j].getRow() > cell.getRow() || 
-                (cells[i][j].getRow() === cell.getRow() && cells[i][j].getColumn() > cell.getColumn())) {
-                return cells[i][j];
-            }
-        }
-    }
-    return null;
-}
-
-/**
  * Given a set of cells returns a group containing the union of the notes of all the cells in the set (if a cell has no notes its considered to have all notes)
  * @param set - set of cells containing notes being unioned
  * @returns union of all notes in the set
@@ -353,59 +170,51 @@ export function getUnionOfSetNotes(set: Cell[]):Group {
 }
 
 /**
- * Given a cell and a group type and a subset returns whether or not the cell is in the part of the group designated by the subset
- * For example if the group is ROW and the subset contains 1 and 3 then returns whether or not the cell is in the 2nd or 4th column of the row
- * @param subset - contains some candidates in group
- * @param cell - cell in group
- * @param group - group e.g. row, column, or box
- * @returns if cell is in subset of group
- */
-export function inSubset(subset: Group, cell: Cell, group: GroupEnum):boolean {
-    if (group === GroupEnum.ROW) {
-        return subset.contains(cell.getColumn());
-    }
-    else if (group === GroupEnum.COLUMN) {
-        return subset.contains(cell.getRow());
-    }
-    else {
-        let boxRowStart:number = Cell.getBoxRowStart(cell.getBox());
-        let boxColumnStart:number = Cell.getBoxColumnStart(cell.getBox());
-        let boxIndex:number = (cell.getRow() - boxRowStart) * 3;
-        boxIndex += cell.getColumn() - boxColumnStart;
-        return subset.contains(boxIndex);
-    }
-}
-
-/**
- * Returns a group containing indexes of given cells that appear in the given subset of the given group
+ * Returns a subset of given cells based on given subset G
  * @param cells - cells array
- * @param subset - subset of a group
- * @param group - row, column, or box
- * @returns group containing indexes of cells from cells that appear in the subset
+ * @param subset - Group obj representing subset
+ * @returns subset of cells reflective of subset Group
  */
-export function getCellsSubset(cells: Cell[], subset: Group, group: GroupEnum):Group {
-    let cellsSubset:Group = new Group(false);
-    // Adds each cell in cells that is part of the subset to cellsSubset
-    for (let k:number = 0; k < cells.length; k++) {
-        if (inSubset(subset, cells[k], group)) { 
-            cellsSubset.insert(k);
-        }
-    }
-    return cellsSubset;
-}
-
-/**
- * Returns an array of cells in the given subset
- * @param cells - cells array
- * @param subset - subset of cells
- * @returns array of cells representing the given subset of the given cells array
- */
-export function getCellsInSubset(cells: Cell[], subset: Group):Cell[] {
-    let cellsInSubset:Cell[] = new Array();
-    for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
+export function getSubsetOfCells(cells: Cell[], subset: Group):Cell[] {
+    let cellSubset:Cell[] = new Array();
+    for (let i:number = 0; i < cells.length; i++) {
         if (subset.contains(i)) {
-            cellsInSubset.push(cells[i]);
+            cellSubset.push(cells[i]);
         }
     }
-    return cellsInSubset;
+    return cellSubset;
+}
+
+/**
+ * Returns true if cells contains cell
+ * @param cells - cells array
+ * @param cell - cell object
+ * @returns true if cells contains cell
+ */
+export function cellsContainCell(cells: Cell[], cell: Cell) {
+    for (let i:number = 0; i < cells.length; i++) {
+        if (cells[i].getRow() === cell.getRow() &&
+            cells[i].getColumn() === cell.getColumn()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * Returns true if a has same cells as b
+ * @param a - cells array a
+ * @param b - cells array b
+ * @returns true if a has the same cells as b
+ */
+export function cellsEqual(a: Cell[], b: Cell[]):boolean {
+    if (a.length !== b.length) {
+        return false;
+    }
+    for (let i:number = 0; i < a.length; i++) {
+        if (!cellsContainCell(b, a[i])) {
+            return false;
+        }
+    }
+    return true;
 }

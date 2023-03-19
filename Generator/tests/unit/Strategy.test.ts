@@ -4,22 +4,24 @@ import { CustomError, CustomErrorEnum } from '../../CustomError';
 import { getBlankCellBoard, getError, getRowTuplet, removeNotesFromEach, removeTupleNotes } from '../testResources';
 import { Group } from '../../Group';
 import { GroupEnum, StrategyEnum, SudokuEnum, TupleEnum } from '../../Sudoku';
+import { CellBoard } from '../../CellBoard';
 
 describe("create amend notes", () => {
     it('should not be an amend notes', () => {
         let board:Cell[][] = getBlankCellBoard();
-        let strategy:Strategy = new Strategy(board, board);
+        let strategy:Strategy = new Strategy(new CellBoard(board), board, board);
         expect(strategy.setStrategyType(StrategyEnum.AMEND_NOTES)).toBeFalsy();
     });
     it('should be an amend notes', () => {
         let board:Cell[][] = getBlankCellBoard();
         // Insert values into same group as amend notes cell (which will be row 0 and column 0)
-        board[0][8].setValue("1");
-        board[1][1].setValue("2");
-        board[8][0].setValue("3");
+        let cellBoard:CellBoard = new CellBoard(board);
+        cellBoard.setValue(0, 8, "1");
+        cellBoard.setValue(1, 1, "2");
+        cellBoard.setValue(8, 0, "3");
         // Insert value that doesn't share group
-        board[8][8].setValue("4");
-        let strategy:Strategy = new Strategy(board, board);
+        cellBoard.setValue(8, 8, "4");
+        let strategy:Strategy = new Strategy(cellBoard, board, board);
         expect(strategy.setStrategyType(StrategyEnum.AMEND_NOTES)).toBeTruthy();
         expect((strategy.getNotesToRemove())[0].getSize()).toBe(3);
         expect((strategy.getNotesToRemove()[0].contains("1"))).toBeTruthy();
@@ -37,12 +39,13 @@ describe("create amend notes", () => {
             }
         }
         // Add a value in the same group as the first cell so amend notes has something to remove
-        board[0][1].setValue("2");
+        let cellBoard:CellBoard = new CellBoard(board);
+        cellBoard.setValue(0, 1, "2");
         // Remove 1 from the first cells notes even though it must be a one
         board[0][0].resetNotes();
         board[0][0].removeNote("1");
         // Should now be an amend notes on the first cell such that the 1 is added back in and the 2 is removed
-        let strategy:Strategy = new Strategy(board, board, solution);
+        let strategy:Strategy = new Strategy(cellBoard, board, board, solution);
         expect(strategy.setStrategyType(StrategyEnum.AMEND_NOTES)).toBeTruthy();
         expect(strategy.getNotesToRemove()[0].getRow()).toBe(0);
         expect(strategy.getNotesToRemove()[0].getColumn()).toBe(0);
@@ -52,15 +55,15 @@ describe("create amend notes", () => {
 
 describe("create naked single", () => {
     it('should throw strategy not identified error', async () => {
-        let cells:Cell[][] = new Array();
-        let strategy:Strategy = new Strategy(cells, cells);
+        let board:Cell[][] = getBlankCellBoard();
+        let strategy:Strategy = new Strategy(new CellBoard(board), board, board);
         const error = await getError(async () => strategy.getValuesToPlace());
         expect(error).toBeInstanceOf(CustomError);
         expect(error).toHaveProperty('Error_Message', CustomErrorEnum.STRATEGY_NOT_IDENTIFIED);
     });
     it('should not be a naked single', () => {
         let board:Cell[][] = getBlankCellBoard();
-        let strategy:Strategy = new Strategy(board, board);
+        let strategy:Strategy = new Strategy(new CellBoard(board), board, board);
         expect(strategy.setStrategyType(StrategyEnum.NAKED_SINGLE)).toBeFalsy();
     });
     it('should be a naked single', () => {
@@ -73,7 +76,7 @@ describe("create naked single", () => {
         for (let i:number = 1; i < SudokuEnum.COLUMN_LENGTH; i++) {
             (board[0][0]).removeNote(i.toString());
         }
-        let strategy:Strategy = new Strategy(board, board);
+        let strategy:Strategy = new Strategy(new CellBoard(board), board, board);
         expect(strategy.setStrategyType(StrategyEnum.NAKED_SINGLE)).toBeTruthy();
         expect(strategy.getValuesToPlace()[0].getValue()).toBe("9");
         let cause:Cell[] = strategy.getCause();
@@ -96,7 +99,7 @@ describe("create hidden single", () => {
         for (let i:number = 1; i < 8; i++) {
             board[0][i].removeNote("6");
         }
-        let strategy:Strategy = new Strategy(board, board);
+        let strategy:Strategy = new Strategy(new CellBoard(board), board, board);
         expect(strategy.setStrategyType(StrategyEnum.HIDDEN_SINGLE)).toBeFalsy();
     });
     it ('should be a hidden single', () => {
@@ -109,7 +112,7 @@ describe("create hidden single", () => {
         for (let i:number = 0; i < 8; i++) {
             board[0][i].removeNote("9");
         }
-        let strategy:Strategy = new Strategy(board, board);
+        let strategy:Strategy = new Strategy(new CellBoard(board), board, board);
         expect(strategy.setStrategyType(StrategyEnum.HIDDEN_SINGLE)).toBeTruthy();
         expect((strategy.getNotesToRemove())[0].getSize()).toBe(SudokuEnum.ROW_LENGTH - 1);
         let cause:Cell[] = strategy.getCause();
@@ -136,7 +139,7 @@ describe("create naked pair", () => {
         removeNotesFromEach(notes, cells); // removes notes for all but the triplet of candidates from each cell
 
         // Test that it isn't a naked pair
-        let strategy:Strategy = new Strategy(board, board);
+        let strategy:Strategy = new Strategy(new CellBoard(board), board, board);
         expect(strategy.setStrategyType(StrategyEnum.NAKED_PAIR)).toBeFalsy();
     });
     it("should be a naked pair", () => {
@@ -157,7 +160,7 @@ describe("create naked pair", () => {
         removeNotesFromEach(notes, cells);
 
         // Test that is naked pair and can remove notes from every cell in shared row and box except naked pair themself
-        let strategy:Strategy = new Strategy(board, board);
+        let strategy:Strategy = new Strategy(new CellBoard(board), board, board);
         expect(strategy.setStrategyType(StrategyEnum.NAKED_PAIR)).toBeTruthy();
         expect(strategy.getNotesToRemove().length).toBe(13);
         let cause:Cell[] = strategy.getCause();
@@ -192,7 +195,7 @@ describe("create naked triplet", () => {
         removeNotesFromEach(notes, cells);
 
         // Test that is naked triplet and can remove notes from every cell in shared row and box except naked triplet themself
-        let strategy:Strategy = new Strategy(board, board);
+        let strategy:Strategy = new Strategy(new CellBoard(board), board, board);
         expect(strategy.setStrategyType(StrategyEnum.NAKED_TRIPLET)).toBeTruthy();
         expect(strategy.getNotesToRemove().length).toBe(12);
     });
@@ -219,7 +222,7 @@ describe("create naked quadruplet through octuplet", () => {
             cells[0][0].removeNote("1");
 
             // Test that is naked set and can remove notes from every cell in shared row and box except naked tuplet themself
-            let strategy:Strategy = new Strategy(board, board);
+            let strategy:Strategy = new Strategy(new CellBoard(board), board, board);
             //expect(strategy.setStrategyType()).toBeTruthy();
             if (tuple === TupleEnum.QUADRUPLET) {
                 expect(strategy.setStrategyType(StrategyEnum.NAKED_QUADRUPLET));

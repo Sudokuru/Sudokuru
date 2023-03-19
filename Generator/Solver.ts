@@ -4,6 +4,7 @@ import { Strategy } from "./Strategy";
 import { SudokuEnum, StrategyEnum } from "./Sudoku";
 import { Hint } from "./Hint";
 import { Group } from "./Group";
+import { CellBoard } from "./CellBoard";
 
 /**
  * Constructed using 2d board array
@@ -12,6 +13,8 @@ import { Group } from "./Group";
  * Solution 2d board array
  */
 export class Solver{
+    // Stores representation of board being solved and maintains metadata about it
+    private cellBoard: CellBoard;
     // Stores representation of board being solved
     private board: Cell[][];
     // Stores empty cells in board
@@ -37,6 +40,7 @@ export class Solver{
         this.board = new Array();
         this.initializeCellArray(this.board, board.length);
         this.initializeBoard(board);
+        this.cellBoard = new CellBoard(this.board);
         if (notes !== undefined) {
             this.setNotes(notes);
         }
@@ -89,9 +93,9 @@ export class Solver{
     private setAllHints():void {
         this.allHints = new Array();
         for (let strategy: StrategyEnum = (StrategyEnum.INVALID + 1); strategy < StrategyEnum.COUNT; strategy++) {
-            let strategyObj:Strategy = new Strategy(this.board, this.emptyCells, this.solution);
-            if (strategyObj.setStrategyType(strategy)) {
-                this.allHints.push(new Hint(strategyObj));
+            let strategyObj:Strategy = new Strategy(this.cellBoard, this.board, this.emptyCells, this.solution);
+            if (strategyObj.setStrategyType(strategy, true)) {
+                this.allHints.push(strategyObj.getDrillHint());
             }
         }
         return;
@@ -130,7 +134,7 @@ export class Solver{
      */
     private setHint(cells: Cell[][]):void {
         // Attempts to use strategies in order specified by algorithm
-        let strategy:Strategy = new Strategy(this.board, cells, this.solution);
+        let strategy:Strategy = new Strategy(this.cellBoard, this.board, cells, this.solution);
         for (let i: number = 0; i < this.algorithm.length; i++) {
             if (strategy.setStrategyType(this.algorithm[i])) {
                 this.hint = new Hint(strategy);
@@ -289,7 +293,7 @@ export class Solver{
         for (let i:number = 0; i < cells.length; i++) {
             row = cells[i].getRow();
             column = cells[i].getColumn();
-            this.board[row][column].setValue(cells[i].getValue());
+            this.cellBoard.setValue(row, column, cells[i].getValue());
         }
         return;
     }
