@@ -174,6 +174,21 @@ export class Strategy{
     }
 
     /**
+     * Returns true if strategy is a naked set strategy
+     * @param strategyType - strategy type
+     * @returns true if strategy type is a naked set strategy
+     */
+    public isNakedSetStrategy(strategyType: StrategyEnum):boolean {
+        if (strategyType === StrategyEnum.NAKED_SINGLE || strategyType === StrategyEnum.NAKED_PAIR || 
+            strategyType === StrategyEnum.NAKED_TRIPLET || strategyType === StrategyEnum.NAKED_QUADRUPLET || 
+            strategyType === StrategyEnum.NAKED_QUINTUPLET || strategyType === StrategyEnum.NAKED_SEXTUPLET || 
+            strategyType === StrategyEnum.NAKED_SEPTUPLET || strategyType === StrategyEnum.NAKED_OCTUPLET) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Checks if strategy is a given strategy type and if so sets values to place, notes to remove
      * @param strategyType - strategy type that is being checked for
      * @param drill - true if checking if strategy if valid for drill which requires there to be exactly one instance of given strategy
@@ -205,10 +220,7 @@ export class Strategy{
                 }
             }
         }
-        else if (strategyType === StrategyEnum.NAKED_SINGLE || strategyType === StrategyEnum.NAKED_PAIR || 
-                 strategyType === StrategyEnum.NAKED_TRIPLET || strategyType === StrategyEnum.NAKED_QUADRUPLET || 
-                 strategyType === StrategyEnum.NAKED_QUINTUPLET || strategyType === StrategyEnum.NAKED_SEXTUPLET || 
-                 strategyType === StrategyEnum.NAKED_SEPTUPLET || strategyType === StrategyEnum.NAKED_OCTUPLET) {
+        else if (this.isNakedSetStrategy(strategyType)) {
             let tuple:TupleEnum = this.getStrategyTuple(strategyType);
             let subsets:Group[] = Group.getSubset(tuple);
             for (let group:GroupEnum = 0; group < GroupEnum.COUNT; group++) {
