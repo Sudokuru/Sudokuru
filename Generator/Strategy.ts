@@ -205,73 +205,50 @@ export class Strategy{
                         if (!drill) {
                             return true;
                         }
-                        else if (drill && used) {
-                            if (!cellsEqual(this.cause, this.drillHint.getCellsCause())) {
-                                return false;
-                            }
-                        }
-                        else {
+
+                        // If this is first instance of the strategy found for drill we record it
+                        // If we have already found a instance of strategy for this drill we check if this is the same instance, if not return fales
+                        if (!used) {
                             this.strategyType = strategyType;
                             this.drillHint = new Hint(this);
                             this.reset();
                             used = true;
                         }
+                        else if (!cellsEqual(this.cause, this.drillHint.getCellsCause())) {
+                            return false;
+                        }
                     }
                 }
             }
         }
-        else if (this.isNakedSetStrategy(strategyType)) {
+        else if (this.isNakedSetStrategy(strategyType) ||
+                 strategyType === StrategyEnum.HIDDEN_SINGLE) {
             let tuple:TupleEnum = this.getStrategyTuple(strategyType);
             let subsets:Group[] = Group.getSubset(tuple);
             for (let group:GroupEnum = 0; group < GroupEnum.COUNT; group++) {
                 for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
-                    if (this.isNakedSet(tuple, subsets, group, i)) {
+                    if ((this.isNakedSetStrategy(strategyType) && this.isNakedSet(tuple, subsets, group, i)) ||
+                        (strategyType === StrategyEnum.HIDDEN_SINGLE && this.isHiddenSet(tuple, subsets, group, i))) {
                         if (!drill) {
                             return true;
                         }
-                        else if (drill && used) {
-                            if (!cellsEqual(this.cause, this.drillHint.getCellsCause())) {
-                                return false;
-                            }
-                        }
-                        else {
+
+                        // If this is first instance of the strategy found for drill we record it
+                        // If we have already found a instance of strategy for this drill we check if this is the same instance, if not return fales
+                        if (!used) {
                             this.strategyType = strategyType;
                             this.drillHint = new Hint(this);
                             this.reset();
                             used = true;
                         }
-                    }
-                }
-            }
-        }
-        else if (strategyType === StrategyEnum.HIDDEN_SINGLE) {
-            let tuple:TupleEnum = this.getStrategyTuple(strategyType);
-            let subsets:Group[] = Group.getSubset(tuple);
-            for (let group:GroupEnum = 0; group < GroupEnum.COUNT; group++) {
-                for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
-                    if (this.isHiddenSet(tuple, subsets, group, i)) {
-                        if (!drill) {
-                            return true;
-                        }
-                        else if (drill && used) {
-                            if (!cellsEqual(this.cause, this.drillHint.getCellsCause())) {
-                                return false;
-                            }
-                        }
-                        else {
-                            this.strategyType = strategyType;
-                            this.drillHint = new Hint(this);
-                            this.reset();
-                            used = true;
+                        else if (!cellsEqual(this.cause, this.drillHint.getCellsCause())) {
+                            return false;
                         }
                     }
                 }
             }
         }
-        if (drill && used) {
-            return true;
-        }
-        return false;
+        return used;
     }
 
     /**
