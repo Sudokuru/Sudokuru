@@ -423,113 +423,115 @@ export class Strategy{
         // Is naked set iff union of all cells has notes size equal to tuple
         // Stores the cellls that make up the naked set
         let nakedSet:Cell[] = getSubsetOfCells(cells, inNakedSet);
-        // If naked set is correct size (i.e. every element in subset was in cells)
-        if (nakedSet.length === tuple) {
-            // Calculates all notes in naked set
-            let nakedSetCandidates:Group = getUnionOfSetNotes(nakedSet);
-            // Is naked set if it has correct number of notes
-            if (nakedSetCandidates.getSize() === tuple) {
-                // If it is a naked single places value
-                if (tuple === TupleEnum.SINGLE) {
-                    let row:number = nakedSet[0].getRow();
-                    let column:number = nakedSet[0].getColumn();
-                    let single:string = undefined;
-                    for (let singleCandidate:number = 0; singleCandidate < SudokuEnum.ROW_LENGTH; singleCandidate++) {
-                        if (nakedSetCandidates.contains(singleCandidate)) {
-                            single = (singleCandidate+1).toString();
-                        }
-                    }
-                    this.values.push(new Cell(row, column, single));
-                    this.cause.push(new Cell(row, column));
-                    this.identified = true;
-                    this.difficulty = DifficultyLowerBounds.NAKED_SINGLE;
-                    return true;
+        // Check if naked set is correct size (i.e. every element in subset was in cells)
+        if (nakedSet.length !== tuple) {
+            return false;
+        }
+        // Calculates all notes in naked set
+        let nakedSetCandidates:Group = getUnionOfSetNotes(nakedSet);
+        // Check if naked set has correct number of notes
+        if (nakedSetCandidates.getSize() !== tuple) {
+            return false;
+        }
+        // If it is a naked single places value
+        if (tuple === TupleEnum.SINGLE) {
+            let row:number = nakedSet[0].getRow();
+            let column:number = nakedSet[0].getColumn();
+            let single:string = undefined;
+            for (let singleCandidate:number = 0; singleCandidate < SudokuEnum.ROW_LENGTH; singleCandidate++) {
+                if (nakedSetCandidates.contains(singleCandidate)) {
+                    single = (singleCandidate+1).toString();
                 }
-                // Adds notes to remove if there are any to remove
-                for (let k:number = 0; k < cells.length; k++) {
-                    // If cell isn't part of naked set itself and it contains some of the same values as naked set remove them
-                    // Skip if row or column is 'used' i.e. removed due to shared row or column already and checking for others in shared box
-                    if (!inNakedSet.contains(k) && (cells[k].getNotes().intersection(nakedSetCandidates)).getSize() > 0) {
-                        let notes:Group = new Group(false, cells[k].getRow(), cells[k].getColumn());
-                        notes.insert(nakedSetCandidates);
-                        this.notes.push(notes);
-                    }
-                }
-                // If notes can be removed as result of naked set then it is a valid strategy
-                if (this.notes.length > 0) {
-                    this.identified = true;
-                    for (let k:number = 0; k < nakedSet.length; k++) {
-                        this.cause.push(new Cell(nakedSet[k].getRow(), nakedSet[k].getColumn()));
-                    }
-                    let groups:number[] = new Array(2);
-                    groups[0] = group;
-                    groups[1] = i;
-                    this.groups.push(groups);
-                    // Calculate difficulty based on how far apart the naked set cells are
-                    let distanceRatio:number;
-                    if (group === GroupEnum.ROW) {
-                        distanceRatio = nakedSet[nakedSet.length - 1].getRow() - nakedSet[0].getRow();
-                        distanceRatio /= SudokuEnum.COLUMN_LENGTH - 1;
-                    }
-                    else if (group === GroupEnum.COLUMN) {
-                        distanceRatio = nakedSet[nakedSet.length - 1].getColumn() - nakedSet[0].getColumn();
-                        distanceRatio /= SudokuEnum.ROW_LENGTH - 1;
-                    }
-                    else {
-                        let minRow:number = SudokuEnum.COLUMN_LENGTH, minColumn:number = SudokuEnum.ROW_LENGTH;
-                        let maxRow:number = 0, maxColumn:number = 0;
-                        for (let k:number = 0; k < nakedSet.length; k++) {
-                            minRow = Math.min(minRow, nakedSet[k].getRow());
-                            minColumn = Math.min(minColumn, nakedSet[k].getColumn());
-                            maxRow = Math.max(maxRow, nakedSet[k].getRow());
-                            maxColumn = Math.max(maxColumn, nakedSet[k].getColumn());
-                        }
-                        distanceRatio = (maxRow - minRow) + (maxColumn - minColumn);
-                        distanceRatio /= (SudokuEnum.BOX_LENGTH - 1) * 2;
-                    }
-                    this.difficulty = this.getNakedSetDifficultyLowerBound(tuple);
-                    this.difficulty += Math.ceil(distanceRatio * (this.getNakedSetDifficultyUpperBound(tuple) - this.getNakedSetDifficultyLowerBound(tuple)));
-                    // If naked set shares a row or column it might also share a box so skip to check that
-                    if (group !== GroupEnum.BOX) {
-                        // Set used row or column to avoiding adding same cells notes twice
-                        if (group === GroupEnum.ROW) {
-                            usedRow = this.notes[0].getRow();
-                        }
-                        else {
-                            usedColumn = this.notes[0].getColumn();
-                        }
-                        // Check if naked set shares a box
-                        let boxes:Group = new Group(false);
-                        let box:number;
-                        for (let k:number = 0; k < nakedSet.length; k++) {
-                            box = nakedSet[k].getBox();
-                            boxes.insert(box);
-                        }
-                        if (boxes.getSize() === 1) {
-                            // Since the naked set also all share the same box add to notes any notes you can remove from cells in the shared box
-                            let boxCells: Cell[] = getCellsInGroup(this.emptyCells, GroupEnum.BOX, box);
-                            for (let k:number = 0; k < boxCells.length; k++) {
-                                if (boxCells[k].getRow() !== usedRow && boxCells[k].getColumn() !== usedColumn) {
-                                    if ((boxCells[k].getNotes().intersection(nakedSetCandidates)).getSize() > 0) {
-                                        let notes:Group = new Group(false, boxCells[k].getRow(), boxCells[k].getColumn());
-                                        notes.insert(nakedSetCandidates);
-                                        this.notes.push(notes);
-                                        if (this.groups.length === 1) {
-                                            let boxGroup:number[] = new Array(2);
-                                            boxGroup[0] = GroupEnum.BOX;
-                                            boxGroup[1] = boxCells[k].getBox();
-                                            this.groups.push(boxGroup);
-                                        }
-                                    }
-                                }
+            }
+            this.values.push(new Cell(row, column, single));
+            this.cause.push(new Cell(row, column));
+            this.identified = true;
+            this.difficulty = DifficultyLowerBounds.NAKED_SINGLE;
+            return true;
+        }
+        // Adds notes to remove if there are any to remove
+        for (let k:number = 0; k < cells.length; k++) {
+            // If cell isn't part of naked set itself and it contains some of the same values as naked set remove them
+            // Skip if row or column is 'used' i.e. removed due to shared row or column already and checking for others in shared box
+            if (!inNakedSet.contains(k) && (cells[k].getNotes().intersection(nakedSetCandidates)).getSize() > 0) {
+                let notes:Group = new Group(false, cells[k].getRow(), cells[k].getColumn());
+                notes.insert(nakedSetCandidates);
+                this.notes.push(notes);
+            }
+        }
+        // Check if notes can be removed as result of naked set
+        if (this.notes.length === 0) {
+            return false;
+        }
+        this.identified = true;
+        for (let k:number = 0; k < nakedSet.length; k++) {
+            this.cause.push(new Cell(nakedSet[k].getRow(), nakedSet[k].getColumn()));
+        }
+        let groups:number[] = new Array(2);
+        groups[0] = group;
+        groups[1] = i;
+        this.groups.push(groups);
+        // Calculate difficulty based on how far apart the naked set cells are
+        let distanceRatio:number;
+        if (group === GroupEnum.ROW) {
+            distanceRatio = nakedSet[nakedSet.length - 1].getRow() - nakedSet[0].getRow();
+            distanceRatio /= SudokuEnum.COLUMN_LENGTH - 1;
+        }
+        else if (group === GroupEnum.COLUMN) {
+            distanceRatio = nakedSet[nakedSet.length - 1].getColumn() - nakedSet[0].getColumn();
+            distanceRatio /= SudokuEnum.ROW_LENGTH - 1;
+        }
+        else {
+            let minRow:number = SudokuEnum.COLUMN_LENGTH, minColumn:number = SudokuEnum.ROW_LENGTH;
+            let maxRow:number = 0, maxColumn:number = 0;
+            for (let k:number = 0; k < nakedSet.length; k++) {
+                minRow = Math.min(minRow, nakedSet[k].getRow());
+                minColumn = Math.min(minColumn, nakedSet[k].getColumn());
+                maxRow = Math.max(maxRow, nakedSet[k].getRow());
+                maxColumn = Math.max(maxColumn, nakedSet[k].getColumn());
+            }
+            distanceRatio = (maxRow - minRow) + (maxColumn - minColumn);
+            distanceRatio /= (SudokuEnum.BOX_LENGTH - 1) * 2;
+        }
+        this.difficulty = this.getNakedSetDifficultyLowerBound(tuple);
+        this.difficulty += Math.ceil(distanceRatio * (this.getNakedSetDifficultyUpperBound(tuple) - this.getNakedSetDifficultyLowerBound(tuple)));
+        // If naked set shares a row or column it might also share a box so skip to check that
+        if (group !== GroupEnum.BOX) {
+            // Set used row or column to avoiding adding same cells notes twice
+            if (group === GroupEnum.ROW) {
+                usedRow = this.notes[0].getRow();
+            }
+            else {
+                usedColumn = this.notes[0].getColumn();
+            }
+            // Check if naked set shares a box
+            let boxes:Group = new Group(false);
+            let box:number;
+            for (let k:number = 0; k < nakedSet.length; k++) {
+                box = nakedSet[k].getBox();
+                boxes.insert(box);
+            }
+            if (boxes.getSize() === 1) {
+                // Since the naked set also all share the same box add to notes any notes you can remove from cells in the shared box
+                let boxCells: Cell[] = getCellsInGroup(this.emptyCells, GroupEnum.BOX, box);
+                for (let k:number = 0; k < boxCells.length; k++) {
+                    if (boxCells[k].getRow() !== usedRow && boxCells[k].getColumn() !== usedColumn) {
+                        if ((boxCells[k].getNotes().intersection(nakedSetCandidates)).getSize() > 0) {
+                            let notes:Group = new Group(false, boxCells[k].getRow(), boxCells[k].getColumn());
+                            notes.insert(nakedSetCandidates);
+                            this.notes.push(notes);
+                            if (this.groups.length === 1) {
+                                let boxGroup:number[] = new Array(2);
+                                boxGroup[0] = GroupEnum.BOX;
+                                boxGroup[1] = boxCells[k].getBox();
+                                this.groups.push(boxGroup);
                             }
                         }
                     }
-                    return this.identified;
                 }
             }
         }
-        return this.identified;
+        return true;
     }
 
     /**
@@ -547,64 +549,66 @@ export class Strategy{
         // is equal to the tuple (e.g. hidden pair if there are two numbers only in the pair in the row)
         // Stores the cells that make up the hidden set
         let hiddenSet:Cell[] = getSubsetOfCells(cells, inHiddenSet);
-        // If hidden set is correct size (i.e. every element in subset was in cells)
-        if (hiddenSet.length === tuple) {
-            // Stores all of the cells in the hidden sets group (except the hidden set itself and non empty cells)
-            let notHiddenSet:Cell[] = new Array();
-            for (let k:number = 0; k < cells.length; k++) {
-                if (!inHiddenSet.contains(k) && cells[k].isEmpty()) {
-                    notHiddenSet.push(cells[k]);
-                }
-            }
-            // Calculates notes that aren't in the hidden set
-            let notHiddenSetCandidates:Group = getUnionOfSetNotes(notHiddenSet);
-            // Calculates notes that are in the hidden set
-            let hiddenSetCandidates:Group = getUnionOfSetNotes(hiddenSet);
-            // Get values that have already been placed in the group and remove them as candidates
-            let used:Group = new Group(false);
-            let groupCells: Cell[] = getCellsInGroup(this.board, group, i);
-            for (let k:number = 0; k < groupCells.length; k++) {
-                if (!groupCells[k].isEmpty()) {
-                    used.insert(groupCells[k].getValue());
-                }
-            }
-            notHiddenSetCandidates.remove(used);
-            hiddenSetCandidates.remove(used);
-            // Is hidden set if correct number of candidates don't exist outside of the hidden set
-            if ((hiddenSetCandidates.getSize() - (hiddenSetCandidates.intersection(notHiddenSetCandidates)).getSize()) === tuple) {
-                // Remove candidates that aren't part of the hidden set from the hidden sets notes
-                for (let k:number = 0; k < tuple; k++) {
-                    if ((hiddenSet[k].getNotes().intersection(notHiddenSetCandidates)).getSize() > 0) {
-                        let notes:Group = new Group(false, hiddenSet[k].getRow(), hiddenSet[k].getColumn());
-                        notes.insert(notHiddenSetCandidates);
-                        this.notes.push(notes);
-                        this.identified = true;
-                    }
-                }
-                // If notes were found you can remove as part of the hidden single then strategy identified
-                if (this.identified) {
-                    let groups:number[] = new Array(2);
-                    groups[0] = group;
-                    groups[1] = i;
-                    this.groups.push(groups);
-                    for (let k:number = 0; k < notHiddenSet.length; k++) {
-                        this.cause.push(new Cell(notHiddenSet[k].getRow(), notHiddenSet[k].getColumn()));
-                    }
-                    // Calculate ratio of number of notes to possible number (more notes to obscure hidden set = higher difficulty)
-                    let noteCount:number = 0;
-                    for (let k:number = 0; k < tuple; k++) {
-                        noteCount += (hiddenSet[k].getNotes()).getSize();
-                    }
-                    let noteRatio:number = noteCount / (SudokuEnum.ROW_LENGTH * SudokuEnum.ROW_LENGTH);
-                    if (tuple === TupleEnum.SINGLE) {
-                        this.difficulty = DifficultyLowerBounds.HIDDEN_SINGLE;
-                        this.difficulty += Math.ceil(noteRatio * (DifficultyUpperBounds.HIDDEN_SINGLE - DifficultyLowerBounds.HIDDEN_SINGLE));
-                    }
-                    return this.identified;
-                }
+        // Check if hidden set is correct size (i.e. every element in subset was in cells)
+        if (hiddenSet.length !== tuple) {
+            return false;
+        }
+        // Stores all of the cells in the hidden sets group (except the hidden set itself and non empty cells)
+        let notHiddenSet:Cell[] = new Array();
+        for (let k:number = 0; k < cells.length; k++) {
+            if (!inHiddenSet.contains(k) && cells[k].isEmpty()) {
+                notHiddenSet.push(cells[k]);
             }
         }
-        return this.identified;
+        // Calculates notes that aren't in the hidden set
+        let notHiddenSetCandidates:Group = getUnionOfSetNotes(notHiddenSet);
+        // Calculates notes that are in the hidden set
+        let hiddenSetCandidates:Group = getUnionOfSetNotes(hiddenSet);
+        // Get values that have already been placed in the group and remove them as candidates
+        let used:Group = new Group(false);
+        let groupCells: Cell[] = getCellsInGroup(this.board, group, i);
+        for (let k:number = 0; k < groupCells.length; k++) {
+            if (!groupCells[k].isEmpty()) {
+                used.insert(groupCells[k].getValue());
+            }
+        }
+        notHiddenSetCandidates.remove(used);
+        hiddenSetCandidates.remove(used);
+        // Check if hidden set has correct number of candidates that don't exist outside of the hidden set
+        if ((hiddenSetCandidates.getSize() - (hiddenSetCandidates.intersection(notHiddenSetCandidates)).getSize()) !== tuple) {
+            return false;
+        }
+        // Remove candidates that aren't part of the hidden set from the hidden sets notes
+        for (let k:number = 0; k < tuple; k++) {
+            if ((hiddenSet[k].getNotes().intersection(notHiddenSetCandidates)).getSize() > 0) {
+                let notes:Group = new Group(false, hiddenSet[k].getRow(), hiddenSet[k].getColumn());
+                notes.insert(notHiddenSetCandidates);
+                this.notes.push(notes);
+                this.identified = true;
+            }
+        }
+        // If notes weren't found you can remove as part of the hidden single then strategy not identified
+        if (!this.identified) {
+            return false;
+        }
+        let groups:number[] = new Array(2);
+        groups[0] = group;
+        groups[1] = i;
+        this.groups.push(groups);
+        for (let k:number = 0; k < notHiddenSet.length; k++) {
+            this.cause.push(new Cell(notHiddenSet[k].getRow(), notHiddenSet[k].getColumn()));
+        }
+        // Calculate ratio of number of notes to possible number (more notes to obscure hidden set = higher difficulty)
+        let noteCount:number = 0;
+        for (let k:number = 0; k < tuple; k++) {
+            noteCount += (hiddenSet[k].getNotes()).getSize();
+        }
+        let noteRatio:number = noteCount / (SudokuEnum.ROW_LENGTH * SudokuEnum.ROW_LENGTH);
+        if (tuple === TupleEnum.SINGLE) {
+            this.difficulty = DifficultyLowerBounds.HIDDEN_SINGLE;
+            this.difficulty += Math.ceil(noteRatio * (DifficultyUpperBounds.HIDDEN_SINGLE - DifficultyLowerBounds.HIDDEN_SINGLE));
+        }
+        return true;
     }
 
     /**
