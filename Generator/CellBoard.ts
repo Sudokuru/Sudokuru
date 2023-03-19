@@ -14,6 +14,9 @@ export class CellBoard{
     private valuesPlaced: Group[][];
     // 2d array of Groups storing which indexes in each group have had values placed in them
     private indexesPlaced: Group[][];
+    // 3d array containg cells from each group
+    // e.g. cellGroups[0][3][4] = [row][4th row][5th cell] = 5th cell in 4th row
+    private cellGroups: Cell[][][];
 
     constructor(cells: Cell[][]) {
         this.cells = cells;
@@ -25,6 +28,16 @@ export class CellBoard{
             for (let j:number = 0; j < SudokuEnum.ROW_LENGTH; j++) {
                 this.valuesPlaced[i].push(new Group(false));
                 this.indexesPlaced[i].push(new Group(false));
+            }
+        }
+        this.cellGroups = new Array();
+        for (let i:number = 0; i < GroupEnum.COUNT; i++) {
+            this.cellGroups.push(new Array());
+            for (let j:number = 0; j < SudokuEnum.ROW_LENGTH; j++) {
+                this.cellGroups[i].push(new Array());
+                for (let k:number = 0; k < SudokuEnum.ROW_LENGTH; k++) {
+                    this.cellGroups[i][j].push(this.getCell(i, j, k));
+                }
             }
         }
     }
@@ -75,5 +88,54 @@ export class CellBoard{
      */
     public getIndexesPlaced(group: GroupEnum, index: number):Group {
         return this.indexesPlaced[group][index];
+    }
+
+    /**
+     * Given a group and indexes returns the corresponding cell
+     * @param group - group e.g. row
+     * @param groupIndex - group index e.g. 5th row
+     * @param index - index e.g. 7th cell in 5th row
+     * @returns Cell with given group and indexes
+     */
+    public getCell(group: GroupEnum, groupIndex: number, index: number):Cell {
+        if (group === GroupEnum.ROW) {
+            return this.cells[groupIndex][index];
+        }
+        else if (group === GroupEnum.COLUMN) {
+            return this.cells[index][groupIndex];
+        }
+        else if (group === GroupEnum.BOX) {
+            let boxRowStart:number = Cell.getBoxRowStart(groupIndex);
+            let boxColumnStart:number = Cell.getBoxColumnStart(groupIndex);
+            let row:number = boxRowStart + Math.floor(index / 3);
+            let column:number = boxColumnStart + (index % 3);
+            return this.cells[row][column];
+        }
+    }
+
+    /**
+     * Given group and its index returns all of the empty cells in it
+     * @param group - group e.g. row
+     * @param index - index e.g. 7th row
+     * @returns array containing all empty cells in given group
+     */
+    public getEmptyCellsInGroup(group: GroupEnum, index: number):Cell[] {
+        let cells:Cell[] = new Array();
+        for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
+            if (this.cellGroups[group][index][i].isEmpty()) {
+                cells.push(this.cellGroups[group][index][i]);
+            }
+        }
+        return cells;
+    }
+
+    /**
+     * Given group and its index returns all of the cells in it
+     * @param group - group e.g. row
+     * @param index - index e.g. 7th row
+     * @returns array containing all cells in given group
+     */
+    public getCellsInGroup(group: GroupEnum, index: number):Cell[] {
+        return this.cellGroups[group][index];
     }
 }

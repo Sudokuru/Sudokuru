@@ -1,6 +1,6 @@
 import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
-import { SudokuEnum, StrategyEnum, getCellsInRow, getCellsInColumn, getCellsInBox, GroupEnum, getNextCellInGroup, TupleEnum, getCellsInGroup, getUnionOfSetNotes, getSubsetOfCells, cellsEqual } from "./Sudoku"
+import { SudokuEnum, StrategyEnum, GroupEnum, TupleEnum, getUnionOfSetNotes, getSubsetOfCells, cellsEqual } from "./Sudoku"
 import { Group } from "./Group";
 import { CellBoard } from "./CellBoard";
 import { Hint } from "./Hint";
@@ -233,7 +233,7 @@ export class Strategy{
                         continue;
                     }
                     // Contains cells in the same row, column, or box
-                    let cells: Cell[] = getCellsInGroup(this.emptyCells, group, i);
+                    let cells: Cell[] = this.cellBoard.getEmptyCellsInGroup(group, i);
                     for (let j:number = 0; j < subsets.length; j++) {
                         if ((this.isNakedSetStrategy(strategyType) && this.isNakedSet(tuple, group, i, cells, subsets[j])) ||
                             (strategyType === StrategyEnum.HIDDEN_SINGLE && this.isHiddenSet(tuple, group, i, cells, subsets[j]))) {
@@ -513,7 +513,7 @@ export class Strategy{
             }
             if (boxes.getSize() === 1) {
                 // Since the naked set also all share the same box add to notes any notes you can remove from cells in the shared box
-                let boxCells: Cell[] = getCellsInGroup(this.emptyCells, GroupEnum.BOX, box);
+                let boxCells: Cell[] = this.cellBoard.getEmptyCellsInGroup(GroupEnum.BOX, box);
                 for (let k:number = 0; k < boxCells.length; k++) {
                     if (boxCells[k].getRow() !== usedRow && boxCells[k].getColumn() !== usedColumn) {
                         if ((boxCells[k].getNotes().intersection(nakedSetCandidates)).getSize() > 0) {
@@ -566,7 +566,7 @@ export class Strategy{
         let hiddenSetCandidates:Group = getUnionOfSetNotes(hiddenSet);
         // Get values that have already been placed in the group and remove them as candidates
         let used:Group = new Group(false);
-        let groupCells: Cell[] = getCellsInGroup(this.board, group, i);
+        let groupCells: Cell[] = this.cellBoard.getCellsInGroup(group, i);
         for (let k:number = 0; k < groupCells.length; k++) {
             if (!groupCells[k].isEmpty()) {
                 used.insert(groupCells[k].getValue());

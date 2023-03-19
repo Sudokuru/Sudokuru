@@ -55,8 +55,8 @@ describe("create amend notes", () => {
 
 describe("create naked single", () => {
     it('should throw strategy not identified error', async () => {
-        let cells:Cell[][] = new Array();
-        let strategy:Strategy = new Strategy(new CellBoard(cells), cells, cells);
+        let board:Cell[][] = getBlankCellBoard();
+        let strategy:Strategy = new Strategy(new CellBoard(board), board, board);
         const error = await getError(async () => strategy.getValuesToPlace());
         expect(error).toBeInstanceOf(CustomError);
         expect(error).toHaveProperty('Error_Message', CustomErrorEnum.STRATEGY_NOT_IDENTIFIED);
