@@ -235,8 +235,8 @@ export class Strategy{
                     // Contains cells in the same row, column, or box
                     let cells: Cell[] = getCellsInGroup(this.emptyCells, group, i);
                     for (let j:number = 0; j < subsets.length; j++) {
-                        if ((this.isNakedSetStrategy(strategyType) && this.isNakedSet(tuple, subsets, group, i, j, cells)) ||
-                            (strategyType === StrategyEnum.HIDDEN_SINGLE && this.isHiddenSet(tuple, subsets, group, i, j, cells))) {
+                        if ((this.isNakedSetStrategy(strategyType) && this.isNakedSet(tuple, group, i, cells, subsets[j])) ||
+                            (strategyType === StrategyEnum.HIDDEN_SINGLE && this.isHiddenSet(tuple, group, i, cells, subsets[j]))) {
                             if (!drill) {
                                 return true;
                             }
@@ -410,20 +410,17 @@ export class Strategy{
     /**
      * Checks if strategy is a naked set of given tuple and if so adds values to be placed and notes to remove
      * @param tuple - e.g. could be single or pair for naked single or naked pair respectively
-     * @param subsets - every possible combination of cells in a given group
      * @param group - group type being check for a naked set e.g. row
      * @param i - index of group being checked e.g. 3 for 4th group e.g. 4th row
-     * @param j - subset index
      * @param cells - array of cells in the given row, column, or box
+     * @param inNakedSet - stores indexes of the cells that make up the naked set
      * @returns true if strategy is a naked tuple
      */
-    private isNakedSet(tuple: TupleEnum, subsets: Group[], group: GroupEnum, i: number, j: number, cells: Cell[]):boolean {
+    private isNakedSet(tuple: TupleEnum, group: GroupEnum, i: number, cells: Cell[], inNakedSet: Group):boolean {
         // used to prevent adding cells to notes to remove a second time when evaluating box after finding row/column set
         let usedRow:number = -1, usedColumn = -1;
         // Tries to build a naked set of size tuple for each possible size tuple subset of candidates
         // Is naked set iff union of all cells has notes size equal to tuple
-        // Stores indexes of the cells that make up the naked set
-        let inNakedSet:Group = subsets[j];
         // Stores the cellls that make up the naked set
         let nakedSet:Cell[] = getSubsetOfCells(cells, inNakedSet);
         // If naked set is correct size (i.e. every element in subset was in cells)
@@ -538,19 +535,16 @@ export class Strategy{
     /**
      * Checks if strategy is a hidden set of given tuple and if so adds notes to remove
      * @param tuple - e.g. could be single or pair for hidden single or hidden pair respectively
-     * @param subsets - every possible combination of cells in a given group
      * @param group - group type being check for a naked set e.g. row
      * @param i - index of group being checked e.g. 3 for 4th group e.g. 4th row
-     * @param j - subset index
      * @param cells - array of cells in the given row, column, or box
+     * @param inHiddenSet - stores indexes of the cells that make up the hidden set
      * @returns true if strategy is a hidden tuple
      */
-    private isHiddenSet(tuple: TupleEnum, subsets:Group[], group: GroupEnum, i: number, j: number, cells: Cell[]):boolean {
+    private isHiddenSet(tuple: TupleEnum, group: GroupEnum, i: number, cells: Cell[], inHiddenSet: Group):boolean {
         // Tries to build a hidden set of size tuple for each possible size tuple subset of candidates
         // Is hidden single iff the number of candidates that don't exist outside of the hidden tuple
         // is equal to the tuple (e.g. hidden pair if there are two numbers only in the pair in the row)
-        // Stores indexes of the cells that make up the hidden set
-        let inHiddenSet:Group = subsets[j];
         // Stores the cells that make up the hidden set
         let hiddenSet:Cell[] = getSubsetOfCells(cells, inHiddenSet);
         // If hidden set is correct size (i.e. every element in subset was in cells)
