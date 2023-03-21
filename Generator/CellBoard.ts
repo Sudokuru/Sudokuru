@@ -71,6 +71,17 @@ export class CellBoard{
     }
 
     /**
+     * Removes given notes from given cell
+     * @param row - row Cell is in
+     * @param column - column Cell is in
+     * @param notes - notes being removed from Cell
+     */
+    public removeNotes(row: number, column: number, notes: Group):void {
+        this.cells[row][column].removeNotes(notes);
+        return;
+    }
+
+    /**
      * Gets values placed in given group e.g. Group representing 3rd row
      * @param group - Group type e.g. row
      * @param index - index e.g. 2 = 3rd

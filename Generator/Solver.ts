@@ -311,7 +311,7 @@ export class Solver{
             if (amend) {
                 this.board[row][column].resetNotes();
             }
-            this.board[row][column].removeNotes(notes[i]);
+            this.cellBoard.removeNotes(row, column, notes[i]);
         }
     }
 }
