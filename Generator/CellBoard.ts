@@ -1,6 +1,6 @@
 import { Cell } from "./Cell";
 import { Group } from "./Group";
-import { GroupEnum, SudokuEnum } from "./Sudoku";
+import { GroupEnum, StrategyEnum, SudokuEnum } from "./Sudoku";
 
 /**
  * Constructed using 2d array of Cells
@@ -17,9 +17,14 @@ export class CellBoard{
     // 3d array containg cells from each group
     // e.g. cellGroups[0][3][4] = [row][4th row][5th cell] = 5th cell in 4th row
     private cellGroups: Cell[][][];
+    // 3d array containing cache of which groups have been searched for every strategy
+    // e.g. searchedGroups[0][3][4] = [Amend notes strategy][box][5th box]
+    private searchedGroups: boolean[][][];
 
     constructor(cells: Cell[][]) {
         this.cells = cells;
+
+        // Initialize values and indexes placed metadata
         this.valuesPlaced = new Array();
         this.indexesPlaced = new Array();
         for (let i:number = 0; i < GroupEnum.COUNT; i++) {
@@ -30,6 +35,8 @@ export class CellBoard{
                 this.indexesPlaced[i].push(new Group(false));
             }
         }
+
+        // Initialize cellGroups metadata
         this.cellGroups = new Array();
         for (let i:number = 0; i < GroupEnum.COUNT; i++) {
             this.cellGroups.push(new Array());
@@ -37,6 +44,18 @@ export class CellBoard{
                 this.cellGroups[i].push(new Array());
                 for (let k:number = 0; k < SudokuEnum.ROW_LENGTH; k++) {
                     this.cellGroups[i][j].push(this.getCell(i, j, k));
+                }
+            }
+        }
+
+        // Initialize searchedGroups metadata
+        this.searchedGroups = new Array();
+        for (let i:number = 0; i < StrategyEnum.COUNT; i++) {
+            this.searchedGroups.push(new Array());
+            for (let j:number = 0; j < GroupEnum.COUNT; j++) {
+                this.searchedGroups[i].push(new Array());
+                for (let k:number = 0; k < SudokuEnum.ROW_LENGTH; k++) {
+                    this.searchedGroups[i][j].push(false);
                 }
             }
         }
