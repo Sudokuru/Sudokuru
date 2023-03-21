@@ -199,7 +199,14 @@ export class Strategy{
         let used:boolean = false;
         if (strategyType === StrategyEnum.AMEND_NOTES || strategyType === StrategyEnum.SIMPLIFY_NOTES) {
             for (let r:number = 0; r < this.emptyCells.length; r++) {
+                if (this.cellBoard.getSearchedGroups(strategyType, GroupEnum.ROW, r)) {
+                    continue;
+                }
                 for (let c:number = 0; c < this.emptyCells[r].length; c++) {
+                    if (this.cellBoard.getSearchedGroups(strategyType, GroupEnum.COLUMN, c) ||
+                        this.cellBoard.getSearchedGroups(strategyType, GroupEnum.BOX, Cell.calculateBox(r, c))) {
+                        continue;
+                    }
                     if ((strategyType === StrategyEnum.AMEND_NOTES && this.isAmendNotes(r, c)) ||
                         (strategyType === StrategyEnum.SIMPLIFY_NOTES && this.isSimplifyNotes(r, c))) {
                         if (!drill) {
@@ -227,6 +234,9 @@ export class Strategy{
             let subsets:Group[] = Group.getSubset(tuple);
             for (let group:GroupEnum = 0; group < GroupEnum.COUNT; group++) {
                 for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
+                    if (this.cellBoard.getSearchedGroups(strategyType, group, i)) {
+                        continue;
+                    }
                     // Checks if tuple exists by getting all cells in each group and trying to build tuple
                     // Skips over groups where there aren't enough unfilled cells left to form set
                     if (this.cellBoard.getValuesPlaced(group, i).getSize() > (SudokuEnum.ROW_LENGTH - tuple)) {
