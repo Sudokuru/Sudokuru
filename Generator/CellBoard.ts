@@ -185,4 +185,25 @@ export class CellBoard{
     public getCellsInGroup(group: GroupEnum, index: number):Cell[] {
         return this.cellGroups[group][index];
     }
+
+    /**
+     * Checks whether or not a given group has been searched for a given strategy already
+     * @param strategyType - strategy type e.g. amend notes
+     * @param groupType - group type e.g. row
+     * @param groupIndex - group index e.g. 3 (4th cell in group)
+     * @returns whether or not given group has been searched for given strategy
+     */
+    public getSearchedGroups(strategyType: StrategyEnum, groupType: GroupEnum, groupIndex: number):boolean {
+        return this.searchedGroups[strategyType][groupType][groupIndex];
+    }
+
+    /**
+     * Sets whether or not a given group has been searched for a given strategy already
+     * @param strategyType - strategy type e.g. amend notes
+     * @param groupType - group type e.g. row
+     * @param groupIndex - group index e.g. 3 (4th cell in group)
+     */
+    public setSearchedGroups(strategyType: StrategyEnum, groupType: GroupEnum, groupIndex: number, searched: boolean):void {
+        this.searchedGroups[strategyType][groupType][groupIndex] = searched;
+    }
 }
