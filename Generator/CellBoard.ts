@@ -62,6 +62,21 @@ export class CellBoard{
     }
 
     /**
+     * Reset searchedGroups to false for all groups that given cell (which is being updated) is a part of
+     * @param row - row where updated cell is
+     * @param column - column where updated cell is
+     */
+    public resetSearchedGroups(row: number, column: number):void {
+        let box:number = Cell.calculateBox(row, column);
+        for (let i:number = 0; i < StrategyEnum.COUNT; i++) {
+            this.searchedGroups[i][GroupEnum.ROW][row] = false;
+            this.searchedGroups[i][GroupEnum.COLUMN][column] = false;
+            this.searchedGroups[i][GroupEnum.BOX][box] = false;
+        }
+        return;
+    }
+
+    /**
      * Sets given value for given cell and updates metadata
      * @param row - row Cell is in
      * @param column - column Cell is in
@@ -86,6 +101,7 @@ export class CellBoard{
                 index++;
             }
         }
+        this.resetSearchedGroups(row, column);
         return;
     }
 
@@ -97,6 +113,7 @@ export class CellBoard{
      */
     public removeNotes(row: number, column: number, notes: Group):void {
         this.cells[row][column].removeNotes(notes);
+        this.resetSearchedGroups(row, column);
         return;
     }
 
