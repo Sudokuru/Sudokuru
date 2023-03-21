@@ -203,8 +203,10 @@ export class Strategy{
                     continue;
                 }
                 for (let c:number = 0; c < this.emptyCells[r].length; c++) {
-                    if (this.cellBoard.getSearchedGroups(strategyType, GroupEnum.COLUMN, c) ||
-                        this.cellBoard.getSearchedGroups(strategyType, GroupEnum.BOX, Cell.calculateBox(r, c))) {
+                    let column:number = this.emptyCells[r][c].getColumn();
+                    let box:number = Cell.calculateBox(r, column);
+                    if (this.cellBoard.getSearchedGroups(strategyType, GroupEnum.COLUMN, column) ||
+                        this.cellBoard.getSearchedGroups(strategyType, GroupEnum.BOX, box)) {
                         continue;
                     }
                     if ((strategyType === StrategyEnum.AMEND_NOTES && this.isAmendNotes(r, c)) ||
