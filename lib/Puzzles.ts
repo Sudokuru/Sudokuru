@@ -4,8 +4,8 @@ import { Hint } from "../Generator/Hint";
 import { Solver } from "../Generator/Solver";
 import { Strategy } from "../Generator/Strategy";
 
-const START_GAME:string = "api/v1/user/newGame?difficulty=";
-const GET_GAME:string = "api/v1/user/activeGames";
+const START_GAME:string = "api/v1/newGame?difficulty=";
+const GET_GAME:string = "api/v1/activeGames";
 const SAVE_GAME:string = "api/v1/activeGames?puzzle=";
 const FINISH_GAME:string = "api/v1/activeGames?puzzle=";
 // HTTP Status Codes
