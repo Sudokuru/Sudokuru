@@ -2,7 +2,7 @@ import { StrategyEnum } from "../Generator";
 import { getMaxGameDifficulty } from "../Generator/Board";
 import { Hint } from "../Generator/Hint";
 import { Solver } from "../Generator/Solver";
-import { Strategy } from "../Generator/Strategy";
+import { MAX_DIFFICULTY, Strategy } from "../Generator/Strategy";
 
 const START_GAME:string = "api/v1/newGame?difficulty=";
 const GET_GAME:string = "api/v1/activeGames";
@@ -28,8 +28,8 @@ export class Puzzles{
         // If difficulty was put on the standard 1-1000 scale the top portion of the scale would contain strategies user doesn't know
         // Therefore the following code sets difficulty on 1-HardestPossiblePuzzleWithOnlyGivenStrategies scale
         let hardestStrategyDifficulty:number = Strategy.getHighestStrategyDifficultyBound(strategies);
-        let hardestGameWithStrategies:number = Math.ceil((getMaxGameDifficulty(hardestStrategyDifficulty)) / 1000);
-        difficulty = Math.ceil(difficulty * hardestGameWithStrategies);
+        let hardestGameWithStrategies:number = getMaxGameDifficulty(hardestStrategyDifficulty);
+        difficulty = Math.ceil(1000 * (difficulty * (hardestGameWithStrategies / getMaxGameDifficulty(MAX_DIFFICULTY))));
         try {
             let res:Response = await fetch(url + START_GAME + JSON.stringify(difficulty), {
                 method: 'GET',
