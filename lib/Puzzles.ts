@@ -4,7 +4,7 @@ import { Hint } from "../Generator/Hint";
 import { Solver } from "../Generator/Solver";
 import { MAX_DIFFICULTY, Strategy } from "../Generator/Strategy";
 
-const START_GAME:string = "api/v1/newGame?difficulty=";
+const START_GAME:string = "api/v1/newGame?closestDifficulty=";
 const GET_GAME:string = "api/v1/activeGames";
 const SAVE_GAME:string = "api/v1/activeGames?puzzle=";
 const FINISH_GAME:string = "api/v1/activeGames?puzzle=";
