@@ -200,6 +200,14 @@ export class Strategy{
         if (strategyType === StrategyEnum.AMEND_NOTES || strategyType === StrategyEnum.SIMPLIFY_NOTES) {
             for (let r:number = 0; r < this.emptyCells.length; r++) {
                 for (let c:number = 0; c < this.emptyCells[r].length; c++) {
+                    let column:number = this.emptyCells[r][c].getColumn();
+                    let box:number = Cell.calculateBox(r, column);
+                    // Skips over cells that have already been checked for this strategy (without any relevant changes being made since)
+                    if (this.cellBoard.getSearchedGroups(strategyType, GroupEnum.ROW, r) &&
+                        this.cellBoard.getSearchedGroups(strategyType, GroupEnum.COLUMN, column) &&
+                        this.cellBoard.getSearchedGroups(strategyType, GroupEnum.BOX, box)) {
+                        continue;
+                    }
                     if ((strategyType === StrategyEnum.AMEND_NOTES && this.isAmendNotes(r, c)) ||
                         (strategyType === StrategyEnum.SIMPLIFY_NOTES && this.isSimplifyNotes(r, c))) {
                         if (!drill) {
@@ -220,6 +228,12 @@ export class Strategy{
                     }
                 }
             }
+            // Since this strategy wasn't found records that this strategy has been checked already (unless strategy was found via drill)
+            for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
+                this.cellBoard.setSearchedGroups(strategyType, GroupEnum.ROW, i, !used);
+                this.cellBoard.setSearchedGroups(strategyType, GroupEnum.COLUMN, i, !used);
+                this.cellBoard.setSearchedGroups(strategyType, GroupEnum.BOX, i, !used);
+            }
         }
         else if (this.isNakedSetStrategy(strategyType) ||
                  strategyType === StrategyEnum.HIDDEN_SINGLE) {
@@ -227,6 +241,10 @@ export class Strategy{
             let subsets:Group[] = Group.getSubset(tuple);
             for (let group:GroupEnum = 0; group < GroupEnum.COUNT; group++) {
                 for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
+                    // Skips over groups that have already been checked for this strategy (without any relevant changes being made since)
+                    if (this.cellBoard.getSearchedGroups(strategyType, group, i)) {
+                        continue;
+                    }
                     // Checks if tuple exists by getting all cells in each group and trying to build tuple
                     // Skips over groups where there aren't enough unfilled cells left to form set
                     if (this.cellBoard.getValuesPlaced(group, i).getSize() > (SudokuEnum.ROW_LENGTH - tuple)) {
@@ -254,6 +272,8 @@ export class Strategy{
                             }
                         }
                     }
+                    // Since this strategy wasn't found records that this group has been checked already (unless strategy was found via drill)
+                    this.cellBoard.setSearchedGroups(strategyType, group, i, !used);
                 }
             }
         }

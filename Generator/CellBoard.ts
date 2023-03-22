@@ -1,6 +1,6 @@
 import { Cell } from "./Cell";
 import { Group } from "./Group";
-import { GroupEnum, SudokuEnum } from "./Sudoku";
+import { GroupEnum, StrategyEnum, SudokuEnum } from "./Sudoku";
 
 /**
  * Constructed using 2d array of Cells
@@ -17,9 +17,14 @@ export class CellBoard{
     // 3d array containg cells from each group
     // e.g. cellGroups[0][3][4] = [row][4th row][5th cell] = 5th cell in 4th row
     private cellGroups: Cell[][][];
+    // 3d array containing cache of which groups have been searched for every strategy
+    // e.g. searchedGroups[0][3][4] = [Amend notes strategy][box][5th box]
+    private searchedGroups: boolean[][][];
 
     constructor(cells: Cell[][]) {
         this.cells = cells;
+
+        // Initialize values and indexes placed metadata
         this.valuesPlaced = new Array();
         this.indexesPlaced = new Array();
         for (let i:number = 0; i < GroupEnum.COUNT; i++) {
@@ -30,6 +35,8 @@ export class CellBoard{
                 this.indexesPlaced[i].push(new Group(false));
             }
         }
+
+        // Initialize cellGroups metadata
         this.cellGroups = new Array();
         for (let i:number = 0; i < GroupEnum.COUNT; i++) {
             this.cellGroups.push(new Array());
@@ -40,6 +47,33 @@ export class CellBoard{
                 }
             }
         }
+
+        // Initialize searchedGroups metadata
+        this.searchedGroups = new Array();
+        for (let i:number = 0; i < StrategyEnum.COUNT; i++) {
+            this.searchedGroups.push(new Array());
+            for (let j:number = 0; j < GroupEnum.COUNT; j++) {
+                this.searchedGroups[i].push(new Array());
+                for (let k:number = 0; k < SudokuEnum.ROW_LENGTH; k++) {
+                    this.searchedGroups[i][j].push(false);
+                }
+            }
+        }
+    }
+
+    /**
+     * Reset searchedGroups to false for all groups that given cell (which is being updated) is a part of
+     * @param row - row where updated cell is
+     * @param column - column where updated cell is
+     */
+    public resetSearchedGroups(row: number, column: number):void {
+        let box:number = Cell.calculateBox(row, column);
+        for (let i:number = 0; i < StrategyEnum.COUNT; i++) {
+            this.searchedGroups[i][GroupEnum.ROW][row] = false;
+            this.searchedGroups[i][GroupEnum.COLUMN][column] = false;
+            this.searchedGroups[i][GroupEnum.BOX][box] = false;
+        }
+        return;
     }
 
     /**
@@ -67,6 +101,19 @@ export class CellBoard{
                 index++;
             }
         }
+        this.resetSearchedGroups(row, column);
+        return;
+    }
+
+    /**
+     * Removes given notes from given cell
+     * @param row - row Cell is in
+     * @param column - column Cell is in
+     * @param notes - notes being removed from Cell
+     */
+    public removeNotes(row: number, column: number, notes: Group):void {
+        this.cells[row][column].removeNotes(notes);
+        this.resetSearchedGroups(row, column);
         return;
     }
 
@@ -137,5 +184,26 @@ export class CellBoard{
      */
     public getCellsInGroup(group: GroupEnum, index: number):Cell[] {
         return this.cellGroups[group][index];
+    }
+
+    /**
+     * Checks whether or not a given group has been searched for a given strategy already
+     * @param strategyType - strategy type e.g. amend notes
+     * @param groupType - group type e.g. row
+     * @param groupIndex - group index e.g. 3 (4th cell in group)
+     * @returns whether or not given group has been searched for given strategy
+     */
+    public getSearchedGroups(strategyType: StrategyEnum, groupType: GroupEnum, groupIndex: number):boolean {
+        return this.searchedGroups[strategyType][groupType][groupIndex];
+    }
+
+    /**
+     * Sets whether or not a given group has been searched for a given strategy already
+     * @param strategyType - strategy type e.g. amend notes
+     * @param groupType - group type e.g. row
+     * @param groupIndex - group index e.g. 3 (4th cell in group)
+     */
+    public setSearchedGroups(strategyType: StrategyEnum, groupType: GroupEnum, groupIndex: number, searched: boolean):void {
+        this.searchedGroups[strategyType][groupType][groupIndex] = searched;
     }
 }
