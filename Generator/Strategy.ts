@@ -377,16 +377,27 @@ export class Strategy{
     }
 
     /**
-     * Given a tuple like pair returns the difficulty lower bound for that naked set like naked pair
+     * Given a tuple like pair returns the difficulty lower bound for that set like naked pair
+     * @param strategyType - strategy type
      * @param tuple - tuple e.g. naked single, pair, ...
-     * @returns lower bound for naked single of given tuple
+     * @returns lower bound for given strategy set of given tuple
      */
-    private getNakedSetDifficultyLowerBound(tuple: TupleEnum):DifficultyLowerBounds {
+    private getSetDifficultyLowerBound(strategyType: StrategyEnum, tuple: TupleEnum):DifficultyLowerBounds {
         if (tuple === TupleEnum.SINGLE) {
-            return DifficultyLowerBounds.NAKED_SINGLE;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.NAKED_SINGLE;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.HIDDEN_SINGLE;
+            }
         }
         else if (tuple === TupleEnum.PAIR) {
-            return DifficultyLowerBounds.NAKED_PAIR;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.NAKED_PAIR;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.HIDDEN_PAIR;
+            }
         }
         else if (tuple === TupleEnum.TRIPLET) {
             return DifficultyLowerBounds.NAKED_TRIPLET;
@@ -409,16 +420,27 @@ export class Strategy{
     }
 
     /**
-     * Given a tuple like pair returns the difficulty upper bound for that naked set like naked pair
+     * Given a tuple like pair returns the difficulty upper bound for that set like naked pair
+     * @param strategyType - strategy type
      * @param tuple - tuple e.g. naked single, pair, ...
-     * @returns upper bound for naked single of given tuple
+     * @returns upper bound for given strategy set of given tuple
      */
-    private getNakedSetDifficultyUpperBound(tuple: TupleEnum):DifficultyUpperBounds {
+    private getSetDifficultyUpperBound(strategyType: StrategyEnum, tuple: TupleEnum):DifficultyUpperBounds {
         if (tuple === TupleEnum.SINGLE) {
-            return DifficultyUpperBounds.NAKED_SINGLE;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.NAKED_SINGLE;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.HIDDEN_SINGLE;
+            }
         }
         else if (tuple === TupleEnum.PAIR) {
-            return DifficultyUpperBounds.NAKED_PAIR;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.NAKED_PAIR;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.HIDDEN_PAIR;
+            }
         }
         else if (tuple === TupleEnum.TRIPLET) {
             return DifficultyUpperBounds.NAKED_TRIPLET;
@@ -526,8 +548,8 @@ export class Strategy{
             distanceRatio = (maxRow - minRow) + (maxColumn - minColumn);
             distanceRatio /= (SudokuEnum.BOX_LENGTH - 1) * 2;
         }
-        this.difficulty = this.getNakedSetDifficultyLowerBound(tuple);
-        this.difficulty += Math.ceil(distanceRatio * (this.getNakedSetDifficultyUpperBound(tuple) - this.getNakedSetDifficultyLowerBound(tuple)));
+        this.difficulty = this.getSetDifficultyLowerBound(StrategyEnum.NAKED_SINGLE, tuple);
+        this.difficulty += Math.ceil(distanceRatio * (this.getSetDifficultyUpperBound(StrategyEnum.NAKED_SINGLE, tuple) - this.getSetDifficultyLowerBound(StrategyEnum.NAKED_SINGLE, tuple)));
         // If naked set shares a row or column it might also share a box so skip to check that
         if (group !== GroupEnum.BOX) {
             // Set used row or column to avoiding adding same cells notes twice
