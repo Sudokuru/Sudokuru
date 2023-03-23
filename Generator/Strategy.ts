@@ -189,6 +189,18 @@ export class Strategy{
     }
 
     /**
+     * Returns true if strategy is a hidden set strategy
+     * @param strategyType - strategy type
+     * @returns true if strategy type is a hidden set strategy
+     */
+    public isHiddenSetStrategy(strategyType: StrategyEnum):boolean {
+        if (strategyType === StrategyEnum.HIDDEN_SINGLE) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Checks if strategy is a given strategy type and if so sets values to place, notes to remove
      * @param strategyType - strategy type that is being checked for
      * @param drill - true if checking if strategy if valid for drill which requires there to be exactly one instance of given strategy
@@ -235,8 +247,7 @@ export class Strategy{
                 this.cellBoard.setSearchedGroups(strategyType, GroupEnum.BOX, i, !used);
             }
         }
-        else if (this.isNakedSetStrategy(strategyType) ||
-                 strategyType === StrategyEnum.HIDDEN_SINGLE) {
+        else if (this.isNakedSetStrategy(strategyType) || this.isHiddenSetStrategy(strategyType)) {
             let tuple:TupleEnum = this.getStrategyTuple(strategyType);
             let subsets:Group[] = Group.getSubset(tuple);
             for (let group:GroupEnum = 0; group < GroupEnum.COUNT; group++) {
