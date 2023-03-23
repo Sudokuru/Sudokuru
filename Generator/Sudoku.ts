@@ -27,6 +27,7 @@ export enum StrategyEnum {
     NAKED_SINGLE,
     HIDDEN_SINGLE,
     NAKED_PAIR,
+    HIDDEN_PAIR,
     NAKED_TRIPLET,
     NAKED_QUADRUPLET,
     NAKED_QUINTUPLET,
