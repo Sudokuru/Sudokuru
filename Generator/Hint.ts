@@ -30,7 +30,7 @@ export enum NAKED_SINGLE {
  */
 export enum HIDDEN_SINGLE {
     HINT_INFO = "Hidden singles are when you only have one cell left still containing a specific value in a row, column, or box",
-    HINT_ACTION = "When you see a hidden single you can fill it in with its unique possibility"
+    HINT_ACTION = "When you see a hidden single you can remove all notes other than the single from the cell"
 }
 
 /**
@@ -41,6 +41,16 @@ export enum HIDDEN_SINGLE {
 export enum NAKED_PAIR {
     HINT_INFO = "Naked pairs are when you only have the same two numbers left as a possibility in two cells in the same row, column, or box",
     HINT_ACTION = "When you see a naked pair you can remove them from the notes of every other cell in the row, column, or box that they share"
+}
+
+/**
+ * Contains hint information for hidden pair strategy
+ * Contains what action hint is trying to get you to do
+ * @enum
+ */
+export enum HIDDEN_PAIR {
+    HINT_INFO = "Hidden pairs are when you only have two cells left still containing two specific values in a shared row, column, or box",
+    HINT_ACTION = "When you see a hidden pair you can remove all notes other than the pair from the cells"
 }
 
 /**
