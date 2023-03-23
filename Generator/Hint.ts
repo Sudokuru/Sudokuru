@@ -186,6 +186,10 @@ export class Hint{
             this.info = HIDDEN_SINGLE.HINT_INFO;
             this.action = HIDDEN_SINGLE.HINT_ACTION;
         }
+        else if (this.getStrategyType() === StrategyEnum.HIDDEN_PAIR) {
+            this.info = HIDDEN_PAIR.HINT_INFO;
+            this.action = HIDDEN_PAIR.HINT_ACTION;
+        }
         else if (this.getStrategyType() === StrategyEnum.SIMPLIFY_NOTES) {
             this.info = SIMPLIFY_NOTES.HINT_INFO;
             this.action = SIMPLIFY_NOTES.HINT_ACTION;
