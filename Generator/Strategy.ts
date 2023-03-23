@@ -150,7 +150,7 @@ export class Strategy{
         if (strategyType === StrategyEnum.NAKED_SINGLE || strategyType === StrategyEnum.HIDDEN_SINGLE) {
             return TupleEnum.SINGLE;
         }
-        else if (strategyType === StrategyEnum.NAKED_PAIR) {
+        else if (strategyType === StrategyEnum.NAKED_PAIR || strategyType === StrategyEnum.HIDDEN_PAIR) {
             return TupleEnum.PAIR;
         }
         else if (strategyType === StrategyEnum.NAKED_TRIPLET) {
@@ -194,7 +194,7 @@ export class Strategy{
      * @returns true if strategy type is a hidden set strategy
      */
     public isHiddenSetStrategy(strategyType: StrategyEnum):boolean {
-        if (strategyType === StrategyEnum.HIDDEN_SINGLE) {
+        if (strategyType === StrategyEnum.HIDDEN_SINGLE || strategyType === StrategyEnum.HIDDEN_PAIR) {
             return true;
         }
         return false;
