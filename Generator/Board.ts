@@ -179,7 +179,7 @@ export class Board{
             prereqs.push(StrategyEnum.NAKED_TRIPLET);
             strategy = StrategyEnum.NAKED_TRIPLET;
         }
-        if (strategy === StrategyEnum.NAKED_TRIPLET) {
+        if (strategy === StrategyEnum.NAKED_TRIPLET || strategy === StrategyEnum.HIDDEN_PAIR) {
             prereqs.push(StrategyEnum.NAKED_PAIR);
             strategy = StrategyEnum.NAKED_PAIR;
         }
