@@ -159,23 +159,27 @@ export class Board{
      */
     private getPrereqs(strategy: StrategyEnum):StrategyEnum[] {
         let prereqs:StrategyEnum[] = new Array();
-        if (strategy === StrategyEnum.NAKED_OCTUPLET) {
+        if (strategy === StrategyEnum.HIDDEN_OCTUPLET) {
+            prereqs.push(StrategyEnum.NAKED_OCTUPLET);
+            strategy = StrategyEnum.NAKED_OCTUPLET;
+        }
+        if (strategy === StrategyEnum.NAKED_OCTUPLET || strategy === StrategyEnum.HIDDEN_SEPTUPLET) {
             prereqs.push(StrategyEnum.NAKED_SEPTUPLET);
             strategy = StrategyEnum.NAKED_SEPTUPLET;
         }
-        if (strategy === StrategyEnum.NAKED_SEPTUPLET) {
+        if (strategy === StrategyEnum.NAKED_SEPTUPLET || strategy === StrategyEnum.HIDDEN_SEXTUPLET) {
             prereqs.push(StrategyEnum.NAKED_SEXTUPLET);
             strategy = StrategyEnum.NAKED_SEXTUPLET;
         }
-        if (strategy === StrategyEnum.NAKED_SEXTUPLET) {
+        if (strategy === StrategyEnum.NAKED_SEXTUPLET || strategy === StrategyEnum.HIDDEN_QUINTUPLET) {
             prereqs.push(StrategyEnum.NAKED_QUINTUPLET);
             strategy = StrategyEnum.NAKED_QUINTUPLET;
         }
-        if (strategy === StrategyEnum.NAKED_QUINTUPLET) {
+        if (strategy === StrategyEnum.NAKED_QUINTUPLET || strategy === StrategyEnum.HIDDEN_QUADRUPLET) {
             prereqs.push(StrategyEnum.NAKED_QUADRUPLET);
             strategy = StrategyEnum.NAKED_QUADRUPLET;
         }
-        if (strategy === StrategyEnum.NAKED_QUADRUPLET) {
+        if (strategy === StrategyEnum.NAKED_QUADRUPLET || strategy === StrategyEnum.HIDDEN_TRIPLET) {
             prereqs.push(StrategyEnum.NAKED_TRIPLET);
             strategy = StrategyEnum.NAKED_TRIPLET;
         }
