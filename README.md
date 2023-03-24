@@ -80,14 +80,14 @@
         *   [info](#info-3)
         *   [action](#action-3)
     *   [Example 5: Other Naked Sets](#example-5-other-naked-sets)
+        *   [strategy](#strategy-4)
         *   [strategy](#strategy-5)
         *   [strategy](#strategy-6)
         *   [strategy](#strategy-7)
         *   [strategy](#strategy-8)
         *   [strategy](#strategy-9)
-        *   [strategy](#strategy-10)
     *   [Example 6: Hidden Single](#example-6-hidden-single)
-        *   [strategy](#strategy-11)
+        *   [strategy](#strategy-10)
         *   [cause](#cause-4)
         *   [groups](#groups-4)
         *   [placements](#placements-4)
@@ -95,13 +95,20 @@
         *   [info](#info-4)
         *   [action](#action-4)
     *   [Example 7: Hidden Pair](#example-7-hidden-pair)
-        *   [strategy](#strategy-12)
+        *   [strategy](#strategy-11)
         *   [cause](#cause-5)
         *   [groups](#groups-5)
         *   [placements](#placements-5)
         *   [removals](#removals-5)
         *   [info](#info-5)
         *   [action](#action-5)
+    *   [Example 8: Other Hidden Sets](#example-8-other-hidden-sets)
+        *   [strategy](#strategy-12)
+        *   [strategy](#strategy-13)
+        *   [strategy](#strategy-14)
+        *   [strategy](#strategy-15)
+        *   [strategy](#strategy-16)
+        *   [strategy](#strategy-17)
 *   [Developer Tools](#developer-tools)
 
 # Installation
@@ -638,6 +645,32 @@ Info about the strategy being used by the hint.
 "When you see a hidden pair you can remove all notes other than the pair from the cells"
 ```
 Describes the action that the hint is suggesting.
+## Example 8: Other Hidden Sets
+### strategy
+```json
+"HIDDEN_TRIPLET"
+```
+### strategy
+```json
+"HIDDEN_QUADRUPLET"
+```
+### strategy
+```json
+"HIDDEN_QUINTUPLET"
+```
+### strategy
+```json
+"HIDDEN_SEXTUPLET"
+```
+### strategy
+```json
+"HIDDEN_SEPTUPLET"
+```
+### strategy
+```json
+"HIDDEN_OCTUPLET"
+```
+Name of strategy used by the hint. Hidden triplets through octuplets are scaled up versions of hidden pairs except instead of using two cells and notes they share 3-8. Note: while cells in say a hidden quadruplet must share the same 4 notes the 4 cells don't have to individually have all 4 notes they just have to be the only cells in the group that have those notes.
 # Developer Tools
 ```shell
 # Clone Repository
