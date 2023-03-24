@@ -9,6 +9,12 @@ They can also skip steps in some cases.
 classDiagram
     HiddenSingle --<| NakedSingle
     HiddenPair --<| NakedPair
+    HiddenTriplet --<| NakedTriplet
+    HiddenQuadruplet --<| NakedQuadruplet
+    HiddenQuintuplet --<| NakedQuintuplet
+    HiddenSextuplet --<| NakedSextuplet
+    HiddenSeptuplet --<| NakedSeptuplet
+    HiddenOctuplet --<| NakedOctuplet
     NakedPair --<| NakedSingle
     NakedTriplet --<| NakedPair
     NakedQuadruplet --<| NakedTriplet
