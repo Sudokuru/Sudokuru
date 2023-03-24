@@ -463,6 +463,39 @@ export class Strategy{
     }
 
     /**
+     * Calculates a ratio (number between 0 and 1) based on distance between cells being used by strategy
+     * @param cells - cells being used by this strategy
+     * @param groupType - optional parameter if this strategy uses a specific group type
+     * @returns ratio based on distance between given cells
+     */
+    private getDistanceRatio(cells: Cell[], groupType?: GroupEnum):number {
+        let distanceRatio:number;
+        let minRow:number = SudokuEnum.COLUMN_LENGTH, minColumn:number = SudokuEnum.ROW_LENGTH;
+        let maxRow:number = 0, maxColumn:number = 0;
+        for (let i:number = 0; i < cells.length; i++) {
+            minRow = Math.min(minRow, cells[i].getRow());
+            minColumn = Math.min(minColumn, cells[i].getColumn());
+            maxRow = Math.max(maxRow, cells[i].getRow());
+            maxColumn = Math.max(maxColumn, cells[i].getColumn());
+        }
+        if (groupType === undefined) {
+            distanceRatio = (maxRow - minRow) + (maxColumn - minColumn);
+            distanceRatio /= SudokuEnum.ROW_LENGTH + SudokuEnum.COLUMN_LENGTH;
+        }
+        else if (groupType === GroupEnum.ROW) {
+            distanceRatio = (maxRow - minRow) / SudokuEnum.ROW_LENGTH;
+        }
+        else if (groupType === GroupEnum.COLUMN) {
+            distanceRatio = (maxColumn - minColumn) / SudokuEnum.COLUMN_LENGTH;
+        }
+        else if (groupType === GroupEnum.BOX) {
+            distanceRatio = (maxRow - minRow) + (maxColumn - minColumn);
+            distanceRatio /= (SudokuEnum.BOX_LENGTH - 1) * 2;
+        }
+        return distanceRatio;
+    }
+
+    /**
      * Checks if strategy is a naked set of given tuple and if so adds values to be placed and notes to remove
      * @param tuple - e.g. could be single or pair for naked single or naked pair respectively
      * @param group - group type being check for a naked set e.g. row
@@ -527,27 +560,7 @@ export class Strategy{
         groups[1] = i;
         this.groups.push(groups);
         // Calculate difficulty based on how far apart the naked set cells are
-        let distanceRatio:number;
-        if (group === GroupEnum.ROW) {
-            distanceRatio = nakedSet[nakedSet.length - 1].getRow() - nakedSet[0].getRow();
-            distanceRatio /= SudokuEnum.COLUMN_LENGTH - 1;
-        }
-        else if (group === GroupEnum.COLUMN) {
-            distanceRatio = nakedSet[nakedSet.length - 1].getColumn() - nakedSet[0].getColumn();
-            distanceRatio /= SudokuEnum.ROW_LENGTH - 1;
-        }
-        else {
-            let minRow:number = SudokuEnum.COLUMN_LENGTH, minColumn:number = SudokuEnum.ROW_LENGTH;
-            let maxRow:number = 0, maxColumn:number = 0;
-            for (let k:number = 0; k < nakedSet.length; k++) {
-                minRow = Math.min(minRow, nakedSet[k].getRow());
-                minColumn = Math.min(minColumn, nakedSet[k].getColumn());
-                maxRow = Math.max(maxRow, nakedSet[k].getRow());
-                maxColumn = Math.max(maxColumn, nakedSet[k].getColumn());
-            }
-            distanceRatio = (maxRow - minRow) + (maxColumn - minColumn);
-            distanceRatio /= (SudokuEnum.BOX_LENGTH - 1) * 2;
-        }
+        let distanceRatio:number = this.getDistanceRatio(nakedSet, group);
         this.difficulty = this.getSetDifficultyLowerBound(StrategyEnum.NAKED_SINGLE, tuple);
         this.difficulty += Math.ceil(distanceRatio * (this.getSetDifficultyUpperBound(StrategyEnum.NAKED_SINGLE, tuple) - this.getSetDifficultyLowerBound(StrategyEnum.NAKED_SINGLE, tuple)));
         // If naked set shares a row or column it might also share a box so skip to check that
