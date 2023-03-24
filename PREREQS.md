@@ -8,6 +8,13 @@ They can also skip steps in some cases.
 %%{init: {'theme': 'neutral', 'themeVariables': { 'fontSize': '32px', 'fontFamily': 'arial'}}}%%
 classDiagram
     HiddenSingle --<| NakedSingle
+    HiddenPair --<| NakedPair
+    HiddenTriplet --<| NakedTriplet
+    HiddenQuadruplet --<| NakedQuadruplet
+    HiddenQuintuplet --<| NakedQuintuplet
+    HiddenSextuplet --<| NakedSextuplet
+    HiddenSeptuplet --<| NakedSeptuplet
+    HiddenOctuplet --<| NakedOctuplet
     NakedPair --<| NakedSingle
     NakedTriplet --<| NakedPair
     NakedQuadruplet --<| NakedTriplet

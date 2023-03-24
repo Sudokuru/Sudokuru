@@ -124,6 +124,44 @@ describe("create hidden single", () => {
     });
 });
 
+describe("create hidden pair", () => {
+    it('should not be a hidden pair', () => {
+        let board:Cell[][] = getBlankCellBoard();
+        board[0][0].removeNote("3");
+        board[0][4].removeNote("3");
+        board[0][2].removeNote("5");
+        for (let i:number = 0; i < 7; i++) {
+            board[0][i].removeNote("7");
+        }
+        for (let i:number = 1; i < 8; i++) {
+            board[0][i].removeNote("6");
+        }
+        let strategy:Strategy = new Strategy(new CellBoard(board), board, board);
+        expect(strategy.setStrategyType(StrategyEnum.HIDDEN_PAIR)).toBeFalsy();
+    });
+    it ('should be a hidden pair', () => {
+        let board:Cell[][] = getBlankCellBoard();
+        for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+            for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                board[row][column].resetNotes();
+            }
+        }
+        for (let i:number = 0; i < 7; i++) {
+            board[0][i].removeNote("8");
+            board[0][i].removeNote("9");
+        }
+        let strategy:Strategy = new Strategy(new CellBoard(board), board, board);
+        expect(strategy.setStrategyType(StrategyEnum.HIDDEN_PAIR)).toBeTruthy();
+        expect((strategy.getNotesToRemove())[0].getSize()).toBe(SudokuEnum.ROW_LENGTH - 2);
+        let cause:Cell[] = strategy.getCause();
+        expect(cause.length).toBe(7);
+        let groups:number[][] = strategy.getGroups();
+        expect(groups.length).toBe(1);
+        expect(groups[0][0]).toBe(GroupEnum.ROW);
+        expect(groups[0][1]).toBe(0);
+    });
+});
+
 describe("create naked pair", () => {
     it("should not be a naked pair", () => {
         // Create board

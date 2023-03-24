@@ -12,12 +12,19 @@ const NEXT_NOTES:string = "&notes=";
 const NEXT_NAKED_SINGLE:string = "&nakedSingle=";
 const NEXT_HIDDEN_SINGLE:string = "&hiddenSingle=";
 const NEXT_NAKED_PAIR:string = "&nakedPair=";
+const NEXT_HIDDEN_PAIR:string = "&hiddenPair=";
 const NEXT_NAKED_TRIPLET:string = "&nakedTriplet=";
+const NEXT_HIDDEN_TRIPLET:string = "&hiddenTriplet=";
 const NEXT_NAKED_QUADRUPLET:string = "&nakedQuadruplet=";
+const NEXT_HIDDEN_QUADRUPLET:string = "&hiddenQuadruplet=";
 const NEXT_NAKED_QUINTUPLET:string = "&nakedQuintuplet=";
+const NEXT_HIDDEN_QUINTUPLET:string = "&hiddenQuintuplet=";
 const NEXT_NAKED_SEXTUPLET:string = "&nakedSextuplet=";
+const NEXT_HIDDEN_SEXTUPLET:string = "&hiddenSextuplet=";
 const NEXT_NAKED_SEPTUPLET:string = "&nakedSeptuplet=";
+const NEXT_HIDDEN_SEPTUPLET:string = "&hiddenSeptuplet=";
 const NEXT_NAKED_OCTUPLET:string = "&nakedOctuplet=";
+const NEXT_HIDDEN_OCTUPLET:string = "&hiddenOctuplet=";
 const NEXT_SIMPLIFY_NOTES:string = "&simplifyNotes=";
 const NEXT_AMEND_NOTES:string = "&amendNotes=";
 const CANDIDATES:string = "123456789";
@@ -321,23 +328,44 @@ function getStrategyOrder():string {
     algorithm += NEXT_NAKED_PAIR;
     algorithm += (<HTMLInputElement>document.getElementById("nakedPair")).value;
 
+    algorithm += NEXT_HIDDEN_PAIR;
+    algorithm += (<HTMLInputElement>document.getElementById("hiddenPair")).value;
+
     algorithm += NEXT_NAKED_TRIPLET;
     algorithm += (<HTMLInputElement>document.getElementById("nakedTriplet")).value;
+
+    algorithm += NEXT_HIDDEN_TRIPLET;
+    algorithm += (<HTMLInputElement>document.getElementById("hiddenTriplet")).value;
 
     algorithm += NEXT_NAKED_QUADRUPLET;
     algorithm += (<HTMLInputElement>document.getElementById("nakedQuadruplet")).value;
 
+    algorithm += NEXT_HIDDEN_QUADRUPLET;
+    algorithm += (<HTMLInputElement>document.getElementById("hiddenQuadruplet")).value;
+
     algorithm += NEXT_NAKED_QUINTUPLET;
     algorithm += (<HTMLInputElement>document.getElementById("nakedQuintuplet")).value;
+
+    algorithm += NEXT_HIDDEN_QUINTUPLET;
+    algorithm += (<HTMLInputElement>document.getElementById("hiddenQuintuplet")).value;
 
     algorithm += NEXT_NAKED_SEXTUPLET;
     algorithm += (<HTMLInputElement>document.getElementById("nakedSextuplet")).value;
 
+    algorithm += NEXT_HIDDEN_SEXTUPLET;
+    algorithm += (<HTMLInputElement>document.getElementById("hiddenSextuplet")).value;
+
     algorithm += NEXT_NAKED_SEPTUPLET;
     algorithm += (<HTMLInputElement>document.getElementById("nakedSeptuplet")).value;
 
+    algorithm += NEXT_HIDDEN_SEPTUPLET;
+    algorithm += (<HTMLInputElement>document.getElementById("hiddenSeptuplet")).value;
+
     algorithm += NEXT_NAKED_OCTUPLET;
     algorithm += (<HTMLInputElement>document.getElementById("nakedOctuplet")).value;
+
+    algorithm += NEXT_HIDDEN_OCTUPLET;
+    algorithm += (<HTMLInputElement>document.getElementById("hiddenOctuplet")).value;
 
     algorithm += NEXT_SIMPLIFY_NOTES;
     algorithm += (<HTMLInputElement>document.getElementById("simplifyNotes")).value;

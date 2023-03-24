@@ -14,12 +14,19 @@ enum DifficultyLowerBounds {
     NAKED_SINGLE = 10,
     HIDDEN_SINGLE = 20,
     NAKED_PAIR = 40,
+    HIDDEN_PAIR = 50,
     NAKED_TRIPLET = 60,
+    HIDDEN_TRIPLET = 75,
     NAKED_QUADRUPLET = 90,
+    HIDDEN_QUADRUPLET = 115,
     NAKED_QUINTUPLET = 140,
+    HIDDEN_QUINTUPLET = 170,
     NAKED_SEXTUPLET = 200,
+    HIDDEN_SEXTUPLET = 250,
     NAKED_SEPTUPLET = 300,
+    HIDDEN_SEPTUPLET = 375,
     NAKED_OCTUPLET = 450,
+    HIDDEN_OCTUPLET = 550,
     SIMPLIFY_NOTES = 10
 }
 
@@ -32,12 +39,19 @@ enum DifficultyUpperBounds {
     NAKED_SINGLE = 10,
     HIDDEN_SINGLE = 40,
     NAKED_PAIR = 60,
+    HIDDEN_PAIR = 75,
     NAKED_TRIPLET = 90,
+    HIDDEN_TRIPLET = 115,
     NAKED_QUADRUPLET = 140,
+    HIDDEN_QUADRUPLET = 140,
     NAKED_QUINTUPLET = 140,
+    HIDDEN_QUINTUPLET = 190,
     NAKED_SEXTUPLET = 200,
+    HIDDEN_SEXTUPLET = 250,
     NAKED_SEPTUPLET = 300,
+    HIDDEN_SEPTUPLET = 375,
     NAKED_OCTUPLET = 450,
+    HIDDEN_OCTUPLET = 600,
     SIMPLIFY_NOTES = 10
 }
 
@@ -150,25 +164,25 @@ export class Strategy{
         if (strategyType === StrategyEnum.NAKED_SINGLE || strategyType === StrategyEnum.HIDDEN_SINGLE) {
             return TupleEnum.SINGLE;
         }
-        else if (strategyType === StrategyEnum.NAKED_PAIR) {
+        else if (strategyType === StrategyEnum.NAKED_PAIR || strategyType === StrategyEnum.HIDDEN_PAIR) {
             return TupleEnum.PAIR;
         }
-        else if (strategyType === StrategyEnum.NAKED_TRIPLET) {
+        else if (strategyType === StrategyEnum.NAKED_TRIPLET || strategyType === StrategyEnum.HIDDEN_TRIPLET) {
             return TupleEnum.TRIPLET;
         }
-        else if (strategyType === StrategyEnum.NAKED_QUADRUPLET) {
+        else if (strategyType === StrategyEnum.NAKED_QUADRUPLET || strategyType === StrategyEnum.HIDDEN_QUADRUPLET) {
             return TupleEnum.QUADRUPLET;
         }
-        else if (strategyType === StrategyEnum.NAKED_QUINTUPLET) {
+        else if (strategyType === StrategyEnum.NAKED_QUINTUPLET || strategyType === StrategyEnum.HIDDEN_QUINTUPLET) {
             return TupleEnum.QUINTUPLET;
         }
-        else if (strategyType === StrategyEnum.NAKED_SEXTUPLET) {
+        else if (strategyType === StrategyEnum.NAKED_SEXTUPLET || strategyType === StrategyEnum.HIDDEN_SEXTUPLET) {
             return TupleEnum.SEXTUPLET;
         }
-        else if (strategyType === StrategyEnum.NAKED_SEPTUPLET) {
+        else if (strategyType === StrategyEnum.NAKED_SEPTUPLET || strategyType === StrategyEnum.HIDDEN_SEPTUPLET) {
             return TupleEnum.SEPTUPLET;
         }
-        else if (strategyType === StrategyEnum.NAKED_OCTUPLET) {
+        else if (strategyType === StrategyEnum.NAKED_OCTUPLET || strategyType === StrategyEnum.HIDDEN_OCTUPLET) {
             return TupleEnum.OCTUPLET;
         }
     }
@@ -183,6 +197,21 @@ export class Strategy{
             strategyType === StrategyEnum.NAKED_TRIPLET || strategyType === StrategyEnum.NAKED_QUADRUPLET || 
             strategyType === StrategyEnum.NAKED_QUINTUPLET || strategyType === StrategyEnum.NAKED_SEXTUPLET || 
             strategyType === StrategyEnum.NAKED_SEPTUPLET || strategyType === StrategyEnum.NAKED_OCTUPLET) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns true if strategy is a hidden set strategy
+     * @param strategyType - strategy type
+     * @returns true if strategy type is a hidden set strategy
+     */
+    public isHiddenSetStrategy(strategyType: StrategyEnum):boolean {
+        if (strategyType === StrategyEnum.HIDDEN_SINGLE || strategyType === StrategyEnum.HIDDEN_PAIR || 
+            strategyType === StrategyEnum.HIDDEN_TRIPLET || strategyType === StrategyEnum.HIDDEN_QUADRUPLET || 
+            strategyType === StrategyEnum.HIDDEN_QUINTUPLET || strategyType === StrategyEnum.HIDDEN_SEXTUPLET || 
+            strategyType === StrategyEnum.HIDDEN_SEPTUPLET || strategyType === StrategyEnum.HIDDEN_OCTUPLET) {
             return true;
         }
         return false;
@@ -235,8 +264,7 @@ export class Strategy{
                 this.cellBoard.setSearchedGroups(strategyType, GroupEnum.BOX, i, !used);
             }
         }
-        else if (this.isNakedSetStrategy(strategyType) ||
-                 strategyType === StrategyEnum.HIDDEN_SINGLE) {
+        else if (this.isNakedSetStrategy(strategyType) || this.isHiddenSetStrategy(strategyType)) {
             let tuple:TupleEnum = this.getStrategyTuple(strategyType);
             let subsets:Group[] = Group.getSubset(tuple);
             for (let group:GroupEnum = 0; group < GroupEnum.COUNT; group++) {
@@ -254,7 +282,7 @@ export class Strategy{
                     let cells: Cell[] = this.cellBoard.getEmptyCellsInGroup(group, i);
                     for (let j:number = 0; j < subsets.length; j++) {
                         if ((this.isNakedSetStrategy(strategyType) && this.isNakedSet(tuple, group, i, cells, subsets[j])) ||
-                            (strategyType === StrategyEnum.HIDDEN_SINGLE && this.isHiddenSet(tuple, group, i, cells, subsets[j]))) {
+                            (this.isHiddenSetStrategy(strategyType) && this.isHiddenSet(tuple, group, i, cells, subsets[j]))) {
                             if (!drill) {
                                 return true;
                             }
@@ -364,67 +392,182 @@ export class Strategy{
     }
 
     /**
-     * Given a tuple like pair returns the difficulty lower bound for that naked set like naked pair
+     * Given a tuple like pair returns the difficulty lower bound for that set like naked pair
+     * @param strategyType - strategy type
      * @param tuple - tuple e.g. naked single, pair, ...
-     * @returns lower bound for naked single of given tuple
+     * @returns lower bound for given strategy set of given tuple
      */
-    private getNakedSetDifficultyLowerBound(tuple: TupleEnum):DifficultyLowerBounds {
+    private getSetDifficultyLowerBound(strategyType: StrategyEnum, tuple: TupleEnum):DifficultyLowerBounds {
         if (tuple === TupleEnum.SINGLE) {
-            return DifficultyLowerBounds.NAKED_SINGLE;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.NAKED_SINGLE;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.HIDDEN_SINGLE;
+            }
         }
         else if (tuple === TupleEnum.PAIR) {
-            return DifficultyLowerBounds.NAKED_PAIR;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.NAKED_PAIR;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.HIDDEN_PAIR;
+            }
         }
         else if (tuple === TupleEnum.TRIPLET) {
-            return DifficultyLowerBounds.NAKED_TRIPLET;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.NAKED_TRIPLET;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.HIDDEN_TRIPLET;
+            }
         }
         else if (tuple === TupleEnum.QUADRUPLET) {
-            return DifficultyLowerBounds.NAKED_QUADRUPLET;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.NAKED_QUADRUPLET;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.HIDDEN_QUADRUPLET;
+            }
         }
         else if (tuple === TupleEnum.QUINTUPLET) {
-            return DifficultyLowerBounds.NAKED_QUINTUPLET;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.NAKED_QUINTUPLET;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.HIDDEN_QUINTUPLET;
+            }
         }
         else if (tuple === TupleEnum.SEXTUPLET) {
-            return DifficultyLowerBounds.NAKED_SEXTUPLET;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.NAKED_SEXTUPLET;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.HIDDEN_SEXTUPLET;
+            }
         }
         else if (tuple === TupleEnum.SEPTUPLET) {
-            return DifficultyLowerBounds.NAKED_SEPTUPLET;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.NAKED_SEPTUPLET;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.HIDDEN_SEPTUPLET;
+            }
         }
         else if (tuple === TupleEnum.OCTUPLET) {
-            return DifficultyLowerBounds.NAKED_OCTUPLET;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.NAKED_OCTUPLET;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.HIDDEN_OCTUPLET;
+            }
         }
     }
 
     /**
-     * Given a tuple like pair returns the difficulty upper bound for that naked set like naked pair
+     * Given a tuple like pair returns the difficulty upper bound for that set like naked pair
+     * @param strategyType - strategy type
      * @param tuple - tuple e.g. naked single, pair, ...
-     * @returns upper bound for naked single of given tuple
+     * @returns upper bound for given strategy set of given tuple
      */
-    private getNakedSetDifficultyUpperBound(tuple: TupleEnum):DifficultyUpperBounds {
+    private getSetDifficultyUpperBound(strategyType: StrategyEnum, tuple: TupleEnum):DifficultyUpperBounds {
         if (tuple === TupleEnum.SINGLE) {
-            return DifficultyUpperBounds.NAKED_SINGLE;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.NAKED_SINGLE;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.HIDDEN_SINGLE;
+            }
         }
         else if (tuple === TupleEnum.PAIR) {
-            return DifficultyUpperBounds.NAKED_PAIR;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.NAKED_PAIR;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.HIDDEN_PAIR;
+            }
         }
         else if (tuple === TupleEnum.TRIPLET) {
-            return DifficultyUpperBounds.NAKED_TRIPLET;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.NAKED_TRIPLET;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.HIDDEN_TRIPLET;
+            }
         }
         else if (tuple === TupleEnum.QUADRUPLET) {
-            return DifficultyUpperBounds.NAKED_QUADRUPLET;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.NAKED_QUADRUPLET;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.HIDDEN_QUADRUPLET;
+            }
         }
         else if (tuple === TupleEnum.QUINTUPLET) {
-            return DifficultyUpperBounds.NAKED_QUINTUPLET;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.NAKED_QUINTUPLET;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.HIDDEN_QUINTUPLET;
+            }
         }
         else if (tuple === TupleEnum.SEXTUPLET) {
-            return DifficultyUpperBounds.NAKED_SEXTUPLET;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.NAKED_SEXTUPLET;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.HIDDEN_SEXTUPLET;
+            }
         }
         else if (tuple === TupleEnum.SEPTUPLET) {
-            return DifficultyUpperBounds.NAKED_SEPTUPLET;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.NAKED_SEPTUPLET;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.HIDDEN_SEPTUPLET;
+            }
         }
         else if (tuple === TupleEnum.OCTUPLET) {
-            return DifficultyUpperBounds.NAKED_OCTUPLET;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.NAKED_OCTUPLET;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.HIDDEN_OCTUPLET;
+            }
         }
+    }
+
+    /**
+     * Calculates a ratio (number between 0 and 1) based on distance between cells being used by strategy
+     * @param cells - cells being used by this strategy
+     * @param groupType - optional parameter if this strategy uses a specific group type
+     * @returns ratio based on distance between given cells
+     */
+    private getDistanceRatio(cells: Cell[], groupType?: GroupEnum):number {
+        let distanceRatio:number;
+        let minRow:number = SudokuEnum.COLUMN_LENGTH, minColumn:number = SudokuEnum.ROW_LENGTH;
+        let maxRow:number = 0, maxColumn:number = 0;
+        for (let i:number = 0; i < cells.length; i++) {
+            minRow = Math.min(minRow, cells[i].getRow());
+            minColumn = Math.min(minColumn, cells[i].getColumn());
+            maxRow = Math.max(maxRow, cells[i].getRow());
+            maxColumn = Math.max(maxColumn, cells[i].getColumn());
+        }
+        if (groupType === undefined) {
+            distanceRatio = (maxRow - minRow) + (maxColumn - minColumn);
+            distanceRatio /= SudokuEnum.ROW_LENGTH + SudokuEnum.COLUMN_LENGTH;
+        }
+        else if (groupType === GroupEnum.ROW) {
+            distanceRatio = (maxRow - minRow) / SudokuEnum.ROW_LENGTH;
+        }
+        else if (groupType === GroupEnum.COLUMN) {
+            distanceRatio = (maxColumn - minColumn) / SudokuEnum.COLUMN_LENGTH;
+        }
+        else if (groupType === GroupEnum.BOX) {
+            distanceRatio = (maxRow - minRow) + (maxColumn - minColumn);
+            distanceRatio /= (SudokuEnum.BOX_LENGTH - 1) * 2;
+        }
+        return distanceRatio;
     }
 
     /**
@@ -492,29 +635,9 @@ export class Strategy{
         groups[1] = i;
         this.groups.push(groups);
         // Calculate difficulty based on how far apart the naked set cells are
-        let distanceRatio:number;
-        if (group === GroupEnum.ROW) {
-            distanceRatio = nakedSet[nakedSet.length - 1].getRow() - nakedSet[0].getRow();
-            distanceRatio /= SudokuEnum.COLUMN_LENGTH - 1;
-        }
-        else if (group === GroupEnum.COLUMN) {
-            distanceRatio = nakedSet[nakedSet.length - 1].getColumn() - nakedSet[0].getColumn();
-            distanceRatio /= SudokuEnum.ROW_LENGTH - 1;
-        }
-        else {
-            let minRow:number = SudokuEnum.COLUMN_LENGTH, minColumn:number = SudokuEnum.ROW_LENGTH;
-            let maxRow:number = 0, maxColumn:number = 0;
-            for (let k:number = 0; k < nakedSet.length; k++) {
-                minRow = Math.min(minRow, nakedSet[k].getRow());
-                minColumn = Math.min(minColumn, nakedSet[k].getColumn());
-                maxRow = Math.max(maxRow, nakedSet[k].getRow());
-                maxColumn = Math.max(maxColumn, nakedSet[k].getColumn());
-            }
-            distanceRatio = (maxRow - minRow) + (maxColumn - minColumn);
-            distanceRatio /= (SudokuEnum.BOX_LENGTH - 1) * 2;
-        }
-        this.difficulty = this.getNakedSetDifficultyLowerBound(tuple);
-        this.difficulty += Math.ceil(distanceRatio * (this.getNakedSetDifficultyUpperBound(tuple) - this.getNakedSetDifficultyLowerBound(tuple)));
+        let distanceRatio:number = this.getDistanceRatio(nakedSet, group);
+        this.difficulty = this.getSetDifficultyLowerBound(StrategyEnum.NAKED_SINGLE, tuple);
+        this.difficulty += Math.ceil(distanceRatio * (this.getSetDifficultyUpperBound(StrategyEnum.NAKED_SINGLE, tuple) - this.getSetDifficultyLowerBound(StrategyEnum.NAKED_SINGLE, tuple)));
         // If naked set shares a row or column it might also share a box so skip to check that
         if (group !== GroupEnum.BOX) {
             // Set used row or column to avoiding adding same cells notes twice
@@ -624,10 +747,8 @@ export class Strategy{
             noteCount += (hiddenSet[k].getNotes()).getSize();
         }
         let noteRatio:number = noteCount / (SudokuEnum.ROW_LENGTH * SudokuEnum.ROW_LENGTH);
-        if (tuple === TupleEnum.SINGLE) {
-            this.difficulty = DifficultyLowerBounds.HIDDEN_SINGLE;
-            this.difficulty += Math.ceil(noteRatio * (DifficultyUpperBounds.HIDDEN_SINGLE - DifficultyLowerBounds.HIDDEN_SINGLE));
-        }
+        this.difficulty = this.getSetDifficultyLowerBound(StrategyEnum.HIDDEN_SINGLE, tuple);
+        this.difficulty += Math.ceil(noteRatio * (this.getSetDifficultyUpperBound(StrategyEnum.HIDDEN_SINGLE, tuple) - this.getSetDifficultyLowerBound(StrategyEnum.HIDDEN_SINGLE, tuple)));
         return true;
     }
 

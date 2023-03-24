@@ -80,20 +80,35 @@
         *   [info](#info-3)
         *   [action](#action-3)
     *   [Example 5: Other Naked Sets](#example-5-other-naked-sets)
+        *   [strategy](#strategy-4)
         *   [strategy](#strategy-5)
         *   [strategy](#strategy-6)
         *   [strategy](#strategy-7)
         *   [strategy](#strategy-8)
         *   [strategy](#strategy-9)
-        *   [strategy](#strategy-10)
     *   [Example 6: Hidden Single](#example-6-hidden-single)
-        *   [strategy](#strategy-11)
+        *   [strategy](#strategy-10)
         *   [cause](#cause-4)
         *   [groups](#groups-4)
         *   [placements](#placements-4)
         *   [removals](#removals-4)
         *   [info](#info-4)
         *   [action](#action-4)
+    *   [Example 7: Hidden Pair](#example-7-hidden-pair)
+        *   [strategy](#strategy-11)
+        *   [cause](#cause-5)
+        *   [groups](#groups-5)
+        *   [placements](#placements-5)
+        *   [removals](#removals-5)
+        *   [info](#info-5)
+        *   [action](#action-5)
+    *   [Example 8: Other Hidden Sets](#example-8-other-hidden-sets)
+        *   [strategy](#strategy-12)
+        *   [strategy](#strategy-13)
+        *   [strategy](#strategy-14)
+        *   [strategy](#strategy-15)
+        *   [strategy](#strategy-16)
+        *   [strategy](#strategy-17)
 *   [Developer Tools](#developer-tools)
 
 # Installation
@@ -590,9 +605,72 @@ Notes that can be removed from cells along with their row and columns. The first
 Info about the strategy being used by the hint.
 ### action
 ```json
-"When you see a hidden single you can fill it in with its unique possibility"
+"When you see a hidden single you can remove all notes other than the single from the cell"
 ```
 Describes the action that the hint is suggesting.
+## Example 7: Hidden Pair
+![Example 7](https://sudokuru.s3.amazonaws.com/hintExample6-V1.png)
+### strategy
+```json
+"HIDDEN_PAIR"
+```
+Name of strategy used by the hint. Hidden pair works by having only two cells in a group that still have two specific numbers as possibilities in which case all other notes can be removed from the pair of cells. This is shown by the naked pair in the top right in which they have the only 2 and 3's in the box with the green border. Therefore, the other notes highlighted in red can be removed.
+### cause
+```json
+[[0,7],[1,7],[1,8]]
+```
+Coordinates of cells that "cause" strategy to be applicable. This is a 2d array so cause[0] is [0, 7] referring to the 8th cell in the 1st row (rows and columns are zero-indexed). cause[0][0] refers to it being in the 1st row and cause[0][1] refers to it being in the 8th column.
+### groups
+```json
+[[2,2]]
+```
+Group type and index of groups that "cause strategy". This is a 2d array so group[0] is [2, 2] referring to the 3rd box with green borders (boxes are zero-indexed starting with the top left and going left to right top to bottom). group[0][0] refers to the group type (0 = row, 1 = column, 2 = box) and group[0][1] refers to it being the 3rd box.
+### placements
+```json
+[]
+```
+Row, column, and values for cells that have had values placed in them as result of strategy. This does not apply to this strategy.
+### removals
+```json
+[[0,6,1,7,8],[2,6,1,7,8]]
+```
+Notes that can be removed from cells along with their row and columns. The first two values in each subarray represent the row and column respectively so removals[0][0] and removals[0][1] refer to the 7th cell in the 1st row. The rest of the numbers in the subarray are the notes to be removed which is 1, 7, and 8 (although only 1 and 8 are present and are highlighted in red in the cell in the first row).
+### info
+```json
+"Hidden pairs are when you only have two cells left still containing two specific values in a shared row, column, or box"
+```
+Info about the strategy being used by the hint.
+### action
+```json
+"When you see a hidden pair you can remove all notes other than the pair from the cells"
+```
+Describes the action that the hint is suggesting.
+## Example 8: Other Hidden Sets
+### strategy
+```json
+"HIDDEN_TRIPLET"
+```
+### strategy
+```json
+"HIDDEN_QUADRUPLET"
+```
+### strategy
+```json
+"HIDDEN_QUINTUPLET"
+```
+### strategy
+```json
+"HIDDEN_SEXTUPLET"
+```
+### strategy
+```json
+"HIDDEN_SEPTUPLET"
+```
+### strategy
+```json
+"HIDDEN_OCTUPLET"
+```
+Name of strategy used by the hint. Hidden triplets through octuplets are scaled up versions of hidden pairs except instead of using two cells and notes they share 3-8. Note: while cells in say a hidden quadruplet must share the same 4 notes the 4 cells don't have to individually have all 4 notes they just have to be the only cells in the group that have those notes.
 # Developer Tools
 ```shell
 # Clone Repository

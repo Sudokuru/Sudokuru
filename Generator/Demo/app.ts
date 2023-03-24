@@ -68,23 +68,44 @@ app.get('/solver/nextStep', (req, res) => {
         else if (Number(req.query.nakedPair) === i) {
             algorithm.push(StrategyEnum.NAKED_PAIR);
         }
+        else if (Number(req.query.hiddenPair) === i) {
+            algorithm.push(StrategyEnum.HIDDEN_PAIR);
+        }
         else if (Number(req.query.nakedTriplet) === i) {
             algorithm.push(StrategyEnum.NAKED_TRIPLET);
+        }
+        else if (Number(req.query.hiddenTriplet) === i) {
+            algorithm.push(StrategyEnum.HIDDEN_TRIPLET);
         }
         else if (Number(req.query.nakedQuadruplet) === i) {
             algorithm.push(StrategyEnum.NAKED_QUADRUPLET);
         }
+        else if (Number(req.query.hiddenQuadruplet) === i) {
+            algorithm.push(StrategyEnum.HIDDEN_QUADRUPLET);
+        }
         else if (Number(req.query.nakedQuintuplet) === i) {
             algorithm.push(StrategyEnum.NAKED_QUINTUPLET);
+        }
+        else if (Number(req.query.hiddenQuintuplet) === i) {
+            algorithm.push(StrategyEnum.HIDDEN_QUINTUPLET);
         }
         else if (Number(req.query.nakedSextuplet) === i) {
             algorithm.push(StrategyEnum.NAKED_SEXTUPLET);
         }
+        else if (Number(req.query.hiddenSextuplet) === i) {
+            algorithm.push(StrategyEnum.HIDDEN_SEXTUPLET);
+        }
         else if (Number(req.query.nakedSeptuplet) === i) {
             algorithm.push(StrategyEnum.NAKED_SEPTUPLET);
         }
+        else if (Number(req.query.hiddenSeptuplet) === i) {
+            algorithm.push(StrategyEnum.HIDDEN_SEPTUPLET);
+        }
         else if (Number(req.query.nakedOctuplet) === i) {
             algorithm.push(StrategyEnum.NAKED_OCTUPLET);
+        }
+        else if (Number(req.query.hiddenOctuplet) === i) {
+            algorithm.push(StrategyEnum.HIDDEN_OCTUPLET);
         }
         else if (Number(req.query.simplifyNotes) === i) {
             algorithm.push(StrategyEnum.SIMPLIFY_NOTES);
