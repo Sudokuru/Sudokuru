@@ -16,11 +16,17 @@ enum DifficultyLowerBounds {
     NAKED_PAIR = 40,
     HIDDEN_PAIR = 50,
     NAKED_TRIPLET = 60,
+    HIDDEN_TRIPLET = 75,
     NAKED_QUADRUPLET = 90,
+    HIDDEN_QUADRUPLET = 115,
     NAKED_QUINTUPLET = 140,
+    HIDDEN_QUINTUPLET = 170,
     NAKED_SEXTUPLET = 200,
+    HIDDEN_SEXTUPLET = 250,
     NAKED_SEPTUPLET = 300,
+    HIDDEN_SEPTUPLET = 375,
     NAKED_OCTUPLET = 450,
+    HIDDEN_OCTUPLET = 550,
     SIMPLIFY_NOTES = 10
 }
 
@@ -35,11 +41,17 @@ enum DifficultyUpperBounds {
     NAKED_PAIR = 60,
     HIDDEN_PAIR = 75,
     NAKED_TRIPLET = 90,
+    HIDDEN_TRIPLET = 115,
     NAKED_QUADRUPLET = 140,
+    HIDDEN_QUADRUPLET = 140,
     NAKED_QUINTUPLET = 140,
+    HIDDEN_QUINTUPLET = 190,
     NAKED_SEXTUPLET = 200,
+    HIDDEN_SEXTUPLET = 250,
     NAKED_SEPTUPLET = 300,
+    HIDDEN_SEPTUPLET = 375,
     NAKED_OCTUPLET = 450,
+    HIDDEN_OCTUPLET = 600,
     SIMPLIFY_NOTES = 10
 }
 
@@ -403,22 +415,52 @@ export class Strategy{
             }
         }
         else if (tuple === TupleEnum.TRIPLET) {
-            return DifficultyLowerBounds.NAKED_TRIPLET;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.NAKED_TRIPLET;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.HIDDEN_TRIPLET;
+            }
         }
         else if (tuple === TupleEnum.QUADRUPLET) {
-            return DifficultyLowerBounds.NAKED_QUADRUPLET;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.NAKED_QUADRUPLET;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.HIDDEN_QUADRUPLET;
+            }
         }
         else if (tuple === TupleEnum.QUINTUPLET) {
-            return DifficultyLowerBounds.NAKED_QUINTUPLET;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.NAKED_QUINTUPLET;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.HIDDEN_QUINTUPLET;
+            }
         }
         else if (tuple === TupleEnum.SEXTUPLET) {
-            return DifficultyLowerBounds.NAKED_SEXTUPLET;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.NAKED_SEXTUPLET;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.HIDDEN_SEXTUPLET;
+            }
         }
         else if (tuple === TupleEnum.SEPTUPLET) {
-            return DifficultyLowerBounds.NAKED_SEPTUPLET;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.NAKED_SEPTUPLET;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.HIDDEN_SEPTUPLET;
+            }
         }
         else if (tuple === TupleEnum.OCTUPLET) {
-            return DifficultyLowerBounds.NAKED_OCTUPLET;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.NAKED_OCTUPLET;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyLowerBounds.HIDDEN_OCTUPLET;
+            }
         }
     }
 
@@ -446,22 +488,52 @@ export class Strategy{
             }
         }
         else if (tuple === TupleEnum.TRIPLET) {
-            return DifficultyUpperBounds.NAKED_TRIPLET;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.NAKED_TRIPLET;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.HIDDEN_TRIPLET;
+            }
         }
         else if (tuple === TupleEnum.QUADRUPLET) {
-            return DifficultyUpperBounds.NAKED_QUADRUPLET;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.NAKED_QUADRUPLET;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.HIDDEN_QUADRUPLET;
+            }
         }
         else if (tuple === TupleEnum.QUINTUPLET) {
-            return DifficultyUpperBounds.NAKED_QUINTUPLET;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.NAKED_QUINTUPLET;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.HIDDEN_QUINTUPLET;
+            }
         }
         else if (tuple === TupleEnum.SEXTUPLET) {
-            return DifficultyUpperBounds.NAKED_SEXTUPLET;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.NAKED_SEXTUPLET;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.HIDDEN_SEXTUPLET;
+            }
         }
         else if (tuple === TupleEnum.SEPTUPLET) {
-            return DifficultyUpperBounds.NAKED_SEPTUPLET;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.NAKED_SEPTUPLET;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.HIDDEN_SEPTUPLET;
+            }
         }
         else if (tuple === TupleEnum.OCTUPLET) {
-            return DifficultyUpperBounds.NAKED_OCTUPLET;
+            if (this.isNakedSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.NAKED_OCTUPLET;
+            }
+            else if (this.isHiddenSetStrategy(strategyType)) {
+                return DifficultyUpperBounds.HIDDEN_OCTUPLET;
+            }
         }
     }
 
