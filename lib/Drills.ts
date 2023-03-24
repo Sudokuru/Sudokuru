@@ -13,7 +13,7 @@ interface getDrillGameResponse {
 export class Drills{
     public static strategies:string[][] = [
         ["NAKED_SET", "NAKED_SINGLE", "NAKED_PAIR", "NAKED_TRIPLET", "NAKED_QUADRUPLET", "NAKED_QUINTUPLET", "NAKED_SEXTUPLET", "NAKED_SEPTUPLET", "NAKED_OCTUPLET"],
-        ["HIDDEN_SET", "HIDDEN_SINGLE", "HIDDEN_PAIR"]
+        ["HIDDEN_SET", "HIDDEN_SINGLE", "HIDDEN_PAIR", "HIDDEN_TRIPLET", "HIDDEN_QUADRUPLET", "HIDDEN_QUINTUPLET", "HIDDEN_SEXTUPLET", "HIDDEN_SEPTUPLET", "HIDDEN_OCTUPLET"]
     ];
 
     public static async getGame(url: string, strategy: string, token: string):Promise<JSON> {
