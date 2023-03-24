@@ -70,6 +70,30 @@ export class Hint{
             this.info = "Hidden pairs are when you only have two cells left still containing two specific values in a shared row, column, or box";
             this.action = "When you see a hidden pair you can remove all notes other than the pair from the cells";
         }
+        else if (this.getStrategyType() === StrategyEnum.HIDDEN_TRIPLET) {
+            this.info = "Hidden triplets are when you only have three cells left still containing three specific values in a shared row, column, or box";
+            this.action = "When you see a hidden triplet you can remove all notes other than the triplet from the cells";
+        }
+        else if (this.getStrategyType() === StrategyEnum.HIDDEN_QUADRUPLET) {
+        this.info = "Hidden quadruplets are when you only have four cells left still containing four specific values in a shared row, column, or box";
+            this.action = "When you see a hidden quadruplet you can remove all notes other than the quadruplet from the cells";
+        }
+        else if (this.getStrategyType() === StrategyEnum.HIDDEN_QUINTUPLET) {
+            this.info = "Hidden quintuplets are when you only have five cells left still containing five specific values in a shared row, column, or box";
+            this.action = "When you see a hidden quintuplet you can remove all notes other than the quintuplet from the cells";
+        }
+        else if (this.getStrategyType() === StrategyEnum.HIDDEN_SEXTUPLET) {
+            this.info = "Hidden sextuplets are when you only have six cells left still containing six specific values in a shared row, column, or box";
+            this.action = "When you see a hidden sextuplet you can remove all notes other than the sextuplet from the cells";
+        }
+        else if (this.getStrategyType() === StrategyEnum.HIDDEN_SEPTUPLET) {
+            this.info = "Hidden septuplets are when you only have seven cells left still containing seven specific values in a shared row, column, or box";
+            this.action = "When you see a hidden septuplet you can remove all notes other than the septuplet from the cells";
+        }
+        else if (this.getStrategyType() === StrategyEnum.HIDDEN_OCTUPLET) {
+            this.info = "Hidden octuplets are when you only have eight cells left still containing eight specific values in a shared row, column, or box";
+            this.action = "When you see a hidden octuplet you can remove all notes other than the octuplet from the cells";
+        }
         else if (this.getStrategyType() === StrategyEnum.SIMPLIFY_NOTES) {
             this.info = "You can simplify notes using values already placed in cells at the start of the game";
             this.action = "When there is a value already placed in a cell than it can be removed from all other cells notes in its row, column, and box";
