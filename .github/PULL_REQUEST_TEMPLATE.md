@@ -7,7 +7,6 @@
 - [ ] Verify that strategy has been added to PREREQS.md
 - [ ] Verify that strategy is added to Sudoku.ts StrategyEnum
 - [ ] Verify that strategy has been added to Board.ts getPrereqs()
-- [ ] Verify that strategy enum has been added to Hint.ts
 - [ ] Verify that strategy has been added to Hint.ts constructor
 - [ ] Verify that isStrategyName function has been added to Strategy.ts
 - [ ] Verify that strategy has been added to isStrategySet and/or getStrategyTuple functions if applicable

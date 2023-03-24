@@ -4,126 +4,6 @@ import { Strategy } from "./Strategy";
 import { StrategyEnum, SudokuEnum } from "./Sudoku";
 
 /**
- * Contains hint information for amend notes strategy
- * Contains what action hint is trying to get you to do
- * @enum
- */
-export enum AMEND_NOTES {
-    HINT_INFO = "Amend notes are when you reset a cell's notes to contain every nonconflicting number",
-    HINT_ACTION = "When you see an amend notes you can remove all notes then add all nonconflicting numbers to its notes"
-}
-
-/**
- * Contains hint information for naked single strategy
- * Contains what action hint is trying to get you to do
- * @enum
- */
-export enum NAKED_SINGLE {
-    HINT_INFO = "Naked singles are when you only have one number left as a possibility in a cell",
-    HINT_ACTION = "When you see a naked single you can fill it in with its last remaining possibility"
-}
-
-/**
- * Contains hint information for hidden single strategy
- * Contains what action hint is trying to get you to do
- * @enum
- */
-export enum HIDDEN_SINGLE {
-    HINT_INFO = "Hidden singles are when you only have one cell left still containing a specific value in a row, column, or box",
-    HINT_ACTION = "When you see a hidden single you can remove all notes other than the single from the cell"
-}
-
-/**
- * Contains hint information for naked pair strategy
- * Contains what action hint is trying to get you to do
- * @enum
- */
-export enum NAKED_PAIR {
-    HINT_INFO = "Naked pairs are when you only have the same two numbers left as a possibility in two cells in the same row, column, or box",
-    HINT_ACTION = "When you see a naked pair you can remove them from the notes of every other cell in the row, column, or box that they share"
-}
-
-/**
- * Contains hint information for hidden pair strategy
- * Contains what action hint is trying to get you to do
- * @enum
- */
-export enum HIDDEN_PAIR {
-    HINT_INFO = "Hidden pairs are when you only have two cells left still containing two specific values in a shared row, column, or box",
-    HINT_ACTION = "When you see a hidden pair you can remove all notes other than the pair from the cells"
-}
-
-/**
- * Contains hint information for naked triplet strategy
- * Contains what action hint is trying to get you to do
- * @enum
- */
-export enum NAKED_TRIPLET {
-    HINT_INFO = "Naked triplets are when you only have the same three numbers left as a possibility in three cells in the same row, column, or box",
-    HINT_ACTION = "When you see a naked triplet you can remove them from the notes of every other cell in the row, column, or box that they share"
-}
-
-/**
- * Contains hint information for naked quadruplet strategy
- * Contains what action hint is trying to get you to do
- * @enum
- */
-export enum NAKED_QUADRUPLET {
-    HINT_INFO = "Naked quadruplets are when you only have the same four numbers left as a possibility in four cells in the same row, column, or box",
-    HINT_ACTION = "When you see a naked quadruplet you can remove them from the notes of every other cell in the row, column, or box that they share"
-}
-
-/**
- * Contains hint information for naked quintuplet strategy
- * Contains what action hint is trying to get you to do
- * @enum
- */
-export enum NAKED_QUINTUPLET {
-    HINT_INFO = "Naked quintuplets are when you only have the same five numbers left as a possibility in five cells in the same row, column, or box",
-    HINT_ACTION = "When you see a naked quintuplet you can remove them from the notes of every other cell in the row, column, or box that they share"
-}
-
-/**
- * Contains hint information for naked sextuplet strategy
- * Contains what action hint is trying to get you to do
- * @enum
- */
-export enum NAKED_SEXTUPLET {
-    HINT_INFO = "Naked sextuplets are when you only have the same six numbers left as a possibility in six cells in the same row, column, or box",
-    HINT_ACTION = "When you see a naked sextuplet you can remove them from the notes of every other cell in the row, column, or box that they share"
-}
-
-/**
- * Contains hint information for naked septuplet strategy
- * Contains what action hint is trying to get you to do
- * @enum
- */
-export enum NAKED_SEPTUPLET {
-    HINT_INFO = "Naked septuplets are when you only have the same seven numbers left as a possibility in seven cells in the same row, column, or box",
-    HINT_ACTION = "When you see a naked septuplet you can remove them from the notes of every other cell in the row, column, or box that they share"
-}
-
-/**
- * Contains hint information for naked octuplet strategy
- * Contains what action hint is trying to get you to do
- * @enum
- */
-export enum NAKED_OCTUPLET {
-    HINT_INFO = "Naked octuplets are when you only have the same eight numbers left as a possibility in eight cells in the same row, column, or box",
-    HINT_ACTION = "When you see a naked octuplet you can remove them from the notes of every other cell in the row, column, or box that they share"
-}
-
-/**
- * Contains hint information for simplify notes
- * Contains what action hint is trying to get you to do
- * @enum
- */
-export enum SIMPLIFY_NOTES {
-    HINT_INFO = "You can simplify notes using values already placed in cells at the start of the game",
-    HINT_ACTION = "When there is a value already placed in a cell than it can be removed from all other cells notes in its row, column, and box"
-}
-
-/**
  * Constructed using strategy object and info/action strings
  * Inherited by hint classes for specific strategies like NakedSingle
  * Returns:
@@ -147,52 +27,52 @@ export class Hint{
     constructor(strategy: Strategy) {
         this.strategy = strategy;
         if (this.getStrategyType() === StrategyEnum.AMEND_NOTES) {
-            this.info = AMEND_NOTES.HINT_INFO;
-            this.action = AMEND_NOTES.HINT_ACTION;
+            this.info = "Amend notes are when you reset a cell's notes to contain every nonconflicting number";
+            this.action = "When you see an amend notes you can remove all notes then add all nonconflicting numbers to its notes";
         }
         else if (this.getStrategyType() === StrategyEnum.NAKED_SINGLE) {
-            this.info = NAKED_SINGLE.HINT_INFO;
-            this.action = NAKED_SINGLE.HINT_ACTION;
+            this.info = "Naked singles are when you only have one number left as a possibility in a cell";
+            this.action = "When you see a naked single you can fill it in with its last remaining possibility";
         }
         else if (this.getStrategyType() === StrategyEnum.NAKED_PAIR) {
-            this.info = NAKED_PAIR.HINT_INFO;
-            this.action = NAKED_PAIR.HINT_ACTION;
+            this.info = "Naked pairs are when you only have the same two numbers left as a possibility in two cells in the same row, column, or box";
+            this.action = "When you see a naked pair you can remove them from the notes of every other cell in the row, column, or box that they share";
         }
         else if (this.getStrategyType() === StrategyEnum.NAKED_TRIPLET) {
-            this.info = NAKED_TRIPLET.HINT_INFO;
-            this.action = NAKED_TRIPLET.HINT_ACTION;
+            this.info = "Naked triplets are when you only have the same three numbers left as a possibility in three cells in the same row, column, or box";
+            this.action = "When you see a naked triplet you can remove them from the notes of every other cell in the row, column, or box that they share";
         }
         else if (this.getStrategyType() === StrategyEnum.NAKED_QUADRUPLET) {
-            this.info = NAKED_QUADRUPLET.HINT_INFO;
-            this.action = NAKED_QUADRUPLET.HINT_ACTION;
+            this.info = "Naked quadruplets are when you only have the same four numbers left as a possibility in four cells in the same row, column, or box";
+            this.action = "When you see a naked quadruplet you can remove them from the notes of every other cell in the row, column, or box that they share";
         }
         else if (this.getStrategyType() === StrategyEnum.NAKED_QUINTUPLET) {
-            this.info = NAKED_QUINTUPLET.HINT_INFO;
-            this.action = NAKED_QUINTUPLET.HINT_ACTION;
+            this.info = "Naked quintuplets are when you only have the same five numbers left as a possibility in five cells in the same row, column, or box";
+            this.action = "When you see a naked quintuplet you can remove them from the notes of every other cell in the row, column, or box that they share";
         }
         else if (this.getStrategyType() === StrategyEnum.NAKED_SEXTUPLET) {
-            this.info = NAKED_SEXTUPLET.HINT_INFO;
-            this.action = NAKED_SEXTUPLET.HINT_ACTION;
+            this.info = "Naked sextuplets are when you only have the same six numbers left as a possibility in six cells in the same row, column, or box";
+            this.action = "When you see a naked sextuplet you can remove them from the notes of every other cell in the row, column, or box that they share";
         }
         else if (this.getStrategyType() === StrategyEnum.NAKED_SEPTUPLET) {
-            this.info = NAKED_SEPTUPLET.HINT_INFO;
-            this.action = NAKED_SEPTUPLET.HINT_ACTION;
+            this.info = "Naked septuplets are when you only have the same seven numbers left as a possibility in seven cells in the same row, column, or box";
+            this.action = "When you see a naked septuplet you can remove them from the notes of every other cell in the row, column, or box that they share";
         }
         else if (this.getStrategyType() === StrategyEnum.NAKED_OCTUPLET) {
-            this.info = NAKED_OCTUPLET.HINT_INFO;
-            this.action = NAKED_OCTUPLET.HINT_ACTION;
+            this.info = "Naked octuplets are when you only have the same eight numbers left as a possibility in eight cells in the same row, column, or box";
+            this.action = "When you see a naked octuplet you can remove them from the notes of every other cell in the row, column, or box that they share";
         }
         else if (this.getStrategyType() === StrategyEnum.HIDDEN_SINGLE) {
-            this.info = HIDDEN_SINGLE.HINT_INFO;
-            this.action = HIDDEN_SINGLE.HINT_ACTION;
+            this.info = "Hidden singles are when you only have one cell left still containing a specific value in a row, column, or box";
+            this.action = "When you see a hidden single you can remove all notes other than the single from the cell";
         }
         else if (this.getStrategyType() === StrategyEnum.HIDDEN_PAIR) {
-            this.info = HIDDEN_PAIR.HINT_INFO;
-            this.action = HIDDEN_PAIR.HINT_ACTION;
+            this.info = "Hidden pairs are when you only have two cells left still containing two specific values in a shared row, column, or box";
+            this.action = "When you see a hidden pair you can remove all notes other than the pair from the cells";
         }
         else if (this.getStrategyType() === StrategyEnum.SIMPLIFY_NOTES) {
-            this.info = SIMPLIFY_NOTES.HINT_INFO;
-            this.action = SIMPLIFY_NOTES.HINT_ACTION;
+            this.info = "You can simplify notes using values already placed in cells at the start of the game";
+            this.action = "When there is a value already placed in a cell than it can be removed from all other cells notes in its row, column, and box";
         }
         else {
             throw new Error();
