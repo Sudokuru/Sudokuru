@@ -68,6 +68,9 @@ app.get('/solver/nextStep', (req, res) => {
         else if (Number(req.query.nakedPair) === i) {
             algorithm.push(StrategyEnum.NAKED_PAIR);
         }
+        else if (Number(req.query.hiddenPair) === i) {
+            algorithm.push(StrategyEnum.HIDDEN_PAIR);
+        }
         else if (Number(req.query.nakedTriplet) === i) {
             algorithm.push(StrategyEnum.NAKED_TRIPLET);
         }

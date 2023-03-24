@@ -12,6 +12,7 @@ const NEXT_NOTES:string = "&notes=";
 const NEXT_NAKED_SINGLE:string = "&nakedSingle=";
 const NEXT_HIDDEN_SINGLE:string = "&hiddenSingle=";
 const NEXT_NAKED_PAIR:string = "&nakedPair=";
+const NEXT_HIDDEN_PAIR:string = "&hiddenPair=";
 const NEXT_NAKED_TRIPLET:string = "&nakedTriplet=";
 const NEXT_NAKED_QUADRUPLET:string = "&nakedQuadruplet=";
 const NEXT_NAKED_QUINTUPLET:string = "&nakedQuintuplet=";
@@ -320,6 +321,9 @@ function getStrategyOrder():string {
 
     algorithm += NEXT_NAKED_PAIR;
     algorithm += (<HTMLInputElement>document.getElementById("nakedPair")).value;
+
+    algorithm += NEXT_HIDDEN_PAIR;
+    algorithm += (<HTMLInputElement>document.getElementById("hiddenPair")).value;
 
     algorithm += NEXT_NAKED_TRIPLET;
     algorithm += (<HTMLInputElement>document.getElementById("nakedTriplet")).value;
