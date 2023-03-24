@@ -672,10 +672,8 @@ export class Strategy{
             noteCount += (hiddenSet[k].getNotes()).getSize();
         }
         let noteRatio:number = noteCount / (SudokuEnum.ROW_LENGTH * SudokuEnum.ROW_LENGTH);
-        if (tuple === TupleEnum.SINGLE) {
-            this.difficulty = DifficultyLowerBounds.HIDDEN_SINGLE;
-            this.difficulty += Math.ceil(noteRatio * (DifficultyUpperBounds.HIDDEN_SINGLE - DifficultyLowerBounds.HIDDEN_SINGLE));
-        }
+        this.difficulty = this.getSetDifficultyLowerBound(StrategyEnum.HIDDEN_SINGLE, tuple);
+        this.difficulty += Math.ceil(noteRatio * (this.getSetDifficultyUpperBound(StrategyEnum.HIDDEN_SINGLE, tuple) - this.getSetDifficultyLowerBound(StrategyEnum.HIDDEN_SINGLE, tuple)));
         return true;
     }
 
