@@ -267,7 +267,7 @@ export class Strategy{
                     let cells: Cell[] = this.cellBoard.getEmptyCellsInGroup(group, i);
                     for (let j:number = 0; j < subsets.length; j++) {
                         if ((this.isNakedSetStrategy(strategyType) && this.isNakedSet(tuple, group, i, cells, subsets[j])) ||
-                            (strategyType === StrategyEnum.HIDDEN_SINGLE && this.isHiddenSet(tuple, group, i, cells, subsets[j]))) {
+                            (this.isHiddenSetStrategy(strategyType) && this.isHiddenSet(tuple, group, i, cells, subsets[j]))) {
                             if (!drill) {
                                 return true;
                             }
