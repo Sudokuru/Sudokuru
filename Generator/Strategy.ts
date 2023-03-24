@@ -155,22 +155,22 @@ export class Strategy{
         else if (strategyType === StrategyEnum.NAKED_PAIR || strategyType === StrategyEnum.HIDDEN_PAIR) {
             return TupleEnum.PAIR;
         }
-        else if (strategyType === StrategyEnum.NAKED_TRIPLET) {
+        else if (strategyType === StrategyEnum.NAKED_TRIPLET || strategyType === StrategyEnum.HIDDEN_TRIPLET) {
             return TupleEnum.TRIPLET;
         }
-        else if (strategyType === StrategyEnum.NAKED_QUADRUPLET) {
+        else if (strategyType === StrategyEnum.NAKED_QUADRUPLET || strategyType === StrategyEnum.HIDDEN_QUADRUPLET) {
             return TupleEnum.QUADRUPLET;
         }
-        else if (strategyType === StrategyEnum.NAKED_QUINTUPLET) {
+        else if (strategyType === StrategyEnum.NAKED_QUINTUPLET || strategyType === StrategyEnum.HIDDEN_QUINTUPLET) {
             return TupleEnum.QUINTUPLET;
         }
-        else if (strategyType === StrategyEnum.NAKED_SEXTUPLET) {
+        else if (strategyType === StrategyEnum.NAKED_SEXTUPLET || strategyType === StrategyEnum.HIDDEN_SEXTUPLET) {
             return TupleEnum.SEXTUPLET;
         }
-        else if (strategyType === StrategyEnum.NAKED_SEPTUPLET) {
+        else if (strategyType === StrategyEnum.NAKED_SEPTUPLET || strategyType === StrategyEnum.HIDDEN_SEPTUPLET) {
             return TupleEnum.SEPTUPLET;
         }
-        else if (strategyType === StrategyEnum.NAKED_OCTUPLET) {
+        else if (strategyType === StrategyEnum.NAKED_OCTUPLET || strategyType === StrategyEnum.HIDDEN_OCTUPLET) {
             return TupleEnum.OCTUPLET;
         }
     }
@@ -196,7 +196,10 @@ export class Strategy{
      * @returns true if strategy type is a hidden set strategy
      */
     public isHiddenSetStrategy(strategyType: StrategyEnum):boolean {
-        if (strategyType === StrategyEnum.HIDDEN_SINGLE || strategyType === StrategyEnum.HIDDEN_PAIR) {
+        if (strategyType === StrategyEnum.HIDDEN_SINGLE || strategyType === StrategyEnum.HIDDEN_PAIR || 
+            strategyType === StrategyEnum.HIDDEN_TRIPLET || strategyType === StrategyEnum.HIDDEN_QUADRUPLET || 
+            strategyType === StrategyEnum.HIDDEN_QUINTUPLET || strategyType === StrategyEnum.HIDDEN_SEXTUPLET || 
+            strategyType === StrategyEnum.HIDDEN_SEPTUPLET || strategyType === StrategyEnum.HIDDEN_OCTUPLET) {
             return true;
         }
         return false;
