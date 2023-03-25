@@ -13,8 +13,10 @@ const NEXT_NAKED_SINGLE:string = "&nakedSingle=";
 const NEXT_HIDDEN_SINGLE:string = "&hiddenSingle=";
 const NEXT_NAKED_PAIR:string = "&nakedPair=";
 const NEXT_HIDDEN_PAIR:string = "&hiddenPair=";
+const NEXT_POINTING_PAIR:string = "&pointingPair=";
 const NEXT_NAKED_TRIPLET:string = "&nakedTriplet=";
 const NEXT_HIDDEN_TRIPLET:string = "&hiddenTriplet=";
+const NEXT_POINTING_TRIPLET:string = "&pointingTriplet=";
 const NEXT_NAKED_QUADRUPLET:string = "&nakedQuadruplet=";
 const NEXT_HIDDEN_QUADRUPLET:string = "&hiddenQuadruplet=";
 const NEXT_NAKED_QUINTUPLET:string = "&nakedQuintuplet=";
@@ -331,11 +333,17 @@ function getStrategyOrder():string {
     algorithm += NEXT_HIDDEN_PAIR;
     algorithm += (<HTMLInputElement>document.getElementById("hiddenPair")).value;
 
+    algorithm += NEXT_POINTING_PAIR;
+    algorithm += (<HTMLInputElement>document.getElementById("pointingPair")).value;
+
     algorithm += NEXT_NAKED_TRIPLET;
     algorithm += (<HTMLInputElement>document.getElementById("nakedTriplet")).value;
 
     algorithm += NEXT_HIDDEN_TRIPLET;
     algorithm += (<HTMLInputElement>document.getElementById("hiddenTriplet")).value;
+
+    algorithm += NEXT_POINTING_TRIPLET;
+    algorithm += (<HTMLInputElement>document.getElementById("pointingTriplet")).value;
 
     algorithm += NEXT_NAKED_QUADRUPLET;
     algorithm += (<HTMLInputElement>document.getElementById("nakedQuadruplet")).value;
