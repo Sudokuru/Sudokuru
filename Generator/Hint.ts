@@ -94,6 +94,14 @@ export class Hint{
             this.info = "Hidden octuplets are when you only have eight cells left still containing eight specific values in a shared row, column, or box";
             this.action = "When you see a hidden octuplet you can remove all notes other than the octuplet from the cells";
         }
+        else if (this.getStrategyType() === StrategyEnum.POINTING_PAIR) {
+            this.info = "Pointing pairs are when you only have two cells in a row or column left still containing a specific value and the cells also share a box";
+            this.action = "When you see a pointing pair you can remove all other instances of the shared note from the box (except for those in the pair themself)";
+        }
+        else if (this.getStrategyType() === StrategyEnum.POINTING_TRIPLET) {
+            this.info = "Pointing triplets are when you only have three cells in a row or column left still containing a specific value and the cells also share a box";
+            this.action = "When you see a pointing triplet you can remove all other instances of the shared note from the box (except for those in the triplet themself)";
+        }
         else if (this.getStrategyType() === StrategyEnum.SIMPLIFY_NOTES) {
             this.info = "You can simplify notes using values already placed in cells at the start of the game";
             this.action = "When there is a value already placed in a cell than it can be removed from all other cells notes in its row, column, and box";
