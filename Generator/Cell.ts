@@ -198,6 +198,24 @@ export class Cell{
     }
 
     /**
+     * Given a cells row and column returns its box index (0-8 inclusive, left to right, top to bottom)
+     * @param row - row cell is in
+     * @param column - column cell is in
+     * @returns box index
+     */
+    public static calculateBoxIndex(row: number, column: number):number {
+        let index:number = 0;
+        let box:number = Cell.calculateBox(row, column);
+        let rowStart = Cell.getBoxRowStart(box);
+        let columnStart = Cell.getBoxColumnStart(box);
+        // Add how far right the cell is to index
+        index += column - columnStart;
+        // Add for each row down the cell is
+        index += (row - rowStart) * SudokuEnum.BOX_LENGTH;
+        return index;
+    }
+
+    /**
      * Given a cells box and box index returns what row it is in
      * @param box - box cell is in
      * @param index - box index of cell (first row is 0-2, 2nd 3-5, last 6-8)
