@@ -214,6 +214,44 @@ describe("create naked pair", () => {
     });
 });
 
+describe("create pointing pair", () => {
+    it("should be a pointing pair", () => {
+        // Create board
+        let board:Cell[][] = getBlankCellBoard();
+        for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+            for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                board[row][column].resetNotes();
+            }
+        }
+        
+        // Remove "1" from every cell in the first box except for the first two in the top row
+        let boxRowStart:number = Cell.getBoxRowStart(0), boxColumnStart:number = Cell.getBoxColumnStart(0);
+        for (let row:number = boxRowStart; row < (boxRowStart + SudokuEnum.BOX_LENGTH); row++) {
+            for (let column:number = boxColumnStart; column < (boxColumnStart + SudokuEnum.BOX_LENGTH); column++) {
+                if (row === boxRowStart && column < (boxColumnStart + 2)) {
+                    continue;
+                }
+                board[row][column].removeNote("1");
+            }
+        }
+
+        // Test that is pointing pair and can remove notes from every cell in shared row except for those in box itself and correct cause/groups
+        let strategy:Strategy = new Strategy(new CellBoard(board), board, board);
+        expect(strategy.setStrategyType(StrategyEnum.POINTING_PAIR)).toBeTruthy();
+        expect(strategy.getNotesToRemove().length).toBe(6);
+        let cause:Cell[] = strategy.getCause();
+        expect(cause.length).toBe(2);
+        expect(cause[0].getRow()+cause[1].getRow()+cause[0].getColumn()).toBe(0);
+        expect(cause[1].getColumn()).toBe(1);
+        let groups:number[][] = strategy.getGroups();
+        expect(groups.length).toBe(2);
+        expect(groups[0][0]).toBe(GroupEnum.ROW);
+        expect(groups[0][1]).toBe(0);
+        expect(groups[1][0]).toBe(GroupEnum.BOX);
+        expect(groups[1][1]).toBe(0);
+    });
+});
+
 describe("create naked triplet", () => {
     it("should be a naked triplet", () => {
         // Create board
