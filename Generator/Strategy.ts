@@ -311,7 +311,9 @@ export class Strategy{
         }
         else if (strategyType === StrategyEnum.POINTING_PAIR || strategyType === StrategyEnum.POINTING_TRIPLET) {
             for (let box:number = 0; box < SudokuEnum.ROW_LENGTH; box++) {
-                if (this.isPointingSet(box)) {
+                let set:TupleEnum = this.isPointingSet(box);
+                if ((strategyType === StrategyEnum.POINTING_PAIR && set === TupleEnum.PAIR) || 
+                    (strategyType === StrategyEnum.POINTING_TRIPLET && set === TupleEnum.TRIPLET)) {
                     if (!drill) {
                         return true;
                     }
