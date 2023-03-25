@@ -815,7 +815,7 @@ export class Strategy{
             if (!rowSet && !columnSet) {
                 continue;
             }
-            // Check if note is in the rest of the row or column, if not add to cause/groups and notes to remove arrays and return true
+            // Check if note is in the rest of the row or column, if so add to cause/groups and notes to remove arrays and return true
             let found:boolean = false;
             let distanceRatio:number;
             let notes:Group[] = new Array();
@@ -825,15 +825,14 @@ export class Strategy{
                 for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
                     if (column < columnStart || column > (columnStart + SudokuEnum.BOX_LENGTH - 1)) {
                         if ((this.board[row][column].getNotes()).contains(note)) {
+                            let toRemove:Group = new Group(false, row, column);
+                            toRemove.insert(note);
+                            notes.push(toRemove);
                             found = true;
-                            break;
                         }
-                        let toRemove:Group = new Group(false, row, column);
-                        toRemove.insert(note);
-                        notes.push(toRemove);
                     }
                 }
-                if (!found) {
+                if (found) {
                     this.groups.push([GroupEnum.ROW, row]);
                     distanceRatio = this.getDistanceRatio(cells, GroupEnum.ROW);
                 }
@@ -844,20 +843,19 @@ export class Strategy{
                 for (let row:number = 0; row < SudokuEnum.ROW_LENGTH; row++) {
                     if (row < rowStart || row > (rowStart + SudokuEnum.BOX_LENGTH - 1)) {
                         if ((this.board[row][column].getNotes()).contains(note)) {
+                            let toRemove:Group = new Group(false, row, column);
+                            toRemove.insert(note);
+                            notes.push(toRemove);
                             found = true;
-                            break;
                         }
-                        let toRemove:Group = new Group(false, row, column);
-                        toRemove.insert(note);
-                        notes.push(toRemove);
                     }
                 }
-                if (!found) {
+                if (found) {
                     this.groups.push([GroupEnum.COLUMN, column]);
                     distanceRatio = this.getDistanceRatio(cells, GroupEnum.COLUMN);
                 }
             }
-            if (!found) {
+            if (found) {
                 this.groups.push([GroupEnum.BOX, box]);
                 this.cause = cells;
                 this.notes = notes;
