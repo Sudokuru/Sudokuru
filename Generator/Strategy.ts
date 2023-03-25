@@ -753,6 +753,91 @@ export class Strategy{
     }
 
     /**
+     * Given a tuple and a box checks for a pointing set
+     * @param tuple - Can be pair or triplet for pointing pair or pointing triplet respectively
+     * @param box - index of box being checked
+     */
+    private isPointingSet(tuple: TupleEnum, box: number):boolean {
+        // Check if each note is the basis for a pointing set
+        for (let note:number = 0; note < SudokuEnum.ROW_LENGTH; note++) {
+            // Get indexes of cells with given note in the box being checked
+            let indexesWithNote:Group = this.cellBoard.getIndexesWithNote(GroupEnum.BOX, box, note);
+            // Proceed to check next note if there isn't the right number of occurences of the note
+            if (indexesWithNote.getSize() !== tuple) {
+                continue;
+            }
+            // Get cells that contain the notes
+            let cells:Cell[] = new Array();
+            for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
+                if (indexesWithNote.contains(i)) {
+                    cells.push(this.board[Cell.calculateRow(box, i)][Cell.calculateColumn(box, i)]);
+                }
+            }
+            // Check if they are on the same row or column
+            let rowSet:boolean = true, columnSet:boolean = true;
+            for (let i:number = 0; i < (cells.length - 1); i++) {
+                if (cells[i].getRow() !== cells[i + 1].getRow()) {
+                    rowSet = false;
+                }
+                if (cells[i].getColumn() !== cells[i + 1].getColumn()) {
+                    columnSet = false;
+                }
+            }
+            // Proceed to check next note if the cells aren't all on the same row or column
+            if (!rowSet && !columnSet) {
+                continue;
+            }
+            // Check if note is in the rest of the row or column, if not add to cause/groups and notes to remove arrays and return true
+            let found:boolean = false;
+            if (rowSet) {
+                let row:number = cells[0].getRow();
+                let columnStart:number = Cell.getBoxColumnStart(box);
+                let notes:Group[] = new Array();
+                for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                    if (column < columnStart && column > (columnStart + SudokuEnum.BOX_LENGTH - 1)) {
+                        if ((this.board[row][column].getNotes()).contains(note)) {
+                            found = true;
+                            break;
+                        }
+                        let toRemove:Group = new Group(false, row, column);
+                        toRemove.insert(note);
+                        notes.push(toRemove);
+                    }
+                }
+                if (!found) {
+                    this.cause = cells;
+                    this.groups.push([GroupEnum.ROW, row]);
+                    this.notes = notes;
+                    return true;
+                }
+            }
+            else {
+                let column:number = cells[0].getColumn();
+                let rowStart:number = Cell.getBoxRowStart(box);
+                let notes:Group[] = new Array();
+                for (let row:number = 0; row < SudokuEnum.ROW_LENGTH; row++) {
+                    if (row < rowStart && row > (rowStart + SudokuEnum.BOX_LENGTH - 1)) {
+                        if ((this.board[row][column].getNotes()).contains(note)) {
+                            found = true;
+                            break;
+                        }
+                        let toRemove:Group = new Group(false, row, column);
+                        toRemove.insert(note);
+                        notes.push(toRemove);
+                    }
+                }
+                if (!found) {
+                    this.cause = cells;
+                    this.groups.push([GroupEnum.COLUMN, column]);
+                    this.notes = notes;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Checks if strategy is simplify notes and if so adds notes to remove from a cell
      * @param i - corresponds to an array in empty cells
      * @param j - corresponds to an index in an array in emptyCells
