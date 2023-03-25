@@ -858,6 +858,7 @@ export class Strategy{
                 }
             }
             if (!found) {
+                this.groups.push([GroupEnum.BOX, box]);
                 this.cause = cells;
                 this.notes = notes;
                 if (tuple === TupleEnum.PAIR) {
