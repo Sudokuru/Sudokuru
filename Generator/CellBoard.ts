@@ -131,6 +131,12 @@ export class CellBoard{
             }
         }
         this.resetSearchedGroups(row, column);
+        // Update indexesWithNote metadata
+        for (let note:number = 0; note < SudokuEnum.ROW_LENGTH; note++) {
+            this.indexesWithNote[GroupEnum.ROW][row][note].remove(column);
+            this.indexesWithNote[GroupEnum.COLUMN][column][note].remove(row);
+            this.indexesWithNote[GroupEnum.BOX][Cell.calculateBox(row, column)][note].remove(Cell.calculateBoxIndex(row, column));
+        }
         return;
     }
 
