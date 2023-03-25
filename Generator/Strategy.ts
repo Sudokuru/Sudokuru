@@ -815,10 +815,11 @@ export class Strategy{
             }
             // Check if note is in the rest of the row or column, if not add to cause/groups and notes to remove arrays and return true
             let found:boolean = false;
+            let distanceRatio:number;
+            let notes:Group[] = new Array();
             if (rowSet) {
                 let row:number = cells[0].getRow();
                 let columnStart:number = Cell.getBoxColumnStart(box);
-                let notes:Group[] = new Array();
                 for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
                     if (column < columnStart && column > (columnStart + SudokuEnum.BOX_LENGTH - 1)) {
                         if ((this.board[row][column].getNotes()).contains(note)) {
@@ -831,16 +832,13 @@ export class Strategy{
                     }
                 }
                 if (!found) {
-                    this.cause = cells;
                     this.groups.push([GroupEnum.ROW, row]);
-                    this.notes = notes;
-                    return tuple;
+                    distanceRatio = this.getDistanceRatio(cells, GroupEnum.ROW);
                 }
             }
             else {
                 let column:number = cells[0].getColumn();
                 let rowStart:number = Cell.getBoxRowStart(box);
-                let notes:Group[] = new Array();
                 for (let row:number = 0; row < SudokuEnum.ROW_LENGTH; row++) {
                     if (row < rowStart && row > (rowStart + SudokuEnum.BOX_LENGTH - 1)) {
                         if ((this.board[row][column].getNotes()).contains(note)) {
@@ -853,11 +851,18 @@ export class Strategy{
                     }
                 }
                 if (!found) {
-                    this.cause = cells;
                     this.groups.push([GroupEnum.COLUMN, column]);
-                    this.notes = notes;
-                    return tuple;
+                    distanceRatio = this.getDistanceRatio(cells, GroupEnum.COLUMN);
                 }
+            }
+            if (!found) {
+                this.cause = cells;
+                this.notes = notes;
+                if (tuple === TupleEnum.PAIR) {
+                    this.difficulty = DifficultyLowerBounds.POINTING_PAIR;
+                    this.difficulty += Math.ceil(distanceRatio * (DifficultyUpperBounds.POINTING_PAIR - DifficultyLowerBounds.POINTING_PAIR));
+                }
+                return tuple;
             }
         }
         return null;
