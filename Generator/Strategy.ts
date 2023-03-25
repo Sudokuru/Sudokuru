@@ -985,7 +985,7 @@ export class Strategy{
                 }
             }
             // If there are notes to remove then return them
-            if (notesToRemove.getSize() > 0) {
+            if (notesToRemove.getSize() > 0 && notesToRemove.getSize() < SudokuEnum.ROW_LENGTH) {
                 this.notes.push(notesToRemove);
                 this.identified = true;
                 this.difficulty = DifficultyLowerBounds.AMEND_NOTES;
