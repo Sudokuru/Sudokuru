@@ -823,7 +823,7 @@ export class Strategy{
                 let row:number = cells[0].getRow();
                 let columnStart:number = Cell.getBoxColumnStart(box);
                 for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
-                    if (column < columnStart && column > (columnStart + SudokuEnum.BOX_LENGTH - 1)) {
+                    if (column < columnStart || column > (columnStart + SudokuEnum.BOX_LENGTH - 1)) {
                         if ((this.board[row][column].getNotes()).contains(note)) {
                             found = true;
                             break;
@@ -842,7 +842,7 @@ export class Strategy{
                 let column:number = cells[0].getColumn();
                 let rowStart:number = Cell.getBoxRowStart(box);
                 for (let row:number = 0; row < SudokuEnum.ROW_LENGTH; row++) {
-                    if (row < rowStart && row > (rowStart + SudokuEnum.BOX_LENGTH - 1)) {
+                    if (row < rowStart || row > (rowStart + SudokuEnum.BOX_LENGTH - 1)) {
                         if ((this.board[row][column].getNotes()).contains(note)) {
                             found = true;
                             break;
