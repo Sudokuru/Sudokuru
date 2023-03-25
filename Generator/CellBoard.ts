@@ -54,6 +54,9 @@ export class CellBoard{
         // For each note in each cell add it to the indexesWithNote groups
         for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
             for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                if (!this.cells[row][column].isEmpty()) {
+                    continue;
+                }
                 let notes:Group = this.cells[row][column].getNotes();
                 for (let note:number = 0; note < SudokuEnum.ROW_LENGTH; note++) {
                     if (notes.contains(note)) {
