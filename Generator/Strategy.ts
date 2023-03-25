@@ -786,7 +786,11 @@ export class Strategy{
      */
     private isPointingSet(box: number):TupleEnum {
         // Check if each note is the basis for a pointing set
+        let placedValues = this.cellBoard.getValuesPlaced(GroupEnum.BOX, box);
         for (let note:number = 0; note < SudokuEnum.ROW_LENGTH; note++) {
+            if (placedValues.contains(note)) {
+                continue;
+            }
             // Get indexes of cells with given note in the box being checked
             let indexesWithNote:Group = this.cellBoard.getIndexesWithNote(GroupEnum.BOX, box, note);
             // Proceed to check next note if there isn't the right number of occurences of the note
