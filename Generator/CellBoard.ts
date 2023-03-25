@@ -165,6 +165,15 @@ export class CellBoard{
     }
 
     /**
+     * Adds all notes back into Cell (used for amend notes strategy)
+     * @param row - row Cell is in
+     * @param column - column Cell is in
+     */
+    public resetNotes(row: number, column: number):void {
+        this.cells[row][column].resetNotes();
+    }
+
+    /**
      * Gets values placed in given group e.g. Group representing 3rd row
      * @param group - Group type e.g. row
      * @param index - index e.g. 2 = 3rd

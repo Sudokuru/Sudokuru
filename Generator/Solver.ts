@@ -233,7 +233,7 @@ export class Solver{
         for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
             for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
                 // Add every possible note to cell
-                this.board[row][column].resetNotes();
+                this.cellBoard.resetNotes(row, column);
                 // Remove every note except ones provided
                 let removedNotes:Group = new Group(true);
                 index = (row * SudokuEnum.COLUMN_LENGTH) + column;
@@ -309,7 +309,7 @@ export class Solver{
             row = notes[i].getRow();
             column = notes[i].getColumn();
             if (amend) {
-                this.board[row][column].resetNotes();
+                this.cellBoard.resetNotes(row, column);
             }
             this.cellBoard.removeNotes(row, column, notes[i]);
         }
