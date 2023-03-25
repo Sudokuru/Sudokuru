@@ -856,6 +856,7 @@ export class Strategy{
                 }
             }
             if (found) {
+                this.identified = true;
                 this.groups.push([GroupEnum.BOX, box]);
                 this.cause = cells;
                 this.notes = notes;
