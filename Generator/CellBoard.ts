@@ -152,10 +152,8 @@ export class CellBoard{
             return this.cells[index][groupIndex];
         }
         else if (group === GroupEnum.BOX) {
-            let boxRowStart:number = Cell.getBoxRowStart(groupIndex);
-            let boxColumnStart:number = Cell.getBoxColumnStart(groupIndex);
-            let row:number = boxRowStart + Math.floor(index / 3);
-            let column:number = boxColumnStart + (index % 3);
+            let row:number = Cell.calculateRow(groupIndex, index);
+            let column:number = Cell.calculateColumn(groupIndex, index);
             return this.cells[row][column];
         }
     }
