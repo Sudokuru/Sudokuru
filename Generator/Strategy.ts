@@ -305,6 +305,27 @@ export class Strategy{
                 }
             }
         }
+        else if (strategyType === StrategyEnum.POINTING_PAIR || strategyType === StrategyEnum.POINTING_TRIPLET) {
+            for (let box:number = 0; box < SudokuEnum.ROW_LENGTH; box++) {
+                if (this.isPointingSet(box)) {
+                    if (!drill) {
+                        return true;
+                    }
+
+                    // If this is first instance of the strategy found for drill we record it
+                    // If we have already found a instance of strategy for this drill we check if this is the same instance, if not return fales
+                    if (!used) {
+                        this.strategyType = strategyType;
+                        this.drillHint = new Hint(this);
+                        this.reset();
+                        used = true;
+                    }
+                    else if (!cellsEqual(this.cause, this.drillHint.getCellsCause())) {
+                        return false;
+                    }
+                }
+            }
+        }
         return used;
     }
 
