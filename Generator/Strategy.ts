@@ -753,17 +753,18 @@ export class Strategy{
     }
 
     /**
-     * Given a tuple and a box checks for a pointing set
-     * @param tuple - Can be pair or triplet for pointing pair or pointing triplet respectively
+     * Given a box checks for a pointing set
      * @param box - index of box being checked
+     * @returns set tuple e.g. pair if its pointing pair or triplet if its pointing triplet, null if no pointing set found
      */
-    private isPointingSet(tuple: TupleEnum, box: number):boolean {
+    private isPointingSet(box: number):TupleEnum {
         // Check if each note is the basis for a pointing set
         for (let note:number = 0; note < SudokuEnum.ROW_LENGTH; note++) {
             // Get indexes of cells with given note in the box being checked
             let indexesWithNote:Group = this.cellBoard.getIndexesWithNote(GroupEnum.BOX, box, note);
             // Proceed to check next note if there isn't the right number of occurences of the note
-            if (indexesWithNote.getSize() !== tuple) {
+            let tuple:TupleEnum = indexesWithNote.getSize();
+            if (tuple !== TupleEnum.PAIR && tuple !== TupleEnum.TRIPLET) {
                 continue;
             }
             // Get cells that contain the notes
@@ -808,7 +809,7 @@ export class Strategy{
                     this.cause = cells;
                     this.groups.push([GroupEnum.ROW, row]);
                     this.notes = notes;
-                    return true;
+                    return tuple;
                 }
             }
             else {
@@ -830,11 +831,11 @@ export class Strategy{
                     this.cause = cells;
                     this.groups.push([GroupEnum.COLUMN, column]);
                     this.notes = notes;
-                    return true;
+                    return tuple;
                 }
             }
         }
-        return false;
+        return null;
     }
 
     /**
