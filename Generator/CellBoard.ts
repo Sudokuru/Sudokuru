@@ -171,6 +171,12 @@ export class CellBoard{
      */
     public resetNotes(row: number, column: number):void {
         this.cells[row][column].resetNotes();
+        // Update indexesWithNote metadata
+        for (let note:number = 0; note < SudokuEnum.ROW_LENGTH; note++) {
+            this.indexesWithNote[GroupEnum.ROW][row][note].insert(column);
+            this.indexesWithNote[GroupEnum.COLUMN][column][note].insert(row);
+            this.indexesWithNote[GroupEnum.BOX][Cell.calculateBox(row, column)][note].insert(Cell.calculateBoxIndex(row, column));
+        }
     }
 
     /**
