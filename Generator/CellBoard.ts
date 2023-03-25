@@ -253,7 +253,7 @@ export class CellBoard{
      * Given a group and a note returns Group object containing indexes of cells containing the note in the group
      * @param groupType - group type e.g. row
      * @param index - index e.g. 3 (4th row)
-     * @param note - note e.g. 4 (refers to "4")
+     * @param note - note e.g. 4 (refers to "3")
      * @returns group containing indexes of cells in given group containing given note
      */
     public getIndexesWithNote(groupType: GroupEnum, index: number, note: number):Group {
