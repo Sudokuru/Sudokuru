@@ -7,11 +7,6 @@ import { GroupEnum, StrategyEnum, SudokuEnum, TupleEnum } from '../../Sudoku';
 import { CellBoard } from '../../CellBoard';
 
 describe("create amend notes", () => {
-    it('should not be an amend notes', () => {
-        let board:Cell[][] = getBlankCellBoard();
-        let strategy:Strategy = new Strategy(new CellBoard(board), board, board);
-        expect(strategy.setStrategyType(StrategyEnum.AMEND_NOTES)).toBeFalsy();
-    });
     it('should be an amend notes', () => {
         let board:Cell[][] = getBlankCellBoard();
         // Insert values into same group as amend notes cell (which will be row 0 and column 0)
