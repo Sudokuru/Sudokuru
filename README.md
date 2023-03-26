@@ -109,6 +109,16 @@
         *   [strategy](#strategy-15)
         *   [strategy](#strategy-16)
         *   [strategy](#strategy-17)
+    *   [Example 9: Pointing Pair](#example-9-pointing-pair)
+        *   [strategy](#strategy-18)
+        *   [cause](#cause-6)
+        *   [groups](#groups-6)
+        *   [placements](#placements-6)
+        *   [removals](#removals-6)
+        *   [info](#info-6)
+        *   [action](#action-6)
+    *   [Example 10: Other Pointing Set](#example-10-other-pointing-set)
+        *   [strategy](#strategy-19)
 *   [Developer Tools](#developer-tools)
 
 # Installation
@@ -671,6 +681,48 @@ Describes the action that the hint is suggesting.
 "HIDDEN_OCTUPLET"
 ```
 Name of strategy used by the hint. Hidden triplets through octuplets are scaled up versions of hidden pairs except instead of using two cells and notes they share 3-8. Note: while cells in say a hidden quadruplet must share the same 4 notes the 4 cells don't have to individually have all 4 notes they just have to be the only cells in the group that have those notes.
+## Example 9: Pointing Pair
+![Example 8](https://sudokuru.s3.amazonaws.com/hintExample7-V1.png)
+### strategy
+```json
+"POINTING_PAIR"
+```
+Name of strategy used by the hint. Pointing pair works by having only two cells in a box that still have a specific numbers as a possibility and also share a row or column in which case all other notes can be removed from any other cells in the shared row or column except for the pointing pair themself. This is shown by the pointing pair in the top right in which they have the only 6's in the box are in the two cells highlighted in blue on the same row. Therefore, the other notes highlighted in red can be removed.
+### cause
+```json
+[[0,6],[0,8]]
+```
+Coordinates of cells that "cause" strategy to be applicable.
+### groups
+```json
+[[0,0],[2,2]]
+```
+Group type and index of groups that "cause strategy".
+### placements
+```json
+[]
+```
+Row, column, and values for cells that have had values placed in them as result of strategy. This does not apply to this strategy.
+### removals
+```json
+[[0,1,6],[0,2,6]]
+```
+Notes that can be removed from cells along with their row and columns. The first two values in each subarray represent the row and column respectively.
+### info
+```json
+"Pointing pairs are when you only have two cells in a row or column left still containing a specific value and the cells also share a box"
+```
+Info about the strategy being used by the hint.
+### action
+```json
+"When you see a pointing pair you can remove all other instances of the shared note from the box (except for those in the pair themself)"
+```
+Describes the action that the hint is suggesting.
+## Example 10: Other Pointing Set
+### strategy
+```json
+"POINTING_TRIPLET"
+```
 # Developer Tools
 ```shell
 # Clone Repository
