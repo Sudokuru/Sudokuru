@@ -1007,7 +1007,12 @@ export class Strategy{
         let algorithm:StrategyEnum[] = new Array();
         // Adds strategies in order of least to most complex
         for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
-            algorithm.push(strategy);
+            if (strategy !== StrategyEnum.NAKED_QUINTUPLET && strategy !== StrategyEnum.NAKED_SEXTUPLET &&
+                strategy !== StrategyEnum.NAKED_SEPTUPLET && strategy !== StrategyEnum.NAKED_OCTUPLET &&
+                strategy !== StrategyEnum.HIDDEN_QUINTUPLET && strategy !== StrategyEnum.HIDDEN_SEXTUPLET &&
+                strategy !== StrategyEnum.HIDDEN_SEPTUPLET && strategy !== StrategyEnum.HIDDEN_OCTUPLET) {
+                algorithm.push(strategy);
+            }
         }
         return algorithm;
     }
