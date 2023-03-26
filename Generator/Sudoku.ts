@@ -227,3 +227,18 @@ export function cellsEqual(a: Cell[], b: Cell[]):boolean {
     }
     return true;
 }
+
+/**
+ * Returns true if a has any of the same cells as b
+ * @param a - cells array a
+ * @param b - cells array b
+ * @returns true if a has any of the same cells as b
+ */
+export function anyCellsEqual(a: Cell[], b: Cell[]):boolean {
+    for (let i:number = 0; i < a.length; i++) {
+        if (cellsContainCell(b, a[i])) {
+            return true;
+        }
+    }
+    return false;
+}

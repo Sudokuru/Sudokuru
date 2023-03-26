@@ -14,7 +14,7 @@ export class Drills{
     public static strategies:string[][] = [
         ["NAKED_SET", "NAKED_SINGLE", "NAKED_PAIR", "NAKED_TRIPLET", "NAKED_QUADRUPLET"],
         ["HIDDEN_SET", "HIDDEN_SINGLE", "HIDDEN_PAIR", "HIDDEN_TRIPLET", "HIDDEN_QUADRUPLET"],
-        ["POINTING_SET", "POINTING_PAIR", "POINTING_TRIPLET"]
+        ["POINTING_PAIR"]
     ];
 
     public static async getGame(url: string, strategy: string, token: string):Promise<JSON> {

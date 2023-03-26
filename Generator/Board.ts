@@ -1,5 +1,5 @@
 import { CustomError, CustomErrorEnum } from "./CustomError";
-import { getBoardArray, SudokuEnum } from "./Sudoku";
+import { anyCellsEqual, getBoardArray, SudokuEnum } from "./Sudoku";
 import { Solver } from "./Solver";
 import { Hint } from "./Hint";
 import { StrategyEnum } from "./Sudoku"
@@ -134,17 +134,24 @@ export class Board{
         }
         // Adds drills
         this.drills = new Array(StrategyEnum.COUNT).fill(false);
+        let drillCells:Cell[][] = new Array(StrategyEnum.COUNT);
         for (let i:number = 0; i < hints.length; i++) {
             this.drills[hints[i].getStrategyType()] = true;
+            drillCells[hints[i].getStrategyType()] = hints[i].getCellsCause();
         }
         // Removes strategies whose prereqs are included
         for (let i:number = 0; i < this.drills.length; i++) {
             if (this.drills[i]) {
                 let prereqs:StrategyEnum[] = this.getPrereqs(i);
                 for (let j:number = 0; j < prereqs.length; j++) {
+                    // Checks if there is a drill that is a prereq of the current drill, if so sees if they overlap in which case drill is excluded
                     if (this.drills[prereqs[j]]) {
-                        this.drills[i] = false;
-                        j = prereqs.length;
+                        let drillA:Cell[] = drillCells[i];
+                        let drillB:Cell[] =drillCells[prereqs[j]];
+                        if (anyCellsEqual(drillA, drillB)) {
+                            this.drills[i] = false;
+                            j = prereqs.length;
+                        }
                     }
                 }
             }
