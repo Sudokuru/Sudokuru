@@ -1010,7 +1010,8 @@ export class Strategy{
             if (strategy !== StrategyEnum.NAKED_QUINTUPLET && strategy !== StrategyEnum.NAKED_SEXTUPLET &&
                 strategy !== StrategyEnum.NAKED_SEPTUPLET && strategy !== StrategyEnum.NAKED_OCTUPLET &&
                 strategy !== StrategyEnum.HIDDEN_QUINTUPLET && strategy !== StrategyEnum.HIDDEN_SEXTUPLET &&
-                strategy !== StrategyEnum.HIDDEN_SEPTUPLET && strategy !== StrategyEnum.HIDDEN_OCTUPLET) {
+                strategy !== StrategyEnum.HIDDEN_SEPTUPLET && strategy !== StrategyEnum.HIDDEN_OCTUPLET &&
+                strategy !== StrategyEnum.POINTING_TRIPLET) {
                 algorithm.push(strategy);
             }
         }

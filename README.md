@@ -117,8 +117,6 @@
         *   [removals](#removals-6)
         *   [info](#info-6)
         *   [action](#action-6)
-    *   [Example 10: Other Pointing Set](#example-10-other-pointing-set)
-        *   [strategy](#strategy-19)
 *   [Developer Tools](#developer-tools)
 
 # Installation
@@ -718,11 +716,6 @@ Info about the strategy being used by the hint.
 "When you see a pointing pair you can remove all other instances of the shared note from the box (except for those in the pair themself)"
 ```
 Describes the action that the hint is suggesting.
-## Example 10: Other Pointing Set
-### strategy
-```json
-"POINTING_TRIPLET"
-```
 # Developer Tools
 ```shell
 # Clone Repository
