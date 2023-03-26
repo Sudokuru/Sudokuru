@@ -15,8 +15,10 @@ enum DifficultyLowerBounds {
     HIDDEN_SINGLE = 20,
     NAKED_PAIR = 40,
     HIDDEN_PAIR = 50,
+    POINTING_PAIR = 80,
     NAKED_TRIPLET = 60,
     HIDDEN_TRIPLET = 75,
+    POINTING_TRIPLET = 180,
     NAKED_QUADRUPLET = 90,
     HIDDEN_QUADRUPLET = 115,
     NAKED_QUINTUPLET = 140,
@@ -40,8 +42,10 @@ enum DifficultyUpperBounds {
     HIDDEN_SINGLE = 40,
     NAKED_PAIR = 60,
     HIDDEN_PAIR = 75,
+    POINTING_PAIR = 120,
     NAKED_TRIPLET = 90,
     HIDDEN_TRIPLET = 115,
+    POINTING_TRIPLET = 195,
     NAKED_QUADRUPLET = 140,
     HIDDEN_QUADRUPLET = 140,
     NAKED_QUINTUPLET = 140,
@@ -302,6 +306,29 @@ export class Strategy{
                     }
                     // Since this strategy wasn't found records that this group has been checked already (unless strategy was found via drill)
                     this.cellBoard.setSearchedGroups(strategyType, group, i, !used);
+                }
+            }
+        }
+        else if (strategyType === StrategyEnum.POINTING_PAIR || strategyType === StrategyEnum.POINTING_TRIPLET) {
+            for (let box:number = 0; box < SudokuEnum.ROW_LENGTH; box++) {
+                let set:TupleEnum = this.isPointingSet(box);
+                if ((strategyType === StrategyEnum.POINTING_PAIR && set === TupleEnum.PAIR) || 
+                    (strategyType === StrategyEnum.POINTING_TRIPLET && set === TupleEnum.TRIPLET)) {
+                    if (!drill) {
+                        return true;
+                    }
+
+                    // If this is first instance of the strategy found for drill we record it
+                    // If we have already found a instance of strategy for this drill we check if this is the same instance, if not return fales
+                    if (!used) {
+                        this.strategyType = strategyType;
+                        this.drillHint = new Hint(this);
+                        this.reset();
+                        used = true;
+                    }
+                    else if (!cellsEqual(this.cause, this.drillHint.getCellsCause())) {
+                        return false;
+                    }
                 }
             }
         }
@@ -753,6 +780,101 @@ export class Strategy{
     }
 
     /**
+     * Given a box checks for a pointing set
+     * @param box - index of box being checked
+     * @returns set tuple e.g. pair if its pointing pair or triplet if its pointing triplet, null if no pointing set found
+     */
+    private isPointingSet(box: number):TupleEnum {
+        // Check if each note is the basis for a pointing set
+        let placedValues = this.cellBoard.getValuesPlaced(GroupEnum.BOX, box);
+        for (let note:number = 0; note < SudokuEnum.ROW_LENGTH; note++) {
+            if (placedValues.contains(note)) {
+                continue;
+            }
+            // Get indexes of cells with given note in the box being checked
+            let indexesWithNote:Group = this.cellBoard.getIndexesWithNote(GroupEnum.BOX, box, note);
+            // Proceed to check next note if there isn't the right number of occurences of the note
+            let tuple:TupleEnum = indexesWithNote.getSize();
+            if (tuple !== TupleEnum.PAIR && tuple !== TupleEnum.TRIPLET) {
+                continue;
+            }
+            // Get cells that contain the notes
+            let cells:Cell[] = new Array();
+            for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
+                if (indexesWithNote.contains(i)) {
+                    cells.push(this.board[Cell.calculateRow(box, i)][Cell.calculateColumn(box, i)]);
+                }
+            }
+            // Check if they are on the same row or column
+            let rowSet:boolean = true, columnSet:boolean = true;
+            for (let i:number = 0; i < (cells.length - 1); i++) {
+                if (cells[i].getRow() !== cells[i + 1].getRow()) {
+                    rowSet = false;
+                }
+                if (cells[i].getColumn() !== cells[i + 1].getColumn()) {
+                    columnSet = false;
+                }
+            }
+            // Proceed to check next note if the cells aren't all on the same row or column
+            if (!rowSet && !columnSet) {
+                continue;
+            }
+            // Check if note is in the rest of the row or column, if so add to cause/groups and notes to remove arrays and return true
+            let found:boolean = false;
+            let distanceRatio:number;
+            let notes:Group[] = new Array();
+            if (rowSet) {
+                let row:number = cells[0].getRow();
+                let columnStart:number = Cell.getBoxColumnStart(box);
+                for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                    if (column < columnStart || column > (columnStart + SudokuEnum.BOX_LENGTH - 1)) {
+                        if (this.board[row][column].isEmpty() && (this.board[row][column].getNotes()).contains(note)) {
+                            let toRemove:Group = new Group(false, row, column);
+                            toRemove.insert(note);
+                            notes.push(toRemove);
+                            found = true;
+                        }
+                    }
+                }
+                if (found) {
+                    this.groups.push([GroupEnum.ROW, row]);
+                    distanceRatio = this.getDistanceRatio(cells, GroupEnum.ROW);
+                }
+            }
+            else {
+                let column:number = cells[0].getColumn();
+                let rowStart:number = Cell.getBoxRowStart(box);
+                for (let row:number = 0; row < SudokuEnum.ROW_LENGTH; row++) {
+                    if (row < rowStart || row > (rowStart + SudokuEnum.BOX_LENGTH - 1)) {
+                        if (this.board[row][column].isEmpty() && (this.board[row][column].getNotes()).contains(note)) {
+                            let toRemove:Group = new Group(false, row, column);
+                            toRemove.insert(note);
+                            notes.push(toRemove);
+                            found = true;
+                        }
+                    }
+                }
+                if (found) {
+                    this.groups.push([GroupEnum.COLUMN, column]);
+                    distanceRatio = this.getDistanceRatio(cells, GroupEnum.COLUMN);
+                }
+            }
+            if (found) {
+                this.identified = true;
+                this.groups.push([GroupEnum.BOX, box]);
+                this.cause = cells;
+                this.notes = notes;
+                if (tuple === TupleEnum.PAIR) {
+                    this.difficulty = DifficultyLowerBounds.POINTING_PAIR;
+                    this.difficulty += Math.ceil(distanceRatio * (DifficultyUpperBounds.POINTING_PAIR - DifficultyLowerBounds.POINTING_PAIR));
+                }
+                return tuple;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Checks if strategy is simplify notes and if so adds notes to remove from a cell
      * @param i - corresponds to an array in empty cells
      * @param j - corresponds to an index in an array in emptyCells
@@ -852,14 +974,14 @@ export class Strategy{
             }
             usedGroup = false;
             // Add every placed value from given box
-            for (let r:number = boxRowStart; r < (boxRowStart + SudokuEnum.BOX_LENGTH); r++) {
-                for (let c:number = boxColumnStart; c < (boxColumnStart + SudokuEnum.BOX_LENGTH); c++) {
-                    if (!this.board[r][c].isEmpty()) {
-                        if (!notesToRemove.contains(this.board[r][c].getValue())) {
-                            notesToRemove.insert(this.board[r][c].getValue());
-                            this.cause.push(this.board[r][c]);
+            for (let rr:number = boxRowStart; rr < (boxRowStart + SudokuEnum.BOX_LENGTH); rr++) {
+                for (let cc:number = boxColumnStart; cc < (boxColumnStart + SudokuEnum.BOX_LENGTH); cc++) {
+                    if (!this.board[rr][cc].isEmpty()) {
+                        if (!notesToRemove.contains(this.board[rr][cc].getValue())) {
+                            notesToRemove.insert(this.board[rr][cc].getValue());
+                            this.cause.push(this.board[rr][cc]);
                             if (!usedGroup) {
-                                this.groups.push([GroupEnum.BOX, this.board[r][c].getBox()]);
+                                this.groups.push([GroupEnum.BOX, this.board[rr][cc].getBox()]);
                                 usedGroup = true;
                             }
                         }
@@ -867,7 +989,7 @@ export class Strategy{
                 }
             }
             // If there are notes to remove then return them
-            if (notesToRemove.getSize() > 0) {
+            if (notesToRemove.getSize() < SudokuEnum.ROW_LENGTH) {
                 this.notes.push(notesToRemove);
                 this.identified = true;
                 this.difficulty = DifficultyLowerBounds.AMEND_NOTES;

@@ -187,6 +187,14 @@ export class Board{
             prereqs.push(StrategyEnum.NAKED_PAIR);
             strategy = StrategyEnum.NAKED_PAIR;
         }
+        if (strategy === StrategyEnum.POINTING_TRIPLET) {
+            prereqs.push(StrategyEnum.POINTING_PAIR);
+            strategy = StrategyEnum.POINTING_PAIR;
+        }
+        if (strategy === StrategyEnum.POINTING_PAIR) {
+            prereqs.push(StrategyEnum.HIDDEN_SINGLE);
+            strategy = StrategyEnum.HIDDEN_SINGLE;
+        }
         if (strategy === StrategyEnum.NAKED_PAIR || strategy === StrategyEnum.HIDDEN_SINGLE) {
             prereqs.push(StrategyEnum.NAKED_SINGLE);
         }

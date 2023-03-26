@@ -22,4 +22,6 @@ classDiagram
     NakedSextuplet --<| NakedQuintuplet
     NakedSeptuplet --<| NakedSextuplet
     NakedOctuplet --<| NakedSeptuplet
+    PointingPair --<| HiddenSingle
+    PointingTriplet --<| PointingPair
 ```

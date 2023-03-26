@@ -14,6 +14,9 @@ export class CellBoard{
     private valuesPlaced: Group[][];
     // 2d array of Groups storing which indexes in each group have had values placed in them
     private indexesPlaced: Group[][];
+    // 2d array of Groups storing which indexes in each group have a given note left (cells with values placed in them are excluded)
+    // e.g. indexesWithNote[2][0][3] = [GroupType][GroupIndex][Note] = [box][1st box]["4"] = indexes of cells in 1st box with "4" as note
+    private indexesWithNote: Group[][][];
     // 3d array containg cells from each group
     // e.g. cellGroups[0][3][4] = [row][4th row][5th cell] = 5th cell in 4th row
     private cellGroups: Cell[][][];
@@ -33,6 +36,35 @@ export class CellBoard{
             for (let j:number = 0; j < SudokuEnum.ROW_LENGTH; j++) {
                 this.valuesPlaced[i].push(new Group(false));
                 this.indexesPlaced[i].push(new Group(false));
+            }
+        }
+
+        // Initialize indexesWithNote metadata
+        this.indexesWithNote = new Array();
+        for (let i:number = 0; i < GroupEnum.COUNT; i++) {
+            this.indexesWithNote.push(new Array());
+            for (let j:number = 0; j < SudokuEnum.ROW_LENGTH; j++) {
+                this.indexesWithNote[i].push(new Array());
+                for (let k:number = 0; k < SudokuEnum.ROW_LENGTH; k++) {
+                    // Initialize group to be empty
+                    this.indexesWithNote[i][j].push(new Group(false));
+                }
+            }
+        }
+        // For each note in each cell add it to the indexesWithNote groups
+        for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+            for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                if (!this.cells[row][column].isEmpty()) {
+                    continue;
+                }
+                let notes:Group = this.cells[row][column].getNotes();
+                for (let note:number = 0; note < SudokuEnum.ROW_LENGTH; note++) {
+                    if (notes.contains(note)) {
+                        this.indexesWithNote[GroupEnum.ROW][row][note].insert(column);
+                        this.indexesWithNote[GroupEnum.COLUMN][column][note].insert(row);
+                        this.indexesWithNote[GroupEnum.BOX][Cell.calculateBox(row, column)][note].insert(Cell.calculateBoxIndex(row, column));
+                    }
+                }
             }
         }
 
@@ -102,6 +134,12 @@ export class CellBoard{
             }
         }
         this.resetSearchedGroups(row, column);
+        // Update indexesWithNote metadata
+        for (let note:number = 0; note < SudokuEnum.ROW_LENGTH; note++) {
+            this.indexesWithNote[GroupEnum.ROW][row][note].remove(column);
+            this.indexesWithNote[GroupEnum.COLUMN][column][note].remove(row);
+            this.indexesWithNote[GroupEnum.BOX][Cell.calculateBox(row, column)][note].remove(Cell.calculateBoxIndex(row, column));
+        }
         return;
     }
 
@@ -113,8 +151,32 @@ export class CellBoard{
      */
     public removeNotes(row: number, column: number, notes: Group):void {
         this.cells[row][column].removeNotes(notes);
+        // Update searched group metadata
         this.resetSearchedGroups(row, column);
+        // Update indexesWithNote metadata
+        for (let note:number = 0; note < SudokuEnum.ROW_LENGTH; note++) {
+            if (notes.contains(note)) {
+                this.indexesWithNote[GroupEnum.ROW][row][note].remove(column);
+                this.indexesWithNote[GroupEnum.COLUMN][column][note].remove(row);
+                this.indexesWithNote[GroupEnum.BOX][Cell.calculateBox(row, column)][note].remove(Cell.calculateBoxIndex(row, column));
+            }
+        }
         return;
+    }
+
+    /**
+     * Adds all notes back into Cell (used for amend notes strategy)
+     * @param row - row Cell is in
+     * @param column - column Cell is in
+     */
+    public resetNotes(row: number, column: number):void {
+        this.cells[row][column].resetNotes();
+        // Update indexesWithNote metadata
+        for (let note:number = 0; note < SudokuEnum.ROW_LENGTH; note++) {
+            this.indexesWithNote[GroupEnum.ROW][row][note].insert(column);
+            this.indexesWithNote[GroupEnum.COLUMN][column][note].insert(row);
+            this.indexesWithNote[GroupEnum.BOX][Cell.calculateBox(row, column)][note].insert(Cell.calculateBoxIndex(row, column));
+        }
     }
 
     /**
@@ -152,10 +214,8 @@ export class CellBoard{
             return this.cells[index][groupIndex];
         }
         else if (group === GroupEnum.BOX) {
-            let boxRowStart:number = Cell.getBoxRowStart(groupIndex);
-            let boxColumnStart:number = Cell.getBoxColumnStart(groupIndex);
-            let row:number = boxRowStart + Math.floor(index / 3);
-            let column:number = boxColumnStart + (index % 3);
+            let row:number = Cell.calculateRow(groupIndex, index);
+            let column:number = Cell.calculateColumn(groupIndex, index);
             return this.cells[row][column];
         }
     }
@@ -205,5 +265,16 @@ export class CellBoard{
      */
     public setSearchedGroups(strategyType: StrategyEnum, groupType: GroupEnum, groupIndex: number, searched: boolean):void {
         this.searchedGroups[strategyType][groupType][groupIndex] = searched;
+    }
+
+    /**
+     * Given a group and a note returns Group object containing indexes of cells containing the note in the group
+     * @param groupType - group type e.g. row
+     * @param index - index e.g. 3 (4th row)
+     * @param note - note e.g. 4 (refers to "3")
+     * @returns group containing indexes of cells in given group containing given note
+     */
+    public getIndexesWithNote(groupType: GroupEnum, index: number, note: number):Group {
+        return this.indexesWithNote[groupType][index][note];
     }
 }

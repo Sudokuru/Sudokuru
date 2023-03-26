@@ -19,6 +19,7 @@
 - [ ] Verify that strategy label/input has been added to demo.html
 - [ ] Verify that strategy has been added to algorithm in getStrategyOrder() in script.ts
 - [ ] Verify that strategy has been pushed to algorithm in app.get('solver/nextStep') in app.ts
+- [ ] Verify that identified is set to true when strategy found in isStrategyName in Strategy.ts
 - [ ] Verify that strategy has been solved in Strategy.test.ts
 - [ ] Verify that hint example has been added to hint Object Properties in README.md
 - [ ] Verify that strategy is supported by backend as evident by being in activeGame numWrongCellsPlayedPerStrategy in README.md

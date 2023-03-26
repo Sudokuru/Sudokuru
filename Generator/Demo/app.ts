@@ -71,11 +71,17 @@ app.get('/solver/nextStep', (req, res) => {
         else if (Number(req.query.hiddenPair) === i) {
             algorithm.push(StrategyEnum.HIDDEN_PAIR);
         }
+        else if (Number(req.query.pointingPair) === i) {
+            algorithm.push(StrategyEnum.POINTING_PAIR);
+        }
         else if (Number(req.query.nakedTriplet) === i) {
             algorithm.push(StrategyEnum.NAKED_TRIPLET);
         }
         else if (Number(req.query.hiddenTriplet) === i) {
             algorithm.push(StrategyEnum.HIDDEN_TRIPLET);
+        }
+        else if (Number(req.query.pointingTriplet) === i) {
+            algorithm.push(StrategyEnum.POINTING_TRIPLET);
         }
         else if (Number(req.query.nakedQuadruplet) === i) {
             algorithm.push(StrategyEnum.NAKED_QUADRUPLET);

@@ -185,9 +185,57 @@ export class Cell{
         return;
     }
 
+    /**
+     * Given a cells row and column calculate what box it is in
+     * @param row - row cell is in
+     * @param column - column cell is in
+     * @returns index of box given cell is in
+     */
     public static calculateBox(row: number, column: number):number {
         let box:number = Math.floor(column / SudokuEnum.BOX_LENGTH);
         box += Math.floor(row / SudokuEnum.BOX_LENGTH) * SudokuEnum.BOX_LENGTH;
         return box;
+    }
+
+    /**
+     * Given a cells row and column returns its box index (0-8 inclusive, left to right, top to bottom)
+     * @param row - row cell is in
+     * @param column - column cell is in
+     * @returns box index
+     */
+    public static calculateBoxIndex(row: number, column: number):number {
+        let index:number = 0;
+        let box:number = Cell.calculateBox(row, column);
+        let rowStart = Cell.getBoxRowStart(box);
+        let columnStart = Cell.getBoxColumnStart(box);
+        // Add how far right the cell is to index
+        index += column - columnStart;
+        // Add for each row down the cell is
+        index += (row - rowStart) * SudokuEnum.BOX_LENGTH;
+        return index;
+    }
+
+    /**
+     * Given a cells box and box index returns what row it is in
+     * @param box - box cell is in
+     * @param index - box index of cell (first row is 0-2, 2nd 3-5, last 6-8)
+     * @returns row cell is in
+     */
+    public static calculateRow(box: number, index: number):number {
+        let row:number = Cell.getBoxRowStart(box);
+        row += Math.floor(index / SudokuEnum.BOX_LENGTH);
+        return row;
+    }
+
+    /**
+     * Given a cells box and box index returns what column it is in
+     * @param box - box cell is in
+     * @param index - box index of cell (first row is 0-2, 2nd 3-5, last 6-8)
+     * @returns column cell is in
+     */
+    public static calculateColumn(box: number, index: number):number {
+        let column:number = Cell.getBoxColumnStart(box);
+        column += index % SudokuEnum.BOX_LENGTH;
+        return column;
     }
 }

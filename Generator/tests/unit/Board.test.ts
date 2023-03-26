@@ -21,7 +21,8 @@ enum TestBoards {
     NAKED_TRIPLET = "070408029002000004854020007008374200020000000003261700000093612200000403130642070",
     NAKED_TRIPLET_SOLUTION = "671438529392715864854926137518374296726859341943261785487593612269187453135642978",
     NAKED_OCTUPLET = "390000500000050832008316970080030000639702010007000009070045098000690040000000000",
-    NAKED_OCTUPLET_SOLUTION = "394827561761459832528316974485931726639782415217564389173245698852693147946178253"
+    NAKED_OCTUPLET_SOLUTION = "394827561761459832528316974485931726639782415217564389173245698852693147946178253",
+    POINTING_PAIR = "009070000080400000003000028100000670020013040040007800600030000010000000000000284"
 }
 
 enum InvalidTestBoards {
@@ -302,5 +303,19 @@ describe("solve Boards", () => {
         let strategies:boolean[] = board.getStrategies();
         expect(board.getSolutionString()).toBe(TestBoards.NAKED_OCTUPLET_SOLUTION);
         expect(strategies[StrategyEnum.NAKED_OCTUPLET]).toBeTruthy();
+    });
+
+    it('should solve pointing pair', () => {
+        let algorithm:StrategyEnum[] = new Array();
+        algorithm.push(StrategyEnum.AMEND_NOTES);
+        algorithm.push(StrategyEnum.POINTING_PAIR);
+        for (let strategy:number = 0; strategy < StrategyEnum.COUNT; strategy++) {
+            if (strategy !== StrategyEnum.AMEND_NOTES && strategy !== StrategyEnum.POINTING_PAIR) {
+                algorithm.push(strategy);
+            }
+        }
+        let board:Board = new Board(TestBoards.POINTING_PAIR, algorithm);
+        let stategies:boolean[] = board.getStrategies();
+        expect(stategies[StrategyEnum.POINTING_PAIR]).toBeTruthy();
     });
 });
