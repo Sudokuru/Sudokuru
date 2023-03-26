@@ -828,7 +828,7 @@ export class Strategy{
                 let columnStart:number = Cell.getBoxColumnStart(box);
                 for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
                     if (column < columnStart || column > (columnStart + SudokuEnum.BOX_LENGTH - 1)) {
-                        if ((this.board[row][column].getNotes()).contains(note)) {
+                        if (this.board[row][column].isEmpty() && (this.board[row][column].getNotes()).contains(note)) {
                             let toRemove:Group = new Group(false, row, column);
                             toRemove.insert(note);
                             notes.push(toRemove);
@@ -846,7 +846,7 @@ export class Strategy{
                 let rowStart:number = Cell.getBoxRowStart(box);
                 for (let row:number = 0; row < SudokuEnum.ROW_LENGTH; row++) {
                     if (row < rowStart || row > (rowStart + SudokuEnum.BOX_LENGTH - 1)) {
-                        if ((this.board[row][column].getNotes()).contains(note)) {
+                        if (this.board[row][column].isEmpty() && (this.board[row][column].getNotes()).contains(note)) {
                             let toRemove:Group = new Group(false, row, column);
                             toRemove.insert(note);
                             notes.push(toRemove);
@@ -974,14 +974,14 @@ export class Strategy{
             }
             usedGroup = false;
             // Add every placed value from given box
-            for (let r:number = boxRowStart; r < (boxRowStart + SudokuEnum.BOX_LENGTH); r++) {
-                for (let c:number = boxColumnStart; c < (boxColumnStart + SudokuEnum.BOX_LENGTH); c++) {
-                    if (!this.board[r][c].isEmpty()) {
-                        if (!notesToRemove.contains(this.board[r][c].getValue())) {
-                            notesToRemove.insert(this.board[r][c].getValue());
-                            this.cause.push(this.board[r][c]);
+            for (let rr:number = boxRowStart; rr < (boxRowStart + SudokuEnum.BOX_LENGTH); rr++) {
+                for (let cc:number = boxColumnStart; cc < (boxColumnStart + SudokuEnum.BOX_LENGTH); cc++) {
+                    if (!this.board[rr][cc].isEmpty()) {
+                        if (!notesToRemove.contains(this.board[rr][cc].getValue())) {
+                            notesToRemove.insert(this.board[rr][cc].getValue());
+                            this.cause.push(this.board[rr][cc]);
                             if (!usedGroup) {
-                                this.groups.push([GroupEnum.BOX, this.board[r][c].getBox()]);
+                                this.groups.push([GroupEnum.BOX, this.board[rr][cc].getBox()]);
                                 usedGroup = true;
                             }
                         }
@@ -989,7 +989,7 @@ export class Strategy{
                 }
             }
             // If there are notes to remove then return them
-            if (notesToRemove.getSize() > 0 && notesToRemove.getSize() < SudokuEnum.ROW_LENGTH) {
+            if (notesToRemove.getSize() < SudokuEnum.ROW_LENGTH) {
                 this.notes.push(notesToRemove);
                 this.identified = true;
                 this.difficulty = DifficultyLowerBounds.AMEND_NOTES;
