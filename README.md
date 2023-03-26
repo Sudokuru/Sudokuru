@@ -347,6 +347,11 @@ Solved puzzle state, 81 numeric characters
 774
 ```
 Number of seconds that has elapsed during gameplay
+## difficulty
+```json
+24
+```
+The difficulty of the puzzle
 ## moves array
 Contains state of the puzzle and user notes at each step in order first to latest (enables undo button)
 ### puzzleCurrentState
@@ -359,7 +364,7 @@ Current puzzle state, 81 numeric characters, zeroes represent empty cells
 "111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
 ```
 729 characters, 9 per cell representing numbers 1-9 in order, cells going left to right and top to bottom, ones represent note being in cell and zeros represent note not in cell
-## numHintsAskedFor
+## numHintsUsed
 ```json
 3
 ```
@@ -369,7 +374,7 @@ Number of hints the user has requested during the game
 108
 ```
 Number of times the user has entered the wrong number into a cell
-## numWrongCellsPlayedPerStrategy
+## numHintsUsedPerStrategy
 ```json
 "NAKED_SINGLE": 4,
 "HIDDEN_SINGLE": 8,
@@ -394,7 +399,7 @@ Number of times the user has entered the wrong number into a cell
 "SWORDFISH": 0,
 "SINGLES_CHAINING": 0
 ```
-Number of times user has entered the wrong number when given strategies were the next available hints (approximates how much practice user needs per strategy)
+Number of times each hint type has been given to the user
 
 # hint Object Properties
 ## Example 1: Amend Notes
