@@ -317,5 +317,7 @@ describe("solve Boards", () => {
         let board:Board = new Board(TestBoards.POINTING_PAIR, algorithm);
         let stategies:boolean[] = board.getStrategies();
         expect(stategies[StrategyEnum.POINTING_PAIR]).toBeTruthy();
+        let drills:boolean[] = board.getDrills();
+        expect (drills[StrategyEnum.POINTING_PAIR]).toBeTruthy();
     });
 });
