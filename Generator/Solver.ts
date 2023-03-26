@@ -240,7 +240,7 @@ export class Solver{
                 for (let note:number = 0; note < notes[index].length; note++) {
                     removedNotes.remove(notes[index][note]);
                 }
-                this.board[row][column].removeNotes(removedNotes);
+                this.cellBoard.removeNotes(row, column, removedNotes);
             }
         }
     }
