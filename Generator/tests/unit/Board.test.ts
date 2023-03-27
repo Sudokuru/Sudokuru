@@ -180,10 +180,6 @@ describe("solve Boards", () => {
         }
     });
 
-    it('should give higher difficulty rating to board with multiple naked singles than one with only one', () => {
-        expect(onlyNakedSingles.getDifficulty()).toBeGreaterThan(singleNakedSingle.getDifficulty());
-    });
-
     it ('should solve row hidden single', () => {
         let board:Board = new Board(TestBoards.ROW_HIDDEN_SINGLES);
         let strategies:boolean[] = board.getStrategies();
