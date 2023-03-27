@@ -16,6 +16,7 @@ export class Hint{
     private strategy: Strategy;
     private info: string;
     private action: string;
+    private cellsCause: Cell[];
 
     /**
      * Creates Hint object
@@ -24,8 +25,9 @@ export class Hint{
      * @param info - Hint info
      * @param action - Hint action
      */
-    constructor(strategy: Strategy) {
+    constructor(strategy: Strategy, cellsCause?: Cell[]) {
         this.strategy = strategy;
+        this.cellsCause = cellsCause;
         if (this.getStrategyType() === StrategyEnum.AMEND_NOTES) {
             this.info = "Amend notes are when you reset a cell's notes to contain every nonconflicting number";
             this.action = "When you see an amend notes you can remove all notes then add all nonconflicting numbers to its notes";
@@ -163,7 +165,7 @@ export class Hint{
      * @returns cells "causing" strategy
      */
     public getCellsCause():Cell[] {
-        return this.strategy.getCause();
+        return this.cellsCause;
     }
 
     /**

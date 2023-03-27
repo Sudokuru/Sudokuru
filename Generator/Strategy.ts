@@ -251,12 +251,8 @@ export class Strategy{
                         // If we have already found a instance of strategy for this drill we check if this is the same instance, if not return fales
                         if (!used) {
                             this.strategyType = strategyType;
-                            this.drillHint = new Hint(this);
-                            this.reset();
-                            used = true;
-                        }
-                        else if (!cellsEqual(this.cause, this.drillHint.getCellsCause())) {
-                            return false;
+                            this.drillHint = new Hint(this, this.cause);
+                            return true;
                         }
                     }
                 }
@@ -295,12 +291,15 @@ export class Strategy{
                             // If we have already found a instance of strategy for this drill we check if this is the same instance, if not return fales
                             if (!used) {
                                 this.strategyType = strategyType;
-                                this.drillHint = new Hint(this);
+                                this.drillHint = new Hint(this, this.cause);
                                 this.reset();
                                 used = true;
                             }
                             else if (!cellsEqual(this.cause, this.drillHint.getCellsCause())) {
                                 return false;
+                            }
+                            else {
+                                this.reset();
                             }
                         }
                     }
@@ -322,12 +321,15 @@ export class Strategy{
                     // If we have already found a instance of strategy for this drill we check if this is the same instance, if not return fales
                     if (!used) {
                         this.strategyType = strategyType;
-                        this.drillHint = new Hint(this);
+                        this.drillHint = new Hint(this, this.cause);
                         this.reset();
                         used = true;
                     }
                     else if (!cellsEqual(this.cause, this.drillHint.getCellsCause())) {
                         return false;
+                    }
+                    else {
+                        this.reset();
                     }
                 }
             }

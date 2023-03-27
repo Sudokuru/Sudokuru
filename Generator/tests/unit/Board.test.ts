@@ -171,7 +171,7 @@ describe("solve Boards", () => {
         }
         let drills:boolean[] = onlyNakedSingles.getDrills();
         for (let i:StrategyEnum = (StrategyEnum.INVALID + 1); i < StrategyEnum.COUNT; i++) {
-            if (i === StrategyEnum.NAKED_SINGLE || i == StrategyEnum.HIDDEN_SEXTUPLET) {
+            if (i == StrategyEnum.HIDDEN_SEXTUPLET) {
                 expect(drills[i]).toBeTruthy();
             }
             else {
