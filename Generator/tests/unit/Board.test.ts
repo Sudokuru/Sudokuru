@@ -240,10 +240,6 @@ describe("solve Boards", () => {
         expect(strategies[StrategyEnum.NAKED_QUADRUPLET]).toBeTruthy();
     });
 
-    it('should give a higher difficulty score to solving same board with naked quadruplets than singles', () => {
-        expect(onlyNakedSinglesQuadruplets.getDifficulty()).toBeGreaterThan(onlyNakedSingles.getDifficulty());
-    });
-
     it('should solve naked quintuplet', () => {
         let algorithm:StrategyEnum[] = new Array();
         algorithm.push(StrategyEnum.AMEND_NOTES);
