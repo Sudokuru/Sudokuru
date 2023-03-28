@@ -27,8 +27,10 @@ export class Lessons{
         }
         else if (strategy == "NAKED_SET"){
             return [
-                ["Here is an example of the amend notes strategy", "https://sudokuru.s3.amazonaws.com/hintExample1-V2.png"],
-                ["Here is more insight into that example", "https://sudokuru.s3.amazonaws.com/hintExample1-V2.png"]
+                ["Naked singles are based on the fact that if a single cell has only a single possibility (aka note). This then leads to the elimination of the note from other cells in the row, column, and box due to the rule of Sudoku stating that each row, column, and box can only have a number occur once. This idea can be generalized to any set size. For instance, you can have naked pairs, triplets, or even quadruplets (can go even further but they become more rare). While only naked singles involve directly placing a value they all hinge on the fact that there are only x notes that can be placed in x cells leading to each of them having to be placed in one of them eventually resulting in notes being removed from other cells.", "https://sudokuru.s3.amazonaws.com/Lessons/NAKED_SET_STEP_1.png"],
+                ["In the above puzzle we have highlighted a naked pair made up of the numbers 2 and 9 in gold. They constitute a naked pair because they are two cells that can only be filled with a combined two numbers. Therefore, on of them will eventually be filled with a 2 while the other will be filled with a 9. This lets you remove both a 2 and a 9 from every cell in the column and box that the two cells share.", "https://sudokuru.s3.amazonaws.com/Lessons/NAKED_SET_STEP_2.png"],
+                ["We've now finished removing all of the notes from applying the naked pair.", "https://sudokuru.s3.amazonaws.com/Lessons/NAKED_SET_STEP_3.png"],
+                ["You've now learned how to use the naked set strategies! While you can't directly place values with naked sets other than singles you can remove lots of notes which lead to placing values like in the case of the 6 naked single revealed in the leftmost column by the naked pair we just applied.", "https://sudokuru.s3.amazonaws.com/Lessons/NAKED_SET_STEP_4.png"]
             ];
         }
         else if (strategy == "HIDDEN_SINGLE"){
