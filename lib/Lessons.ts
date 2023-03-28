@@ -16,14 +16,13 @@ export class Lessons{
         }
         else if (strategy == "NAKED_SINGLE"){
             return [
-                ["Here is an example of the amend notes strategy", "https://sudokuru.s3.amazonaws.com/Lessons/NAKED_SINGLE_STEP_1.png"],
-                ["Here is more insight into that example", "https://sudokuru.s3.amazonaws.com/Lessons/NAKED_SINGLE_STEP_2.png"],
-                ["Here is more insight into that example", "https://sudokuru.s3.amazonaws.com/Lessons/NAKED_SINGLE_STEP_3.png"]
-            ];
-        }
-        else if (strategy === "SIMPLIFY_NOTES") {
-            return [
-                ["Here is an example of the simplify notes strategy", "https://sudokuru.s3.amazonaws.com/hintExample2-V2.png"]
+                ["To solve a Sudoku puzzle you have to correctly fill in all of the empty cells. You can do this by utilizing the naked single strategy. To use the naked single strategy you first have to find a cell with only one note left.", "https://sudokuru.s3.amazonaws.com/Lessons/NAKED_SINGLE_STEP_1.png"],
+                ["The highlighted cell in the top middle of the above puzzle is an example of a naked single. Since it only have an 8 left as a note you can fill the cell in with the value 8.", "https://sudokuru.s3.amazonaws.com/Lessons/NAKED_SINGLE_STEP_2.png"],
+                ["You have now finished the first half of the naked single strategy by placing the 8.", "https://sudokuru.s3.amazonaws.com/Lessons/NAKED_SINGLE_STEP_3.png"],
+                ["The second half of the naked single strategy is using the placed value to simplify the notes of other cells. That is to say you can remove the placed value from the notes of any cell that contains it that shares a row, column, and/or box with the given cell.", "https://sudokuru.s3.amazonaws.com/Lessons/NAKED_SINGLE_STEP_4.png"],
+                ["You can now remove the 8 as a note from the cell directly to the left of the recently placed 8 because they share a row (and box).", "https://sudokuru.s3.amazonaws.com/Lessons/NAKED_SINGLE_STEP_5.png"],
+                ["Since that is the only cell with a shared row, column, or box that also has an 8 you are now done with this naked single.", "https://sudokuru.s3.amazonaws.com/Lessons/NAKED_SINGLE_STEP_6.png"],
+                ["You have now learned how to use the naked single strategy to solve Sudoku puzzles! Part of what makes naked singles so effective is that they can have a domino effect. For instance, the cell we just removed an 8 from is now its own naked single.", "https://sudokuru.s3.amazonaws.com/Lessons/NAKED_SINGLE_STEP_7.png"]
             ];
         }
         else if (strategy == "NAKED_SET"){
