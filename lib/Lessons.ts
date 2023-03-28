@@ -35,8 +35,10 @@ export class Lessons{
         }
         else if (strategy == "HIDDEN_SINGLE"){
             return [
-                ["Here is an example of the amend notes strategy", "https://sudokuru.s3.amazonaws.com/hintExample1-V2.png"],
-                ["Here is more insight into that example", "https://sudokuru.s3.amazonaws.com/hintExample1-V2.png"]
+                ["Hidden singles are when a single note is only left in a single cell in a row, column, and/or box. When you find a hidden single you can remove all of the notes other than the hidden single itself from the cell.", "https://sudokuru.s3.amazonaws.com/Lessons/HIDDEN_SINGLE_STEP_1.png"],
+                ["In the highlighted column above the number 9 is absent from all of the gold highlighted cells appearing only in one cell. Since only one cell in the column has a nine left you can remove all of the other notes from it as shown highlighted red.", "https://sudokuru.s3.amazonaws.com/Lessons/HIDDEN_SINGLE_STEP_2.png"],
+                ["We've now finished removing all of the excess notes from the hidden single cell.", "https://sudokuru.s3.amazonaws.com/Lessons/HIDDEN_SINGLE_STEP_3.png"],
+                ["You've now learned how to use the hidden single strategy! Hidden singles are particularly useful because they always result in naked singles which can be used to place the value.", "https://sudokuru.s3.amazonaws.com/Lessons/HIDDEN_SINGLE_STEP_4.png"]
             ];
         }
         else if (strategy == "HIDDEN_SET"){
