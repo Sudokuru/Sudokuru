@@ -298,7 +298,9 @@ const Lessons = sudokuru.Lessons;
 1. Description: Returns a 2d array containing "steps" which are arrays containing two strings, the first of which is text describing the image which is linked to by the url which is the second string in the subarray.
 2. Syntax
     ```shell
-    Lessons.getSteps(strategy);
+    Lessons.getSteps(strategy).then(steps => {
+        console.log(steps);
+    });
     ```
 3. Parameters:
     - strategy: string representing type, can be any from Lessons.strategies
