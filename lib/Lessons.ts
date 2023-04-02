@@ -2,7 +2,14 @@
  * Functions to handle requesting lessons
  */
 export class Lessons{
-    public static strategies:string[] = ["AMEND_NOTES", "NAKED_SINGLE", "NAKED_SET", "HIDDEN_SINGLE", "HIDDEN_SET"];
+    /**
+     * Returns a list of all the strategies that have lessons
+     */
+    public static async getStrategies():Promise<string[]> {
+        const response:Response = await fetch("https://sudokuru.s3.amazonaws.com/Lessons/strategies.json", { cache: "no-cache" })
+        const json = await response.json();
+        return json;
+    }
 
     public static getSteps(strategy: string):string[][] {
         if (strategy === "AMEND_NOTES") {

@@ -28,7 +28,7 @@
             *   [How to Use Drills](#how-to-use-drills)
         *   [Lessons Class](#lessons-class)
             *   [Setup](#setup-2)
-            *   [Lessons.strategies](#lessonsstrategies)
+            *   [Lessons.getStrategies()](#lessonsgetstrategies)
             *   [Lessons.getSteps()](#lessonsgetsteps)
 *   [Puzzle Object Properties](#puzzle-object-properties)
     *   [puzzle](#puzzle)
@@ -284,8 +284,15 @@ Once you get a drill game using Drills.getGame() and one of the supported strate
 const Lessons = sudokuru.Lessons;
 ```
 
-#### Lessons.strategies
-1. Description: array containing strategy strings that lessons are available for, e.g. ["AMEND_NOTES", "SIMPLIFY_NOTES", "NAKED_SET", ...].
+#### Lessons.getStrategies()
+1. Description: Returns an array containing strategy strings that lessons are available for
+2. Syntax
+    ```shell
+    Lessons.getStrategies().then(strategies => {
+        console.log(strategies);
+    });
+    ```
+3. Return Value: string array e.g. ["AMEND_NOTES", "SIMPLIFY_NOTES", "NAKED_SET", ...]
 
 #### Lessons.getSteps()
 1. Description: Returns a 2d array containing "steps" which are arrays containing two strings, the first of which is text describing the image which is linked to by the url which is the second string in the subarray.
