@@ -28,8 +28,9 @@
             *   [How to Use Drills](#how-to-use-drills)
         *   [Lessons Class](#lessons-class)
             *   [Setup](#setup-2)
-            *   [Lessons.strategies](#lessonsstrategies)
+            *   [Lessons.getStrategies()](#lessonsgetstrategies)
             *   [Lessons.getSteps()](#lessonsgetsteps)
+            *   [Lessons.getTutorial()](#lessonsgettutorial)
 *   [Puzzle Object Properties](#puzzle-object-properties)
     *   [puzzle](#puzzle)
     *   [puzzleSolution](#puzzlesolution)
@@ -284,18 +285,37 @@ Once you get a drill game using Drills.getGame() and one of the supported strate
 const Lessons = sudokuru.Lessons;
 ```
 
-#### Lessons.strategies
-1. Description: array containing strategy strings that lessons are available for, e.g. ["AMEND_NOTES", "SIMPLIFY_NOTES", "NAKED_SET", ...].
+#### Lessons.getStrategies()
+1. Description: Returns an array containing strategy strings that lessons are available for
+2. Syntax
+    ```shell
+    Lessons.getStrategies().then(strategies => {
+        console.log(strategies);
+    });
+    ```
+3. Return Value: string array e.g. ["AMEND_NOTES", "SIMPLIFY_NOTES", "NAKED_SET", ...]
 
 #### Lessons.getSteps()
 1. Description: Returns a 2d array containing "steps" which are arrays containing two strings, the first of which is text describing the image which is linked to by the url which is the second string in the subarray.
 2. Syntax
     ```shell
-    Lessons.getSteps(strategy);
+    Lessons.getSteps(strategy).then(steps => {
+        console.log(steps);
+    });
     ```
 3. Parameters:
     - strategy: string representing type, can be any from Lessons.strategies
 4. Return Value: 2d array e.g. [["Here is an example of the simplify notes strategy", "https://sudokuru.s3.amazonaws.com/hintExample2-V2.png"]].
+
+#### Lessons.getTutorial()
+1. Description: Returns a 2d string array containing "steps" which are arrays containing two strings, the first of which is text describing the image which is linked to by the url which is the second string in the subarray for the first few lessons.
+2. Syntax
+    ```shell
+    Lessons.getTutorial().then(tutorial => {
+        console.log(tutorial);
+    });
+    ```
+3. Return Value: 2d array e.g. [["Here is an example of the simplify notes strategy", "https://sudokuru.s3.amazonaws.com/hintExample2-V2.png"]].
 
 # Puzzle Object Properties
 
@@ -711,6 +731,22 @@ npm run start
 # Puzzles.saveGame(): Attempts to save changes to activeGame stored locally in a text file and returns true if successful
 # Puzzles.finishGame(): Attempts to delete activeGame stored locally in a text file and returns true if successful
 # Drills.getGame(): Will return a puzzle string constant
+
+# Can modify a lessons by doing the following:
+1. Log into AWS Console using team IAM user
+2. Navigate to S3
+3. Navigate to sudokuru bucket
+4. Navigate to Lessons folder
+5. Download the lessons json file e.g. AMEND_NOTES.json
+6. Make changes locally to the json file
+7. Upload the json file (it will overwrite the old version)
+
+# Can add a lesson by doing the following:
+1. Navigate to S3 sudokuru bucket Lessons folder same as in modifying lesson instructions above
+2. Upload the new lesson json file using the same format as the existing ones
+3. Download strategies.json
+4. Add the new strategies name (same as uploaded file name) to strategies.json locally
+5. Upload the json file (it will overwrite the old version)
 ```
 Official TypeDoc Documentation is Hosted Here: https://sudokuru.github.io/SudokuPuzzleGenerator/
 
