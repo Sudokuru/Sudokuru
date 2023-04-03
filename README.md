@@ -30,6 +30,7 @@
             *   [Setup](#setup-2)
             *   [Lessons.getStrategies()](#lessonsgetstrategies)
             *   [Lessons.getSteps()](#lessonsgetsteps)
+            *   [Lessons.getTutorial()](#lessonsgettutorial)
 *   [Puzzle Object Properties](#puzzle-object-properties)
     *   [puzzle](#puzzle)
     *   [puzzleSolution](#puzzlesolution)
@@ -305,6 +306,16 @@ const Lessons = sudokuru.Lessons;
 3. Parameters:
     - strategy: string representing type, can be any from Lessons.strategies
 4. Return Value: 2d array e.g. [["Here is an example of the simplify notes strategy", "https://sudokuru.s3.amazonaws.com/hintExample2-V2.png"]].
+
+#### Lessons.getTutorial()
+1. Description: Returns a 2d string array containing "steps" which are arrays containing two strings, the first of which is text describing the image which is linked to by the url which is the second string in the subarray for the first few lessons.
+2. Syntax
+    ```shell
+    Lessons.getTutorial().then(tutorial => {
+        console.log(tutorial);
+    });
+    ```
+3. Return Value: 2d array e.g. [["Here is an example of the simplify notes strategy", "https://sudokuru.s3.amazonaws.com/hintExample2-V2.png"]].
 
 # Puzzle Object Properties
 
