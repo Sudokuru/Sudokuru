@@ -1,6 +1,6 @@
 {
   "name": "sudokuru",
-  "version": "1.12.0",
+  "version": "1.13.0",
   "description": "This is the Sudokuru package.",
   "main": "index.js",
   "scripts": {
