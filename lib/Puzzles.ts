@@ -1,8 +1,8 @@
-import { StrategyEnum } from "../Generator";
-import { getMaxGameDifficulty } from "../Generator/Board";
-import { Hint } from "../Generator/Hint";
-import { Solver } from "../Generator/Solver";
-import { MAX_DIFFICULTY, Strategy } from "../Generator/Strategy";
+import {StrategyEnum} from "../Generator";
+import {getMaxGameDifficulty} from "../Generator/Board";
+import {Hint} from "../Generator/Hint";
+import {Solver} from "../Generator/Solver";
+import {MAX_DIFFICULTY, Strategy} from "../Generator/Strategy";
 
 const START_GAME:string = "api/v1/newGame?closestDifficulty=";
 const GET_GAME:string = "api/v1/activeGames";
@@ -30,19 +30,22 @@ export class Puzzles{
         let hardestStrategyDifficulty:number = Strategy.getHighestStrategyDifficultyBound(strategies);
         let hardestGameWithStrategies:number = Math.min(getMaxGameDifficulty(MAX_DIFFICULTY), getMaxGameDifficulty(hardestStrategyDifficulty) * 2);
         difficulty = Math.ceil(1000 * (difficulty * (hardestGameWithStrategies / getMaxGameDifficulty(MAX_DIFFICULTY))));
-        try {
-            let res:Response = await fetch(url + START_GAME + JSON.stringify(difficulty), {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + token
-                }
-            });
-            let data:JSON = await res.json();
-            return data;
-        } catch(err) {
-            console.log(err);
-        }
+
+        const res:Response = await fetch(url + START_GAME + JSON.stringify(difficulty), {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            }
+        });
+
+       if (res.status === SUCCESS) {
+           return await res.json();
+       }
+       else {
+           console.log("Error: " + START_GAME + " GET request has status " + res.status);
+           return null;
+       }
     }
 
    /**
@@ -61,8 +64,7 @@ export class Puzzles{
         });
 
         if (res.status === SUCCESS) {
-            const data:JSON = await res.json();
-            return data;
+            return await res.json();
         }
         else if (res.status === NOT_FOUND) {
             return null;

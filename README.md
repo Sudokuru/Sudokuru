@@ -170,10 +170,12 @@ const Puzzles = sudokuru.Puzzles;
 2. Syntax
     ```shell
     Puzzles.startGame(url, difficulty, strategies, token).then(game => {
-        console.log(game);
-    }).catch(err => {
-        console.log(err);
-    });
+        if (game !== null) {
+            console.log(game);
+        }
+        else {
+            console.log("Unexpected error when starting game");
+        }
     ```
 3. Parameters
     - url: Server url e.g. "http://localhost:3100/"
@@ -273,7 +275,7 @@ const Drills = sudokuru.Drills;
     - url: Server url e.g. "http://localhost:3100/"
     - strategy: string representing strategy type, can be any from Drills.getDrillStrategies()
     - token: string authentication token
-4. Return Value: JSON object containing puzzleCurrentState and puzzleCurrentNotesState as described in [activeGame](#activegame-object-properties) if drill found, otherwise null
+4. Return Value: JSON object containing puzzleCurrentState,puzzleCurrentNotesState, and puzzleSolution as described in [activeGame](#activegame-object-properties) if drill found, otherwise null
 
 #### How to Use Drills
 Once you get a drill game using Drills.getGame() and one of the supported strategies from Drills.strategies you just need to get a hint. To do that you can use [Puzzles.getHint()](#puzzlesgethint) using the board and notes from Drills.getGame() and the strategy you are using put inside of an array.
