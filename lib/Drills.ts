@@ -37,7 +37,8 @@ export class Drills{
             }
             return <JSON><unknown>{
                 "puzzleCurrentState": boardString,
-                "puzzleCurrentNotesState": notes
+                "puzzleCurrentNotesState": notes,
+                "puzzleSolution": data[0].puzzleSolution
             };
         }
         else if (res.status === 404) {
