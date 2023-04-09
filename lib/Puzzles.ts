@@ -111,7 +111,16 @@ export class Puzzles{
             }
         });
 
-        return res.status === SUCCESS;
+        if (res.status === SUCCESS) {
+            return await res.json();
+        }
+        else if (res.status === NOT_FOUND) {
+            return null;
+        }
+        else {
+            console.log("Error: " + FINISH_GAME + " DELETE request has status " + res.status);
+            return null;
+        }
     }
 
     /**

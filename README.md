@@ -44,9 +44,14 @@
     *   [moves array](#moves-array)
         *   [puzzleCurrentState](#puzzlecurrentstate)
         *   [puzzleCurrentNotesState](#puzzlecurrentnotesstate)
-    *   [numHintsAskedFor](#numhintsaskedfor)
+    *   [numHintsUsed](#numhintsused)
     *   [numWrongCellsPlayed](#numwrongcellsplayed)
     *   [numWrongCellsPlayedPerStrategy](#numwrongcellsplayedperstrategy)
+*   [finishGame Object Properties](#finishgame-object-properties)
+    *   [score](#score)
+    *   [solveTime](#solvetime)
+    *   [numHintsUsed](#numhintsused)
+    *   [numWrongCellsPlayed](#numwrongcellsplayed)
 *   [hint Object Properties](#hint-object-properties)
     *   [Example 1: Amend Notes](#example-1-amend-notes)
         *   [strategy](#strategy)
@@ -233,7 +238,7 @@ const Puzzles = sudokuru.Puzzles;
     - url: Server url e.g. "http://localhost:3100/"
     - puzzle: a string containing the initial puzzle state
     - token: string authentication token
-4. Return Value: true if game was deleted successfully
+      [finishGame](#finishgame-object-properties) JSON object if game exists and has been ended, otherwise null
 
 #### Puzzles.getHint()
 1. Description: Returns a hint based on the puzzle and notes provided
@@ -422,6 +427,31 @@ Number of times the user has entered the wrong number into a cell
 "SINGLES_CHAINING": 0
 ```
 Number of times each hint type has been given to the user
+
+# finishGame Object Properties
+## score
+```json
+69
+```
+User's score (max value is 100)
+
+## solveTime
+```json
+234
+```
+User's solve time in seconds
+
+## numHintsUsed
+```json
+4
+```
+The number of hits the user used. 
+
+## numWrongCellsPlayed
+```json
+6
+```
+The number of incorrect cells the user played
 
 # hint Object Properties
 ## Example 1: Amend Notes
