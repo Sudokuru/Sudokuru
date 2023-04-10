@@ -31,6 +31,23 @@
             *   [Lessons.getStrategies()](#lessonsgetstrategies)
             *   [Lessons.getSteps()](#lessonsgetsteps)
             *   [Lessons.getTutorial()](#lessonsgettutorial)
+        *   [Statistics Class](#statistics-class)
+            *   [Setup](#setup-3)
+            *   [Statistics.getLearnedLessons()](#statisticsgetlearnedlessons)
+            *   [Statistics.saveLearnedLessons()](#statisticssavelearnedlessons)
+            *   [Statistics.getStatistics()](#statisticsgetstatistics)
+            *   [Statistics.deleteStatistics()](statisticsdeletestatistics)
+*   [Statistics Object Properties](#statistics-object-properties)
+    *   [userID](#userid)
+    *   [dateRange](#daterange)
+    *   [score](#score)
+    *   [strategiesLearned](#strategieslearned)
+    *   [averageSolveTime](#averagesolvetime)
+    *   [fastestSolveTime](#fastestsolvetime)
+    *   [totalSolveTime](#totalsolvetime)
+    *   [numHintsUsed](#numhintsused)
+    *   [numWrongCellsPlayed](#numwrongcellsplayed)
+    *   [numGamesPlayed](#numgamesplayed)
 *   [Puzzle Object Properties](#puzzle-object-properties)
     *   [puzzle](#puzzle)
     *   [puzzleSolution](#puzzlesolution)
@@ -46,7 +63,6 @@
         *   [puzzleCurrentNotesState](#puzzlecurrentnotesstate)
     *   [numHintsUsed](#numhintsused)
     *   [numWrongCellsPlayed](#numwrongcellsplayed)
-    *   [numWrongCellsPlayedPerStrategy](#numwrongcellsplayedperstrategy)
 *   [finishGame Object Properties](#finishgame-object-properties)
     *   [score](#score)
     *   [solveTime](#solvetime)
@@ -323,6 +339,133 @@ const Lessons = sudokuru.Lessons;
     });
     ```
 3. Return Value: 2d array e.g. [["Here is an example of the simplify notes strategy", "https://sudokuru.s3.amazonaws.com/hintExample2-V2.png"]].
+
+### Statistics Class
+
+#### Setup
+```shell
+const Statistics = sudokuru.Statistics;
+```
+
+#### Statistics.getLearnedLessons()
+1. Description: Returns an JSON object containing the strategies a user has learned
+2. Syntax
+    ```shell
+    Statistics.getLearnedLessons(url, token).then(lessons => {
+        if (lessons !== null) {
+            console.log(lessons);
+        }
+        else {
+            console.log("User has not completed any lessons");
+        }
+    });
+    ```
+3. Return Value: JSON array:
+   Example:
+```json
+{
+    "strategiesLearned": [
+        "NAKED_SINGLE",
+        "HIDDEN_SINGLE"
+    ]
+}
+```
+
+#### Statistics.saveLearnedLessons()
+1. Description: Returns an JSON object containing the strategies a user has learned
+2. Syntax
+    ```shell
+    Statistics.saveLearnedLessons(url, learnedLessons, token).then(res => {
+        if (res) {
+            console.log("User's learned lessons were updated successfully!");
+        }
+    });
+    ```
+3. Return Value: boolean
+
+#### Statistics.getStatistics()
+1. Description: Returns an JSON object containing the strategies a user has learned
+2. Syntax
+    ```shell
+    Statistics.getStatistics(url, token).then(statistics => {
+        if (statistics !== null) {
+            console.log(statistics);
+        }
+        else {
+            console.log("User does not have any game statistics!");
+        }
+    });
+    ```
+3. Return Value: [statistics](#statistics-object-properties)
+
+#### Statistics.deleteStatistics()
+1. Description: Returns an JSON object containing the strategies a user has learned
+2. Syntax
+    ```shell
+    Statistics.deleteStatistics(url, token).then(res => {
+        if (res) {
+            console.log("User's statistics were deleted successfully!");
+        }
+    });
+    ```
+3. Return Value: boolean
+
+# Statistics Object Properties
+
+## userID
+```json
+"P7JS989SM4DS058KAZ2Y5CNK80Q3"
+```
+Unique string representing the user (who this game belongs to)
+## dateRange
+```json
+"1111-11-11T00:00:00.000Z"
+```
+Date representing what day the statistics object is tracking. "1111-11-11" is a special case representing 
+the object that stores the user's total statistics. Format: YYYY-MM-DD
+## score
+```json
+200
+```
+Integer representing the user's total score
+## strategiesLearned
+```json
+[
+    "NAKED_SINGLE",
+    "HIDDEN_SINGLE"
+]
+```
+Array of strategies that the user has learned. Only stored in total statistics object
+## averageSolveTime
+```json
+200
+```
+Average solve time of the user (time spent playing) in seconds
+## fastestSolveTime
+```json
+200
+```
+Fastest solve time of the user (time spent playing) in seconds
+## totalSolveTime
+```json
+200
+```
+Total solve time of the user (time spent playing) in seconds
+## numHintsUsed
+```json
+3
+```
+Number of hints the user has requested
+## numWrongCellsPlayed
+```json
+108
+```
+Number of times the user has entered the wrong number into a cell
+## numGamesPlayed
+```json
+22
+```
+Number of games the user has played
 
 # Puzzle Object Properties
 
