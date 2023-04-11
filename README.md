@@ -21,6 +21,7 @@
             *   [Puzzles.saveGame()](#puzzlessavegame)
             *   [Puzzles.finishGame()](#puzzlesfinishgame)
             *   [Puzzles.getHint()](#puzzlesgethint)
+            *   [Puzzles.getRandomGame()](#puzzlesgetrandomgame)
         *   [Drills Class](#drills-class)
             *   [Setup](#setup-1)
             *   [Drills.strategies](#drillsstrategies)
@@ -268,6 +269,14 @@ const Puzzles = sudokuru.Puzzles;
     - strategies: optional parameter specifying which strategies are allowed to be used in the hint
     - solution: optional parameter specifying boards solution so that amend notes hints can correct users mistakes
 4. Return Value: [hint](#hint-object-properties)
+
+#### Puzzles.getRandomGame()
+1. Description: Returns a random game to be used by landing page display
+2. Syntax
+    ```shell
+    Puzzles.getRandomGame();
+    ```
+3. Return Value: [activeGame](#activegame-object-properties) JSON object 
 
 ### Drills Class
 

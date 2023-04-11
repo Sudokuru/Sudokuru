@@ -11,6 +11,91 @@ const FINISH_GAME:string = "api/v1/activeGames?puzzle=";
 // HTTP Status Codes
 const SUCCESS:number = 200;
 const NOT_FOUND:number = 404;
+// Random games to be used by getRandomGame for landing page
+interface GAME {
+    userID: string;
+    puzzle: string;
+    puzzleSolution: string;
+    difficulty: number;
+    currentTime: number;
+    numHintsUsed: number;
+    numWrongCellsPlayed: number;
+    _id: string;
+    moves: any[];
+    __v: number;
+}
+const RANDOM_GAMES:GAME[][] = [
+    [
+        {
+            "userID": "",
+            "puzzle": "003006908450000037000001000004900800007000002290700010040000300900502600000100000",
+            "puzzleSolution": "123476958456298137789351264614925873837614592295783416541867329978532641362149785",
+            "difficulty": 1000,
+            "currentTime": 0,
+            "numHintsUsed": 0,
+            "numWrongCellsPlayed": 0,
+            "_id": "",
+            "moves": [],
+            "__v": 0
+        }
+    ],
+    [
+        {
+            "userID": "",
+            "puzzle": "000004000056000030000000610040300007900100058800000020000002000010609000300510070",
+            "puzzleSolution": "123764589456891732789253614241385967937126458865947321678432195512679843394518276",
+            "difficulty": 1000,
+            "currentTime": 0,
+            "numHintsUsed": 0,
+            "numWrongCellsPlayed": 0,
+            "_id": "",
+            "moves": [],
+            "__v": 0
+        }
+    ],
+    [
+        {
+            "userID": "",
+            "puzzle": "100470000450008000000000000030000700071903840000027001008000005090100307540002000",
+            "puzzleSolution": "123476958456298173789531264835614792271953846964827531318769425692145387547382619",
+            "difficulty": 1000,
+            "currentTime": 0,
+            "numHintsUsed": 0,
+            "numWrongCellsPlayed": 0,
+            "_id": "",
+            "moves": [],
+            "__v": 0
+        }
+    ],
+    [
+        {
+            "userID": "",
+            "puzzle": "100064070000007002089000100030400080500000000090003007000000800000089006067000300",
+            "puzzleSolution": "123964578456817932789352164231475689574698213698123457945736821312589746867241395",
+            "difficulty": 1000,
+            "currentTime": 0,
+            "numHintsUsed": 0,
+            "numWrongCellsPlayed": 0,
+            "_id": "",
+            "moves": [],
+            "__v": 0
+        }
+    ],
+    [
+        {
+            "userID": "",
+            "puzzle": "000400000000972000080005060205010000340020090001000003010000085000000007674050100",
+            "puzzleSolution": "123486759456972318789135264295314876347628591861597423912743685538261947674859132",
+            "difficulty": 966,
+            "currentTime": 0,
+            "numHintsUsed": 0,
+            "numWrongCellsPlayed": 0,
+            "_id": "",
+            "moves": [],
+            "__v": 0
+        }
+    ]
+];
 
 /**
 * Functions to handle puzzle related operations
@@ -155,5 +240,13 @@ export class Puzzles{
             "info": hint.getInfo(),
             "action": hint.getAction()
         };
+    }
+
+    /**
+     * Returns a random game to be displayed on the landing page
+     * @returns JSON puzzle object
+     */
+    public static getRandomGame():GAME[] {
+        return RANDOM_GAMES[Math.floor(Math.random() * RANDOM_GAMES.length)];
     }
 }
