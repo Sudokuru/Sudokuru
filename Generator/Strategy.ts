@@ -332,6 +332,9 @@ export class Strategy{
                         this.reset();
                     }
                 }
+                else {
+                    this.reset();
+                }
             }
         }
         return used;
