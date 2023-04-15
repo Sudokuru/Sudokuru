@@ -283,10 +283,82 @@ export class Board{
     }
 
     /**
+     * Returns if given value is a possible candidate at given position taking into account row/column/box constraints
+     * @param row - row to check
+     * @param col - column to check
+     * @param value - value to check
+     * @param board - 2d board array to check
+     * @returns true if value is a possible candidate, false otherwise
+     */
+    private isPossibleCandidate(row:number, col:number, value:string, board:string[][]):boolean {
+        // Check row
+        for (let i:number = 0; i < 9; i++) {
+            if (board[row][i] === value) {
+                return false;
+            }
+        }
+        // Check column
+        for (let i:number = 0; i < 9; i++) {
+            if (board[i][col] === value) {
+                return false;
+            }
+        }
+        // Check box
+        let boxRow:number = Math.floor(row / 3);
+        let boxCol:number = Math.floor(col / 3);
+        for (let i:number = 0; i < 3; i++) {
+            for (let j:number = 0; j < 3; j++) {
+                if (board[boxRow * 3 + i][boxCol * 3 + j] === value) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Returns if given Sudoku board is unsolvable, uniquely solvable, or has multiple solutions using recursive algorithm
+     * @param row - row to start at
+     * @param col - column to start at
+     * @param board - 2d board array to solve
+     * @param solutions - number of solutions found so far
+     * @returns 0 if unsolvable, 1 if uniquely solvable, 2 if multiple solutions
+     */
+    private getSolutionCount(row:number, col:number, board:string[][], solutions:number):number {
+        // If at end of board, return 1 plus number of solutions found so far
+        if (row === 9) {
+            return 1 + solutions;
+        }
+        // If at end of row, move to next row
+        if (col === 9) {
+            return this.getSolutionCount(row + 1, 0, board, solutions);
+        }
+        // If cell is not empty, move to next cell'
+        if (board[row][col] !== SudokuEnum.EMPTY_CELL) {
+            return this.getSolutionCount(row, col + 1, board, solutions);
+        }
+        // Try each possible value for cell
+        for (let i:number = 1; i <= 9; i++) {
+            // If value is valid, place it in cell and move to next cell
+            if (this.isPossibleCandidate(row, col, i.toString(), board)) {
+                board[row][col] = i.toString();
+                solutions = this.getSolutionCount(row, col + 1, board, solutions);
+                // If more than 1 solution found, return
+                if (solutions > 1) {
+                    return solutions;
+                }
+            }
+        }
+        // Reset cell to empty and return number of solutions found
+        board[row][col] = SudokuEnum.EMPTY_CELL;
+        return solutions;
+    }
+
+    /**
      * Determines if the input board is a valid Sudoku board
      * @param board - 81 length board string (left to right, top to bottom)
      * @throws {@link CustomError}
-     * Thrown if board has invalid length, characters, is already solved, or if there are duplicate values 
+     * Thrown if board has invalid length, characters, duplicate values, is already solved, is unsolvable, or has multiple solutions
      * in a row, column, or box (Excluding zeros)
      */
     public validatePuzzle(board: string):boolean {
@@ -344,6 +416,14 @@ export class Board{
                     }
                 }
             }
+        }
+        // Checks board for unsolvable or multiple solutions
+        let solutionCount:number = this.getSolutionCount(0, 0, boardArray, 0);
+        if (solutionCount === 0) {
+            throw new CustomError(CustomErrorEnum.UNSOLVABLE);
+        }
+        else if (solutionCount > 1) {
+            throw new CustomError(CustomErrorEnum.MULTIPLE_SOLUTIONS);
         }
         return true;
     }

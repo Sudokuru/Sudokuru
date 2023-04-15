@@ -16,6 +16,7 @@ export enum CustomErrorEnum {
     INVALID_VALUE = "The value provided isn't one of the following options allowed: 123456789",
     STRATEGY_NOT_IDENTIFIED = "A strategy hasn't been identified yet",
     UNSOLVABLE = "This board isn't solvable",
+    MULTIPLE_SOLUTIONS = "This board has multiple solutions",
     NOT_SOLVED = "This board isn't solved",
     INVALID_CANDIDATE_TYPE = "Candidate isn't a string candidate or a number candidate index",
     DEFAULT_ERROR = "Default Error"
