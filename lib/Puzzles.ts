@@ -116,7 +116,12 @@ export class Puzzles{
         let hardestGameWithStrategies:number = Math.min(getMaxGameDifficulty(MAX_DIFFICULTY), getMaxGameDifficulty(hardestStrategyDifficulty) * 2);
         difficulty = Math.ceil(1000 * (difficulty * (hardestGameWithStrategies / getMaxGameDifficulty(MAX_DIFFICULTY))));
 
-        const res:Response = await fetch(url + START_GAME + JSON.stringify(difficulty), {
+       let concatUrlString = ""
+       for (let i = 0; i < strategies.length; i++){
+           concatUrlString = concatUrlString + "&learnedStrategies[]=" + strategies[i];
+       }
+
+        const res:Response = await fetch(url + START_GAME + JSON.stringify(difficulty) + concatUrlString, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
