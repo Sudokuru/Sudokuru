@@ -113,7 +113,23 @@ export class Puzzles{
         // If difficulty was put on the standard 1-1000 scale the top portion of the scale would contain strategies user doesn't know
         // Therefore the following code sets difficulty on 1-HardestPossiblePuzzleWithOnlyGivenStrategies scale
         let hardestStrategyDifficulty:number = Strategy.getHighestStrategyDifficultyBound(strategies);
-        let hardestGameWithStrategies:number = Math.min(getMaxGameDifficulty(MAX_DIFFICULTY), getMaxGameDifficulty(hardestStrategyDifficulty) * 2);
+        //let hardestGameWithStrategies:number = Math.min(getMaxGameDifficulty(MAX_DIFFICULTY), getMaxGameDifficulty(hardestStrategyDifficulty) * 2);
+        let hardestGameWithStrategies:number;
+        if (strategies.indexOf("POINTING_PAIR") !== -1 || strategies.indexOf("POINTING_TRIPLET") !== -1){
+            hardestGameWithStrategies = 1000;
+        }
+        else if (strategies.indexOf("HIDDEN_PAIR") !== -1 || strategies.indexOf("HIDDEN_TRIPLET") !== -1 || strategies.indexOf("HIDDEN_QUADRUPLET") !== -1){
+            hardestGameWithStrategies = 1000;
+        }
+        else if (strategies.indexOf("HIDDEN_SINGLE") !== -1 ){
+            hardestGameWithStrategies = 1000;
+        }
+        else if (strategies.indexOf("NAKED_PAIR") !== -1 || strategies.indexOf("NAKED_TRIPLET") !== -1 || strategies.indexOf("NAKED_QUADRUPLET") !== -1){
+            hardestGameWithStrategies = 200;
+        }
+        else if (strategies.indexOf("NAKED_SINGLE") !== -1){
+            hardestGameWithStrategies = 200;
+        }
         difficulty = Math.ceil(1000 * (difficulty * (hardestGameWithStrategies / getMaxGameDifficulty(MAX_DIFFICULTY))));
 
        let concatUrlString = ""
