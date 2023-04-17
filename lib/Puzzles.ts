@@ -114,23 +114,23 @@ export class Puzzles{
         // Therefore the following code sets difficulty on 1-HardestPossiblePuzzleWithOnlyGivenStrategies scale
         let hardestStrategyDifficulty:number = Strategy.getHighestStrategyDifficultyBound(strategies);
         //let hardestGameWithStrategies:number = Math.min(getMaxGameDifficulty(MAX_DIFFICULTY), getMaxGameDifficulty(hardestStrategyDifficulty) * 2);
-        let hardestGameWithStrategies:number;
+        let hardestStrategyRatio:number;
         if (strategies.indexOf("POINTING_PAIR") !== -1 || strategies.indexOf("POINTING_TRIPLET") !== -1){
-            hardestGameWithStrategies = 1000;
+            hardestStrategyRatio = 1;
         }
         else if (strategies.indexOf("HIDDEN_PAIR") !== -1 || strategies.indexOf("HIDDEN_TRIPLET") !== -1 || strategies.indexOf("HIDDEN_QUADRUPLET") !== -1){
-            hardestGameWithStrategies = 1000;
+            hardestStrategyRatio = 1;
         }
         else if (strategies.indexOf("HIDDEN_SINGLE") !== -1 ){
-            hardestGameWithStrategies = 1000;
+            hardestStrategyRatio = 1;
         }
         else if (strategies.indexOf("NAKED_PAIR") !== -1 || strategies.indexOf("NAKED_TRIPLET") !== -1 || strategies.indexOf("NAKED_QUADRUPLET") !== -1){
-            hardestGameWithStrategies = 200;
+            hardestStrategyRatio = 0.2;
         }
         else if (strategies.indexOf("NAKED_SINGLE") !== -1){
-            hardestGameWithStrategies = 200;
+            hardestStrategyRatio = 0.2;
         }
-        difficulty = Math.ceil(1000 * (difficulty * (hardestGameWithStrategies / getMaxGameDifficulty(MAX_DIFFICULTY))));
+        difficulty = Math.ceil(1000 * (difficulty * (hardestStrategyRatio)));
 
        let concatUrlString = ""
        for (let i = 0; i < strategies.length; i++){
