@@ -142,11 +142,8 @@ npm install sudokuru
 ## Command Line Interface Installation
 
 ```shell
-# Navigate to sudokuru package installation
-cd node_modules/sudokuru/dist
-
-# Install CLI dependencies
-npm install
+# Navigate to sudokuru Generator folder
+cd Generator
 ```
 
 # Usage
@@ -154,9 +151,6 @@ npm install
 ## Command Line
 
 ```shell
-# Navigate to sudokuru package installation
-cd node_modules/sudokuru/dist
-
 # Generate puzzles:
 # filepath: Gets puzzles from inputPuzzles.txt (only integers, newline indicates new puzzle)
 # start: Ignores puzzle strings until the 2nd puzzle (1 indexed) which it includes in output
