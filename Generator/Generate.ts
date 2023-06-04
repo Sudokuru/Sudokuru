@@ -1,7 +1,5 @@
-// @ts-ignore
-import {Board} from './bundle.js';
-// @ts-ignore
-import {StrategyEnum} from './bundle.js';
+import {Board} from './Board';
+import {StrategyEnum} from './Sudoku'
 
 import * as events from 'events';
 import * as fs from 'fs';
