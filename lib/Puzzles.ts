@@ -1,4 +1,4 @@
-import {StrategyEnum} from "../Generator";
+import {StrategyEnum} from "../index";
 import {getMaxGameDifficulty} from "../Generator/Board";
 import {Hint} from "../Generator/Hint";
 import {Solver} from "../Generator/Solver";

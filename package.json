@@ -2,14 +2,14 @@
   "name": "sudokuru",
   "version": "1.18.4",
   "description": "This is the Sudokuru package.",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "jest",
     "test:unit": "jest --testPathPattern=Generator/tests/unit",
     "test:integration": "jest --testPathPattern=Generator/tests/integration",
     "update-docs": "npx typedoc Generator/*.ts --name GeneratorDocs",
     "start": "tsc Generator/Demo/script.ts && tsc Generator/Board.ts && tsc lib/Puzzles.ts && ts-node Generator/Demo/app.ts",
-    "build": "tsc ./Generator/Generate.ts ./Generator/Upload.ts && webpack"
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",

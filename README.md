@@ -13,7 +13,6 @@
 *   [Usage](#usage)
     *   [Command Line](#command-line)
     *   [JavaScript](#javascript)
-        *   [Import](#import)
         *   [Puzzles Class](#puzzles-class)
             *   [Setup](#setup)
             *   [Puzzles.startGame()](#puzzlesstartgame)
@@ -175,22 +174,17 @@ npm run upload --endpoint=http://localhost:3000/api/v1/puzzles/ --token=PDQ88b20
 
 ## JavaScript
 
-### Import
-```shell
-const sudokuru = require("./node_modules/sudokuru/dist/bundle.js");
-```
-
 ### Puzzles Class
 
 #### Setup
-```shell
-const Puzzles = sudokuru.Puzzles;
+```typescript
+import {Puzzles} from 'sudokuru';
 ```
 
 #### Puzzles.startGame()
 1. Description: Returns puzzle only containing strategies specified, hasn't been solved by user, and has difficulty as close to the specified difficulty as possible.
 2. Syntax
-    ```shell
+    ```typescript
     Puzzles.startGame(url, difficulty, strategies, token).then(game => {
         if (game !== null) {
             console.log(game);
@@ -209,7 +203,7 @@ const Puzzles = sudokuru.Puzzles;
 #### Puzzles.getGame()
 1. Description: Retrieves users active game if they have one, otherwise returns null
 2. Syntax
-    ```shell
+    ```typescript
     Puzzles.getGame(url, token).then(game => {
         if (game !== null) {
             console.log(game);
@@ -227,7 +221,7 @@ const Puzzles = sudokuru.Puzzles;
 #### Puzzles.saveGame()
 1. Description: Saves changes to users active game and returns true if successful
 2. Syntax
-    ```shell
+    ```typescript
     Puzzles.saveGame(url, activeGame, puzzle, token).then(res => {
         if (res) {
             console.log("Game progress was saved successfully");
@@ -244,7 +238,7 @@ const Puzzles = sudokuru.Puzzles;
 #### Puzzles.finishGame()
 1. Description: Deletes users active game and returns true if successful
 2. Syntax
-    ```shell
+    ```typescript
     Puzzles.finishGame(url, puzzle, token).then(res => {
         if (res) {
             console.log("Game was deleted successfully");
@@ -260,7 +254,7 @@ const Puzzles = sudokuru.Puzzles;
 #### Puzzles.getHint()
 1. Description: Returns a hint based on the puzzle and notes provided
 2. Syntax
-    ```shell
+    ```typescript
     Puzzles.getHint(board, notes, strategies, solution);
     ```
 3. Parameters:
@@ -273,7 +267,7 @@ const Puzzles = sudokuru.Puzzles;
 #### Puzzles.getRandomGame()
 1. Description: Returns a random game to be used by landing page display
 2. Syntax
-    ```shell
+    ```typescript
     Puzzles.getRandomGame();
     ```
 3. Return Value: [activeGame](#activegame-object-properties) JSON object 
@@ -281,8 +275,8 @@ const Puzzles = sudokuru.Puzzles;
 ### Drills Class
 
 #### Setup
-```shell
-const Drills = sudokuru.Drills;
+```typescript
+import {Drills} from 'sudokuru';
 ```
 
 #### Drills.strategies
@@ -291,7 +285,7 @@ const Drills = sudokuru.Drills;
 #### Drills.getGame()
 1. Description: Returns board and notes state for a drill of the given strategy type if there is one
 2. Syntax
-    ```shell
+    ```typescript
     Drills.getGame(url, strategy, token).then(drill => {
         if (drill !== null) {
             console.log(drill);
@@ -313,14 +307,14 @@ Once you get a drill game using Drills.getGame() and one of the supported strate
 ### Lessons Class
 
 #### Setup
-```shell
-const Lessons = sudokuru.Lessons;
+```typescript
+import {Lessons} from 'sudokuru';
 ```
 
 #### Lessons.getStrategies()
 1. Description: Returns an array containing strategy strings that lessons are available for
 2. Syntax
-    ```shell
+    ```typescript
     Lessons.getStrategies().then(strategies => {
         console.log(strategies);
     });
@@ -330,7 +324,7 @@ const Lessons = sudokuru.Lessons;
 #### Lessons.getSteps()
 1. Description: Returns a 2d array containing "steps" which are arrays containing two strings, the first of which is text describing the image which is linked to by the url which is the second string in the subarray.
 2. Syntax
-    ```shell
+    ```typescript
     Lessons.getSteps(strategy).then(steps => {
         console.log(steps);
     });
@@ -342,7 +336,7 @@ const Lessons = sudokuru.Lessons;
 #### Lessons.getTutorial()
 1. Description: Returns a 2d string array containing "steps" which are arrays containing two strings, the first of which is text describing the image which is linked to by the url which is the second string in the subarray for the first few lessons.
 2. Syntax
-    ```shell
+    ```typescript
     Lessons.getTutorial().then(tutorial => {
         console.log(tutorial);
     });
@@ -353,13 +347,13 @@ const Lessons = sudokuru.Lessons;
 
 #### Setup
 ```shell
-const Statistics = sudokuru.Statistics;
+import {Statistics} from 'sudokuru';
 ```
 
 #### Statistics.getLearnedLessons()
 1. Description: Returns an JSON object containing the strategies a user has learned
 2. Syntax
-    ```shell
+    ```typescript
     Statistics.getLearnedLessons(url, token).then(lessons => {
         if (lessons !== null) {
             console.log(lessons);
@@ -383,7 +377,7 @@ const Statistics = sudokuru.Statistics;
 #### Statistics.saveLearnedLessons()
 1. Description: Returns an JSON object containing the strategies a user has learned
 2. Syntax
-    ```shell
+    ```typescript
     Statistics.saveLearnedLessons(url, learnedLessons, token).then(res => {
         if (res) {
             console.log("User's learned lessons were updated successfully!");
@@ -395,7 +389,7 @@ const Statistics = sudokuru.Statistics;
 #### Statistics.getStatistics()
 1. Description: Returns an JSON object containing the strategies a user has learned
 2. Syntax
-    ```shell
+    ```typescript
     Statistics.getStatistics(url, token).then(statistics => {
         if (statistics !== null) {
             console.log(statistics);
@@ -410,7 +404,7 @@ const Statistics = sudokuru.Statistics;
 #### Statistics.deleteStatistics()
 1. Description: Returns an JSON object containing the strategies a user has learned
 2. Syntax
-    ```shell
+    ```typescript
     Statistics.deleteStatistics(url, token).then(res => {
         if (res) {
             console.log("User's statistics were deleted successfully!");
