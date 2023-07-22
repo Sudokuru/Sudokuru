@@ -278,4 +278,23 @@ export class Group{
         }
         return Group.subsets[size-1];
     }
+
+    /**
+     * Returns first candidate not less than given candidate, i.e. smallest candidate >= given candidate
+     * @param candidate - candidate
+     * @returns first candidate not less than given candidate or -1 if no such candidate exists
+     */
+    public lower_bound(candidate: string):string;
+
+    public lower_bound(candidate: number):number;
+
+    public lower_bound(candidate: unknown):unknown {
+        let candidateIndex:number = getCandidateIndex(candidate);
+        for (let i:number = candidateIndex; i < SudokuEnum.ROW_LENGTH; i++) {
+            if (this.candidates[i] === true) {
+                return i;
+            }
+        }
+        return -1;
+    }
 }
