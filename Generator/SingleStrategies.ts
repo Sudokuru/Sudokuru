@@ -15,11 +15,7 @@ export class SingleStrategies{
     public static getSingle(board: Cell[][], row: number, column: number): number{
         // Check if the cell is a naked single
         if (board[row][column].getNotes().getSize() === 1){
-            for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++){
-                if (board[row][column].getNotes().contains(i)){
-                    return i;
-                }
-            }
+            return board[row][column].getNotes().lower_bound(0);
         }
         return -1;
     }
