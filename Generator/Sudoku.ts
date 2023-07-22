@@ -242,3 +242,40 @@ export function anyCellsEqual(a: Cell[], b: Cell[]):boolean {
     }
     return false;
 }
+
+/**
+ * Removes value at given row and column from every row/column/box that it is in
+ * @param board - 2d Cell array representing the board
+ * @param row - row of value
+ * @param column - column of value
+ */
+export function simplifyNotes(board: Cell[][], row: number, column: number):void {
+    if (board[row][column].isEmpty()) {
+        return;
+    }
+    let value:Group = new Group(false);
+    value.insert(board[row][column].getValue());
+    // Remove value from row
+    for (let c:number = 0; c < SudokuEnum.ROW_LENGTH; c++) {
+        if (c !== column) {
+            board[row][c].getNotes().remove(value);
+        }
+    }
+    // Remove value from column
+    for (let r:number = 0; r < SudokuEnum.COLUMN_LENGTH; r++) {
+        if (r !== row) {
+            board[r][column].getNotes().remove(value);
+        }
+    }
+    // Remove value from box
+    let boxRowStart:number = board[row][column].getBoxRowStart();
+    let boxColumnStart:number = board[row][column].getBoxColumnStart();
+    for (let r:number = boxRowStart; r < boxRowStart + SudokuEnum.BOX_LENGTH; r++) {
+        for (let c:number = boxColumnStart; c < boxColumnStart + SudokuEnum.BOX_LENGTH; c++) {
+            if (r !== row || c !== column) {
+                board[r][c].getNotes().remove(value);
+            }
+        }
+    }
+    return;
+}
