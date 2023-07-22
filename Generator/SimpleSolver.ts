@@ -1,13 +1,13 @@
 import { Cell } from "./Cell";
 import { SingleStrategies } from "./SingleStrategies";
-import { SudokuEnum } from "./Sudoku";
+import { SudokuEnum, simplifyNotes } from "./Sudoku";
 
 /**
  * Contains function to solve a Sudoku board step by step using just naked and hidden single strategies.
  */
 export class SimpleSolver{
     /**
-     * If possible solves a single random cell using the naked or hidden single strategies.
+     * If possible solves a single random cell using the naked or hidden single strategies and simplifies the notes of the board.
      * @param board - 2d Cell array representing the board.
      * @returns true if a cell was solved, false otherwise.
      */
@@ -37,6 +37,7 @@ export class SimpleSolver{
             let single:number = SingleStrategies.getSingle(board, row, column);
             if (single !== -1){
                 board[row][column].setValue((single + 1).toString());
+                simplifyNotes(board, row, column);
                 return true;
             }
         }

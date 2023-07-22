@@ -17,7 +17,13 @@ describe("solve board step by step using naked and hidden single strategies", ()
         notes.remove(8);
         cellBoard.resetNotes(0, 0);
         cellBoard.removeNotes(0, 0, notes);
+        cellBoard.resetNotes(0, 1);
+        cellBoard.resetNotes(1, 0);
+        cellBoard.resetNotes(1, 1);
         expect(SimpleSolver.solveStep(board)).toBe(true);
         expect(board[0][0].getValue()).toBe("9");
+        expect(board[0][1].getNotes().getSize()).toBe(8);
+        expect(board[1][0].getNotes().getSize()).toBe(8);
+        expect(board[1][1].getNotes().getSize()).toBe(8);
     });
 });
