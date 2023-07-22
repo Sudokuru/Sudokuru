@@ -348,3 +348,70 @@ export function checkBoardForDuplicates(board: unknown):void {
     }
     return;
 }
+
+/**
+ * Given a 2d Cell board checks for values that don't appear in row/column/boxes as placed values or notes
+ * @param board - 2d Cell board
+ * @throws {@link CustomError}
+ */
+export function checkBoardForMissingValues(board: Cell[][]):void {
+    // checks every row for missing values
+    for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+        // stores values found in the row
+        let rowGroup:Group = new Group(false);
+        for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+            // If there is a value in the cell insert it, otherwise insert all notes
+            if (!board[row][column].isEmpty()) {
+                rowGroup.insert(board[row][column].getValue());
+            }
+            else {
+                rowGroup.insert(board[row][column].getNotes());
+            }
+        }
+        // If there are any missing values throw an error
+        if (rowGroup.getSize() !== SudokuEnum.ROW_LENGTH) {
+            throw new CustomError(CustomErrorEnum.MISSING_VALUE);
+        }
+    }
+    // checks every column for missing values
+    for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+        // stores values found in the column
+        let columnGroup:Group = new Group(false);
+        for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+            // If there is a value in the cell insert it, otherwise insert all notes
+            if (!board[row][column].isEmpty()) {
+                columnGroup.insert(board[row][column].getValue());
+            }
+            else {
+                columnGroup.insert(board[row][column].getNotes());
+            }
+        }
+        // If there are any missing values throw an error
+        if (columnGroup.getSize() !== SudokuEnum.COLUMN_LENGTH) {
+            throw new CustomError(CustomErrorEnum.MISSING_VALUE);
+        }
+    }
+    // checks every box for missing values
+    for (let box:number = 0; box < SudokuEnum.BOX_COUNT; box++) {
+        // stores values found in the box
+        let boxGroup:Group = new Group(false);
+        let rowStart:number = Cell.getBoxRowStart(box);
+        for (let row:number = rowStart; row < (rowStart + SudokuEnum.BOX_LENGTH); row++) {
+            let columnStart:number = Cell.getBoxColumnStart(box);
+            for (let column:number = columnStart; column < (columnStart + SudokuEnum.BOX_LENGTH); column++) {
+                // If there is a value in the cell insert it, otherwise insert all notes
+                if (!board[row][column].isEmpty()) {
+                    boxGroup.insert(board[row][column].getValue());
+                }
+                else {
+                    boxGroup.insert(board[row][column].getNotes());
+                }
+            }
+        }
+        // If there are any missing values throw an error
+        if (boxGroup.getSize() !== SudokuEnum.ROW_LENGTH) {
+            throw new CustomError(CustomErrorEnum.MISSING_VALUE);
+        }
+    }
+    return;
+}
