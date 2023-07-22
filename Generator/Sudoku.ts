@@ -285,14 +285,37 @@ export function simplifyNotes(board: Cell[][], row: number, column: number):void
  * @param board - 2d string board array
  * @throws {@link CustomError}
  */
-export function checkBoardForDuplicates(board: string[][]):void {
+export function checkBoardForDuplicates(board: string[][]):void;
+
+export function checkBoardForDuplicates(board: Cell[][]):void;
+
+export function checkBoardForDuplicates(board: unknown):void {
+    let boardArray:string[][];
+    if (typeof(board[0][0]) === 'object') {
+        // Convert board to string array
+        boardArray = new Array();
+        for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+            boardArray.push([]);
+            for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                if (board[row][column].isEmpty()) {
+                    boardArray[row].push(SudokuEnum.EMPTY_CELL);
+                }
+                else {
+                    boardArray[row].push(board[row][column].getValue());
+                }
+            }
+        }
+    }
+    else {
+        boardArray = board as string[][];
+    }
     // checks every row for duplicate values
     for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
         // stores values found in the row
         let rowGroup:Group = new Group(false);
         for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
             // If there is a value in the cell and it's already been added to the group throw a duplicate value error, otherwise just insert it
-            if ((board[row][column] !== SudokuEnum.EMPTY_CELL) && !rowGroup.insert(board[row][column])) {
+            if ((boardArray[row][column] !== SudokuEnum.EMPTY_CELL) && !rowGroup.insert(boardArray[row][column])) {
                 throw new CustomError(CustomErrorEnum.DUPLICATE_VALUE_IN_ROW);
             }
         }
@@ -303,7 +326,7 @@ export function checkBoardForDuplicates(board: string[][]):void {
         let columnGroup:Group = new Group(false);
         for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
             // If there is a value in the cell and it's already been added to the group throw a duplicate value error, otherwise just insert it
-            if ((board[row][column] !== SudokuEnum.EMPTY_CELL) && !columnGroup.insert(board[row][column])) {
+            if ((boardArray[row][column] !== SudokuEnum.EMPTY_CELL) && !columnGroup.insert(boardArray[row][column])) {
                 throw new CustomError(CustomErrorEnum.DUPLICATE_VALUE_IN_COLUMN);
             }
         }
@@ -317,7 +340,7 @@ export function checkBoardForDuplicates(board: string[][]):void {
             let columnStart:number = Cell.getBoxColumnStart(box);
             for (let column:number = columnStart; column < (columnStart + SudokuEnum.BOX_LENGTH); column++) {
                 // If there is a value in the cell and it's already been added to the group throw a duplicate value error, otherwise just insert it
-                if ((board[row][column] !== SudokuEnum.EMPTY_CELL) && !boxGroup.insert(board[row][column])) {
+                if ((boardArray[row][column] !== SudokuEnum.EMPTY_CELL) && !boxGroup.insert(boardArray[row][column])) {
                     throw new CustomError(CustomErrorEnum.DUPLICATE_VALUE_IN_BOX);
                 }
             }
