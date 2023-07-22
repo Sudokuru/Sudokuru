@@ -279,3 +279,49 @@ export function simplifyNotes(board: Cell[][], row: number, column: number):void
     }
     return;
 }
+
+/**
+ * Given a 2d string board array throws duplicate value error if board is invalid
+ * @param board - 2d string board array
+ * @throws {@link CustomError}
+ */
+export function checkBoardForDuplicates(board: string[][]):void {
+    // checks every row for duplicate values
+    for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+        // stores values found in the row
+        let rowGroup:Group = new Group(false);
+        for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+            // If there is a value in the cell and it's already been added to the group throw a duplicate value error, otherwise just insert it
+            if ((board[row][column] !== SudokuEnum.EMPTY_CELL) && !rowGroup.insert(board[row][column])) {
+                throw new CustomError(CustomErrorEnum.DUPLICATE_VALUE_IN_ROW);
+            }
+        }
+    }
+    // checks every column for duplicate values
+    for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+        // stores values found in the column
+        let columnGroup:Group = new Group(false);
+        for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+            // If there is a value in the cell and it's already been added to the group throw a duplicate value error, otherwise just insert it
+            if ((board[row][column] !== SudokuEnum.EMPTY_CELL) && !columnGroup.insert(board[row][column])) {
+                throw new CustomError(CustomErrorEnum.DUPLICATE_VALUE_IN_COLUMN);
+            }
+        }
+    }
+    // checks every box for duplicate values
+    for (let box:number = 0; box < SudokuEnum.BOX_COUNT; box++) {
+        // stores values found in the box
+        let boxGroup:Group = new Group(false);
+        let rowStart:number = Cell.getBoxRowStart(box);
+        for (let row:number = rowStart; row < (rowStart + SudokuEnum.BOX_LENGTH); row++) {
+            let columnStart:number = Cell.getBoxColumnStart(box);
+            for (let column:number = columnStart; column < (columnStart + SudokuEnum.BOX_LENGTH); column++) {
+                // If there is a value in the cell and it's already been added to the group throw a duplicate value error, otherwise just insert it
+                if ((board[row][column] !== SudokuEnum.EMPTY_CELL) && !boxGroup.insert(board[row][column])) {
+                    throw new CustomError(CustomErrorEnum.DUPLICATE_VALUE_IN_BOX);
+                }
+            }
+        }
+    }
+    return;
+}
