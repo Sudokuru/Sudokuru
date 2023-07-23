@@ -415,3 +415,27 @@ export function checkBoardForMissingValues(board: Cell[][]):void {
     }
     return;
 }
+
+/**
+ * Given a 2d Cell board creates and returns a copy of it
+ * @param board - 2d Cell board
+ * @returns copy of board
+ */
+export function copy2dCellArray(board: Cell[][]):Cell[][] {
+    let boardCopy:Cell[][] = [];
+    for (let r:number = 0; r < SudokuEnum.COLUMN_LENGTH; r++) {
+        boardCopy.push([]);
+        for (let c:number = 0; c < SudokuEnum.ROW_LENGTH; c++) {
+            boardCopy[r].push(new Cell(r, c, board[r][c].getValue()));
+            boardCopy[r][c].resetNotes();
+            let notes:Group = new Group(false);
+            for (let n:number = 0; n < SudokuEnum.ROW_LENGTH; n++) {
+                if (!board[r][c].getNotes().contains(n)) {
+                    notes.insert(n);
+                }
+            }
+            boardCopy[r][c].getNotes().remove(notes);
+        }
+    }
+    return boardCopy;
+}
