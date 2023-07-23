@@ -27,6 +27,14 @@ export class Refutation{
             while (!isSolved(boardCopy)) {
                 // Solve board step by step until naked and hidden singles can no longer be used
                 while (SimpleSolver.solveStep(boardCopy)){}
+                // Loop over every empty cell
+                for (let r:number = 0; r < SudokuEnum.COLUMN_LENGTH; r++) {
+                    for (let c:number = 0; c < SudokuEnum.ROW_LENGTH; c++) {
+                        if (!boardCopy[r][c].isEmpty()) {
+                            continue;
+                        }
+                    }
+                }
             }
         }
         return Math.floor(refutationScore / 30);
