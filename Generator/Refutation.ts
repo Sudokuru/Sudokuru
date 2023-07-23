@@ -38,6 +38,8 @@ export class Refutation{
                             if ((candidate + 1).toString() === solution[r][c]) {
                                 continue;
                             }
+                            // Place incorrect candidate in cell
+                            boardCopy[r][c].setValue((candidate + 1).toString());
                         }
                     }
                 }
