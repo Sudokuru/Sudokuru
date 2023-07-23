@@ -33,6 +33,12 @@ export class Refutation{
                         if (!boardCopy[r][c].isEmpty()) {
                             continue;
                         }
+                        // Loop over every incorrect candidate
+                        for (let candidate:number = 0; candidate < SudokuEnum.ROW_LENGTH; candidate++) {
+                            if ((candidate + 1).toString() === solution[r][c]) {
+                                continue;
+                            }
+                        }
                     }
                 }
             }
