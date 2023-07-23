@@ -1,6 +1,6 @@
 import { Cell } from "./Cell";
 import { Group } from "./Group";
-import { SudokuEnum, copy2dCellArray } from "./Sudoku";
+import { SudokuEnum, copy2dCellArray, isSolved } from "./Sudoku";
 
 /**
  * Contains function to return refutation score of a Sudoku board to be used to calculate difficulty.
@@ -22,6 +22,9 @@ export class Refutation{
         for (let i:number = 0; i < 30; i++) {
             // Create copy of board
             let boardCopy:Cell[][] = copy2dCellArray(board);
+            // Increment refutation score until board is solved
+            while (!isSolved(boardCopy)) {
+            }
         }
         return Math.floor(refutationScore / 30);
     }
