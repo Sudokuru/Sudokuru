@@ -439,3 +439,19 @@ export function copy2dCellArray(board: Cell[][]):Cell[][] {
     }
     return boardCopy;
 }
+
+/**
+ * Checks if board has been solved
+ * @param board - 2d Cell board
+ * @returns true if board has been solved
+ */
+export function isSolved(board: Cell[][]):boolean {
+    for (let r:number = 0; r < SudokuEnum.COLUMN_LENGTH; r++) {
+        for (let c:number = 0; c < SudokuEnum.ROW_LENGTH; c++) {
+            if (board[r][c].isEmpty()) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
