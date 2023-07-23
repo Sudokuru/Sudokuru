@@ -1,5 +1,6 @@
 import { Cell } from "./Cell";
 import { Group } from "./Group";
+import { SimpleSolver } from "./SimpleSolver";
 import { SudokuEnum, copy2dCellArray, isSolved } from "./Sudoku";
 
 /**
@@ -24,6 +25,8 @@ export class Refutation{
             let boardCopy:Cell[][] = copy2dCellArray(board);
             // Increment refutation score until board is solved
             while (!isSolved(boardCopy)) {
+                // Solve board step by step until naked and hidden singles can no longer be used
+                while (SimpleSolver.solveStep(boardCopy)){}
             }
         }
         return Math.floor(refutationScore / 30);
