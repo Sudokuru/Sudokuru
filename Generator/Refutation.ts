@@ -39,26 +39,28 @@ export class Refutation{
                             if ((candidate + 1).toString() === solution[r][c]) {
                                 continue;
                             }
+                            // Create temp copy of board
+                            let tempBoard:Cell[][] = copy2dCellArray(boardCopy);
                             // Place incorrect candidate in cell
-                            boardCopy[r][c].setValue((candidate + 1).toString());
+                            tempBoard[r][c].setValue((candidate + 1).toString());
                             // Calculate refutation score
                             let refutationScoreTemp:number = 0;
                             // Loop until this candidate is proven to be invalid i.e. refuted i.e. rule violation is found or cannot solve board
                             while (true) {
                                 // Exit loop if duplicates are found in row, column, or box
                                 try {
-                                    checkBoardForDuplicates(boardCopy);
+                                    checkBoardForDuplicates(tempBoard);
                                 } catch (CustomError) {
                                     break;
                                 }
                                 // Exit loop if values are missing from row, column, or box
                                 try {
-                                    checkBoardForMissingValues(boardCopy);
+                                    checkBoardForMissingValues(tempBoard);
                                 } catch (CustomError) {
                                     break;
                                 }
                                 // Exit loop if cannot solve board
-                                if (!SimpleSolver.solveStep(boardCopy)) {
+                                if (!SimpleSolver.solveStep(tempBoard)) {
                                     break;
                                 }
                                 // Increment refutation score
