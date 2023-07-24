@@ -47,6 +47,8 @@ export class Refutation{
                             let refutationScoreTemp:number = 0;
                             // Loop until this candidate is proven to be invalid i.e. refuted i.e. rule violation is found or cannot solve board
                             while (true) {
+                                // Increment refutation score
+                                refutationScoreTemp++;
                                 // Exit loop if duplicates are found in row, column, or box
                                 try {
                                     checkBoardForDuplicates(tempBoard);
@@ -63,8 +65,6 @@ export class Refutation{
                                 if (!SimpleSolver.solveStep(tempBoard)) {
                                     break;
                                 }
-                                // Increment refutation score
-                                refutationScoreTemp++;
                             }
                             // Update lowest refutation score
                             if (refutationScoreTemp < lowestRefutationScore) {
