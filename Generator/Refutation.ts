@@ -1,7 +1,7 @@
 import { Cell } from "./Cell";
 import { Group } from "./Group";
 import { SimpleSolver } from "./SimpleSolver";
-import { SudokuEnum, copy2dCellArray, isSolved } from "./Sudoku";
+import { SudokuEnum, checkBoardForDuplicates, checkBoardForMissingValues, copy2dCellArray, isSolved } from "./Sudoku";
 
 /**
  * Contains function to return refutation score of a Sudoku board to be used to calculate difficulty.
@@ -43,6 +43,33 @@ export class Refutation{
                             boardCopy[r][c].setValue((candidate + 1).toString());
                             // Calculate refutation score
                             let refutationScoreTemp:number = 0;
+                            // Loop until this candidate is proven to be invalid i.e. refuted i.e. rule violation is found or cannot solve board
+                            while (true) {
+                                // Exit loop if duplicates are found in row, column, or box
+                                try {
+                                    checkBoardForDuplicates(boardCopy);
+                                } catch (CustomError) {
+                                    break;
+                                }
+                                // Exit loop if values are missing from row, column, or box
+                                try {
+                                    checkBoardForMissingValues(boardCopy);
+                                } catch (CustomError) {
+                                    break;
+                                }
+                                // Exit loop if cannot solve board
+                                if (!SimpleSolver.solveStep(boardCopy)) {
+                                    break;
+                                }
+                                // Increment refutation score
+                                refutationScoreTemp++;
+                            }
+                            // Update lowest refutation score
+                            if (refutationScoreTemp < lowestRefutationScore) {
+                                lowestRefutationScore = refutationScoreTemp;
+                                lowestScoreRow = r;
+                                lowestScoreColumn = c;
+                            }
                         }
                     }
                 }
