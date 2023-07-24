@@ -6,7 +6,7 @@
 
 import { Cell } from "./Cell";
 import { Refutation } from "./Refutation";
-import { getBoardArray, getCellBoard } from "./Sudoku";
+import { getBoardArray, getCellBoard, simplifyNotes } from "./Sudoku";
 
 const calculateCorrelation = require("calculate-correlation");
 
@@ -24,6 +24,14 @@ for (let i:number = 0; i < puzzles.length; i++) {
         for (let c:number = 0; c < 9; c++) {
             if (board[r][c].isEmpty()) {
                 board[r][c].resetNotes();
+            }
+        }
+    }
+    // Simplify notes based on givens
+    for (let r:number = 0; r < 9; r++) {
+        for (let c:number = 0; c < 9; c++) {
+            if (!board[r][c].isEmpty()) {
+                simplifyNotes(board, r, c);
             }
         }
     }
