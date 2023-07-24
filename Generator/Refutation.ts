@@ -28,6 +28,7 @@ export class Refutation{
                 // Solve board step by step until naked and hidden singles can no longer be used
                 while (SimpleSolver.solveStep(boardCopy)){}
                 // Loop over every empty cell
+                let lowestRefutationScore:number = 1000000, lowestScoreRow:number = -1, lowestScoreColumn:number = -1;
                 for (let r:number = 0; r < SudokuEnum.COLUMN_LENGTH; r++) {
                     for (let c:number = 0; c < SudokuEnum.ROW_LENGTH; c++) {
                         if (!boardCopy[r][c].isEmpty()) {
@@ -40,6 +41,8 @@ export class Refutation{
                             }
                             // Place incorrect candidate in cell
                             boardCopy[r][c].setValue((candidate + 1).toString());
+                            // Calculate refutation score
+                            let refutationScoreTemp:number = 0;
                         }
                     }
                 }
