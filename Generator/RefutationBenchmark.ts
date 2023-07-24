@@ -36,7 +36,7 @@ for (let i:number = 0; i < puzzles.length; i++) {
         }
     }
     let solution:string[][] = getBoardArray(solutions[i]);
-    let refutationScore:number = Refutation.getRefutationScore(board, solution);
+    let refutationScore:number = Refutation.getRefutationScore(board, solution, 1);
     refutationScores.push(refutationScore);
     notGivens.push((puzzles[i].match(/0/g) || []).length);
 }

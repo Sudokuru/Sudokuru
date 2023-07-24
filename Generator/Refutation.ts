@@ -15,9 +15,10 @@ export class Refutation{
      * Returns the refutation score of the board.
      * @param board - 2d Cell array representing the board.
      * @param solution - 2d string array representing the solution.
+     * @param boost - Number between 0 and 1 that boosts performance by randomly skipping checking some cells (e.g. 0.6 skips 60% of cells)
      * @returns The refutation score of the board.
      */
-    public static getRefutationScore(board: Cell[][], solution: string[][]): number{
+    public static getRefutationScore(board: Cell[][], solution: string[][], boost: number): number{
         let refutationScore:number = 0;
         // Sums refutation score from 30 runs to account for randomness (e.g. random cell selection when solving with naked and hidden singles)
         for (let i:number = 0; i < 30; i++) {
@@ -32,6 +33,10 @@ export class Refutation{
                 for (let r:number = 0; r < SudokuEnum.COLUMN_LENGTH; r++) {
                     for (let c:number = 0; c < SudokuEnum.ROW_LENGTH; c++) {
                         if (!boardCopy[r][c].isEmpty()) {
+                            continue;
+                        }
+                        // After a single refutation score is calculated, skip 50% of the rest of the empty cells
+                        if (lowestScoreRow != -1 && Math.random() < boost) {
                             continue;
                         }
                         // Loop over every incorrect candidate
