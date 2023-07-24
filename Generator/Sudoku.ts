@@ -141,6 +141,21 @@ export function getEmptyCellBoard():Cell[][] {
 }
 
 /**
+ * Creates a 2d Cell array from 2d string array
+ * @param board - 2d string array
+ * @returns 2d Cell array
+ */
+export function getCellBoard(board: string[][]):Cell[][] {
+    let cellBoard: Cell[][] = getEmptyCellBoard();
+    for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+        for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+            cellBoard[row].push(new Cell(row, column, board[row][column]));
+        }
+    }
+    return cellBoard;
+}
+
+/**
  * Given a candidate (string) or candidate index (number), calculates candidate index
  * @param candidate - number candidate index or candidate string
  * @returns candidate index
