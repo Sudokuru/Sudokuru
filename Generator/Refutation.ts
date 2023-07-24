@@ -73,6 +73,10 @@ export class Refutation{
                         }
                     }
                 }
+                // Add lowest refutation score to total refutation score
+                refutationScore += lowestRefutationScore;
+                // Fill in cell with lowest refutation score
+                boardCopy[lowestScoreRow][lowestScoreColumn].setValue(solution[lowestScoreRow][lowestScoreColumn]);
             }
         }
         return Math.floor(refutationScore / 30);
