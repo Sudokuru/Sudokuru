@@ -1,7 +1,7 @@
 import { Cell } from "./Cell";
 import { Group } from "./Group";
 import { SimpleSolver } from "./SimpleSolver";
-import { SudokuEnum, checkBoardForDuplicates, checkBoardForMissingValues, copy2dCellArray, isSolved } from "./Sudoku";
+import { SudokuEnum, checkBoardForDuplicates, checkBoardForMissingValues, copy2dCellArray, isSolved, simplifyNotes } from "./Sudoku";
 
 /**
  * Contains function to return refutation score of a Sudoku board to be used to calculate difficulty.
@@ -43,6 +43,8 @@ export class Refutation{
                             let tempBoard:Cell[][] = copy2dCellArray(boardCopy);
                             // Place incorrect candidate in cell
                             tempBoard[r][c].setValue((candidate + 1).toString());
+                            // Simplify notes
+                            simplifyNotes(tempBoard, r, c);
                             // Calculate refutation score
                             let refutationScoreTemp:number = 0;
                             // Loop until this candidate is proven to be invalid i.e. refuted i.e. rule violation is found or cannot solve board
@@ -56,11 +58,11 @@ export class Refutation{
                                     break;
                                 }
                                 // Exit loop if values are missing from row, column, or box
-                                try {
+                                /*try {
                                     checkBoardForMissingValues(tempBoard);
                                 } catch (CustomError) {
                                     break;
-                                }
+                                }*/
                                 // Exit loop if cannot solve board
                                 if (!SimpleSolver.solveStep(tempBoard)) {
                                     break;
