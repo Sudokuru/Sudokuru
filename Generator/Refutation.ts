@@ -36,7 +36,8 @@ export class Refutation{
                         }
                         // Loop over every incorrect candidate
                         for (let candidate:number = 0; candidate < SudokuEnum.ROW_LENGTH; candidate++) {
-                            if ((candidate + 1).toString() === solution[r][c]) {
+                            // Skip if value is correct solution or if value is already eliminated from notes based on givens
+                            if ((candidate + 1).toString() === solution[r][c] || !boardCopy[r][c].getNotes().contains(candidate)) {
                                 continue;
                             }
                             // Create temp copy of board
@@ -76,6 +77,9 @@ export class Refutation{
                             }
                         }
                     }
+                }
+                if (lowestScoreRow === -1) {
+                    break;
                 }
                 // Add lowest refutation score to total refutation score
                 refutationScore += lowestRefutationScore;
