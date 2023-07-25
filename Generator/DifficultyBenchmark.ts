@@ -19,6 +19,7 @@ let solveTimeSeconds:number[] = [460, 746, 898, 1410, 460, 746, 898, 1410];
 
 let refutationScores:number[] = [];
 let dependencyScores:number[] = [];
+let rdScores:number[] = [];
 let notGivens:number[] = [];
 
 for (let i:number = 0; i < puzzles.length; i++) {
@@ -42,9 +43,11 @@ for (let i:number = 0; i < puzzles.length; i++) {
     let solution:string[][] = getBoardArray(solutions[i]);
     refutationScores.push(Refutation.getRefutationScore(board, solution, 1));
     dependencyScores.push(Dependency.getDependencyScore(board));
+    rdScores.push(refutationScores[i] + (-1 * dependencyScores[i]));
     notGivens.push((puzzles[i].match(/0/g) || []).length);
 }
 
 console.log("Givens correlation coefficient: " + calculateCorrelation(notGivens, solveTimeSeconds));
 console.log("Refutation score correlation coefficient: " + calculateCorrelation(refutationScores, solveTimeSeconds));
 console.log("Dependency score correlation coefficient: " + calculateCorrelation(dependencyScores, solveTimeSeconds));
+console.log("Combined refutation+dependency score correlation coefficient: " + calculateCorrelation(rdScores, solveTimeSeconds));
