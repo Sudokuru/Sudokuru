@@ -5,6 +5,7 @@
  */
 
 import { Cell } from "./Cell";
+import { Dependency } from "./Dependency";
 import { Refutation } from "./Refutation";
 import { getBoardArray, getCellBoard, simplifyNotes } from "./Sudoku";
 
@@ -17,6 +18,7 @@ let solutions:string[] = ["15268379479824156336479528183591247694637815221756493
 let solveTimeSeconds:number[] = [460, 746, 898, 1410, 460, 746, 898, 1410];
 
 let refutationScores:number[] = [];
+let dependencyScores:number[] = [];
 let notGivens:number[] = [];
 
 for (let i:number = 0; i < puzzles.length; i++) {
@@ -38,10 +40,11 @@ for (let i:number = 0; i < puzzles.length; i++) {
         }
     }
     let solution:string[][] = getBoardArray(solutions[i]);
-    let refutationScore:number = Refutation.getRefutationScore(board, solution, 1);
-    refutationScores.push(refutationScore);
+    refutationScores.push(Refutation.getRefutationScore(board, solution, 1));
+    dependencyScores.push(Dependency.getDependencyScore(board));
     notGivens.push((puzzles[i].match(/0/g) || []).length);
 }
 
 console.log("Givens correlation coefficient: " + calculateCorrelation(notGivens, solveTimeSeconds));
 console.log("Refutation score correlation coefficient: " + calculateCorrelation(refutationScores, solveTimeSeconds));
+console.log("Dependency score correlation coefficient: " + calculateCorrelation(dependencyScores, solveTimeSeconds));
