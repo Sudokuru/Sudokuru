@@ -58,7 +58,7 @@ for (let i:number = 0; i < puzzles.length; i++) {
     let refutationScore:number = Refutation.getRefutationScore(board, solution, 1);
     let dependencyScore:number = Dependency.getDependencyScore(board);
     let rdScore:number = refutationScore + (-1 * dependencyScore);
-    puzzlesArray.push(new Puzzle(puzzles[i], sources[i], descriptions[i], getStrategyString(boardObj.getStrategies()), (puzzles[i].match(/0/g) || []).length, rdScore));
+    puzzlesArray.push(new Puzzle(puzzles[i], sources[i], descriptions[i], getStrategyString(boardObj.getStrategies()), 81 - (puzzles[i].match(/0/g) || []).length, rdScore));
 }
 
 puzzlesArray.sort((a, b) => (a.rdScore > b.rdScore) ? 1 : -1);
