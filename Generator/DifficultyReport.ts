@@ -10,9 +10,9 @@ import { Dependency } from "./Dependency";
 import { Refutation } from "./Refutation";
 import { StrategyEnum, getBoardArray, getCellBoard, simplifyNotes } from "./Sudoku";
 
-let puzzles:string[] = ["100603700700240560304795080800002400046300100000500008003000809000050307020830010"];
-let sources:string[] = ["http://www.sudokuoftheday.co.uk/"];
-let descriptions:string[] = ["Easy level with 3.5/5 stars"];
+let puzzles:string[] = ["100603700700240560304795080800002400046300100000500008003000809000050307020830010", "000005008000804109002090540230080654700650800085031002020000000050208716008100000", "007900100000700060630000407006000200800000706000008005902004800450000900000000001", "090000060000100450306000100005002001800000040027450000000907000002000000001020800"];
+let sources:string[] = ["http://www.sudokuoftheday.co.uk/", "http://www.sudokuoftheday.co.uk/", "http://www.sudokuoftheday.co.uk/", "http://www.sudokuoftheday.co.uk/"];
+let descriptions:string[] = ["Easy level with 3.5/5 stars", "Easy level with 3.5/5 stars", "Medium level with 5/5 stars", "Medium level with 5/5 stars"];
 
 function Puzzle(puzzleString, source, description, strategies, givensCount, rdScore) {
     this.puzzleString = puzzleString;
