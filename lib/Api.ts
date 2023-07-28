@@ -14,7 +14,7 @@ export interface puzzle {
     puzzleSolution: string,
     strategies: sudokuStrategyArray,
     difficulty: number,
-    drillStrategies: sudokuStrategyArray
+    drillStrategies?: sudokuStrategyArray
 }
 
 export interface drill {

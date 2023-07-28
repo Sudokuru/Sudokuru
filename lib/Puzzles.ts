@@ -1,8 +1,8 @@
 import {StrategyEnum} from "../Generator/Sudoku";
-import {getMaxGameDifficulty} from "../Generator/Board";
 import {Hint} from "../Generator/Hint";
 import {Solver} from "../Generator/Solver";
-import {MAX_DIFFICULTY, Strategy} from "../Generator/Strategy";
+import {Strategy} from "../Generator/Strategy";
+import {activeGame, gameResults, puzzle} from "./Api";
 
 const START_GAME:string = "api/v1/newGame?closestDifficulty=";
 const GET_GAME:string = "api/v1/activeGames";
@@ -11,91 +11,152 @@ const FINISH_GAME:string = "api/v1/activeGames?puzzle=";
 // HTTP Status Codes
 const SUCCESS:number = 200;
 const NOT_FOUND:number = 404;
+
 // Random games to be used by getRandomGame for landing page
-interface GAME {
-    userID: string;
-    puzzle: string;
-    puzzleSolution: string;
-    difficulty: number;
-    currentTime: number;
-    numHintsUsed: number;
-    numWrongCellsPlayed: number;
-    _id: string;
-    moves: any[];
-    __v: number;
-}
-const RANDOM_GAMES:GAME[][] = [
+const RANDOM_GAMES:puzzle[] =
     [
         {
-            "userID": "",
-            "puzzle": "003006908450000037000001000004900800007000002290700010040000300900502600000100000",
-            "puzzleSolution": "123476958456298137789351264614925873837614592295783416541867329978532641362149785",
-            "difficulty": 1000,
-            "currentTime": 0,
-            "numHintsUsed": 0,
-            "numWrongCellsPlayed": 0,
-            "_id": "",
-            "moves": [],
-            "__v": 0
-        }
-    ],
-    [
+            "puzzle": "003070040006002301089000000000107080517000006000400000271009005095000000000020000",
+            "puzzleSolution": "123675948456982371789314562964157283517238496832496157271849635395761824648523719",
+            "strategies": [
+                "NAKED_SINGLE",
+                "HIDDEN_SINGLE",
+                "NAKED_PAIR"
+            ],
+            "difficulty": 348,
+            "drillStrategies": [
+                "NAKED_SINGLE",
+                "POINTING_PAIR",
+                "POINTING_TRIPLET"
+            ]
+        },
         {
-            "userID": "",
-            "puzzle": "000004000056000030000000610040300007900100058800000020000002000010609000300510070",
-            "puzzleSolution": "123764589456891732789253614241385967937126458865947321678432195512679843394518276",
-            "difficulty": 1000,
-            "currentTime": 0,
-            "numHintsUsed": 0,
-            "numWrongCellsPlayed": 0,
-            "_id": "",
-            "moves": [],
-            "__v": 0
-        }
-    ],
-    [
+            "puzzle": "020400000006009130000015200000080000300000500800064700014702805000001090000000000",
+            "puzzleSolution": "123476958456829137789315246247583619361297584895164723914732865578641392632958471",
+            "strategies": [
+                "NAKED_SINGLE",
+                "HIDDEN_SINGLE"
+            ],
+            "difficulty": 2,
+            "drillStrategies": [
+                "POINTING_PAIR",
+                "NAKED_TRIPLET",
+                "HIDDEN_QUADRUPLET"
+            ]
+        },
         {
-            "userID": "",
-            "puzzle": "100470000450008000000000000030000700071903840000027001008000005090100307540002000",
-            "puzzleSolution": "123476958456298173789531264835614792271953846964827531318769425692145387547382619",
-            "difficulty": 1000,
-            "currentTime": 0,
-            "numHintsUsed": 0,
-            "numWrongCellsPlayed": 0,
-            "_id": "",
-            "moves": [],
-            "__v": 0
-        }
-    ],
-    [
+            "puzzle": "103000900006000001009300024000006040060007813817005002090000430000009080000020000",
+            "puzzleSolution": "123574968456982371789361524932816745564297813817435692291658437375149286648723159",
+            "strategies": [
+                "NAKED_SINGLE",
+                "HIDDEN_SINGLE"
+            ],
+            "difficulty": 64,
+            "drillStrategies": [
+                "NAKED_SINGLE",
+                "POINTING_TRIPLET",
+                "HIDDEN_QUADRUPLET"
+            ]
+        },
         {
-            "userID": "",
-            "puzzle": "100064070000007002089000100030400080500000000090003007000000800000089006067000300",
-            "puzzleSolution": "123964578456817932789352164231475689574698213698123457945736821312589746867241395",
-            "difficulty": 1000,
-            "currentTime": 0,
-            "numHintsUsed": 0,
-            "numWrongCellsPlayed": 0,
-            "_id": "",
-            "moves": [],
-            "__v": 0
-        }
-    ],
-    [
+            "puzzle": "020609780050000090709050340071008000004000000060020000030001000900007020000000160",
+            "puzzleSolution": "123649785456873291789152346271938654594716832368524917632481579915367428847295163",
+            "strategies": [
+                "NAKED_SINGLE",
+                "HIDDEN_SINGLE"
+            ],
+            "difficulty": 654,
+            "drillStrategies": [
+                "HIDDEN_PAIR",
+                "POINTING_TRIPLET"
+            ]
+        },
         {
-            "userID": "",
-            "puzzle": "000400000000972000080005060205010000340020090001000003010000085000000007674050100",
-            "puzzleSolution": "123486759456972318789135264295314876347628591861597423912743685538261947674859132",
-            "difficulty": 966,
-            "currentTime": 0,
-            "numHintsUsed": 0,
-            "numWrongCellsPlayed": 0,
-            "_id": "",
-            "moves": [],
-            "__v": 0
+            "puzzle": "020700080050091007709304000000500098004010000290000040008060300000180004900000070",
+            "puzzleSolution": "123756489456891237789324561317542698864913725295678143578469312632187954941235876",
+            "strategies": [
+                "NAKED_SINGLE",
+                "HIDDEN_SINGLE"
+            ],
+            "difficulty": 835,
+            "drillStrategies": [
+                "NAKED_SINGLE",
+                "NAKED_QUADRUPLET"
+            ]
+        },
+        {
+            "puzzle": "120000000400009017780500034060000003000065000800070002000000400500900001300080050",
+            "puzzleSolution": "123647895456839217789512634261498573937265148845371962618753429574926381392184756",
+            "strategies": [
+                "NAKED_SINGLE",
+                "HIDDEN_SINGLE"
+            ],
+            "difficulty": 96,
+            "drillStrategies": [
+                "NAKED_PAIR",
+                "HIDDEN_PAIR",
+                "HIDDEN_TRIPLET",
+                "POINTING_TRIPLET",
+                "NAKED_QUADRUPLET"
+            ]
+        },
+        {
+            "puzzle": "100060500006780300709020406200040005090000021000007030002000800640070000900400000",
+            "puzzleSolution": "123964578456781392789523416237149685594836721861257934312695847648372159975418263",
+            "strategies": [
+                "NAKED_SINGLE",
+                "HIDDEN_SINGLE",
+                "NAKED_PAIR",
+                "HIDDEN_PAIR",
+                "POINTING_PAIR"
+            ],
+            "difficulty": 24,
+            "drillStrategies": [
+                "HIDDEN_PAIR",
+                "POINTING_PAIR",
+                "NAKED_TRIPLET"
+            ]
+        },
+        {
+            "puzzle": "000050080000003109780000005000320008500090060000000200041006073000002050600007040",
+            "puzzleSolution": "123459786456873129789261435967324518512798364834615297241586973378942651695137842",
+            "strategies": [
+                "NAKED_SINGLE",
+                "HIDDEN_SINGLE",
+                "NAKED_PAIR"
+            ],
+            "difficulty": 246
+        },
+        {
+            "puzzle": "000000800450000001009000004030080900800370000000526040000400070608002010007000506",
+            "puzzleSolution": "123647895456893721789215634532184967864379152971526348315468279698752413247931586",
+            "strategies": [
+                "NAKED_SINGLE",
+                "HIDDEN_SINGLE",
+                "NAKED_PAIR"
+            ],
+            "difficulty": 622,
+            "drillStrategies": [
+                "NAKED_PAIR",
+            ]
+        },
+        {
+            "puzzle": "020000008000700900000000010007009100000008056240006000005302000890004030300800560",
+            "puzzleSolution": "123945678456781923789623415567239184931478256248156397675312849892564731314897562",
+            "strategies": [
+                "NAKED_SINGLE",
+                "HIDDEN_SINGLE",
+                "NAKED_PAIR"
+            ],
+            "difficulty": 291,
+            "drillStrategies": [
+                "HIDDEN_SINGLE",
+                "NAKED_PAIR",
+                "POINTING_TRIPLET",
+                "NAKED_QUADRUPLET",
+            ]
         }
-    ]
-];
+    ];
 
 /**
 * Functions to handle puzzle related operations
@@ -109,7 +170,7 @@ export class Puzzles{
     * @param token - authentication token
     * @returns promise of puzzle JSON object
     */
-    public static async startGame(url: string, difficulty: number, strategies: string[], token: string):Promise<JSON> {
+    public static async startGame(url: string, difficulty: number, strategies: string[], token: string):Promise<puzzle> {
         // If difficulty was put on the standard 1-1000 scale the top portion of the scale would contain strategies user doesn't know
         // Therefore the following code sets difficulty on 1-HardestPossiblePuzzleWithOnlyGivenStrategies scale
         let hardestStrategyDifficulty:number = Strategy.getHighestStrategyDifficultyBound(strategies);
@@ -160,7 +221,7 @@ export class Puzzles{
     * @param token - authentication token
     * @returns promise of puzzle JSON object
     */
-    public static async getGame(url: string, token: string):Promise<JSON> {
+    public static async getGame(url: string, token: string):Promise<activeGame> {
         const res:Response = await fetch(url + GET_GAME, {
             method: 'GET',
             headers: {
@@ -208,7 +269,7 @@ export class Puzzles{
      * @param token - authentication token
      * @returns promise of puzzle JSON object
      */
-    public static async finishGame(url: string, puzzle: string, token: string):Promise<boolean> {
+    public static async finishGame(url: string, puzzle: string, token: string):Promise<gameResults> {
         const res:Response = await fetch(url + FINISH_GAME + JSON.stringify(puzzle), {
             method: 'DELETE',
             headers: {
@@ -267,7 +328,7 @@ export class Puzzles{
      * Returns a random game to be displayed on the landing page
      * @returns JSON puzzle object
      */
-    public static getRandomGame():GAME[] {
+    public static getRandomGame():puzzle {
         return RANDOM_GAMES[Math.floor(Math.random() * RANDOM_GAMES.length)];
     }
 }
