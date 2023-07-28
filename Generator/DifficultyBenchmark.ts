@@ -1,7 +1,7 @@
 /**
  * The purpose of this file is to calculate the refutation score for a handful of suodku boards and compare them to average human solving times.
  * Benchmarks the refutation score calculation against the number of givens in the board (using correlation coefficient with solving time as metric).
- * Run this program using the following command while in the Generator folder: npx ts-node RefutationBenchmark.ts
+ * Run this program using the following command while in the Generator folder: npx ts-node DifficultyBenchmark.ts > Benchmarks.txt
  * Puzzles and solve times are from http://www.sudokuoftheday.co.uk/ (solve times are taken from statistics for registered users on specific levels like easy)
  */
 
