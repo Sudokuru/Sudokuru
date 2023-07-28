@@ -6,8 +6,8 @@ import {Lessons} from "./lib/Lessons";
 import {Statistics} from "./lib/Statistics";
 
 // Types
-import {sudokuStrategy, sudokuStrategyArray, puzzle, activeGame, gameResults } from "./lib/Api";
+import {sudokuStrategy, sudokuStrategyArray, puzzle, drill, activeGame, gameResults } from "./lib/Api";
 
 
 export { Board, StrategyEnum, Puzzles, Drills, Lessons, Statistics };
-export { sudokuStrategy, sudokuStrategyArray, puzzle, activeGame, gameResults };
+export { sudokuStrategy, sudokuStrategyArray, puzzle, drill, activeGame, gameResults };

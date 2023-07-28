@@ -17,6 +17,12 @@ export interface puzzle {
     drillStrategies: sudokuStrategyArray
 }
 
+export interface drill {
+    puzzleCurrentState: string,
+    puzzleCurrentNotesState: string,
+    puzzleSolution: string,
+}
+
 export interface activeGame {
     userId: string,
     puzzle: string,

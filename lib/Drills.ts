@@ -1,5 +1,6 @@
-import { Solver } from "../Generator/Solver";
-import { StrategyEnum, getBoardArray } from "../Generator/Sudoku";
+import {Solver} from "../Generator/Solver";
+import {getBoardArray, StrategyEnum} from "../Generator/Sudoku";
+import {drill} from "./Api";
 
 const GET_DRILL_GAME:string = "api/v1/drillGames?drillStrategies[]=";
 
@@ -17,7 +18,7 @@ export class Drills{
         ["POINTING_PAIR"]
     ];
 
-    public static async getGame(url: string, strategy: string, token: string):Promise<JSON> {
+    public static async getGame(url: string, strategy: string, token: string):Promise<drill> {
         const res:Response = await fetch(url + GET_DRILL_GAME + strategy, {
             method: 'GET',
             headers: {
@@ -35,10 +36,10 @@ export class Drills{
             while ((solver.nextStep()).getStrategyType() <= StrategyEnum.SIMPLIFY_NOTES) {
                 notes = solver.getNotesString();
             }
-            return <JSON><unknown>{
-                "puzzleCurrentState": boardString,
-                "puzzleCurrentNotesState": notes,
-                "puzzleSolution": data[0].puzzleSolution
+            return {
+                puzzleCurrentState: boardString,
+                puzzleCurrentNotesState: notes,
+                puzzleSolution: data[0].puzzleSolution
             };
         }
         else if (res.status === 404) {
