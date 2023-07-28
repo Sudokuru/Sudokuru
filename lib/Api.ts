@@ -20,7 +20,7 @@ export interface puzzle {
 export interface drill {
     puzzleCurrentState: string,
     puzzleCurrentNotesState: string,
-    puzzleSolution: string,
+    puzzleSolution: string
 }
 
 export interface activeGame {
@@ -39,5 +39,6 @@ export interface gameResults {
     score: number,
     solveTime: number,
     numHintsUsed: number,
-    numWrongCellsPlayed: number
+    numWrongCellsPlayed: number,
+    difficulty: number
 }

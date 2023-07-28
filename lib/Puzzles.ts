@@ -2,7 +2,7 @@ import {StrategyEnum} from "../Generator/Sudoku";
 import {Hint} from "../Generator/Hint";
 import {Solver} from "../Generator/Solver";
 import {Strategy} from "../Generator/Strategy";
-import {activeGame, gameResults, puzzle} from "./Api";
+import {activeGame, gameResults, puzzle, sudokuStrategy, sudokuStrategyArray} from "./Api";
 
 const START_GAME:string = "api/v1/newGame?closestDifficulty=";
 const GET_GAME:string = "api/v1/activeGames";
@@ -13,7 +13,7 @@ const SUCCESS:number = 200;
 const NOT_FOUND:number = 404;
 
 // Random games to be used by getRandomGame for landing page
-const RANDOM_GAMES:puzzle[] =
+const RANDOM_GAMES:puzzle[][] = [
     [
         {
             "puzzle": "003070040006002301089000000000107080517000006000400000271009005095000000000020000",
@@ -156,7 +156,8 @@ const RANDOM_GAMES:puzzle[] =
                 "NAKED_QUADRUPLET",
             ]
         }
-    ];
+    ]
+];
 
 /**
 * Functions to handle puzzle related operations
@@ -170,7 +171,7 @@ export class Puzzles{
     * @param token - authentication token
     * @returns promise of puzzle JSON object
     */
-    public static async startGame(url: string, difficulty: number, strategies: string[], token: string):Promise<puzzle> {
+    public static async startGame(url: string, difficulty: number, strategies: sudokuStrategyArray, token: string):Promise<puzzle> {
         // If difficulty was put on the standard 1-1000 scale the top portion of the scale would contain strategies user doesn't know
         // Therefore the following code sets difficulty on 1-HardestPossiblePuzzleWithOnlyGivenStrategies scale
         let hardestStrategyDifficulty:number = Strategy.getHighestStrategyDifficultyBound(strategies);
@@ -249,7 +250,7 @@ export class Puzzles{
      * @param puzzle activeGame puzzle string
      * @param token - authentication token
      */
-    public static async saveGame(url: string, game: JSON, puzzle: string, token: string):Promise<boolean> {
+    public static async saveGame(url: string, game: activeGame, puzzle: string, token: string):Promise<boolean> {
         const res:Response = await fetch(url + SAVE_GAME + JSON.stringify(puzzle), {
             method: 'PATCH',
             headers: {
@@ -328,7 +329,7 @@ export class Puzzles{
      * Returns a random game to be displayed on the landing page
      * @returns JSON puzzle object
      */
-    public static getRandomGame():puzzle {
+    public static getRandomGame():puzzle[] {
         return RANDOM_GAMES[Math.floor(Math.random() * RANDOM_GAMES.length)];
     }
 }
