@@ -1,8 +1,7 @@
 import {StrategyEnum} from "../Generator/Sudoku";
-import {getMaxGameDifficulty} from "../Generator/Board";
 import {Hint} from "../Generator/Hint";
 import {Solver} from "../Generator/Solver";
-import {MAX_DIFFICULTY, Strategy} from "../Generator/Strategy";
+import { Strategy} from "../Generator/Strategy";
 
 const START_GAME:string = "api/v1/newGame?closestDifficulty=";
 const GET_GAME:string = "api/v1/activeGames";
@@ -104,34 +103,12 @@ export class Puzzles{
    /**
     * Given a difficulty and an user auth token retrieves a random puzzle close to the difficulty that the user hasn't solved before
     * @param url - server url e.g. http://localhost:3100/
-    * @param difficulty - difficulty number (between 0 and 1)
+    * @param difficulty - difficulty integer (see Report.txt for example values)
     * @param strategies - new game can have subset of these strategies
     * @param token - authentication token
     * @returns promise of puzzle JSON object
     */
     public static async startGame(url: string, difficulty: number, strategies: string[], token: string):Promise<JSON> {
-        // If difficulty was put on the standard 1-1000 scale the top portion of the scale would contain strategies user doesn't know
-        // Therefore the following code sets difficulty on 1-HardestPossiblePuzzleWithOnlyGivenStrategies scale
-        let hardestStrategyDifficulty:number = Strategy.getHighestStrategyDifficultyBound(strategies);
-        //let hardestGameWithStrategies:number = Math.min(getMaxGameDifficulty(MAX_DIFFICULTY), getMaxGameDifficulty(hardestStrategyDifficulty) * 2);
-        let hardestStrategyRatio:number;
-        if (strategies.indexOf("POINTING_PAIR") !== -1 || strategies.indexOf("POINTING_TRIPLET") !== -1){
-            hardestStrategyRatio = 1;
-        }
-        else if (strategies.indexOf("HIDDEN_PAIR") !== -1 || strategies.indexOf("HIDDEN_TRIPLET") !== -1 || strategies.indexOf("HIDDEN_QUADRUPLET") !== -1){
-            hardestStrategyRatio = 1;
-        }
-        else if (strategies.indexOf("HIDDEN_SINGLE") !== -1 ){
-            hardestStrategyRatio = 1;
-        }
-        else if (strategies.indexOf("NAKED_PAIR") !== -1 || strategies.indexOf("NAKED_TRIPLET") !== -1 || strategies.indexOf("NAKED_QUADRUPLET") !== -1){
-            hardestStrategyRatio = 0.2;
-        }
-        else if (strategies.indexOf("NAKED_SINGLE") !== -1){
-            hardestStrategyRatio = 0.2;
-        }
-        difficulty = Math.ceil(1000 * (difficulty * (hardestStrategyRatio)));
-
        let concatUrlString = ""
        for (let i = 0; i < strategies.length; i++){
            concatUrlString = concatUrlString + "&learnedStrategies[]=" + strategies[i];

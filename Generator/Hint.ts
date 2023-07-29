@@ -130,14 +130,6 @@ export class Hint{
     }
 
     /**
-     * Gets strategy difficulty
-     * @returns strategy difficulty
-     */
-    public getDifficulty():number {
-        return this.strategy.getDifficulty();
-    }
-
-    /**
      * Gets coordinates of cells that "cause" strategy to be applicable
      * @returns cells "causing" strategy
      */
