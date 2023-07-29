@@ -1,20 +1,11 @@
 import { CustomError, CustomErrorEnum } from "./CustomError";
-import { anyCellsEqual, checkBoardForDuplicates, getBoardArray, SudokuEnum } from "./Sudoku";
+import { anyCellsEqual, checkBoardForDuplicates, getBoardArray, getCellBoard, simplifyNotes, SudokuEnum } from "./Sudoku";
 import { Solver } from "./Solver";
 import { Hint } from "./Hint";
 import { StrategyEnum } from "./Sudoku"
 import { Cell } from "./Cell";
-import { Group } from "./Group";
-import { MAX_DIFFICULTY } from "./Strategy";
-
-const MAX_GAME_LENGTH_MODIFIER = 70;
-const GAME_LENGTH_DIFFICULTY_MULTIPLIER: number = 0.02;
-
-export function getMaxGameDifficulty(hardestStrategyDifficulty: number):number {
-    return (hardestStrategyDifficulty * (1 + (MAX_GAME_LENGTH_MODIFIER * GAME_LENGTH_DIFFICULTY_MULTIPLIER)));
-}
-
-const MAX_GAME_DIFFICULTY = getMaxGameDifficulty(MAX_DIFFICULTY);
+import { Dependency } from "./Dependency";
+import { Refutation } from "./Refutation";
 
 /**
  * Constructed using board string
@@ -56,7 +47,6 @@ export class Board{
 
         this.strategies = new Array(StrategyEnum.COUNT).fill(false);
         this.drills = new Array(StrategyEnum.COUNT).fill(false);
-        this.difficulty = 0;
 
         if (algorithm === undefined) {
             this.solver = new Solver(this.board);
@@ -68,6 +58,7 @@ export class Board{
         this.setDrills();
 
         this.solve();
+        this.setDifficulty();
     }
 
     /**
@@ -214,35 +205,13 @@ export class Board{
     private solve():void {
         // Stores hint for current step
         let hint:Hint = this.solver.nextStep();
-        // Number of steps taken so far using standard strategies (as opposed to simple base ones) to solve the puzzle
-        let strategyStepCount:number = 0;
-        // Number of steps taken on simple base strategies (note management via amend/simplify and placing values via naked single)
-        let simpleStepCount:number = 0;
-        let simpleDifficulty:number;
         // Gets hint for each stop to solve puzzle (hint is null when board is finished being solved)
         while (hint !== null) {
             // Records what strategy was used
             this.strategies[hint.getStrategyType()] = true;
-            // Updates difficulty rating based on how hard current step is
-            if (hint.getStrategyType() === StrategyEnum.AMEND_NOTES || hint.getStrategyType() === StrategyEnum.SIMPLIFY_NOTES ||
-                hint.getStrategyType() === StrategyEnum.NAKED_SINGLE) {
-                simpleStepCount++;
-                if (simpleDifficulty === undefined) {
-                    simpleDifficulty = hint.getDifficulty();
-                }
-            }
-            else {
-                this.difficulty += hint.getDifficulty();
-                strategyStepCount++;            
-            }
             // Gets hint for next step
             hint = this.solver.nextStep();
         }
-        // Sets simple step count to the number that will actually be used to calculate difficulty (10%)
-        simpleStepCount = Math.ceil(simpleStepCount / 70);
-        // Combine standard and simple steps
-        let stepCount:number = strategyStepCount + simpleStepCount;
-        this.difficulty += simpleStepCount * simpleDifficulty;
         // Sets solution string
         this.solution = this.solver.getSolution();
         this.setSolutionString();
@@ -255,17 +224,6 @@ export class Board{
                 }
             }
         }
-        // Adjusts difficulty for game length
-        this.difficulty /= stepCount;
-        //console.log("simple steps: " + simpleStepCount + " compared to strategySteps: " + strategyStepCount);
-        //console.log("average step difficulty: " + this.difficulty);
-        this.difficulty = Math.ceil(this.difficulty * (1 + (Math.min((strategyStepCount*1.4) + (simpleStepCount * 12) - 30, MAX_GAME_LENGTH_MODIFIER) * GAME_LENGTH_DIFFICULTY_MULTIPLIER)));
-        //console.log("game length modifier: " + Math.min((strategyStepCount*1.4) + (simpleStepCount * 12) - 30, MAX_GAME_LENGTH_MODIFIER));
-        //console.log("final difficulty: " + this.difficulty + " compared to max: " + MAX_GAME_DIFFICULTY);
-        // Add some random noise
-        this.difficulty = Math.min(MAX_GAME_DIFFICULTY, this.difficulty * (Math.random() * 4));
-        // Sets difficulty on 1-1000 scale
-        this.difficulty = Math.ceil(1000 * (this.difficulty / MAX_GAME_DIFFICULTY));
         return;
     }
 
@@ -279,6 +237,33 @@ export class Board{
                 this.solutionString += this.solution[i][j];
             }
         }
+        return;
+    }
+
+    /**
+     * Sets difficulty using combined refutation and dependency scores
+     * Inspired by https://www.fi.muni.cz/~xpelanek/publications/flairs-sudoku.pdf
+     */
+    private setDifficulty():void {
+        let board:Cell[][] = getCellBoard(this.board);
+        // Add all notes to board
+        for (let r:number = 0; r < 9; r++) {
+            for (let c:number = 0; c < 9; c++) {
+                if (board[r][c].isEmpty()) {
+                    board[r][c].resetNotes();
+                }
+            }
+        }
+        // Simplify notes based on givens
+        for (let r:number = 0; r < 9; r++) {
+            for (let c:number = 0; c < 9; c++) {
+                if (!board[r][c].isEmpty()) {
+                    simplifyNotes(board, r, c);
+                }
+            }
+        }
+        // Set difficulty as combination of refutation and dependency scores
+        this.difficulty = Refutation.getRefutationScore(board, this.solution, 1) + (-1 * Dependency.getDependencyScore(board));
         return;
     }
 
