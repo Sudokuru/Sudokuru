@@ -171,7 +171,7 @@ export class Puzzles{
     * @param token - authentication token
     * @returns promise of puzzle JSON object
     */
-    public static async startGame(url: string, difficulty: number, strategies: sudokuStrategyArray, token: string):Promise<puzzle> {
+    public static async startGame(url: string, difficulty: number, strategies: sudokuStrategyArray, token: string):Promise<puzzle[]> {
         // If difficulty was put on the standard 1-1000 scale the top portion of the scale would contain strategies user doesn't know
         // Therefore the following code sets difficulty on 1-HardestPossiblePuzzleWithOnlyGivenStrategies scale
         let hardestStrategyDifficulty:number = Strategy.getHighestStrategyDifficultyBound(strategies);
@@ -222,7 +222,7 @@ export class Puzzles{
     * @param token - authentication token
     * @returns promise of puzzle JSON object
     */
-    public static async getGame(url: string, token: string):Promise<activeGame> {
+    public static async getGame(url: string, token: string):Promise<activeGame[]> {
         const res:Response = await fetch(url + GET_GAME, {
             method: 'GET',
             headers: {

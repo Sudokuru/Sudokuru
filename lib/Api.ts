@@ -29,10 +29,14 @@ export interface activeGame {
     puzzleSolution: string,
     currentTime: number,
     difficulty: number,
-    puzzleCurrentState: string,
-    puzzleCurrentNotesState: string,
+    moves: move[],
     numHintsUsed: number,
     numWrongCellsPlayed: number
+}
+
+export interface move {
+    puzzleCurrentState: string,
+    puzzleCurrentNotesState: string
 }
 
 export interface gameResults {
