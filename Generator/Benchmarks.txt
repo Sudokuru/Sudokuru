@@ -1,0 +1,4 @@
+Givens correlation coefficient: 0.604952926
+Refutation score correlation coefficient: 0.851515731
+Dependency score correlation coefficient: -0.780431215
+Combined refutation+dependency score correlation coefficient: 0.853624912

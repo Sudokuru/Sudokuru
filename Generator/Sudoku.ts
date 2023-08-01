@@ -141,6 +141,21 @@ export function getEmptyCellBoard():Cell[][] {
 }
 
 /**
+ * Creates a 2d Cell array from 2d string array
+ * @param board - 2d string array
+ * @returns 2d Cell array
+ */
+export function getCellBoard(board: string[][]):Cell[][] {
+    let cellBoard: Cell[][] = getEmptyCellBoard();
+    for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+        for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+            cellBoard[row].push(new Cell(row, column, board[row][column]));
+        }
+    }
+    return cellBoard;
+}
+
+/**
  * Given a candidate (string) or candidate index (number), calculates candidate index
  * @param candidate - number candidate index or candidate string
  * @returns candidate index
@@ -241,4 +256,217 @@ export function anyCellsEqual(a: Cell[], b: Cell[]):boolean {
         }
     }
     return false;
+}
+
+/**
+ * Removes value at given row and column from every row/column/box that it is in
+ * @param board - 2d Cell array representing the board
+ * @param row - row of value
+ * @param column - column of value
+ */
+export function simplifyNotes(board: Cell[][], row: number, column: number):void {
+    if (board[row][column].isEmpty()) {
+        return;
+    }
+    let value:Group = new Group(false);
+    value.insert(board[row][column].getValue());
+    // Remove value from row
+    for (let c:number = 0; c < SudokuEnum.ROW_LENGTH; c++) {
+        if (c !== column) {
+            board[row][c].getNotes().remove(value);
+        }
+    }
+    // Remove value from column
+    for (let r:number = 0; r < SudokuEnum.COLUMN_LENGTH; r++) {
+        if (r !== row) {
+            board[r][column].getNotes().remove(value);
+        }
+    }
+    // Remove value from box
+    let boxRowStart:number = board[row][column].getBoxRowStart();
+    let boxColumnStart:number = board[row][column].getBoxColumnStart();
+    for (let r:number = boxRowStart; r < boxRowStart + SudokuEnum.BOX_LENGTH; r++) {
+        for (let c:number = boxColumnStart; c < boxColumnStart + SudokuEnum.BOX_LENGTH; c++) {
+            if (r !== row || c !== column) {
+                board[r][c].getNotes().remove(value);
+            }
+        }
+    }
+    return;
+}
+
+/**
+ * Given a 2d string board array throws duplicate value error if board is invalid
+ * @param board - 2d string board array
+ * @throws {@link CustomError}
+ */
+export function checkBoardForDuplicates(board: string[][]):void;
+
+export function checkBoardForDuplicates(board: Cell[][]):void;
+
+export function checkBoardForDuplicates(board: unknown):void {
+    let boardArray:string[][];
+    if (typeof(board[0][0]) === 'object') {
+        // Convert board to string array
+        boardArray = new Array();
+        for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+            boardArray.push([]);
+            for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                if (board[row][column].isEmpty()) {
+                    boardArray[row].push(SudokuEnum.EMPTY_CELL);
+                }
+                else {
+                    boardArray[row].push(board[row][column].getValue());
+                }
+            }
+        }
+    }
+    else {
+        boardArray = board as string[][];
+    }
+    // checks every row for duplicate values
+    for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+        // stores values found in the row
+        let rowGroup:Group = new Group(false);
+        for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+            // If there is a value in the cell and it's already been added to the group throw a duplicate value error, otherwise just insert it
+            if ((boardArray[row][column] !== SudokuEnum.EMPTY_CELL) && !rowGroup.insert(boardArray[row][column])) {
+                throw new CustomError(CustomErrorEnum.DUPLICATE_VALUE_IN_ROW);
+            }
+        }
+    }
+    // checks every column for duplicate values
+    for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+        // stores values found in the column
+        let columnGroup:Group = new Group(false);
+        for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+            // If there is a value in the cell and it's already been added to the group throw a duplicate value error, otherwise just insert it
+            if ((boardArray[row][column] !== SudokuEnum.EMPTY_CELL) && !columnGroup.insert(boardArray[row][column])) {
+                throw new CustomError(CustomErrorEnum.DUPLICATE_VALUE_IN_COLUMN);
+            }
+        }
+    }
+    // checks every box for duplicate values
+    for (let box:number = 0; box < SudokuEnum.BOX_COUNT; box++) {
+        // stores values found in the box
+        let boxGroup:Group = new Group(false);
+        let rowStart:number = Cell.getBoxRowStart(box);
+        for (let row:number = rowStart; row < (rowStart + SudokuEnum.BOX_LENGTH); row++) {
+            let columnStart:number = Cell.getBoxColumnStart(box);
+            for (let column:number = columnStart; column < (columnStart + SudokuEnum.BOX_LENGTH); column++) {
+                // If there is a value in the cell and it's already been added to the group throw a duplicate value error, otherwise just insert it
+                if ((boardArray[row][column] !== SudokuEnum.EMPTY_CELL) && !boxGroup.insert(boardArray[row][column])) {
+                    throw new CustomError(CustomErrorEnum.DUPLICATE_VALUE_IN_BOX);
+                }
+            }
+        }
+    }
+    return;
+}
+
+/**
+ * Given a 2d Cell board checks for values that don't appear in row/column/boxes as placed values or notes
+ * @param board - 2d Cell board
+ * @throws {@link CustomError}
+ */
+export function checkBoardForMissingValues(board: Cell[][]):void {
+    // checks every row for missing values
+    for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+        // stores values found in the row
+        let rowGroup:Group = new Group(false);
+        for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+            // If there is a value in the cell insert it, otherwise insert all notes
+            if (!board[row][column].isEmpty()) {
+                rowGroup.insert(board[row][column].getValue());
+            }
+            else {
+                rowGroup.insert(board[row][column].getNotes());
+            }
+        }
+        // If there are any missing values throw an error
+        if (rowGroup.getSize() !== SudokuEnum.ROW_LENGTH) {
+            throw new CustomError(CustomErrorEnum.MISSING_VALUE);
+        }
+    }
+    // checks every column for missing values
+    for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+        // stores values found in the column
+        let columnGroup:Group = new Group(false);
+        for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+            // If there is a value in the cell insert it, otherwise insert all notes
+            if (!board[row][column].isEmpty()) {
+                columnGroup.insert(board[row][column].getValue());
+            }
+            else {
+                columnGroup.insert(board[row][column].getNotes());
+            }
+        }
+        // If there are any missing values throw an error
+        if (columnGroup.getSize() !== SudokuEnum.COLUMN_LENGTH) {
+            throw new CustomError(CustomErrorEnum.MISSING_VALUE);
+        }
+    }
+    // checks every box for missing values
+    for (let box:number = 0; box < SudokuEnum.BOX_COUNT; box++) {
+        // stores values found in the box
+        let boxGroup:Group = new Group(false);
+        let rowStart:number = Cell.getBoxRowStart(box);
+        for (let row:number = rowStart; row < (rowStart + SudokuEnum.BOX_LENGTH); row++) {
+            let columnStart:number = Cell.getBoxColumnStart(box);
+            for (let column:number = columnStart; column < (columnStart + SudokuEnum.BOX_LENGTH); column++) {
+                // If there is a value in the cell insert it, otherwise insert all notes
+                if (!board[row][column].isEmpty()) {
+                    boxGroup.insert(board[row][column].getValue());
+                }
+                else {
+                    boxGroup.insert(board[row][column].getNotes());
+                }
+            }
+        }
+        // If there are any missing values throw an error
+        if (boxGroup.getSize() !== SudokuEnum.ROW_LENGTH) {
+            throw new CustomError(CustomErrorEnum.MISSING_VALUE);
+        }
+    }
+    return;
+}
+
+/**
+ * Given a 2d Cell board creates and returns a copy of it
+ * @param board - 2d Cell board
+ * @returns copy of board
+ */
+export function copy2dCellArray(board: Cell[][]):Cell[][] {
+    let boardCopy:Cell[][] = [];
+    for (let r:number = 0; r < SudokuEnum.COLUMN_LENGTH; r++) {
+        boardCopy.push([]);
+        for (let c:number = 0; c < SudokuEnum.ROW_LENGTH; c++) {
+            boardCopy[r].push(new Cell(r, c, board[r][c].getValue()));
+            boardCopy[r][c].resetNotes();
+            let notes:Group = new Group(false);
+            for (let n:number = 0; n < SudokuEnum.ROW_LENGTH; n++) {
+                if (!board[r][c].getNotes().contains(n)) {
+                    notes.insert(n);
+                }
+            }
+            boardCopy[r][c].getNotes().remove(notes);
+        }
+    }
+    return boardCopy;
+}
+
+/**
+ * Checks if board has been solved
+ * @param board - 2d Cell board
+ * @returns true if board has been solved
+ */
+export function isSolved(board: Cell[][]):boolean {
+    for (let r:number = 0; r < SudokuEnum.COLUMN_LENGTH; r++) {
+        for (let c:number = 0; c < SudokuEnum.ROW_LENGTH; c++) {
+            if (board[r][c].isEmpty()) {
+                return false;
+            }
+        }
+    }
+    return true;
 }

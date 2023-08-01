@@ -1,7 +1,7 @@
 import { Cell } from "./Cell";
 import { CustomError, CustomErrorEnum } from "./CustomError";
 import { Strategy } from "./Strategy";
-import { SudokuEnum, StrategyEnum } from "./Sudoku";
+import { SudokuEnum, StrategyEnum, getCellBoard, getEmptyCellBoard } from "./Sudoku";
 import { Hint } from "./Hint";
 import { Group } from "./Group";
 import { CellBoard } from "./CellBoard";
@@ -37,9 +37,7 @@ export class Solver{
      * @param notes - optional parameter specifying initial state of the notes (one array with an array for each cell in order)
      */
     constructor(board: string[][], algorithm: StrategyEnum[] = Strategy.getDefaultAlgorithm(), notes?: string[][], solution?: string[][]) {
-        this.board = new Array();
-        this.initializeCellArray(this.board, board.length);
-        this.initializeBoard(board);
+        this.board = getCellBoard(board);
         this.cellBoard = new CellBoard(this.board);
         if (notes !== undefined) {
             this.setNotes(notes);
@@ -105,8 +103,7 @@ export class Solver{
      * Sets emptyCells to be all of the empty cells in the board
      */
     private setEmptyCells():void {
-        this.emptyCells = new Array();
-        this.initializeCellArray(this.emptyCells, SudokuEnum.COLUMN_LENGTH);
+        this.emptyCells = getEmptyCellBoard();
         this.addEveryEmptyCell(this.emptyCells);
         return;
     }
@@ -241,30 +238,6 @@ export class Solver{
                     removedNotes.remove(notes[index][note]);
                 }
                 this.cellBoard.removeNotes(row, column, removedNotes);
-            }
-        }
-    }
-
-    /**
-     * Initializes 2d cell array
-     * @param cells - 2d array to intialize
-     * @param rowCount - number of rows in array
-     */
-    private initializeCellArray(cells: Cell[][], rowCount: number):void {
-        for (let i:number = 0; i < rowCount; i++) {
-            cells.push(new Array());
-        }
-        return;
-    }
-
-    /**
-     * Initializes board cell array
-     * @param board - board array
-     */
-    private initializeBoard(board: string[][]):void {
-        for (let i:number = 0; i < board.length; i++) {
-            for (let j:number = 0; j < board[i].length; j++) {
-                this.board[i].push(new Cell(i, j, board[i][j]));
             }
         }
     }

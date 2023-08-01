@@ -19,6 +19,7 @@ export enum CustomErrorEnum {
     MULTIPLE_SOLUTIONS = "This board has multiple solutions",
     NOT_SOLVED = "This board isn't solved",
     INVALID_CANDIDATE_TYPE = "Candidate isn't a string candidate or a number candidate index",
+    MISSING_VALUE = "A value is missing from the notes and placed values of a group",
     DEFAULT_ERROR = "Default Error"
 }
 
