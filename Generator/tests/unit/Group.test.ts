@@ -80,4 +80,15 @@ describe("create Group object", () => {
         expect((Group.getSubset(4)).length).toBe(126);
         expect((Group.getSubset(9)).length).toBe(1);
     });
+    it('should return lower bounds', () => {
+        let a:Group = new Group(false);
+        expect(a.lower_bound("5")).toBe(-1);
+        expect(a.lower_bound(4)).toBe(-1);
+        a.insert(4);
+        expect(a.lower_bound(5)).toBe(-1);
+        expect(a.lower_bound(4)).toBe(4);
+        expect(a.lower_bound(3)).toBe(4);
+        a.insert(3);
+        expect(a.lower_bound(3)).toBe(3);
+    });
 });

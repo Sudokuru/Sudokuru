@@ -189,7 +189,7 @@ import {Puzzles} from 'sudokuru';
     ```
 3. Parameters
     - url: Server url e.g. "http://localhost:3100/"
-    - difficulty: number between 0 and 1 where 0 is lowest difficulty and 1 is highest
+    - difficulty: integer representing rd score, see Report.txt to see example values
     - strategies: array of strategies that are allowed to be in returned puzzle e.g. [ "NAKED_SINGLE" ]
     - token: string authentication token
 4. Return Value: [activeGame](#activegame-object-properties) JSON object
@@ -485,7 +485,7 @@ Array of strings representing strategies the solver used to figure out puzzle so
 ```json
 44
 ```
-Integer representing difficulty of puzzle based on instances of strategies used and overall length of game
+Integer representing difficulty of puzzle which is directly related to how long it would typically take a human to solve it
 ## drillStrategies
 ```json
 [ "HIDDEN_SINGLE", "NAKED_SEXTUPLET" ]

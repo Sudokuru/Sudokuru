@@ -6,79 +6,6 @@ import { CellBoard } from "./CellBoard";
 import { Hint } from "./Hint";
 
 /**
- * Includes lower bounds for strategies difficulty ratings
- * @enum
- */
-enum DifficultyLowerBounds {
-    AMEND_NOTES = 1,
-    NAKED_SINGLE = 1,
-    HIDDEN_SINGLE = 5,
-    NAKED_PAIR = 5,
-    HIDDEN_PAIR = 7,
-    POINTING_PAIR = 10,
-    NAKED_TRIPLET = 7,
-    HIDDEN_TRIPLET = 8,
-    POINTING_TRIPLET = 10,
-    NAKED_QUADRUPLET = 10,
-    HIDDEN_QUADRUPLET = 12,
-    NAKED_QUINTUPLET = 10,
-    HIDDEN_QUINTUPLET = 12,
-    NAKED_SEXTUPLET = 10,
-    HIDDEN_SEXTUPLET = 12,
-    NAKED_SEPTUPLET = 10,
-    HIDDEN_SEPTUPLET = 12,
-    NAKED_OCTUPLET = 10,
-    HIDDEN_OCTUPLET = 12,
-    SIMPLIFY_NOTES = 1
-}
-
-/**
- * Includes upper bounds for strategies difficulty ratings
- * @enum
- */
-enum DifficultyUpperBounds {
-    AMEND_NOTES = 1,
-    NAKED_SINGLE = 1,
-    HIDDEN_SINGLE = 10,
-    NAKED_PAIR = 10,
-    HIDDEN_PAIR = 12,
-    POINTING_PAIR = 14,
-    NAKED_TRIPLET = 12,
-    HIDDEN_TRIPLET = 14,
-    POINTING_TRIPLET = 14,
-    NAKED_QUADRUPLET = 14,
-    HIDDEN_QUADRUPLET = 15,
-    NAKED_QUINTUPLET = 14,
-    HIDDEN_QUINTUPLET = 15,
-    NAKED_SEXTUPLET = 14,
-    HIDDEN_SEXTUPLET = 15,
-    NAKED_SEPTUPLET = 14,
-    HIDDEN_SEPTUPLET = 15,
-    NAKED_OCTUPLET = 14,
-    HIDDEN_OCTUPLET = 15,
-    SIMPLIFY_NOTES = 1
-}
-
-/**
- * Gets max difficulty
- * @returns largest difficulty upper bound
- */
-function getMaxDifficulty():number {
-    const upperBounds = Object.values(DifficultyUpperBounds);
-    let maxDifficulty:number = DifficultyUpperBounds.SIMPLIFY_NOTES;
-    let temp:number;
-    for (let i:number = 0; i < upperBounds.length; i++) {
-        temp = Number(upperBounds[i]);
-        if (!Number.isNaN(temp)) {
-            maxDifficulty = Math.max(maxDifficulty, temp);
-        }
-    }
-    return maxDifficulty;
-}
-
-export const MAX_DIFFICULTY:number = getMaxDifficulty();
-
-/**
  * Constructed using 2d array of cells
  * Returns:
  * Whether or object constitutes specific strategies
@@ -106,8 +33,6 @@ export class Strategy{
     private strategyType: number;
     // Whether or not strategy has been identified and ready to use
     private identified: boolean;
-    // Stores number representing its difficulty rating (calculated to be in between the strategies upper/lower bounds)
-    private difficulty: number;
     // Stores solution board if provided, AmendNotes Strategy can use it to correct players who remove "correct" notes
     private solution: string[][];
     // Stores drill hint
@@ -142,7 +67,6 @@ export class Strategy{
         this.notes = new Array();
         this.strategyType = undefined;
         this.identified = false;
-        this.difficulty = undefined;
     }
 
     /**
@@ -413,196 +337,6 @@ export class Strategy{
     }
 
     /**
-     * Gets difficulty rating for the strategy represented as an integer
-     * @returns difficulty int
-     * @throws {@link CustomError}
-     * Thrown if strategy hasn't been identified
-     */
-    public getDifficulty():number {
-        this.verifyIdentified();
-        return this.difficulty;
-    }
-
-    /**
-     * Given a tuple like pair returns the difficulty lower bound for that set like naked pair
-     * @param strategyType - strategy type
-     * @param tuple - tuple e.g. naked single, pair, ...
-     * @returns lower bound for given strategy set of given tuple
-     */
-    private getSetDifficultyLowerBound(strategyType: StrategyEnum, tuple: TupleEnum):DifficultyLowerBounds {
-        if (tuple === TupleEnum.SINGLE) {
-            if (this.isNakedSetStrategy(strategyType)) {
-                return DifficultyLowerBounds.NAKED_SINGLE;
-            }
-            else if (this.isHiddenSetStrategy(strategyType)) {
-                return DifficultyLowerBounds.HIDDEN_SINGLE;
-            }
-        }
-        else if (tuple === TupleEnum.PAIR) {
-            if (this.isNakedSetStrategy(strategyType)) {
-                return DifficultyLowerBounds.NAKED_PAIR;
-            }
-            else if (this.isHiddenSetStrategy(strategyType)) {
-                return DifficultyLowerBounds.HIDDEN_PAIR;
-            }
-        }
-        else if (tuple === TupleEnum.TRIPLET) {
-            if (this.isNakedSetStrategy(strategyType)) {
-                return DifficultyLowerBounds.NAKED_TRIPLET;
-            }
-            else if (this.isHiddenSetStrategy(strategyType)) {
-                return DifficultyLowerBounds.HIDDEN_TRIPLET;
-            }
-        }
-        else if (tuple === TupleEnum.QUADRUPLET) {
-            if (this.isNakedSetStrategy(strategyType)) {
-                return DifficultyLowerBounds.NAKED_QUADRUPLET;
-            }
-            else if (this.isHiddenSetStrategy(strategyType)) {
-                return DifficultyLowerBounds.HIDDEN_QUADRUPLET;
-            }
-        }
-        else if (tuple === TupleEnum.QUINTUPLET) {
-            if (this.isNakedSetStrategy(strategyType)) {
-                return DifficultyLowerBounds.NAKED_QUINTUPLET;
-            }
-            else if (this.isHiddenSetStrategy(strategyType)) {
-                return DifficultyLowerBounds.HIDDEN_QUINTUPLET;
-            }
-        }
-        else if (tuple === TupleEnum.SEXTUPLET) {
-            if (this.isNakedSetStrategy(strategyType)) {
-                return DifficultyLowerBounds.NAKED_SEXTUPLET;
-            }
-            else if (this.isHiddenSetStrategy(strategyType)) {
-                return DifficultyLowerBounds.HIDDEN_SEXTUPLET;
-            }
-        }
-        else if (tuple === TupleEnum.SEPTUPLET) {
-            if (this.isNakedSetStrategy(strategyType)) {
-                return DifficultyLowerBounds.NAKED_SEPTUPLET;
-            }
-            else if (this.isHiddenSetStrategy(strategyType)) {
-                return DifficultyLowerBounds.HIDDEN_SEPTUPLET;
-            }
-        }
-        else if (tuple === TupleEnum.OCTUPLET) {
-            if (this.isNakedSetStrategy(strategyType)) {
-                return DifficultyLowerBounds.NAKED_OCTUPLET;
-            }
-            else if (this.isHiddenSetStrategy(strategyType)) {
-                return DifficultyLowerBounds.HIDDEN_OCTUPLET;
-            }
-        }
-    }
-
-    /**
-     * Given a tuple like pair returns the difficulty upper bound for that set like naked pair
-     * @param strategyType - strategy type
-     * @param tuple - tuple e.g. naked single, pair, ...
-     * @returns upper bound for given strategy set of given tuple
-     */
-    private getSetDifficultyUpperBound(strategyType: StrategyEnum, tuple: TupleEnum):DifficultyUpperBounds {
-        if (tuple === TupleEnum.SINGLE) {
-            if (this.isNakedSetStrategy(strategyType)) {
-                return DifficultyUpperBounds.NAKED_SINGLE;
-            }
-            else if (this.isHiddenSetStrategy(strategyType)) {
-                return DifficultyUpperBounds.HIDDEN_SINGLE;
-            }
-        }
-        else if (tuple === TupleEnum.PAIR) {
-            if (this.isNakedSetStrategy(strategyType)) {
-                return DifficultyUpperBounds.NAKED_PAIR;
-            }
-            else if (this.isHiddenSetStrategy(strategyType)) {
-                return DifficultyUpperBounds.HIDDEN_PAIR;
-            }
-        }
-        else if (tuple === TupleEnum.TRIPLET) {
-            if (this.isNakedSetStrategy(strategyType)) {
-                return DifficultyUpperBounds.NAKED_TRIPLET;
-            }
-            else if (this.isHiddenSetStrategy(strategyType)) {
-                return DifficultyUpperBounds.HIDDEN_TRIPLET;
-            }
-        }
-        else if (tuple === TupleEnum.QUADRUPLET) {
-            if (this.isNakedSetStrategy(strategyType)) {
-                return DifficultyUpperBounds.NAKED_QUADRUPLET;
-            }
-            else if (this.isHiddenSetStrategy(strategyType)) {
-                return DifficultyUpperBounds.HIDDEN_QUADRUPLET;
-            }
-        }
-        else if (tuple === TupleEnum.QUINTUPLET) {
-            if (this.isNakedSetStrategy(strategyType)) {
-                return DifficultyUpperBounds.NAKED_QUINTUPLET;
-            }
-            else if (this.isHiddenSetStrategy(strategyType)) {
-                return DifficultyUpperBounds.HIDDEN_QUINTUPLET;
-            }
-        }
-        else if (tuple === TupleEnum.SEXTUPLET) {
-            if (this.isNakedSetStrategy(strategyType)) {
-                return DifficultyUpperBounds.NAKED_SEXTUPLET;
-            }
-            else if (this.isHiddenSetStrategy(strategyType)) {
-                return DifficultyUpperBounds.HIDDEN_SEXTUPLET;
-            }
-        }
-        else if (tuple === TupleEnum.SEPTUPLET) {
-            if (this.isNakedSetStrategy(strategyType)) {
-                return DifficultyUpperBounds.NAKED_SEPTUPLET;
-            }
-            else if (this.isHiddenSetStrategy(strategyType)) {
-                return DifficultyUpperBounds.HIDDEN_SEPTUPLET;
-            }
-        }
-        else if (tuple === TupleEnum.OCTUPLET) {
-            if (this.isNakedSetStrategy(strategyType)) {
-                return DifficultyUpperBounds.NAKED_OCTUPLET;
-            }
-            else if (this.isHiddenSetStrategy(strategyType)) {
-                return DifficultyUpperBounds.HIDDEN_OCTUPLET;
-            }
-        }
-    }
-
-    /**
-     * Calculates a ratio (number between 0 and 1) based on distance between cells being used by strategy
-     * @param cells - cells being used by this strategy
-     * @param groupType - optional parameter if this strategy uses a specific group type
-     * @returns ratio based on distance between given cells
-     */
-    private getDistanceRatio(cells: Cell[], groupType?: GroupEnum):number {
-        let distanceRatio:number;
-        let minRow:number = SudokuEnum.COLUMN_LENGTH, minColumn:number = SudokuEnum.ROW_LENGTH;
-        let maxRow:number = 0, maxColumn:number = 0;
-        for (let i:number = 0; i < cells.length; i++) {
-            minRow = Math.min(minRow, cells[i].getRow());
-            minColumn = Math.min(minColumn, cells[i].getColumn());
-            maxRow = Math.max(maxRow, cells[i].getRow());
-            maxColumn = Math.max(maxColumn, cells[i].getColumn());
-        }
-        if (groupType === undefined) {
-            distanceRatio = (maxRow - minRow) + (maxColumn - minColumn);
-            distanceRatio /= SudokuEnum.ROW_LENGTH + SudokuEnum.COLUMN_LENGTH;
-        }
-        else if (groupType === GroupEnum.ROW) {
-            distanceRatio = (maxRow - minRow) / SudokuEnum.ROW_LENGTH;
-        }
-        else if (groupType === GroupEnum.COLUMN) {
-            distanceRatio = (maxColumn - minColumn) / SudokuEnum.COLUMN_LENGTH;
-        }
-        else if (groupType === GroupEnum.BOX) {
-            distanceRatio = (maxRow - minRow) + (maxColumn - minColumn);
-            distanceRatio /= (SudokuEnum.BOX_LENGTH - 1) * 2;
-        }
-        return distanceRatio;
-    }
-
-    /**
      * Checks if strategy is a naked set of given tuple and if so adds values to be placed and notes to remove
      * @param tuple - e.g. could be single or pair for naked single or naked pair respectively
      * @param group - group type being check for a naked set e.g. row
@@ -641,7 +375,6 @@ export class Strategy{
             this.values.push(new Cell(row, column, single));
             this.cause.push(new Cell(row, column));
             this.identified = true;
-            this.difficulty = DifficultyLowerBounds.NAKED_SINGLE;
             return true;
         }
         // Adds notes to remove if there are any to remove
@@ -666,10 +399,6 @@ export class Strategy{
         groups[0] = group;
         groups[1] = i;
         this.groups.push(groups);
-        // Calculate difficulty based on how far apart the naked set cells are
-        let distanceRatio:number = this.getDistanceRatio(nakedSet, group);
-        this.difficulty = this.getSetDifficultyLowerBound(StrategyEnum.NAKED_SINGLE, tuple);
-        this.difficulty += Math.ceil(distanceRatio * (this.getSetDifficultyUpperBound(StrategyEnum.NAKED_SINGLE, tuple) - this.getSetDifficultyLowerBound(StrategyEnum.NAKED_SINGLE, tuple)));
         // If naked set shares a row or column it might also share a box so skip to check that
         if (group !== GroupEnum.BOX) {
             // Set used row or column to avoiding adding same cells notes twice
@@ -773,14 +502,6 @@ export class Strategy{
         for (let k:number = 0; k < notHiddenSet.length; k++) {
             this.cause.push(new Cell(notHiddenSet[k].getRow(), notHiddenSet[k].getColumn()));
         }
-        // Calculate ratio of number of notes to possible number (more notes to obscure hidden set = higher difficulty)
-        let noteCount:number = 0;
-        for (let k:number = 0; k < tuple; k++) {
-            noteCount += (hiddenSet[k].getNotes()).getSize();
-        }
-        let noteRatio:number = noteCount / (SudokuEnum.ROW_LENGTH * SudokuEnum.ROW_LENGTH);
-        this.difficulty = this.getSetDifficultyLowerBound(StrategyEnum.HIDDEN_SINGLE, tuple);
-        this.difficulty += Math.ceil(noteRatio * (this.getSetDifficultyUpperBound(StrategyEnum.HIDDEN_SINGLE, tuple) - this.getSetDifficultyLowerBound(StrategyEnum.HIDDEN_SINGLE, tuple)));
         return true;
     }
 
@@ -826,7 +547,6 @@ export class Strategy{
             }
             // Check if note is in the rest of the row or column, if so add to cause/groups and notes to remove arrays and return true
             let found:boolean = false;
-            let distanceRatio:number;
             let notes:Group[] = new Array();
             if (rowSet) {
                 let row:number = cells[0].getRow();
@@ -843,7 +563,6 @@ export class Strategy{
                 }
                 if (found) {
                     this.groups.push([GroupEnum.ROW, row]);
-                    distanceRatio = this.getDistanceRatio(cells, GroupEnum.ROW);
                 }
             }
             else {
@@ -861,7 +580,6 @@ export class Strategy{
                 }
                 if (found) {
                     this.groups.push([GroupEnum.COLUMN, column]);
-                    distanceRatio = this.getDistanceRatio(cells, GroupEnum.COLUMN);
                 }
             }
             if (found) {
@@ -869,10 +587,6 @@ export class Strategy{
                 this.groups.push([GroupEnum.BOX, box]);
                 this.cause = cells;
                 this.notes = notes;
-                if (tuple === TupleEnum.PAIR) {
-                    this.difficulty = DifficultyLowerBounds.POINTING_PAIR;
-                    this.difficulty += Math.ceil(distanceRatio * (DifficultyUpperBounds.POINTING_PAIR - DifficultyLowerBounds.POINTING_PAIR));
-                }
                 return tuple;
             }
         }
@@ -925,7 +639,6 @@ export class Strategy{
             notesToRemove.insert(notes);
             this.notes.push(notesToRemove);
             this.identified = true;
-            this.difficulty = DifficultyLowerBounds.SIMPLIFY_NOTES;
             return this.identified;
         }
         return this.identified;
@@ -997,7 +710,6 @@ export class Strategy{
             if (notesToRemove.getSize() < SudokuEnum.ROW_LENGTH) {
                 this.notes.push(notesToRemove);
                 this.identified = true;
-                this.difficulty = DifficultyLowerBounds.AMEND_NOTES;
                 return this.identified;
             }
         }
@@ -1021,18 +733,5 @@ export class Strategy{
             }
         }
         return algorithm;
-    }
-
-    /**
-     * Given an array of strategy strings returns the highest difficulty upper bound of them
-     * @param strategies array of strategy strings
-     * @returns highest strategy upper bound of given strategies
-     */
-    public static getHighestStrategyDifficultyBound(strategies: string[]):number {
-        let bound:number = -1;
-        for (let i:number = 0; i < strategies.length; i++) {
-            bound = Math.max(bound, DifficultyUpperBounds[strategies[i]]);
-        }
-        return bound;
     }
 }
