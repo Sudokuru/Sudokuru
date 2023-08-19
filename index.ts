@@ -1,8 +1,12 @@
+// Classes
 import {Board} from "./Generator/Board";
 import {StrategyEnum} from "./Generator/Sudoku";
-import {Puzzles} from "./lib/Puzzles";
-import {Drills} from "./lib/Drills";
-import {Lessons} from "./lib/Lessons";
-import {Statistics} from "./lib/Statistics";
+// Functions
+import { getHint } from "./lib/Hint";
+import { calculateNotes } from "./lib/Drill";
+// Types
+import {sudokuStrategy, sudokuStrategyArray } from "./lib/Api";
 
-export { Board, StrategyEnum, Puzzles, Drills, Lessons, Statistics };
+
+export { Board, StrategyEnum, getHint, calculateNotes };
+export { sudokuStrategy, sudokuStrategyArray };

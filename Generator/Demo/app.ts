@@ -4,7 +4,7 @@ import { StrategyEnum, getBoardArray } from "../Sudoku";
 import { Hint } from "../Hint";
 import * as fs from 'fs';
 import * as readline from 'readline';
-import { Puzzles } from "../../lib/Puzzles";
+import { getHint } from "../../lib/Hint";
 import { Board } from "../Board";
 
 const expressApp = require('express');
@@ -136,7 +136,7 @@ app.get('/solver/nextStep', (req, res) => {
 
 app.get('/getHint', (req, res) => {
     let solution:string[][] = (new Board(req.query.boardString)).getSolution();
-    res.send(Puzzles.getHint(JSON.parse(req.query.board), JSON.parse(req.query.notes), undefined, solution));
+    res.send(getHint(JSON.parse(req.query.board), JSON.parse(req.query.notes), undefined, solution));
 });
 
 app.get('/api/v1/user/newGame', (req, res) => {
