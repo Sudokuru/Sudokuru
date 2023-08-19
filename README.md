@@ -13,9 +13,8 @@
 *   [Usage](#usage)
     *   [Command Line](#command-line)
     *   [JavaScript](#javascript)
-        *   [Puzzles Class](#puzzles-class)
-            *   [Setup](#setup)
-            *   [Puzzles.getHint()](#puzzlesgethint)
+        *   [Hint File](#hint-file)
+            *   [getHint()](#gethint)
 *   [hint Object Properties](#hint-object-properties)
     *   [Example 1: Amend Notes](#example-1-amend-notes)
         *   [strategy](#strategy)
@@ -116,25 +115,24 @@ npm run upload --endpoint=http://localhost:3000/api/v1/puzzles/ --token=PDQ88b20
 
 ## JavaScript
 
-### Puzzles Class
+### Hint File
 
-#### Setup
-```typescript
-import {Puzzles} from 'sudokuru';
-```
-
-#### Puzzles.getHint()
-1. Description: Returns a hint based on the puzzle and notes provided
-2. Syntax
+#### getHint()
+1. Setup: 
     ```typescript
-    Puzzles.getHint(board, notes, strategies, solution);
+    import {getHint} from 'sudokuru';
     ```
-3. Parameters:
+2. Description: Returns a hint based on the puzzle and notes provided
+3. Syntax
+    ```typescript
+    getHint(board, notes, strategies, solution);
+    ```
+4. Parameters:
     - board: 2d board array (9 arrays, one for each row, each with 9 strings representing values or "0" if empty)
     - notes: 2d notes array (81 arrays, one for each cell containing each note that is left in it)
     - strategies: optional parameter specifying which strategies are allowed to be used in the hint
     - solution: optional parameter specifying boards solution so that amend notes hints can correct users mistakes
-4. Return Value: [hint](#hint-object-properties)
+5. Return Value: [hint](#hint-object-properties)
 
 # hint Object Properties
 ## Example 1: Amend Notes
