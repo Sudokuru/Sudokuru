@@ -3,6 +3,8 @@
 [![NPM version](https://img.shields.io/npm/v/sudokuru.svg?style=flat)](https://npmjs.org/package/sudokuru)
 [![NPM downloads](https://img.shields.io/npm/dm/sudokuru.svg?style=flat)](https://npmjs.org/package/sudokuru)
 ![NPM License](https://img.shields.io/npm/l/sudokuru)
+[![Pipeline](https://github.com/SudoKuru/Sudokuru/actions/workflows/pipeline.yml/badge.svg)](https://github.com/SudoKuru/Sudokuru/actions/workflows/pipeline.yml)
+[![Coveralls Coverage](https://coveralls.io/repos/github/SudoKuru/Sudokuru/badge.svg)](https://coveralls.io/github/SudoKuru/Sudokuru)
 
 > Generate data about Sudoku puzzles and upload it via POST requests
 
@@ -423,7 +425,8 @@ git clone https://github.com/SudoKuru/SudokuPuzzleGenerator.git
 npm install
 
 # Run Tests
-npm test
+# Coverage reports are automatically generated can can be viewed in `jest-coverage` folder
+npm run test
 
 # Build dist Folder
 npm run build
