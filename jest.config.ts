@@ -16,6 +16,7 @@ const config: Config = {
   ],
   collectCoverage: true,
   coverageDirectory: "jest-coverage",
+  coverageReporters: ["clover", "json", "lcov", ["text", {file: 'coverage.txt'}], "text"]
 };
 
 export default config;

@@ -48,9 +48,6 @@ jobs:
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-    - run: npx nyc report --reporter=text > coverage-final.txt
-      working-directory: ./jest-coverage
-
     - uses: fingerprintjs/action-coverage-report-md@v1
       id: coverage
       with:
