@@ -1,6 +1,7 @@
 name: "Pipeline"
 
 on:
+  workflow_dispatch:
   push:
     branches: 
       - main
@@ -41,11 +42,9 @@ jobs:
 
     - name: Coveralls
       uses: coverallsapp/github-action@v2
-      if: ${{ github.ref == 'refs/heads/main' }}
 
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
-      if: ${{ github.ref == 'refs/heads/main' }}
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
