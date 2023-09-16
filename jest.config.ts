@@ -2,6 +2,12 @@ import type { Config } from "jest";
 
 const config: Config = {
   preset: "ts-jest",
+  testEnvironment: 'node',
+  transform: {
+    '^.+\\.ts?$': ['ts-jest', {
+      isolatedModules: true,
+    }],
+  },
   reporters: [
     "default",
     "github-actions",
@@ -21,3 +27,5 @@ const config: Config = {
 };
 
 export default config;
+
+// ! Current test execution time is 84 - 104 seconds
