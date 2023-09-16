@@ -8,6 +8,8 @@
     "test": "jest",
     "test:unit": "jest --testPathPattern=Generator/tests/unit",
     "test:integration": "jest --testPathPattern=Generator/tests/integration",
+    "mutation": "npx stryker run",
+    "mutation:debug": "npx stryker run --fileLogLevel trace --logLevel debug",
     "update-docs": "npx typedoc Generator/*.ts --name GeneratorDocs",
     "start": "tsc Generator/Demo/script.ts && tsc Generator/Board.ts && tsc lib/Puzzles.ts && ts-node Generator/Demo/app.ts",
     "build": "tsc"

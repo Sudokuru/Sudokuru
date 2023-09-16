@@ -3,7 +3,7 @@
 const config = {
   packageManager: "npm",
   checkers: ["typescript"],
-  reporters: ["html", "clear-text", "progress"],
+  reporters: ["html", "clear-text", "progress", "json"],
   testRunner: "jest",
   mutate: ['Generator/**.ts', '!Generator/tests/**.ts', '!Generator/Demo/**'],
   disableTypeChecks: 'Generator/**.ts',
