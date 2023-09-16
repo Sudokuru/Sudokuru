@@ -419,6 +419,8 @@ Info about the strategy being used by the hint.
 ```
 Describes the action that the hint is suggesting.
 # Developer Tools
+
+**Note**: This project is using Bun. This means WSL or a linux/mac machine is required to run. 
 ```shell
 # Clone Repository
 git clone https://github.com/SudoKuru/Sudokuru.git
