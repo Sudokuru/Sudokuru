@@ -23,7 +23,6 @@ const config: Config = {
   collectCoverage: true,
   coverageDirectory: "jest-coverage",
   coverageReporters: ["clover", "json", "lcov", ["text", {file: 'coverage-final.txt'}], "text"],
-  modulePathIgnorePatterns: ['stryker-tmp']
 };
 
 export default config;
