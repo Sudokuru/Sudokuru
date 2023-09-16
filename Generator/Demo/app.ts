@@ -101,6 +101,20 @@ app.get('/getHint', (req, res) => {
     res.send(getHint(JSON.parse(req.query.board), JSON.parse(req.query.notes), undefined, solution));
 });
 
+app.get('/getBackFilteredPuzzles', (req, res) => {
+    let puzzles:string[] = JSON.parse(req.query.puzzles);
+    let strategy:StrategyEnum = Number(req.query.strategy);
+    let filteredPuzzles:string[] = [];
+    for (let i:number = 0; i < puzzles.length; i++){
+        let board:Board = new Board(puzzles[i]);
+        let strategies:boolean[] = board.getStrategies();
+        if (strategies[strategy]){
+            filteredPuzzles.push(puzzles[i]);
+        }
+    }
+    res.send(filteredPuzzles);
+});
+
 app.use(errorHandler);
 
 app.listen(port, () => console.log(`Listening on: ${port}`));
