@@ -108,7 +108,7 @@ cd Generator
 # end: Ignores all puzzle strings after 4th puzzle (1 indexed) which it includes in output
 # batchSize: Puts 2 puzzle JSON objects in each JSON array (1 per line) in puzzles.txt
 # Note: If number of puzzles is not evenly divisible by batchSize last array will have fewer puzzles
-npm run generate --filepath=inputPuzzles.txt --start=2 --end=4 --batchsize=2
+npm run generate --filepath=Generator/inputPuzzles.txt --start=2 --end=4 --batchsize=2
 
 # Upload puzzles:
 # endpoint: For each line in puzzles.txt uploads JSON array as POST request to http://localhost:3000/api/v1/puzzles/
