@@ -1,5 +1,10 @@
 node_modules/
 .idea/
 dist/
+# jest
 jest-coverage/
 junit.xml
+# stryker
+stryker-tmp
+stryker.log
+reports
