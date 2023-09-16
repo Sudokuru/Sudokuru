@@ -4,7 +4,7 @@
   "description": "This is the Sudokuru package.",
   "main": "dist/index.js",
   "scripts": {
-    "prepare": "husky install",
+    "prepare": "husky install && bash -c 'npm run linuxInit'",
     "linuxInit": "chmod ug+x .husky/* && chmod ug+x .git/hooks/*",
     "test": "jest",
     "test:unit": "jest --testPathPattern=Generator/tests/unit",
