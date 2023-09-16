@@ -23,3 +23,4 @@ const config = {
 export default config;
 
 // performance information here: https://github.com/stryker-mutator/stryker-js/issues/3123
+// more ways to optimize performance: https://github.com/stryker-mutator/stryker-js/issues/4142#event-9136562433
