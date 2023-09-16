@@ -421,25 +421,28 @@ Describes the action that the hint is suggesting.
 # Developer Tools
 ```shell
 # Clone Repository
-git clone https://github.com/SudoKuru/SudokuPuzzleGenerator.git
+git clone https://github.com/SudoKuru/Sudokuru.git
 
 # Install Developer Dependencies
-npm install
+bun install
 
 # Run Tests
 # Coverage reports are automatically generated can can be viewed in `jest-coverage` folder
 npm run test
 
+# Run Tests without coverage (faster)
+bun test
+
 # Build dist Folder
-npm run build
+bun build
 
 # Create Local TypeDoc Documentation
-npm run update-docs
+bun update-docs
 
 # The following can also be done after installing the npm package by navigating to node_modules/sudokuru
 
 # Run Demo Server on http://localhost:3100/
-npm run start
+bun start
 
 # Can open interactive Solver Demo in browser while Demo Server is running (Generator/Demo/demo.html)
 
