@@ -7,6 +7,7 @@ const config = {
   testRunner: "jest",
   mutate: ['Generator/**.ts', '!Generator/tests/**.ts', '!Generator/Demo/**'],
   disableTypeChecks: 'Generator/**.ts',
+  ignorePatterns: [".github/**", ".husky/**", ".idea/**", "dist/**", "jest-coverage/**"],
   tsconfigFile: 'tsconfig.json',
   concurrency: 4,
   jest: {
