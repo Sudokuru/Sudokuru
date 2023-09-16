@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "prepare": "husky install",
+    "linuxInit": "chmod ug+x .husky/* && chmod ug+x .git/hooks/*",
     "test": "jest",
     "test:unit": "jest --testPathPattern=Generator/tests/unit",
     "test:integration": "jest --testPathPattern=Generator/tests/integration",
