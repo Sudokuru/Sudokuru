@@ -187,6 +187,7 @@ describe("solve Boards", () => {
         }
     });
 
+    // ! Takes 3.7 seconds to execute test
     it ('should solve row hidden single', () => {
         let board:Board = new Board(TestBoards.ROW_HIDDEN_SINGLES);
         let strategies:boolean[] = board.getStrategies();
@@ -194,6 +195,7 @@ describe("solve Boards", () => {
         expect(strategies[StrategyEnum.HIDDEN_SINGLE]).toBeTruthy();
     });
 
+    // ! Takes 8.7 seconds to execute test
     it ('should solve row column box hidden singles', () => {
         let board:Board = new Board(TestBoards.ROW_COLUMN_BOX_HIDDEN_SINGLES);
         let strategies:boolean[] = board.getStrategies();
@@ -216,6 +218,7 @@ describe("solve Boards", () => {
         expect(strategies[StrategyEnum.NAKED_PAIR]).toBeTruthy();
     });
 
+    // ! Takes 8.2 seconds to execute test
     it('should solve column naked pair', () => {
         let board:Board = new Board(TestBoards.COLUMN_NAKED_PAIR);
         let strategies:boolean[] = board.getStrategies();
@@ -223,6 +226,7 @@ describe("solve Boards", () => {
         expect(strategies[StrategyEnum.NAKED_PAIR]).toBeTruthy();
     });
 
+    // ! Takes 9.5 seconds to execute test
     it('should solve box naked pair', () => {
         let board:Board = new Board(TestBoards.BOX_NAKED_PAIR);
         let strategies:boolean[] = board.getStrategies();
@@ -230,6 +234,7 @@ describe("solve Boards", () => {
         expect(strategies[StrategyEnum.NAKED_PAIR]).toBeTruthy();
     });
 
+    // ! Takes 7.5 seconds to execute test
     it('should solve naked triplet', () => {
         let board:Board = new Board(TestBoards.NAKED_TRIPLET);
         let strategies:boolean[] = board.getStrategies();
@@ -243,6 +248,7 @@ describe("solve Boards", () => {
         expect(strategies[StrategyEnum.NAKED_QUADRUPLET]).toBeTruthy();
     });
 
+    // ! Takes 2.5 seconds to execute test
     it('should solve naked quintuplet', () => {
         let algorithm:StrategyEnum[] = new Array();
         algorithm.push(StrategyEnum.AMEND_NOTES);
@@ -258,6 +264,7 @@ describe("solve Boards", () => {
         expect(strategies[StrategyEnum.NAKED_QUINTUPLET]).toBeTruthy();
     });
 
+    // ! Takes 2.5 seconds to execute test
     it('should solve naked sextuplet', () => {
         let algorithm:StrategyEnum[] = new Array();
         algorithm.push(StrategyEnum.AMEND_NOTES);
@@ -274,6 +281,7 @@ describe("solve Boards", () => {
         expect(strategies[StrategyEnum.NAKED_SEXTUPLET]).toBeTruthy();
     });
 
+    // ! Takes 8.1 seconds to execute
     it('should solve naked septuplet', () => {
         let algorithm:StrategyEnum[] = new Array();
         algorithm.push(StrategyEnum.AMEND_NOTES);
@@ -290,6 +298,7 @@ describe("solve Boards", () => {
         expect(strategies[StrategyEnum.NAKED_SEPTUPLET]).toBeTruthy();
     });
 
+    // ! Takes 8 seconds to execute
     it('should solve naked octuplet', () => {
         let algorithm:StrategyEnum[] = new Array();
         algorithm.push(StrategyEnum.AMEND_NOTES);
@@ -306,6 +315,7 @@ describe("solve Boards", () => {
         expect(strategies[StrategyEnum.NAKED_OCTUPLET]).toBeTruthy();
     });
 
+    // ! Takes 16 seconds to execute
     it('should solve pointing pair', () => {
         let algorithm:StrategyEnum[] = new Array();
         algorithm.push(StrategyEnum.AMEND_NOTES);

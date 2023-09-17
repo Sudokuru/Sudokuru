@@ -9,6 +9,8 @@
     "test": "jest",
     "test:unit": "jest --testPathPattern=Generator/tests/unit",
     "test:integration": "jest --testPathPattern=Generator/tests/integration",
+    "mutation": "npx stryker run",
+    "mutation:debug": "npx stryker run --fileLogLevel trace --logLevel debug",
     "update-docs": "npx typedoc Generator/*.ts --name GeneratorDocs",
     "start": "tsc Generator/Demo/script.ts && tsc Generator/Board.ts && tsc lib/Puzzles.ts && ts-node Generator/Demo/app.ts",
     "build": "tsc",
@@ -19,6 +21,9 @@
   "author": "",
   "license": "GPL-3.0",
   "devDependencies": {
+    "@stryker-mutator/core": "^7.1.1",
+    "@stryker-mutator/jest-runner": "^7.1.1",
+    "@stryker-mutator/typescript-checker": "^7.1.1",
     "@types/jest": "^29.2.2",
     "@types/node": "^18.11.19",
     "bun": "^1.0.2",

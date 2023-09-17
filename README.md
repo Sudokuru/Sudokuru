@@ -6,7 +6,7 @@
 [![Pipeline](https://github.com/SudoKuru/Sudokuru/actions/workflows/pipeline.yml/badge.svg)](https://github.com/SudoKuru/Sudokuru/actions/workflows/pipeline.yml)
 [![Coveralls Coverage](https://coveralls.io/repos/github/SudoKuru/Sudokuru/badge.svg?branch=main)](https://coveralls.io/github/SudoKuru/Sudokuru?branch=main)
 [![Codecov Coverage](https://codecov.io/gh/SudoKuru/Sudokuru/graph/badge.svg?token=SISS85TX20)](https://codecov.io/gh/SudoKuru/Sudokuru)
-
+[![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FSudoKuru%2FSudokuru%2Fmain)](https://dashboard.stryker-mutator.io/reports/github.com/SudoKuru/Sudokuru/main)
 
 > Generate data about Sudoku puzzles and upload it via POST requests
 
