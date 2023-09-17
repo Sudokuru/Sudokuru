@@ -66,8 +66,8 @@ async function main(): Promise<void> {
             crlfDelay: Infinity
         });
 
-        let writer = fs.createWriteStream('puzzles.txt', {'flags': 'a'});
-        let version = (require('./package.json')).version;
+        let writer = fs.createWriteStream('Generator/puzzles.txt', {'flags': 'a'});
+        let version = (require('../package.json')).version;
         writer.write("/*\n");
         writer.write("This file was generated using version " + version + " of the Sudokuru CLI available at https://www.npmjs.com/package/sudokuru");
         writer.write("\n*/\n");
@@ -118,7 +118,7 @@ async function main(): Promise<void> {
         if (batchIndex !== batchSize && batchIndex !== 0) {
             writer.write("]");
         }
-        console.log("Was unable to solve " + unsolved + " puzzles");
+        console.log("Failed to solve " + unsolved + " puzzles");
     } catch (err) {
         console.log(err);
     }
