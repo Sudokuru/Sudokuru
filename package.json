@@ -6,7 +6,7 @@
   "scripts": {
     "prepare": "husky install && bash -c 'npm run linuxInit'",
     "linuxInit": "chmod ug+x .husky/* && chmod ug+x .git/hooks/*",
-    "test": "jest",
+    "test:jest": "jest",
     "test:unit": "jest --testPathPattern=Generator/tests/unit",
     "test:integration": "jest --testPathPattern=Generator/tests/integration",
     "mutation": "npx stryker run",
@@ -22,7 +22,6 @@
   "license": "GPL-3.0",
   "devDependencies": {
     "@stryker-mutator/core": "^7.1.1",
-    "@stryker-mutator/jest-runner": "^7.1.1",
     "@stryker-mutator/typescript-checker": "^7.1.1",
     "@types/jest": "^29.2.2",
     "@types/node": "^18.11.19",

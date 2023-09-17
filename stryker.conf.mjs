@@ -4,22 +4,22 @@ const config = {
   packageManager: "npm",
   checkers: ["typescript"],
   reporters: ["html", "clear-text", "progress", "json"],
-  testRunner: "jest",
+  testRunner: "command",
+  commandRunner: {
+    command: 'bun test'
+  },
   mutate: ['Generator/**.ts', '!Generator/tests/**.ts', '!Generator/Demo/**'],
   disableTypeChecks: 'Generator/**.ts',
-  ignorePatterns: [".github/**", ".husky/**", ".idea/**", "dist/**", "jest-coverage/**", "Generator/tests/unit/Board.test.ts"],
+  ignorePatterns: [".github/**", ".husky/**", ".idea/**", "dist/**", "jest-coverage/**"],
   tsconfigFile: 'tsconfig.json',
   concurrency: 4,
-  jest: {
-    projectType: 'custom',
-    configFile: 'jest.config.ts',
-    enableFindRelatedTests: true
-  },
-  dryRunTimeoutMinutes: 30,
+  dryRunTimeoutMinutes: 60,
   coverageAnalysis: "perTest",
   ignoreStatic: true, // This ignores static mutants
   tempDirName: 'stryker-tmp',
-  cleanTempDir: 'always'
+  cleanTempDir: true,
+  dryRunOnly: false,
+  inPlace: true
 };
 export default config;
 
