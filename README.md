@@ -19,6 +19,8 @@
     *   [JavaScript](#javascript)
         *   [Hint File](#hint-file)
             *   [getHint()](#gethint)
+        *   [PuzzleData File](#puzzledata-file)
+            *   [getPuzzleData()](#getpuzzledata)
 *   [hint Object Properties](#hint-object-properties)
     *   [Example 1: Amend Notes](#example-1-amend-notes)
         *   [strategy](#strategy)
@@ -82,6 +84,9 @@
         *   [removals](#removals-6)
         *   [info](#info-6)
         *   [action](#action-6)
+*   [PuzzleData Object Properties](#puzzledata-object-properties)
+    *   [solution](#solution)
+    *   [difficulty](#difficulty)
 *   [Developer Tools](#developer-tools)
 
 # Installation
@@ -137,6 +142,20 @@ npm run upload --endpoint=http://localhost:3000/api/v1/puzzles/ --token=PDQ88b20
     - strategies: optional parameter specifying which strategies are allowed to be used in the hint
     - solution: optional parameter specifying boards solution so that amend notes hints can correct users mistakes
 5. Return Value: [hint](#hint-object-properties)
+
+### PuzzleData File
+1. Setup: 
+    ```typescript
+    import {getPuzzleData} from 'sudokuru';
+    ```
+2. Description: Returns data about a given puzzle
+3. Syntax
+    ```typescript
+    getPuzzleData(board);
+    ```
+4. Parameters:
+    - board: puzzle board string (81 characters, one for each cell containing each value or "0" if empty, left to right top to bottom)
+5. Return Value: [puzzleData](#puzzledata-object-properties)
 
 # hint Object Properties
 ## Example 1: Amend Notes
@@ -418,6 +437,11 @@ Info about the strategy being used by the hint.
 "When you see a pointing pair you can remove all other instances of the shared note from the box (except for those in the pair themself)"
 ```
 Describes the action that the hint is suggesting.
+# PuzzleData Object Properties
+## solution
+81 character string representing the solution to the puzzle (left to right top to bottom)
+## difficulty
+Number representing the difficulty of the puzzle (higher is harder)
 # Developer Tools
 
 **Note**: This project is using Bun. This means WSL or a linux/mac machine is required to run. 
