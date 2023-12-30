@@ -177,10 +177,6 @@ describe("solve Boards", () => {
                 expect(strategies[i]).toBeFalsy();
             }
         }
-        let drills:boolean[] = onlyNakedSingles.getDrills();
-        for (let i:StrategyEnum = 0; i < StrategyEnum.HIDDEN_QUADRUPLET - StrategyEnum.NAKED_SINGLE + 1; i++) {
-            expect(drills[i]).toBeFalsy();
-        }
     });
 
     it ('should solve row hidden single', () => {

@@ -60,9 +60,8 @@ export class Board{
 
         this.givensCount = this.solver.getPlacedCount();
 
-        this.drills = this.getDrillStrategies();
-
         this.solve();
+        this.drills = this.moveStrategies[0];
         this.setDifficulty();
     }
 
@@ -130,13 +129,7 @@ export class Board{
      * @returns boolean array representing strategies that can be used as the first step in solving this board
      */
     private getDrillStrategies():boolean[] {
-        // Run through all of the simplify notes so drills that require notes to be removed can be added
-        let solver:Solver = new Solver(this.board);
-        let hints:Hint[] = solver.getAllHints();
-        // Skips over the early game amend and simplify strategies from hints
-        while ((solver.nextStep()).getStrategyType() <= StrategyEnum.SIMPLIFY_NOTES) {
-            hints = solver.getAllHints();
-        }
+        let hints:Hint[] = this.solver.getAllHints();
         // Adds drills
         let drillStrategies:boolean[] = new Array(StrategyEnum.COUNT).fill(false);
         let drillCells:Cell[][] = new Array(StrategyEnum.COUNT);
