@@ -55,7 +55,7 @@ export class Board{
             this.solver = new Solver(this.board, algorithm);
         }
 
-        this.setDrills();
+        this.drills = this.getDrillStrategies();
 
         this.solve();
         this.setDifficulty();
@@ -110,44 +110,45 @@ export class Board{
     }
 
     /**
-     * Adds a StrategyEnum to drills for strategies that can be used as the first step in solving this board
+     * Returns a boolean array representing strategies that can be used as the first step in solving this board
      * If a strategies prereqs are included then it is excluded in order to ensure good examples of strategies are used
      * For example, if there is a naked pair made up of two naked singles only the naked single will be used as a drill
-     * Amend and simplify notes are excluded as they don't make very helpful drills, better to leave them as lessons
+     * Amend and simplify notes are excluded as they don't make very helpful drills, better to leave them as lessons (still in array just false)
+     * @returns boolean array representing strategies that can be used as the first step in solving this board
      */
-    private setDrills():void {
+    private getDrillStrategies():boolean[] {
         // Run through all of the simplify notes so drills that require notes to be removed can be added
         let solver:Solver = new Solver(this.board);
         let hints:Hint[] = solver.getAllHints();
-        // Excludes amend and simplify strategies from hints as they are highest priority
+        // Skips over the early game amend and simplify strategies from hints
         while ((solver.nextStep()).getStrategyType() <= StrategyEnum.SIMPLIFY_NOTES) {
             hints = solver.getAllHints();
         }
         // Adds drills
-        this.drills = new Array(StrategyEnum.COUNT).fill(false);
+        let drillStrategies:boolean[] = new Array(StrategyEnum.COUNT).fill(false);
         let drillCells:Cell[][] = new Array(StrategyEnum.COUNT);
         for (let i:number = 0; i < hints.length; i++) {
-            this.drills[hints[i].getStrategyType()] = true;
+            drillStrategies[hints[i].getStrategyType()] = true;
             drillCells[hints[i].getStrategyType()] = hints[i].getCellsCause();
         }
         // Removes strategies whose prereqs are included
-        for (let i:number = 0; i < this.drills.length; i++) {
-            if (this.drills[i]) {
+        for (let i:number = 0; i < drillStrategies.length; i++) {
+            if (drillStrategies[i]) {
                 let prereqs:StrategyEnum[] = this.getPrereqs(i);
                 for (let j:number = 0; j < prereqs.length; j++) {
                     // Checks if there is a drill that is a prereq of the current drill, if so sees if they overlap in which case drill is excluded
-                    if (this.drills[prereqs[j]]) {
+                    if (drillStrategies[prereqs[j]]) {
                         let drillA:Cell[] = drillCells[i];
-                        let drillB:Cell[] =drillCells[prereqs[j]];
+                        let drillB:Cell[] = drillCells[prereqs[j]];
                         if (anyCellsEqual(drillA, drillB)) {
-                            this.drills[i] = false;
+                            drillStrategies[i] = false;
                             j = prereqs.length;
                         }
                     }
                 }
             }
         }
-        return;
+        return drillStrategies;
     }
 
     /**
