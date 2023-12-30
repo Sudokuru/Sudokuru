@@ -13,6 +13,6 @@ export function getPuzzleData(board: string): JSON {
         "difficulty": boardObj.getDifficulty(),
         "givensCount": boardObj.getGivensCount(),
         "puzzleStrategies": boardObj.getStrategies().slice(StrategyEnum.NAKED_SINGLE, StrategyEnum.HIDDEN_QUADRUPLET + 1), // excludes amend/simplify notes strategies and everything past hidden quadruplet
-        "moveStrategies": boardObj.getMoveStrategies() // excludes amend/simplify notes strategies and everything past hidden quadruplet
+        "drills": boardObj.getDrills() // index of last time strategy can be used as drill or -1 if never (e.g. if on last move then 80 cause 80 cells filled in on last move), excludes amend/simplify notes strategies and everything past hidden quadruplet
     };
 }

@@ -22,8 +22,7 @@ export class Board{
     private solution: string[][];
     private solutionString: string;
     private strategies: boolean[];
-    private moveStrategies: boolean[][]; // stores drillStrategies for each move
-    private drills: boolean[];
+    private drills: number[]; // stores last time strategy can be used as drill or -1 if never
     private difficulty: number;
     private solver: Solver;
     private givensCount: number;
@@ -48,8 +47,7 @@ export class Board{
         this.board = getBoardArray(board);
 
         this.strategies = new Array(StrategyEnum.COUNT).fill(false);
-        this.drills = new Array(StrategyEnum.COUNT).fill(false);
-        this.moveStrategies = new Array();
+        this.drills = new Array(StrategyEnum.HIDDEN_QUADRUPLET-StrategyEnum.NAKED_SINGLE+1).fill(-1);
 
         if (algorithm === undefined) {
             this.solver = new Solver(this.board);
@@ -61,7 +59,6 @@ export class Board{
         this.givensCount = this.solver.getPlacedCount();
 
         this.solve();
-        this.drills = this.moveStrategies[0];
         this.setDifficulty();
     }
 
@@ -106,14 +103,6 @@ export class Board{
     }
 
     /**
-     * Get drills
-     * @returns drills
-     */
-    public getDrills():boolean[] {
-        return this.drills;
-    }
-
-    /**
      * Get givensCount
      * @returns number of givens
      */
@@ -122,11 +111,11 @@ export class Board{
     }
 
     /**
-     * Get moveStrategies
-     * @returns moveStrategies
+     * Get drills
+     * @returns drills
      */
-    public getMoveStrategies():boolean[][] {
-        return this.moveStrategies;
+    public getDrills():number[] {
+        return this.drills;
     }
 
     /**
@@ -227,15 +216,12 @@ export class Board{
 
             // Records what strategies were used for each move
             let move:boolean[] = this.getDrillStrategies();
-            // Moves are classified as one per value insertion so check if move has already started and if so add to it
-            // moveStrategies array index 0 is for when placedCount == givensCount and 1 is givensCount + 1 and so on
-            let moveIndex:number = this.solver.getPlacedCount() - this.givensCount;
-            if (moveIndex >= this.moveStrategies.length) {
-                this.moveStrategies.push(move);
-            }
-            else {
-                for (let i:number = 0; i < move.length; i++) {
-                    this.moveStrategies[moveIndex][i] = this.moveStrategies[moveIndex][i] || move[i];
+            // Moves are classified as one per value insertion (so 80 is last move)
+            // drills array index 0 is naked single and index 9 is hidden quadruplet
+            // each index stores the last time the strategy can be used as a drill or -1 if never
+            for (let i:number = 0; i < move.length; i++) {
+                if (move[i]) {
+                    this.drills[i] = this.solver.getPlacedCount();
                 }
             }
 
