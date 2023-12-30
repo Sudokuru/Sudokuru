@@ -442,6 +442,8 @@ Describes the action that the hint is suggesting.
 81 character string representing the solution to the puzzle (left to right top to bottom)
 ## difficulty
 Number representing the difficulty of the puzzle (higher is harder)
+## givensCount
+Number representing the number of givens i.e. pre-filled cells in the puzzle
 ## puzzleStrategies
 Boolean array representing which strategies were used to solve the puzzle in following order (subset of StrategyEnum):
 - 0: NAKED_SINGLE,

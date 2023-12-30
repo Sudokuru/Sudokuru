@@ -26,6 +26,7 @@ export class Board{
     private drills: boolean[];
     private difficulty: number;
     private solver: Solver;
+    private givensCount: number;
 
     /**
      * Creates board object if valid, otherwise throws error
@@ -55,6 +56,8 @@ export class Board{
         else {
             this.solver = new Solver(this.board, algorithm);
         }
+
+        this.givensCount = this.solver.getPlacedCount();
 
         this.drills = this.getDrillStrategies();
 
@@ -108,6 +111,14 @@ export class Board{
      */
     public getDrills():boolean[] {
         return this.drills;
+    }
+
+    /**
+     * Get givensCount
+     * @returns number of givens
+     */
+    public getGivensCount():number {
+        return this.givensCount;
     }
 
     /**
