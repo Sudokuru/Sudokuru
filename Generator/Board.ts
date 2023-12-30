@@ -22,6 +22,7 @@ export class Board{
     private solution: string[][];
     private solutionString: string;
     private strategies: boolean[];
+    private moveStrategies: boolean[][]; // stores drillStrategies for each move
     private drills: boolean[];
     private difficulty: number;
     private solver: Solver;
