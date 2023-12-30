@@ -22,7 +22,7 @@ export class Board{
     private solution: string[][];
     private solutionString: string;
     private strategies: boolean[];
-    private moveStrategies: number[]; // stores last time strategy can be used as drill or -1 if never
+    private drills: number[]; // stores last time strategy can be used as drill or -1 if never
     private difficulty: number;
     private solver: Solver;
     private givensCount: number;
@@ -47,7 +47,7 @@ export class Board{
         this.board = getBoardArray(board);
 
         this.strategies = new Array(StrategyEnum.COUNT).fill(false);
-        this.moveStrategies = new Array(StrategyEnum.HIDDEN_QUADRUPLET-StrategyEnum.NAKED_SINGLE+1).fill(-1);
+        this.drills = new Array(StrategyEnum.HIDDEN_QUADRUPLET-StrategyEnum.NAKED_SINGLE+1).fill(-1);
 
         if (algorithm === undefined) {
             this.solver = new Solver(this.board);
@@ -111,11 +111,11 @@ export class Board{
     }
 
     /**
-     * Get moveStrategies
-     * @returns moveStrategies
+     * Get drills
+     * @returns drills
      */
-    public getMoveStrategies():number[] {
-        return this.moveStrategies;
+    public getDrills():number[] {
+        return this.drills;
     }
 
     /**
@@ -217,11 +217,11 @@ export class Board{
             // Records what strategies were used for each move
             let move:boolean[] = this.getDrillStrategies();
             // Moves are classified as one per value insertion (so 80 is last move)
-            // moveStrategies array index 0 is naked single and index 9 is hidden quadruplet
+            // drills array index 0 is naked single and index 9 is hidden quadruplet
             // each index stores the last time the strategy can be used as a drill or -1 if never
             for (let i:number = 0; i < move.length; i++) {
                 if (move[i]) {
-                    this.moveStrategies[i] = this.solver.getPlacedCount();
+                    this.drills[i] = this.solver.getPlacedCount();
                 }
             }
 
