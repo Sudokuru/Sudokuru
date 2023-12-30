@@ -113,7 +113,7 @@ export class Board{
      * Returns a boolean array representing strategies that can be used as the first step in solving this board
      * If a strategies prereqs are included then it is excluded in order to ensure good examples of strategies are used
      * For example, if there is a naked pair made up of two naked singles only the naked single will be used as a drill
-     * Amend and simplify notes are excluded as they don't make very helpful drills, better to leave them as lessons (still in array just false)
+     * Excludes amend and simplify notes as well as any strategies past hidden quadruplet in StrategyEnum (so index 0 is naked single and index 9 is hidden quadruplet)
      * @returns boolean array representing strategies that can be used as the first step in solving this board
      */
     private getDrillStrategies():boolean[] {
@@ -148,7 +148,7 @@ export class Board{
                 }
             }
         }
-        return drillStrategies;
+        return drillStrategies.slice(StrategyEnum.NAKED_SINGLE, StrategyEnum.HIDDEN_QUADRUPLET + 1);
     }
 
     /**
