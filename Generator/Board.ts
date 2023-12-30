@@ -122,6 +122,14 @@ export class Board{
     }
 
     /**
+     * Get moveStrategies
+     * @returns moveStrategies
+     */
+    public getMoveStrategies():boolean[][] {
+        return this.moveStrategies;
+    }
+
+    /**
      * Returns a boolean array representing strategies that can be used as the first step in solving this board
      * If a strategies prereqs are included then it is excluded in order to ensure good examples of strategies are used
      * For example, if there is a naked pair made up of two naked singles only the naked single will be used as a drill

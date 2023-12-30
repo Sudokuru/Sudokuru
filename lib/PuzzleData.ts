@@ -12,6 +12,7 @@ export function getPuzzleData(board: string): JSON {
         "solution": boardObj.getSolutionString(),
         "difficulty": boardObj.getDifficulty(),
         "givensCount": boardObj.getGivensCount(),
-        "puzzleStrategies": boardObj.getStrategies().slice(StrategyEnum.NAKED_SINGLE, StrategyEnum.HIDDEN_QUADRUPLET + 1) // excludes amend/simplify notes strategies and everything past hidden quadruplet
+        "puzzleStrategies": boardObj.getStrategies().slice(StrategyEnum.NAKED_SINGLE, StrategyEnum.HIDDEN_QUADRUPLET + 1), // excludes amend/simplify notes strategies and everything past hidden quadruplet
+        "moveStrategies": boardObj.getMoveStrategies() // excludes amend/simplify notes strategies and everything past hidden quadruplet
     };
 }
