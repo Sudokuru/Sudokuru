@@ -442,6 +442,18 @@ Describes the action that the hint is suggesting.
 81 character string representing the solution to the puzzle (left to right top to bottom)
 ## difficulty
 Number representing the difficulty of the puzzle (higher is harder)
+## puzzleStrategies
+Boolean array representing which strategies were used to solve the puzzle in following order (subset of StrategyEnum):
+- 0: NAKED_SINGLE,
+- 1: HIDDEN_SINGLE,
+- 2: NAKED_PAIR,
+- 3: HIDDEN_PAIR,
+- 4: POINTING_PAIR,
+- 5: NAKED_TRIPLET,
+- 6: HIDDEN_TRIPLET,
+- 7: POINTING_TRIPLET,
+- 8: NAKED_QUADRUPLET,
+- 9: HIDDEN_QUADRUPLET,
 # Developer Tools
 
 **Note**: This project is using Bun. This means WSL or a linux/mac machine is required to run. 
