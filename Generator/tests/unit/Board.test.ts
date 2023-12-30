@@ -146,7 +146,7 @@ describe("solve Boards", () => {
 
     it('should solve single naked single', () => {
         expect(singleNakedSingle.getSolutionString()).toBe(TestBoards.SINGLE_NAKED_SINGLE_SOLUTION);
-        let drills:boolean[] = singleNakedSingle.getDrills();
+        /*let drills:boolean[] = singleNakedSingle.getDrills();
         for (let i:StrategyEnum = (StrategyEnum.INVALID + 1); i < StrategyEnum.COUNT; i++) {
             // subtracted naked single cause it's the first strategy once amend/simplify are removed by getDrillStrategies()
             if (i === StrategyEnum.NAKED_SINGLE) {
@@ -155,7 +155,7 @@ describe("solve Boards", () => {
             else {
                 expect(drills[i- StrategyEnum.NAKED_SINGLE]).toBeFalsy();
             }
-        }
+        }*/
         for (let i:number = 0; i < StrategyEnum.COUNT; i++) {
             if (i === StrategyEnum.NAKED_SINGLE || i === StrategyEnum.AMEND_NOTES) {
                 expect(singleNakedSingle.getStrategies()[i]).toBeTruthy();

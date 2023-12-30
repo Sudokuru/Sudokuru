@@ -22,8 +22,7 @@ export class Board{
     private solution: string[][];
     private solutionString: string;
     private strategies: boolean[];
-    private moveStrategies: boolean[][]; // stores drillStrategies for each move
-    private drills: boolean[];
+    private moveStrategies: boolean[][]; // stores last time strategy can be used as drill or -1 if never
     private difficulty: number;
     private solver: Solver;
     private givensCount: number;
@@ -48,7 +47,6 @@ export class Board{
         this.board = getBoardArray(board);
 
         this.strategies = new Array(StrategyEnum.COUNT).fill(false);
-        this.drills = new Array(StrategyEnum.COUNT).fill(false);
         this.moveStrategies = new Array();
 
         if (algorithm === undefined) {
@@ -61,7 +59,6 @@ export class Board{
         this.givensCount = this.solver.getPlacedCount();
 
         this.solve();
-        this.drills = this.moveStrategies[0];
         this.setDifficulty();
     }
 
@@ -103,14 +100,6 @@ export class Board{
      */
     public getDifficulty():number {
         return this.difficulty;
-    }
-
-    /**
-     * Get drills
-     * @returns drills
-     */
-    public getDrills():boolean[] {
-        return this.drills;
     }
 
     /**
