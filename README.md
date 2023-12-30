@@ -442,6 +442,25 @@ Describes the action that the hint is suggesting.
 81 character string representing the solution to the puzzle (left to right top to bottom)
 ## difficulty
 Number representing the difficulty of the puzzle (higher is harder)
+## givensCount
+Number representing the number of givens i.e. pre-filled cells in the puzzle
+## puzzleStrategies
+Boolean array representing which strategies were used to solve the puzzle in following order (subset of StrategyEnum):
+- 0: NAKED_SINGLE,
+- 1: HIDDEN_SINGLE,
+- 2: NAKED_PAIR,
+- 3: HIDDEN_PAIR,
+- 4: POINTING_PAIR,
+- 5: NAKED_TRIPLET,
+- 6: HIDDEN_TRIPLET,
+- 7: POINTING_TRIPLET,
+- 8: NAKED_QUADRUPLET,
+- 9: HIDDEN_QUADRUPLET,
+## moveStrategies
+- 2D boolean array representing which strategies can reasonably be used as drills at each "move".
+- A move is defined as the puzzle when it has a certain number of cells filled in (so index 0 just has givens and last index has all cells filled in).
+- Reasonably is defined as to mean removing strategies if they overlap with their prereqs (i.e. if a naked pair is made up of two naked singles the pair will be excluded) and not counting a strategy if multiple instances of it are present so their is only one correct answer.
+- The same boolean index to strategy mapping as puzzleStrategies is used.
 # Developer Tools
 
 **Note**: This project is using Bun. This means WSL or a linux/mac machine is required to run. 
