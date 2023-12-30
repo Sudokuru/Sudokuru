@@ -456,11 +456,11 @@ Boolean array representing which strategies were used to solve the puzzle in fol
 - 7: POINTING_TRIPLET,
 - 8: NAKED_QUADRUPLET,
 - 9: HIDDEN_QUADRUPLET,
-## moveStrategies
-- 2D boolean array representing which strategies can reasonably be used as drills at each "move".
-- A move is defined as the puzzle when it has a certain number of cells filled in (so index 0 just has givens and last index has all cells filled in).
+## drills
+- 1D number array representing last time strategy can be reasonably used as drill or -1 if it can't be used as a drill
+- Each index is defined as the puzzle when it has a certain number of cells filled in (so index 30 has 30 cells filled in including givens).
 - Reasonably is defined as to mean removing strategies if they overlap with their prereqs (i.e. if a naked pair is made up of two naked singles the pair will be excluded) and not counting a strategy if multiple instances of it are present so their is only one correct answer.
-- The same boolean index to strategy mapping as puzzleStrategies is used.
+- The same number index to strategy mapping as puzzleStrategies is used.
 # Developer Tools
 
 **Note**: This project is using Bun. This means WSL or a linux/mac machine is required to run. 
