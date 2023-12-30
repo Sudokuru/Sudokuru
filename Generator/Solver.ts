@@ -17,6 +17,8 @@ export class Solver{
     private cellBoard: CellBoard;
     // Stores representation of board being solved
     private board: Cell[][];
+    // Stores current number of placed values (including givens)
+    private placedCount: number;
     // Stores empty cells in board
     private emptyCells: Cell[][];
     // Stores whether or not the board has been successfully solved
@@ -38,6 +40,14 @@ export class Solver{
      */
     constructor(board: string[][], algorithm: StrategyEnum[] = Strategy.getDefaultAlgorithm(), notes?: string[][], solution?: string[][]) {
         this.board = getCellBoard(board);
+        this.placedCount = 0;
+        for (let row:number = 0; row < SudokuEnum.COLUMN_LENGTH; row++) {
+            for (let column:number = 0; column < SudokuEnum.ROW_LENGTH; column++) {
+                if (!this.board[row][column].isEmpty()) {
+                    this.placedCount++;
+                }
+            }
+        }
         this.cellBoard = new CellBoard(this.board);
         if (notes !== undefined) {
             this.setNotes(notes);
@@ -222,6 +232,14 @@ export class Solver{
     }
 
     /**
+     * Returns current number of placed values (including givens)
+     * @returns number of placed values
+     */
+    public getPlacedCount():number {
+        return this.placedCount;
+    }
+
+    /**
      * Sets boards notes to given notes
      * @param notes - array of notes arrays in order (one array with an array for each cell)
      */
@@ -267,6 +285,7 @@ export class Solver{
             row = cells[i].getRow();
             column = cells[i].getColumn();
             this.cellBoard.setValue(row, column, cells[i].getValue());
+            this.placedCount++;
         }
         return;
     }
