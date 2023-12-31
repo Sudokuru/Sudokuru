@@ -13,9 +13,7 @@
 # Table of Contents
 
 *   [Installation](#installation)
-    *   [Command Line Interface Installation](#command-line-interface-installation)
 *   [Usage](#usage)
-    *   [Command Line](#command-line)
     *   [JavaScript](#javascript)
         *   [Hint File](#hint-file)
             *   [getHint()](#gethint)
@@ -95,32 +93,7 @@
 npm install sudokuru
 ```
 
-## Command Line Interface Installation
-
-```shell
-# Navigate to sudokuru Generator folder
-cd Generator
-```
-
 # Usage
-
-## Command Line
-
-```shell
-# Generate puzzles:
-# filepath: Gets puzzles from inputPuzzles.txt (only integers, newline indicates new puzzle)
-# start: Ignores puzzle strings until the 2nd puzzle (1 indexed) which it includes in output
-# end: Ignores all puzzle strings after 4th puzzle (1 indexed) which it includes in output
-# batchSize: Puts 2 puzzle JSON objects in each JSON array (1 per line) in puzzles.txt
-# Note: If number of puzzles is not evenly divisible by batchSize last array will have fewer puzzles
-npm run generate --filepath=Generator/inputPuzzles.txt --start=2 --end=4 --batchsize=2
-
-# Upload puzzles:
-# endpoint: For each line in puzzles.txt uploads JSON array as POST request to http://localhost:3000/api/v1/puzzles/
-# token: Authentication token
-# throttle: Milliseconds to delay between uploading each batch (set to 0 to have no delay)
-npm run upload --endpoint=http://localhost:3000/api/v1/puzzles/ --token=PDQ88b2060B01189998819991197253 --throttle=1000
-```
 
 ## JavaScript
 
