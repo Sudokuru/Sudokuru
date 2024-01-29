@@ -11,8 +11,9 @@ import { StrategyEnum } from "../Generator/Sudoku";
  * @returns JSON object containing hint data
  */
 export function getHint(board: string[][], notes: string[][], strategies?: string[], solution?: string[][]):JSON {
-    let algorithm:number[] = new Array();
+    let algorithm:number[] = undefined;
     if (strategies !== undefined) {
+        algorithm = [];
         for (let i:number = (StrategyEnum.INVALID + 1); i < StrategyEnum.COUNT; i++) {
             for (let j:number = 0; j < strategies.length; j++) {
                 if (StrategyEnum[i] === strategies[j]) {
