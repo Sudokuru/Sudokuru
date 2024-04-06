@@ -1,0 +1,9 @@
+default_stages: [pre-commit, pre-push]
+repos:
+  - repo: local
+    hooks:
+      - id: bun
+        name: bun
+        entry: npx bun test
+        always_run: true
+        language: system
