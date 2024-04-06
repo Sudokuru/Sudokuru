@@ -31,7 +31,7 @@ jobs:
       with:
         node-version: 16.x
         
-    - run: npm i
+    - run: npm i --ignore-scripts
     - run: npm run test
     - name: Test Reporter
       uses: dorny/test-reporter@v1
@@ -81,7 +81,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - run: | 
-          npm i
+          npm i --ignore-scripts
           npm run build
           npm publish
         env:
@@ -101,7 +101,7 @@ jobs:
         with:
           node-version: 16.x
 
-      - run: npm i
+      - run: npm i --ignore-scripts
       - run: npm run update-docs
 
       - name: Upload artifact
