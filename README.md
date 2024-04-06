@@ -444,6 +444,18 @@ git clone https://github.com/SudoKuru/Sudokuru.git
 
 [Install pre-commit hooks](https://pre-commit.com/#install)
 
+Pre-commit hooks can be run manually with below command, but
+will always run before git commit and git push if setup correctly.
+
+```shell
+npx run pre-commit
+```
+
+```bun......................................................................Passed```
+
+Should appear in the git output logs after a commit.
+
+
 ```shell
 # Install Developer Dependencies
 bun install
