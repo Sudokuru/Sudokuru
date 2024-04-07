@@ -444,11 +444,20 @@ git clone https://github.com/SudoKuru/Sudokuru.git
 
 [Install pre-commit hooks](https://pre-commit.com/#install)
 
+Run one of the below commands to setup pre-commit hooks:
+
+```shell
+bun install # or npm install
+```
+```shell
+npm run prepare
+```
+
 Pre-commit hooks can be run manually with below command, but
 will always run before git commit and git push if setup correctly.
 
 ```shell
-npx run pre-commit
+npm run pre-commit
 ```
 
 ```bun......................................................................Passed```
