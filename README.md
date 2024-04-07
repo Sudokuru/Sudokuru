@@ -434,34 +434,70 @@ Boolean array representing which strategies were used to solve the puzzle in fol
 - Each index is defined as the puzzle when it has a certain number of cells filled in (so index 30 has 30 cells filled in including givens).
 - Reasonably is defined as to mean removing strategies if they overlap with their prereqs (i.e. if a naked pair is made up of two naked singles the pair will be excluded) and not counting a strategy if multiple instances of it are present so their is only one correct answer.
 - The same number index to strategy mapping as puzzleStrategies is used.
+
 # Developer Tools
 
-**Note**: This project is using Bun. This means WSL or a linux/mac machine is required to run. 
+Clone Repository
 ```shell
-# Clone Repository
 git clone https://github.com/SudoKuru/Sudokuru.git
+```
 
+[Install pre-commit hooks](https://pre-commit.com/#install)
+
+Run one of the below commands to setup pre-commit hooks:
+
+```shell
+bun install # or npm install
+```
+```shell
+npm run prepare
+```
+
+Pre-commit hooks can be run manually with below command, but
+will always run before git commit and git push if setup correctly.
+
+```shell
+npm run pre-commit
+```
+
+```bun......................................................................Passed```
+
+Should appear in the git output logs after a commit.
+
+
+```shell
 # Install Developer Dependencies
 bun install
+```
 
-# Run Tests
-# Coverage reports are automatically generated can can be viewed in `jest-coverage` folder
+Run Tests
+
+Coverage reports are automatically generated can can be viewed in `jest-coverage` folder
+```shell
 npm run test
-
-# Run Tests without coverage (faster)
+```
+Run Tests without coverage (faster)
+```shell
 bun test
+```
 
-# Build dist Folder
+Build dist Folder
+```shell
 bun build
+```
 
-# Create Local TypeDoc Documentation
+Create Local TypeDoc Documentation
+```shell
 bun update-docs
+```
 
-# The following can also be done after installing the npm package by navigating to node_modules/sudokuru
+The following can also be done after installing the npm package by navigating to node_modules/sudokuru
 
-# Run Demo Server on http://localhost:3100/
+Run Demo Server on http://localhost:3100/
+```shell
 bun start
-
+```
+```shell
 # Can open interactive Solver Demo in browser while Demo Server is running (Generator/Demo/demo.html)
 
 # Demo Server provides the following fakes for Puzzle Class (use http://localhost:3100/ as url)
