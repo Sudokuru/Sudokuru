@@ -4,6 +4,7 @@ repos:
     hooks:
       - id: bun
         name: bun
-        entry: npx bun test
+        entry: bun test
         always_run: true
         language: system
+        verbose: false
