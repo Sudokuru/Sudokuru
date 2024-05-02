@@ -23,13 +23,11 @@ puzzles = puzzles.slice(0, 4);
 solutions = solutions.slice(0, 4);
 solveTimeSeconds = solveTimeSeconds.slice(0, 4);
 
-let refutationScores:number[] = [];
-let dependencyScores:number[] = [];
-let rdScores:number[] = [];
-let notGivens:number[] = [];
+function getDifficultyMetrics(puzzle:string, solution:string, solveTimeSeconds:number):number[] {
 
-for (let i:number = 0; i < puzzles.length; i++) {
-    let board:Cell[][] = getCellBoard(getBoardArray(puzzles[i]));
+    let refutationScore:number, dependencyScore:number, rdScore:number, notGivens:number;
+    let board:Cell[][] = getCellBoard(getBoardArray(puzzle));
+
     // Add all notes to board
     for (let r:number = 0; r < 9; r++) {
         for (let c:number = 0; c < 9; c++) {
@@ -38,6 +36,7 @@ for (let i:number = 0; i < puzzles.length; i++) {
             }
         }
     }
+
     // Simplify notes based on givens
     for (let r:number = 0; r < 9; r++) {
         for (let c:number = 0; c < 9; c++) {
@@ -46,11 +45,27 @@ for (let i:number = 0; i < puzzles.length; i++) {
             }
         }
     }
-    let solution:string[][] = getBoardArray(solutions[i]);
-    refutationScores.push(Refutation.getRefutationScore(board, solution, 1));
-    dependencyScores.push(Dependency.getDependencyScore(board));
-    rdScores.push(refutationScores[i] + (-1 * dependencyScores[i]));
-    notGivens.push((puzzles[i].match(/0/g) || []).length);
+
+    let solutionBoard:string[][] = getBoardArray(solution);
+    refutationScore = Refutation.getRefutationScore(board, solutionBoard, 1);
+    dependencyScore = Dependency.getDependencyScore(board);
+    notGivens = (puzzle.match(/0/g) || []).length;
+
+    return [refutationScore, dependencyScore, notGivens];
+}
+
+
+let refutationScores:number[] = [];
+let dependencyScores:number[] = [];
+let notGivens:number[] = [];
+let rdScores:number[] = [];
+
+for (let i:number = 0; i < puzzles.length; i++) {
+    let metrics:number[] = getDifficultyMetrics(puzzles[i], solutions[i], solveTimeSeconds[i]);
+    refutationScores.push(metrics[0]);
+    dependencyScores.push(metrics[1]);
+    notGivens.push(metrics[2]);
+    rdScores.push(metrics[0] + (-1 * metrics[1]));
 }
 
 console.log("Givens correlation coefficient: " + calculateCorrelation(notGivens, solveTimeSeconds));
