@@ -130,8 +130,24 @@ function printCorrelationScores(puzzlesMetrics:PuzzleMetrics[]):void{
 
 console.log("Sudoku of the day data:");
 let puzzlesMetrics:PuzzleMetrics[] = getPuzzlesMetrics(puzzles, solutions, solveTimeSeconds);
+console.table(puzzlesMetrics.map((puzzleMetrics:PuzzleMetrics) => {
+    return {
+        solveTimeSeconds: puzzleMetrics.solveTimeSeconds,
+        refutationScore: puzzleMetrics.difficultyMetrics.refutationScore,
+        dependencyScore: puzzleMetrics.difficultyMetrics.dependencyScore,
+        notGivens: puzzleMetrics.difficultyMetrics.notGivens
+    };
+}));
 printCorrelationScores(puzzlesMetrics);
 
 console.log("\nSudokuru data:");
 let sudokuruPuzzlesMetrics:PuzzleMetrics[] = getPuzzlesMetrics(sudokuruPuzzles, sudokuruSolutions, sudokuruSolveTimeSeconds);
+console.table(sudokuruPuzzlesMetrics.map((puzzleMetrics:PuzzleMetrics) => {
+    return {
+        solveTimeSeconds: puzzleMetrics.solveTimeSeconds,
+        refutationScore: puzzleMetrics.difficultyMetrics.refutationScore,
+        dependencyScore: puzzleMetrics.difficultyMetrics.dependencyScore,
+        notGivens: puzzleMetrics.difficultyMetrics.notGivens
+    };
+}));
 printCorrelationScores(sudokuruPuzzlesMetrics);
