@@ -23,10 +23,16 @@ puzzles = puzzles.slice(0, 4);
 solutions = solutions.slice(0, 4);
 solveTimeSeconds = solveTimeSeconds.slice(0, 4);
 
-function getDifficultyMetrics(puzzle:string, solution:string, solveTimeSeconds:number):number[] {
+interface DifficultyMetrics {
+    refutationScore?:number;
+    dependencyScore?:number;
+    notGivens?:number;
+}
 
-    let refutationScore:number, dependencyScore:number, rdScore:number, notGivens:number;
+function getDifficultyMetrics(puzzle:string, solution:string, solveTimeSeconds:number):DifficultyMetrics {
+
     let board:Cell[][] = getCellBoard(getBoardArray(puzzle));
+    let solutionBoard:string[][] = getBoardArray(solution);
 
     // Add all notes to board
     for (let r:number = 0; r < 9; r++) {
@@ -46,12 +52,12 @@ function getDifficultyMetrics(puzzle:string, solution:string, solveTimeSeconds:n
         }
     }
 
-    let solutionBoard:string[][] = getBoardArray(solution);
-    refutationScore = Refutation.getRefutationScore(board, solutionBoard, 1);
-    dependencyScore = Dependency.getDependencyScore(board);
-    notGivens = (puzzle.match(/0/g) || []).length;
+    let metrics:DifficultyMetrics = {};
+    metrics.refutationScore = Refutation.getRefutationScore(board, solutionBoard, 1);
+    metrics.dependencyScore = Dependency.getDependencyScore(board);
+    metrics.notGivens = (puzzle.match(/0/g) || []).length;
 
-    return [refutationScore, dependencyScore, notGivens];
+    return metrics;
 }
 
 
@@ -61,11 +67,11 @@ let notGivens:number[] = [];
 let rdScores:number[] = [];
 
 for (let i:number = 0; i < puzzles.length; i++) {
-    let metrics:number[] = getDifficultyMetrics(puzzles[i], solutions[i], solveTimeSeconds[i]);
-    refutationScores.push(metrics[0]);
-    dependencyScores.push(metrics[1]);
-    notGivens.push(metrics[2]);
-    rdScores.push(metrics[0] + (-1 * metrics[1]));
+    let metrics:DifficultyMetrics = getDifficultyMetrics(puzzles[i], solutions[i], solveTimeSeconds[i]);
+    refutationScores.push(metrics.refutationScore);
+    dependencyScores.push(metrics.dependencyScore);
+    notGivens.push(metrics.notGivens);
+    rdScores.push(metrics.refutationScore + (-1 * metrics.dependencyScore));
 }
 
 console.log("Givens correlation coefficient: " + calculateCorrelation(notGivens, solveTimeSeconds));
