@@ -65,12 +65,11 @@ function getDifficultyMetrics(puzzle:string, solution:string):DifficultyMetrics 
         }
     }
 
-    let metrics:DifficultyMetrics = {};
-    metrics.refutationScore = Refutation.getRefutationScore(board, solutionBoard, 1);
-    metrics.dependencyScore = Dependency.getDependencyScore(board);
-    metrics.notGivens = (puzzle.match(/0/g) || []).length;
-
-    return metrics;
+    return {
+        refutationScore: Refutation.getRefutationScore(board, solutionBoard, 1),
+        dependencyScore: Dependency.getDependencyScore(board),
+        notGivens: (puzzle.match(/0/g) || []).length
+    };
 }
 
 function getPuzzleMetrics(puzzle:string, solution:string, solveTimeSeconds:number):PuzzleMetrics {
