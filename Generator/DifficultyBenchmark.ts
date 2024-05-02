@@ -72,6 +72,13 @@ function getDifficultyMetrics(puzzle:string, solution:string):DifficultyMetrics 
     };
 }
 
+/**
+ * Given a puzzle, solution, and solve time, returns metrics for the puzzle
+ * @param puzzle - string representation of the puzzle
+ * @param solution - string representation of the solution
+ * @param solveTimeSeconds - time taken human(s) to solve the puzzle in seconds
+ * @returns metrics for the puzzle
+ */
 function getPuzzleMetrics(puzzle:string, solution:string, solveTimeSeconds:number):PuzzleMetrics {
     let metrics:DifficultyMetrics = getDifficultyMetrics(puzzle, solution);
     return {
@@ -82,6 +89,13 @@ function getPuzzleMetrics(puzzle:string, solution:string, solveTimeSeconds:numbe
     };
 }
 
+/**
+ * Given arrays of puzzles, solutions, and solve times, returns metrics for each puzzle
+ * @param puzzles - array of puzzle strings
+ * @param solutions - array of solution strings
+ * @param solveTimeSeconds - array of solve times in seconds
+ * @returns array of metrics for each puzzle
+ */
 function getPuzzlesMetrics(puzzles:string[], solutions:string[], solveTimeSeconds:number[]):PuzzleMetrics[] {
     let puzzlesMetrics:PuzzleMetrics[] = [];
     for (let i:number = 0; i < puzzles.length; i++) {
@@ -90,6 +104,10 @@ function getPuzzlesMetrics(puzzles:string[], solutions:string[], solveTimeSecond
     return puzzlesMetrics;
 }
 
+/**
+ * Given an array of metrics for each puzzle, prints correlation scores for givens, refutation score, dependency score, and combined refutation+dependency score
+ * @param puzzlesMetrics - array of metrics for each puzzle
+ */
 function printCorrelationScores(puzzlesMetrics:PuzzleMetrics[]):void{
     let refutationScores:number[] = [];
     let dependencyScores:number[] = [];
