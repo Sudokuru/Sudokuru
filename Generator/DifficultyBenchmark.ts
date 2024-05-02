@@ -29,6 +29,13 @@ interface DifficultyMetrics {
     notGivens?:number;
 }
 
+/**
+ * Calculates difficulty metrics for provided puzzle
+ * @param puzzle - string representation of the puzzle
+ * @param solution - string representation of the solution
+ * @param solveTimeSeconds - time taken human(s) to solve the puzzle in seconds
+ * @returns calculated difficulty metrics for the puzzle
+ */
 function getDifficultyMetrics(puzzle:string, solution:string, solveTimeSeconds:number):DifficultyMetrics {
 
     let board:Cell[][] = getCellBoard(getBoardArray(puzzle));
