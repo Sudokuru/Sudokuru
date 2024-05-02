@@ -29,6 +29,13 @@ interface DifficultyMetrics {
     notGivens?:number;
 }
 
+interface PuzzleMetrics {
+    puzzle:string;
+    solution:string;
+    solveTimeSeconds:number;
+    difficultyMetrics:DifficultyMetrics;
+}
+
 /**
  * Calculates difficulty metrics for provided puzzle
  * @param puzzle - string representation of the puzzle
@@ -66,18 +73,35 @@ function getDifficultyMetrics(puzzle:string, solution:string):DifficultyMetrics 
     return metrics;
 }
 
+function getPuzzleMetrics(puzzle:string, solution:string, solveTimeSeconds:number):PuzzleMetrics {
+    let metrics:DifficultyMetrics = getDifficultyMetrics(puzzle, solution);
+    return {
+        puzzle: puzzle,
+        solution: solution,
+        solveTimeSeconds: solveTimeSeconds,
+        difficultyMetrics: metrics
+    };
+}
+
+function getPuzzlesMetrics(puzzles:string[], solutions:string[], solveTimeSeconds:number[]):PuzzleMetrics[] {
+    let puzzlesMetrics:PuzzleMetrics[] = [];
+    for (let i:number = 0; i < puzzles.length; i++) {
+        puzzlesMetrics.push(getPuzzleMetrics(puzzles[i], solutions[i], solveTimeSeconds[i]));
+    }
+    return puzzlesMetrics;
+}
 
 let refutationScores:number[] = [];
 let dependencyScores:number[] = [];
 let notGivens:number[] = [];
 let rdScores:number[] = [];
 
-for (let i:number = 0; i < puzzles.length; i++) {
-    let metrics:DifficultyMetrics = getDifficultyMetrics(puzzles[i], solutions[i]);
-    refutationScores.push(metrics.refutationScore);
-    dependencyScores.push(metrics.dependencyScore);
-    notGivens.push(metrics.notGivens);
-    rdScores.push(metrics.refutationScore + (-1 * metrics.dependencyScore));
+let puzzlesMetrics:PuzzleMetrics[] = getPuzzlesMetrics(puzzles, solutions, solveTimeSeconds);
+for (let i:number = 0; i < puzzlesMetrics.length; i++) {
+    refutationScores.push(puzzlesMetrics[i].difficultyMetrics.refutationScore);
+    dependencyScores.push(puzzlesMetrics[i].difficultyMetrics.dependencyScore);
+    notGivens.push(puzzlesMetrics[i].difficultyMetrics.notGivens);
+    rdScores.push(puzzlesMetrics[i].difficultyMetrics.refutationScore + (-1 * puzzlesMetrics[i].difficultyMetrics.dependencyScore));
 }
 
 console.log("Givens correlation coefficient: " + calculateCorrelation(notGivens, solveTimeSeconds));
