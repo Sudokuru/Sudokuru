@@ -90,20 +90,24 @@ function getPuzzlesMetrics(puzzles:string[], solutions:string[], solveTimeSecond
     return puzzlesMetrics;
 }
 
-let refutationScores:number[] = [];
-let dependencyScores:number[] = [];
-let notGivens:number[] = [];
-let rdScores:number[] = [];
+function printCorrelationScores(puzzlesMetrics:PuzzleMetrics[]):void{
+    let refutationScores:number[] = [];
+    let dependencyScores:number[] = [];
+    let notGivens:number[] = [];
+    let rdScores:number[] = [];
 
-let puzzlesMetrics:PuzzleMetrics[] = getPuzzlesMetrics(puzzles, solutions, solveTimeSeconds);
-for (let i:number = 0; i < puzzlesMetrics.length; i++) {
-    refutationScores.push(puzzlesMetrics[i].difficultyMetrics.refutationScore);
-    dependencyScores.push(puzzlesMetrics[i].difficultyMetrics.dependencyScore);
-    notGivens.push(puzzlesMetrics[i].difficultyMetrics.notGivens);
-    rdScores.push(puzzlesMetrics[i].difficultyMetrics.refutationScore + (-1 * puzzlesMetrics[i].difficultyMetrics.dependencyScore));
+    for (let i:number = 0; i < puzzlesMetrics.length; i++) {
+        refutationScores.push(puzzlesMetrics[i].difficultyMetrics.refutationScore);
+        dependencyScores.push(puzzlesMetrics[i].difficultyMetrics.dependencyScore);
+        notGivens.push(puzzlesMetrics[i].difficultyMetrics.notGivens);
+        rdScores.push(puzzlesMetrics[i].difficultyMetrics.refutationScore + (-1 * puzzlesMetrics[i].difficultyMetrics.dependencyScore));
+    }
+
+    console.log("Givens correlation coefficient: " + calculateCorrelation(notGivens, solveTimeSeconds));
+    console.log("Refutation score correlation coefficient: " + calculateCorrelation(refutationScores, solveTimeSeconds));
+    console.log("Dependency score correlation coefficient: " + calculateCorrelation(dependencyScores, solveTimeSeconds));
+    console.log("Combined refutation+dependency score correlation coefficient: " + calculateCorrelation(rdScores, solveTimeSeconds));
 }
 
-console.log("Givens correlation coefficient: " + calculateCorrelation(notGivens, solveTimeSeconds));
-console.log("Refutation score correlation coefficient: " + calculateCorrelation(refutationScores, solveTimeSeconds));
-console.log("Dependency score correlation coefficient: " + calculateCorrelation(dependencyScores, solveTimeSeconds));
-console.log("Combined refutation+dependency score correlation coefficient: " + calculateCorrelation(rdScores, solveTimeSeconds));
+let puzzlesMetrics:PuzzleMetrics[] = getPuzzlesMetrics(puzzles, solutions, solveTimeSeconds);
+printCorrelationScores(puzzlesMetrics);
