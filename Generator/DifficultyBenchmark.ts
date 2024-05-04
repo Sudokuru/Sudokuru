@@ -192,6 +192,13 @@ function printCorrelationScores(correlationScores:CorrelationScores) {
     console.log("");
 }
 
+let averageCorrelationScores:CorrelationScores = {
+    givens: 0,
+    refutationScore: 0,
+    dependencyScore: 0,
+    basicRDScore: 0
+};
+
 for (let i:number = 0; i < data.length; i++) {
     console.log(data[i].name + " data:");
     let puzzlesMetrics:PuzzleMetrics[] = getPuzzlesMetrics(data[i].puzzles, data[i].solutions, data[i].solveTimeSeconds);
@@ -203,5 +210,20 @@ for (let i:number = 0; i < data.length; i++) {
             notGivens: puzzleMetrics.difficultyMetrics.notGivens
         };
     }));
-    printCorrelationScores(getCorrelationScores(puzzlesMetrics, data[i].solveTimeSeconds));
+    let correlationScores:CorrelationScores = getCorrelationScores(puzzlesMetrics, data[i].solveTimeSeconds);
+
+    averageCorrelationScores.givens += correlationScores.givens;
+    averageCorrelationScores.refutationScore += correlationScores.refutationScore;
+    averageCorrelationScores.dependencyScore += correlationScores.dependencyScore;
+    averageCorrelationScores.basicRDScore += correlationScores.basicRDScore;
+    
+    printCorrelationScores(correlationScores);
 }
+
+averageCorrelationScores.givens /= data.length;
+averageCorrelationScores.refutationScore /= data.length;
+averageCorrelationScores.dependencyScore /= data.length;
+averageCorrelationScores.basicRDScore /= data.length;
+
+console.log("Average correlation scores:");
+printCorrelationScores(averageCorrelationScores);

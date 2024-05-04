@@ -54,3 +54,9 @@ Refutation score correlation coefficient: 0
 Dependency score correlation coefficient: -0.046275503
 Basic combined refutation+dependency score correlation coefficient: 0.046275503
 
+Average correlation scores:
+Givens correlation coefficient: 0.7746813465
+Refutation score correlation coefficient: 0.423601553
+Dependency score correlation coefficient: -0.16772979150000003
+Basic combined refutation+dependency score correlation coefficient: 0.199802477
+
