@@ -1,4 +1,4 @@
-Sudoku of the day data:
+Sudoku of the day 1 data:
 ┌─────────┬──────────────────┬─────────────────┬─────────────────┬───────────┐
 │ (index) │ solveTimeSeconds │ refutationScore │ dependencyScore │ notGivens │
 ├─────────┼──────────────────┼─────────────────┼─────────────────┼───────────┤
@@ -6,15 +6,25 @@ Sudoku of the day data:
 │    1    │       746        │       25        │        3        │    57     │
 │    2    │       898        │       52        │        0        │    57     │
 │    3    │       1410       │       97        │        0        │    56     │
-│    4    │       460        │        0        │       10        │    47     │
-│    5    │       746        │       48        │        2        │    58     │
-│    6    │       898        │       51        │        1        │    57     │
-│    7    │       1410       │       49        │        1        │    56     │
 └─────────┴──────────────────┴─────────────────┴─────────────────┴───────────┘
-Givens correlation coefficient: 0.604952926
-Refutation score correlation coefficient: 0.852016392
-Dependency score correlation coefficient: -0.782954539
-Basic combined refutation+dependency score correlation coefficient: 0.855177076
+Givens correlation coefficient: 0.629851558
+Refutation score correlation coefficient: 0.993475153
+Dependency score correlation coefficient: -0.821686514
+Basic combined refutation+dependency score correlation coefficient: 0.990455781
+
+Sudoku of the day 2 data:
+┌─────────┬──────────────────┬─────────────────┬─────────────────┬───────────┐
+│ (index) │ solveTimeSeconds │ refutationScore │ dependencyScore │ notGivens │
+├─────────┼──────────────────┼─────────────────┼─────────────────┼───────────┤
+│    0    │       460        │        0        │       10        │    47     │
+│    1    │       746        │       48        │        2        │    58     │
+│    2    │       898        │       51        │        1        │    57     │
+│    3    │       1410       │       49        │        1        │    56     │
+└─────────┴──────────────────┴─────────────────┴─────────────────┴───────────┘
+Givens correlation coefficient: 0.581852602
+Refutation score correlation coefficient: 0.700931059
+Dependency score correlation coefficient: -0.748872918
+Basic combined refutation+dependency score correlation coefficient: 0.708394393
 
 Sudokuru 1 data:
 ┌─────────┬──────────────────┬─────────────────┬─────────────────┬───────────┐
