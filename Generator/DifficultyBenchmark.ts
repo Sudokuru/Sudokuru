@@ -153,9 +153,8 @@ function adjustDependencyScore(dependencyScore:number, notGivens:number):number 
     return dependencyScore / (notGivens ** 1.9);
 }
 
-function getCombinedScore(notGivens:number, refutationScore:number, adjustedDependencyScore:number):number {
+function getCombinedScore(refutationScore:number, adjustedDependencyScore:number):number {
     return refutationScore + adjustedDependencyScore;
-    //return notGivens + refutationScore + adjustedDependencyScore;
 }
 
 /**
@@ -190,7 +189,7 @@ function getCorrelationScores(puzzlesMetrics:PuzzleMetrics[], solveTimeSeconds:n
         notGivens.push(puzzlesMetrics[i].difficultyMetrics.notGivens);
         adjustedDependencyScores.push(adjustDependencyScore(puzzlesMetrics[i].difficultyMetrics.dependencyScore, puzzlesMetrics[i].difficultyMetrics.notGivens));
         rdScores.push(puzzlesMetrics[i].difficultyMetrics.refutationScore + puzzlesMetrics[i].difficultyMetrics.dependencyScore);
-        combinedScores.push(getCombinedScore(puzzlesMetrics[i].difficultyMetrics.notGivens, puzzlesMetrics[i].difficultyMetrics.refutationScore, adjustedDependencyScores[i]));
+        combinedScores.push(getCombinedScore(puzzlesMetrics[i].difficultyMetrics.refutationScore, adjustedDependencyScores[i])); 
     }
 
     return {
@@ -236,7 +235,7 @@ for (let i:number = 0; i < data.length; i++) {
             dependencyScore: puzzleMetrics.difficultyMetrics.dependencyScore,
             adjustedDependencyScore: adjustDependencyScore(puzzleMetrics.difficultyMetrics.dependencyScore, puzzleMetrics.difficultyMetrics.notGivens),
             notGivens: puzzleMetrics.difficultyMetrics.notGivens,
-            combinedScore: getCombinedScore(puzzleMetrics.difficultyMetrics.notGivens, puzzleMetrics.difficultyMetrics.refutationScore, adjustDependencyScore(puzzleMetrics.difficultyMetrics.dependencyScore, puzzleMetrics.difficultyMetrics.notGivens))
+            combinedScore: getCombinedScore(puzzleMetrics.difficultyMetrics.refutationScore, adjustDependencyScore(puzzleMetrics.difficultyMetrics.dependencyScore, puzzleMetrics.difficultyMetrics.notGivens))
         };
     }));
     let correlationScores:CorrelationScores = getCorrelationScores(puzzlesMetrics, data[i].solveTimeSeconds);
