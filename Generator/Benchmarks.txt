@@ -36,7 +36,7 @@ Sudokuru 1 data:
 │    3    │       251        │        0        │       23        │    37     │
 └─────────┴──────────────────┴─────────────────┴─────────────────┴───────────┘
 Givens correlation coefficient: 0.970248248
-Refutation score correlation coefficient: NaN
+Refutation score correlation coefficient: 0
 Dependency score correlation coefficient: 0.945915769
 Basic combined refutation+dependency score correlation coefficient: -0.945915769
 
@@ -50,7 +50,7 @@ Sudokuru 2 data:
 │    3    │        90        │        0        │       10        │    20     │
 └─────────┴──────────────────┴─────────────────┴─────────────────┴───────────┘
 Givens correlation coefficient: 0.916772978
-Refutation score correlation coefficient: NaN
+Refutation score correlation coefficient: 0
 Dependency score correlation coefficient: -0.046275503
 Basic combined refutation+dependency score correlation coefficient: 0.046275503
 

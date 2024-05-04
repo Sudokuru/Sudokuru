@@ -142,6 +142,20 @@ function getPuzzlesMetrics(puzzles:string[], solutions:string[], solveTimeSecond
 }
 
 /**
+ * Given two arrays of numbers, returns the correlation coefficient between the two arrays or 0 if an error occurs
+ * @param a - array of numbers
+ * @param b - array of numbers
+ * @returns correlation coefficient between a and b or 0 if an error occurs
+ */
+function safeCalculateCorrelation(a:number[], b:number[]):number {
+    let correlation:number = calculateCorrelation(a, b);
+    if (isNaN(correlation)) {
+        return 0;
+    }
+    return correlation;
+}
+
+/**
  * Given an array of metrics for each puzzle, prints correlation scores for givens, refutation score, dependency score, and combined refutation+dependency score
  * @param puzzlesMetrics - array of metrics for each puzzle
  */
@@ -159,10 +173,10 @@ function getCorrelationScores(puzzlesMetrics:PuzzleMetrics[], solveTimeSeconds:n
     }
 
     return {
-        givens: calculateCorrelation(notGivens, solveTimeSeconds),
-        refutationScore: calculateCorrelation(refutationScores, solveTimeSeconds),
-        dependencyScore: calculateCorrelation(dependencyScores, solveTimeSeconds),
-        basicRDScore: calculateCorrelation(rdScores, solveTimeSeconds)
+        givens: safeCalculateCorrelation(notGivens, solveTimeSeconds),
+        refutationScore: safeCalculateCorrelation(refutationScores, solveTimeSeconds),
+        dependencyScore: safeCalculateCorrelation(dependencyScores, solveTimeSeconds),
+        basicRDScore: safeCalculateCorrelation(rdScores, solveTimeSeconds)
     };
 }
 
