@@ -70,6 +70,7 @@ interface CorrelationScores {
     givens:number;
     refutationScore:number;
     dependencyScore:number;
+    adjustedDependencyScore:number;
     basicRDScore:number;
 }
 
@@ -163,12 +164,14 @@ function getCorrelationScores(puzzlesMetrics:PuzzleMetrics[], solveTimeSeconds:n
     let refutationScores:number[] = [];
     let dependencyScores:number[] = [];
     let notGivens:number[] = [];
+    let adjustedDependencyScores:number[] = [];
     let rdScores:number[] = [];
 
     for (let i:number = 0; i < puzzlesMetrics.length; i++) {
         refutationScores.push(puzzlesMetrics[i].difficultyMetrics.refutationScore);
         dependencyScores.push(puzzlesMetrics[i].difficultyMetrics.dependencyScore);
         notGivens.push(puzzlesMetrics[i].difficultyMetrics.notGivens);
+        adjustedDependencyScores.push(puzzlesMetrics[i].difficultyMetrics.dependencyScore / puzzlesMetrics[i].difficultyMetrics.notGivens);
         rdScores.push(puzzlesMetrics[i].difficultyMetrics.refutationScore + puzzlesMetrics[i].difficultyMetrics.dependencyScore);
     }
 
@@ -176,6 +179,7 @@ function getCorrelationScores(puzzlesMetrics:PuzzleMetrics[], solveTimeSeconds:n
         givens: safeCalculateCorrelation(notGivens, solveTimeSeconds),
         refutationScore: safeCalculateCorrelation(refutationScores, solveTimeSeconds),
         dependencyScore: safeCalculateCorrelation(dependencyScores, solveTimeSeconds),
+        adjustedDependencyScore: safeCalculateCorrelation(adjustedDependencyScores, solveTimeSeconds),
         basicRDScore: safeCalculateCorrelation(rdScores, solveTimeSeconds)
     };
 }
@@ -188,6 +192,7 @@ function printCorrelationScores(correlationScores:CorrelationScores) {
     console.log("Givens correlation coefficient: " + correlationScores.givens);
     console.log("Refutation score correlation coefficient: " + correlationScores.refutationScore);
     console.log("Dependency score correlation coefficient: " + correlationScores.dependencyScore);
+    console.log("Adjusted dependency score correlation coefficient: " + correlationScores.adjustedDependencyScore);
     console.log("Basic combined refutation+dependency score correlation coefficient: " + correlationScores.basicRDScore);
     console.log("");
 }
@@ -196,6 +201,7 @@ let averageCorrelationScores:CorrelationScores = {
     givens: 0,
     refutationScore: 0,
     dependencyScore: 0,
+    adjustedDependencyScore: 0,
     basicRDScore: 0
 };
 
@@ -207,6 +213,7 @@ for (let i:number = 0; i < data.length; i++) {
             solveTimeSeconds: puzzleMetrics.solveTimeSeconds,
             refutationScore: puzzleMetrics.difficultyMetrics.refutationScore,
             dependencyScore: puzzleMetrics.difficultyMetrics.dependencyScore,
+            adjustedDependencyScore: puzzleMetrics.difficultyMetrics.dependencyScore / puzzleMetrics.difficultyMetrics.notGivens,
             notGivens: puzzleMetrics.difficultyMetrics.notGivens
         };
     }));
@@ -215,6 +222,7 @@ for (let i:number = 0; i < data.length; i++) {
     averageCorrelationScores.givens += correlationScores.givens;
     averageCorrelationScores.refutationScore += correlationScores.refutationScore;
     averageCorrelationScores.dependencyScore += correlationScores.dependencyScore;
+    averageCorrelationScores.adjustedDependencyScore += correlationScores.adjustedDependencyScore;
     averageCorrelationScores.basicRDScore += correlationScores.basicRDScore;
 
     printCorrelationScores(correlationScores);
@@ -223,6 +231,7 @@ for (let i:number = 0; i < data.length; i++) {
 averageCorrelationScores.givens /= data.length;
 averageCorrelationScores.refutationScore /= data.length;
 averageCorrelationScores.dependencyScore /= data.length;
+averageCorrelationScores.adjustedDependencyScore /= data.length;
 averageCorrelationScores.basicRDScore /= data.length;
 
 console.log("Average correlation scores:");
