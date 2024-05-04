@@ -16,7 +16,7 @@ Refutation score correlation coefficient: 0.852016392
 Dependency score correlation coefficient: -0.782954539
 Basic combined refutation+dependency score correlation coefficient: 0.855177076
 
-Sudokuru data:
+Sudokuru 1 data:
 ┌─────────┬──────────────────┬─────────────────┬─────────────────┬───────────┐
 │ (index) │ solveTimeSeconds │ refutationScore │ dependencyScore │ notGivens │
 ├─────────┼──────────────────┼─────────────────┼─────────────────┼───────────┤
@@ -25,3 +25,22 @@ Sudokuru data:
 │    2    │       135        │        0        │       18        │    29     │
 │    3    │       251        │        0        │       23        │    37     │
 └─────────┴──────────────────┴─────────────────┴─────────────────┴───────────┘
+Givens correlation coefficient: 0.970248248
+Refutation score correlation coefficient: NaN
+Dependency score correlation coefficient: 0.945915769
+Basic combined refutation+dependency score correlation coefficient: -0.945915769
+
+Sudokuru 2 data:
+┌─────────┬──────────────────┬─────────────────┬─────────────────┬───────────┐
+│ (index) │ solveTimeSeconds │ refutationScore │ dependencyScore │ notGivens │
+├─────────┼──────────────────┼─────────────────┼─────────────────┼───────────┤
+│    0    │       173        │        0        │       22        │    34     │
+│    1    │       209        │        0        │       13        │    33     │
+│    2    │       293        │        0        │       11        │    38     │
+│    3    │        90        │        0        │       10        │    20     │
+└─────────┴──────────────────┴─────────────────┴─────────────────┴───────────┘
+Givens correlation coefficient: 0.916772978
+Refutation score correlation coefficient: NaN
+Dependency score correlation coefficient: -0.046275503
+Basic combined refutation+dependency score correlation coefficient: 0.046275503
+
