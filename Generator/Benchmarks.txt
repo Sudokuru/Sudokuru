@@ -14,7 +14,7 @@ Sudoku of the day data:
 Givens correlation coefficient: 0.604952926
 Refutation score correlation coefficient: 0.852016392
 Dependency score correlation coefficient: -0.782954539
-Combined refutation+dependency score correlation coefficient: 0.855177076
+Basic combined refutation+dependency score correlation coefficient: 0.855177076
 
 Sudokuru data:
 ┌─────────┬──────────────────┬─────────────────┬─────────────────┬───────────┐

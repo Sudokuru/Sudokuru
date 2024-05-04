@@ -42,6 +42,13 @@ interface PuzzleMetrics {
     difficultyMetrics:DifficultyMetrics;
 }
 
+interface CorrelationScores {
+    givens:number;
+    refutationScore:number;
+    dependencyScore:number;
+    basicRDScore:number;
+}
+
 /**
  * Calculates difficulty metrics for provided puzzle
  * @param puzzle - string representation of the puzzle
@@ -114,7 +121,7 @@ function getPuzzlesMetrics(puzzles:string[], solutions:string[], solveTimeSecond
  * Given an array of metrics for each puzzle, prints correlation scores for givens, refutation score, dependency score, and combined refutation+dependency score
  * @param puzzlesMetrics - array of metrics for each puzzle
  */
-function printCorrelationScores(puzzlesMetrics:PuzzleMetrics[]):void{
+function getCorrelationScores(puzzlesMetrics:PuzzleMetrics[]):CorrelationScores{
     let refutationScores:number[] = [];
     let dependencyScores:number[] = [];
     let notGivens:number[] = [];
@@ -127,10 +134,23 @@ function printCorrelationScores(puzzlesMetrics:PuzzleMetrics[]):void{
         rdScores.push(puzzlesMetrics[i].difficultyMetrics.refutationScore + (-1 * puzzlesMetrics[i].difficultyMetrics.dependencyScore));
     }
 
-    console.log("Givens correlation coefficient: " + calculateCorrelation(notGivens, solveTimeSeconds));
-    console.log("Refutation score correlation coefficient: " + calculateCorrelation(refutationScores, solveTimeSeconds));
-    console.log("Dependency score correlation coefficient: " + calculateCorrelation(dependencyScores, solveTimeSeconds));
-    console.log("Combined refutation+dependency score correlation coefficient: " + calculateCorrelation(rdScores, solveTimeSeconds));
+    return {
+        givens: calculateCorrelation(notGivens, solveTimeSeconds),
+        refutationScore: calculateCorrelation(refutationScores, solveTimeSeconds),
+        dependencyScore: calculateCorrelation(dependencyScores, solveTimeSeconds),
+        basicRDScore: calculateCorrelation(rdScores, solveTimeSeconds)
+    };
+}
+
+/**
+ * Prints correlation scores
+ * @param correlationScores - object containing correlation scores
+ */
+function printCorrelationScores(correlationScores:CorrelationScores) {
+    console.log("Givens correlation coefficient: " + correlationScores.givens);
+    console.log("Refutation score correlation coefficient: " + correlationScores.refutationScore);
+    console.log("Dependency score correlation coefficient: " + correlationScores.dependencyScore);
+    console.log("Basic combined refutation+dependency score correlation coefficient: " + correlationScores.basicRDScore);
 }
 
 console.log("Sudoku of the day data:");
@@ -143,7 +163,7 @@ console.table(puzzlesMetrics.map((puzzleMetrics:PuzzleMetrics) => {
         notGivens: puzzleMetrics.difficultyMetrics.notGivens
     };
 }));
-printCorrelationScores(puzzlesMetrics);
+printCorrelationScores(getCorrelationScores(puzzlesMetrics));
 
 console.log("\nSudokuru data:");
 let sudokuruPuzzlesMetrics:PuzzleMetrics[] = getPuzzlesMetrics(sudokuruPuzzles, sudokuruSolutions, sudokuruSolveTimeSeconds);
@@ -155,4 +175,4 @@ console.table(sudokuruPuzzlesMetrics.map((puzzleMetrics:PuzzleMetrics) => {
         notGivens: puzzleMetrics.difficultyMetrics.notGivens
     };
 }));
-printCorrelationScores(sudokuruPuzzlesMetrics);
+printCorrelationScores(getCorrelationScores(sudokuruPuzzlesMetrics));
