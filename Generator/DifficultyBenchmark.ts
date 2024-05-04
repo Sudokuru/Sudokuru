@@ -149,7 +149,7 @@ function getPuzzlesMetrics(puzzles:string[], solutions:string[], solveTimeSecond
  * @returns dependency score adjusted for number of not givens
  */
 function adjustDependencyScore(dependencyScore:number, notGivens:number):number {
-    return dependencyScore / notGivens;
+    return dependencyScore / (notGivens ** 1.9);
 }
 
 /**
