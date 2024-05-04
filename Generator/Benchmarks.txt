@@ -44,19 +44,19 @@ Sudokuru 2 data:
 ┌─────────┬──────────────────┬─────────────────┬─────────────────┬───────────┐
 │ (index) │ solveTimeSeconds │ refutationScore │ dependencyScore │ notGivens │
 ├─────────┼──────────────────┼─────────────────┼─────────────────┼───────────┤
-│    0    │       173        │        0        │       -22       │    34     │
-│    1    │       209        │        0        │       -13       │    33     │
-│    2    │       293        │        0        │       -11       │    38     │
-│    3    │        90        │        0        │       -10       │    20     │
+│    0    │        90        │        0        │       -10       │    20     │
+│    1    │       173        │        0        │       -22       │    34     │
+│    2    │       209        │        0        │       -14       │    33     │
+│    3    │       293        │        0        │       -11       │    38     │
 └─────────┴──────────────────┴─────────────────┴─────────────────┴───────────┘
 Givens correlation coefficient: 0.916772978
 Refutation score correlation coefficient: 0
-Dependency score correlation coefficient: 0.046275503
-Basic combined refutation+dependency score correlation coefficient: 0.046275503
+Dependency score correlation coefficient: 0.03367596
+Basic combined refutation+dependency score correlation coefficient: 0.03367596
 
 Average correlation scores:
 Givens correlation coefficient: 0.7746813465
 Refutation score correlation coefficient: 0.423601553
-Dependency score correlation coefficient: 0.16772979150000003
-Basic combined refutation+dependency score correlation coefficient: 0.199802477
+Dependency score correlation coefficient: 0.16457990575
+Basic combined refutation+dependency score correlation coefficient: 0.19665259124999998
 
