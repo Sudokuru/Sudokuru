@@ -143,6 +143,16 @@ function getPuzzlesMetrics(puzzles:string[], solutions:string[], solveTimeSecond
 }
 
 /**
+ * Adjusts dependency score for number of not givens i.e. makes it so that a hard puzzle with more empty spaces is not considered easier than an easier puzzle with fewer empty spaces
+ * @param dependencyScore - raw dependency score
+ * @param notGivens - number of not givens
+ * @returns dependency score adjusted for number of not givens
+ */
+function adjustDependencyScore(dependencyScore:number, notGivens:number):number {
+    return dependencyScore / notGivens;
+}
+
+/**
  * Given two arrays of numbers, returns the correlation coefficient between the two arrays or 0 if an error occurs
  * @param a - array of numbers
  * @param b - array of numbers
@@ -171,7 +181,7 @@ function getCorrelationScores(puzzlesMetrics:PuzzleMetrics[], solveTimeSeconds:n
         refutationScores.push(puzzlesMetrics[i].difficultyMetrics.refutationScore);
         dependencyScores.push(puzzlesMetrics[i].difficultyMetrics.dependencyScore);
         notGivens.push(puzzlesMetrics[i].difficultyMetrics.notGivens);
-        adjustedDependencyScores.push(puzzlesMetrics[i].difficultyMetrics.dependencyScore / puzzlesMetrics[i].difficultyMetrics.notGivens);
+        adjustedDependencyScores.push(adjustDependencyScore(puzzlesMetrics[i].difficultyMetrics.dependencyScore, puzzlesMetrics[i].difficultyMetrics.notGivens));
         rdScores.push(puzzlesMetrics[i].difficultyMetrics.refutationScore + puzzlesMetrics[i].difficultyMetrics.dependencyScore);
     }
 
@@ -213,7 +223,7 @@ for (let i:number = 0; i < data.length; i++) {
             solveTimeSeconds: puzzleMetrics.solveTimeSeconds,
             refutationScore: puzzleMetrics.difficultyMetrics.refutationScore,
             dependencyScore: puzzleMetrics.difficultyMetrics.dependencyScore,
-            adjustedDependencyScore: puzzleMetrics.difficultyMetrics.dependencyScore / puzzleMetrics.difficultyMetrics.notGivens,
+            adjustedDependencyScore: adjustDependencyScore(puzzleMetrics.difficultyMetrics.dependencyScore, puzzleMetrics.difficultyMetrics.notGivens),
             notGivens: puzzleMetrics.difficultyMetrics.notGivens
         };
     }));
