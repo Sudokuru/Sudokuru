@@ -169,7 +169,7 @@ function getCorrelationScores(puzzlesMetrics:PuzzleMetrics[], solveTimeSeconds:n
         refutationScores.push(puzzlesMetrics[i].difficultyMetrics.refutationScore);
         dependencyScores.push(puzzlesMetrics[i].difficultyMetrics.dependencyScore);
         notGivens.push(puzzlesMetrics[i].difficultyMetrics.notGivens);
-        rdScores.push(puzzlesMetrics[i].difficultyMetrics.refutationScore + (-1 * puzzlesMetrics[i].difficultyMetrics.dependencyScore));
+        rdScores.push(puzzlesMetrics[i].difficultyMetrics.refutationScore + puzzlesMetrics[i].difficultyMetrics.dependencyScore);
     }
 
     return {
@@ -216,7 +216,7 @@ for (let i:number = 0; i < data.length; i++) {
     averageCorrelationScores.refutationScore += correlationScores.refutationScore;
     averageCorrelationScores.dependencyScore += correlationScores.dependencyScore;
     averageCorrelationScores.basicRDScore += correlationScores.basicRDScore;
-    
+
     printCorrelationScores(correlationScores);
 }
 
