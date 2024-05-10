@@ -1,4 +1,5 @@
 import { Cell } from "./Cell";
+import { next } from "./Random";
 import { SingleStrategies } from "./SingleStrategies";
 import { SudokuEnum, simplifyNotes } from "./Sudoku";
 
@@ -21,7 +22,7 @@ export class SimpleSolver{
         }
         // Shuffle array
         for (let i:number = cells.length - 1; i > 0; i--){
-            let j:number = Math.floor(Math.random() * (i + 1));
+            let j:number = Math.floor(next() * (i + 1));
             let temp:Cell = cells[i];
             cells[i] = cells[j];
             cells[j] = temp;

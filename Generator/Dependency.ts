@@ -9,6 +9,9 @@ import { copy2dCellArray } from "./Sudoku";
  * Calculates difficulty based on the dependencies of the steps used to solve the board.
  * Calculates dependency score by counting how many applications of simple strategies are available at each step.
  * So if a puzzle has an average of 6 naked/hidden singles available at each step then it is easier to solve than a puzzle where there is only an average of two naked/hidden singles at each step.
+ * WARNING: This assumes that the number of givens is the same for the boards being compared.
+ * For example, you could have a board that is really harder but has fewer givens so there are more naked/hidden singles available at each step due to more cells being empty total.
+ * Multiplied by negative 1 to get a positive correlation between difficulty and dependency score.
  */
 export class Dependency {
     /**
@@ -44,6 +47,6 @@ export class Dependency {
             }
         }
         // Return average dependency score
-        return Math.floor((dependencyScore / 30) / 20);
+        return -1 * Math.floor((dependencyScore / 30) / 20);
     }
 }

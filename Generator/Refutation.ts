@@ -1,5 +1,6 @@
 import { Cell } from "./Cell";
 import { Group } from "./Group";
+import { next } from "./Random";
 import { SimpleSolver } from "./SimpleSolver";
 import { SudokuEnum, checkBoardForDuplicates, checkBoardForMissingValues, copy2dCellArray, isSolved, simplifyNotes } from "./Sudoku";
 
@@ -36,7 +37,7 @@ export class Refutation{
                             continue;
                         }
                         // After a single refutation score is calculated, skip 50% of the rest of the empty cells
-                        if (lowestScoreRow != -1 && Math.random() < boost) {
+                        if (lowestScoreRow != -1 && next() < boost) {
                             continue;
                         }
                         // Loop over every incorrect candidate
