@@ -280,6 +280,8 @@ export class Board{
         }
         // Set difficulty as combination of refutation and dependency scores
         this.difficulty = Refutation.getRefutationScore(board, this.solution, 1) + (Dependency.getDependencyScore(board) / ((81 - this.givensCount) ** 1.9));
+        this.difficulty *= 10000000;
+        this.difficulty = Math.round(this.difficulty);
         return;
     }
 

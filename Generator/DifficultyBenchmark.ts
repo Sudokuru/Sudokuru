@@ -154,7 +154,7 @@ function adjustDependencyScore(dependencyScore:number, notGivens:number):number 
 }
 
 function getCombinedScore(refutationScore:number, adjustedDependencyScore:number):number {
-    return refutationScore + adjustedDependencyScore;
+    return Math.round((refutationScore + adjustedDependencyScore) * 10000000);
 }
 
 /**
