@@ -1,6 +1,7 @@
 import { Hint } from "../Generator/Hint";
 import { Solver } from "../Generator/Solver";
 import { StrategyEnum } from "../Generator/Sudoku";
+import { sudokuStrategy } from "./Api";
 
 /**
  * Given the state of the board and notes return a hint
@@ -10,17 +11,12 @@ import { StrategyEnum } from "../Generator/Sudoku";
  * @param solution - optional parameter specifying solution to the given board, used in amend notes strategy to correct user mistakes
  * @returns JSON object containing hint data
  */
-export function getHint(board: string[][], notes: string[][], strategies?: string[], solution?: string[][]):JSON {
+export function getHint(board: string[][], notes: string[][], strategies?: sudokuStrategy[], solution?: string[][]):JSON {
     let algorithm:number[] = undefined;
     if (strategies !== undefined) {
         algorithm = [];
-        for (let i:number = (StrategyEnum.INVALID + 1); i < StrategyEnum.COUNT; i++) {
-            for (let j:number = 0; j < strategies.length; j++) {
-                if (StrategyEnum[i] === strategies[j]) {
-                    algorithm.push(i);
-                    j = strategies.length;
-                }
-            }
+        for (const strategy of strategies) {
+            algorithm.push(StrategyEnum[strategy]);
         }
     }
     let solver:Solver = new Solver(board, algorithm, notes, solution);

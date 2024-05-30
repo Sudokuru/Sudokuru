@@ -112,7 +112,7 @@ npm install sudokuru
 4. Parameters:
     - board: 2d board array (9 arrays, one for each row, each with 9 strings representing values or "0" if empty)
     - notes: 2d notes array (81 arrays, one for each cell containing each note that is left in it)
-    - strategies: optional parameter specifying which strategies are allowed to be used in the hint
+    - strategies: optional parameter specifying which strategies are allowed to be used in the hint given in order of precedence (allowed values are the strings in the StrategyEnum in Sudoku.ts)
     - solution: optional parameter specifying boards solution so that amend notes hints can correct users mistakes
 5. Return Value: [hint](#hint-object-properties)
 
