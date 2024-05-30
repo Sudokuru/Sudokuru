@@ -14,7 +14,7 @@ export function getHint(board: string[][], notes: string[][], strategies?: strin
     let algorithm:number[] = undefined;
     if (strategies !== undefined) {
         algorithm = [];
-        for (let i:number = 0; i < strategies.length; i++) {
+        for (let i = 0; i < strategies.length; i++) {
             algorithm.push(StrategyEnum[strategies[i]]);
         }
     }
