@@ -4,7 +4,6 @@
   "description": "This is the Sudokuru package.",
   "main": "dist/index.js",
   "scripts": {
-    "preinstall": "pre-commit install",
     "pre-commit": "pre-commit run --all-files",
     "test": "jest",
     "test:unit": "jest --testPathPattern=Generator/tests/unit",
