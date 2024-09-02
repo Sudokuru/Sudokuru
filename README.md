@@ -448,7 +448,7 @@ bun install # or npm install
 
 [Install pre-commit hooks](https://pre-commit.com/#install)
 
-Run one of the below commands to setup pre-commit hooks:
+Run the below command to setup pre-commit hooks:
 
 ```shell
 pre-commit install
