@@ -10,7 +10,7 @@ export type SudokuStrategy = 'AMEND_NOTES' | 'SIMPLIFY_NOTES' |
 export type SudokuStrategyArray = SudokuStrategy[];
 
 // A list of all sudoku strategies in priority solve order.
-export const SUDOKU_STRATEGY_ARRAY = [
+export const SUDOKU_STRATEGY_ARRAY: SudokuStrategyArray = [
     "AMEND_NOTES",
     "SIMPLIFY_NOTES",
     "NAKED_SINGLE",
