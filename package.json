@@ -1,10 +1,9 @@
 {
   "name": "sudokuru",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "description": "This is the Sudokuru package.",
   "main": "dist/index.js",
   "scripts": {
-    "preinstall": "pre-commit install",
     "pre-commit": "pre-commit run --all-files",
     "test": "jest",
     "test:unit": "jest --testPathPattern=Generator/tests/unit",

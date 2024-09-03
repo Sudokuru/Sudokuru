@@ -2,7 +2,7 @@ import { getHint } from "../../../lib/Hint";
 import { TestBoards } from "../testResources";
 import { getBoardArray } from "../../Sudoku";
 import { Solver } from "../../Solver";
-import { sudokuStrategy } from "../../../lib/Api";
+import { SudokuStrategy } from "../../../lib/Api";
 
 describe("get hints", () => {
     it('get hint works with or without some optional parameters', () => {
@@ -22,7 +22,7 @@ describe("get hints", () => {
         const solver:Solver = new Solver(board);
         const notes:string[][] = solver.getNotes();
         notes[2] = ["6"];
-        const strategies:sudokuStrategy[] = ["NAKED_SINGLE", "AMEND_NOTES"];
+        const strategies:SudokuStrategy[] = ["NAKED_SINGLE", "AMEND_NOTES"];
         let hint:JSON = getHint(board, notes, strategies);
         expect(hint["strategy"]).toBe("NAKED_SINGLE");
         // Versus the following if using default strategy order precedence which has amend notes > naked single
