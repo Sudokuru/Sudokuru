@@ -25,3 +25,13 @@ Run Command: `bun Generator/tests/bench/mitata/sudoku.bench.ts`
 Results:
 
 ![alt text](img/mitata-board-bench-results.png)
+
+# tinybench
+
+Run Command: `bun Generator/tests/bench/tinybench/board.bench.ts`
+
+Run Command: `bun Generator/tests/bench/tinybench/difficulty.bench.ts`
+
+Run Command: `bun Generator/tests/bench/tinybench/sudoku.bench.ts`
+
+![alt text](img/tinybench-bench-results.png)

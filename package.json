@@ -27,6 +27,7 @@
     "jest-bench": "^29.7.1",
     "jest-junit": "^16.0.0",
     "mitata": "^0.1.14",
+    "tinybench": "^2.9.0",
     "ts-jest": "^29.0.3",
     "ts-node": "^10.9.1",
     "typedoc": "^0.23.21",
