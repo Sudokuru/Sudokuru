@@ -4,3 +4,4 @@ docs/
 dist/
 jest-coverage/
 junit.xml
+benchmarks
