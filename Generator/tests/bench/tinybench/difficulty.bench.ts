@@ -1,6 +1,6 @@
 import { Board } from "../../../Board";
 import { resetSeed } from "../../../Random";
-import { Bench } from 'tinybench';
+import { Bench, Task } from 'tinybench';
 
 const bench = new Bench({ time: 100 });
 
@@ -24,4 +24,15 @@ bench
 await bench.warmup();
 await bench.run();
 
-console.table(bench.table());
+const table = (task: Task) => {
+    return {
+    'Task Name': task.name,
+    'ops/sec': task.result.error ? 'NaN' : parseInt(task.result.hz.toString(), 10).toLocaleString(),
+    'Average Time (ns)': task.result.error ? 'NaN' : task.result.mean * 1000 * 1000,
+    'Average Time (s)': task.result.error ? 'NaN' : task.result.mean / 1000,
+    Margin: task.result.error ? 'NaN' : `\xb1${task.result.rme.toFixed(2)}%`,
+    Samples: task.result.error ? 'NaN' : task.result.samples.length,
+  }
+}
+
+console.table(bench.table((task) => (table(task))));
