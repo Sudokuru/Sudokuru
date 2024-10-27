@@ -4,11 +4,11 @@ import { SingleStrategies } from "./SingleStrategies";
 import { SudokuEnum, simplifyNotes } from "./Sudoku";
 
 /**
- * Contains function to solve a Sudoku board step by step using just naked and hidden single strategies.
+ * Contains function to solve a Sudoku board step by step using just obvious and hidden single strategies.
  */
 export class SimpleSolver{
     /**
-     * If possible solves a single random cell using the naked or hidden single strategies and simplifies the notes of the board.
+     * If possible solves a single random cell using the obvious or hidden single strategies and simplifies the notes of the board.
      * @param board - 2d Cell array representing the board.
      * @returns true if a cell was solved, false otherwise.
      */
@@ -27,7 +27,7 @@ export class SimpleSolver{
             cells[i] = cells[j];
             cells[j] = temp;
         }
-        // Check each cell for a naked or hidden single
+        // Check each cell for a obvious or hidden single
         for (let i:number = 0; i < cells.length; i++){
             // Skip over cells that are already solved
             if (!cells[i].isEmpty()){

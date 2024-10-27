@@ -5,12 +5,12 @@ import { SudokuEnum } from "../../Sudoku";
 import { CellBoard } from "../../CellBoard";
 import { Group } from "../../Group";
 
-describe("check cell for naked single", () => {
-    it('should not find a naked single on the empty board', () => {
+describe("check cell for obvious single", () => {
+    it('should not find a obvious single on the empty board', () => {
         let board:Cell[][] = getBlankCellBoard();
         expect(SingleStrategies.getSingle(board, 0, 0)).toBe(-1);
     });
-    it('should find a naked single', () => {
+    it('should find a obvious single', () => {
         let board:Cell[][] = getBlankCellBoard();
         // Remove all notes except for 8 from cell
         let cellBoard:CellBoard = new CellBoard(board);

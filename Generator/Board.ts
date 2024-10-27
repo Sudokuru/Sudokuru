@@ -47,7 +47,7 @@ export class Board{
         this.board = getBoardArray(board);
 
         this.strategies = new Array(StrategyEnum.COUNT).fill(false);
-        this.drills = new Array(StrategyEnum.HIDDEN_QUADRUPLET-StrategyEnum.NAKED_SINGLE+1).fill(-1);
+        this.drills = new Array(StrategyEnum.HIDDEN_QUADRUPLET-StrategyEnum.OBVIOUS_SINGLE+1).fill(-1);
 
         if (algorithm === undefined) {
             this.solver = new Solver(this.board);
@@ -121,8 +121,8 @@ export class Board{
     /**
      * Returns a boolean array representing strategies that can be used as the first step in solving this board
      * If a strategies prereqs are included then it is excluded in order to ensure good examples of strategies are used
-     * For example, if there is a naked pair made up of two naked singles only the naked single will be used as a drill
-     * Excludes amend and simplify notes as well as any strategies past hidden quadruplet in StrategyEnum (so index 0 is naked single and index 9 is hidden quadruplet)
+     * For example, if there is a obvious pair made up of two obvious singles only the obvious single will be used as a drill
+     * Excludes amend and simplify notes as well as any strategies past hidden quadruplet in StrategyEnum (so index 0 is obvious single and index 9 is hidden quadruplet)
      * @returns boolean array representing strategies that can be used as the first step in solving this board
      */
     private getDrillStrategies():boolean[] {
@@ -151,7 +151,7 @@ export class Board{
                 }
             }
         }
-        return drillStrategies.slice(StrategyEnum.NAKED_SINGLE, StrategyEnum.HIDDEN_QUADRUPLET + 1);
+        return drillStrategies.slice(StrategyEnum.OBVIOUS_SINGLE, StrategyEnum.HIDDEN_QUADRUPLET + 1);
     }
 
     /**
@@ -162,32 +162,32 @@ export class Board{
     private getPrereqs(strategy: StrategyEnum):StrategyEnum[] {
         let prereqs:StrategyEnum[] = new Array();
         if (strategy === StrategyEnum.HIDDEN_OCTUPLET) {
-            prereqs.push(StrategyEnum.NAKED_OCTUPLET);
-            strategy = StrategyEnum.NAKED_OCTUPLET;
+            prereqs.push(StrategyEnum.OBVIOUS_OCTUPLET);
+            strategy = StrategyEnum.OBVIOUS_OCTUPLET;
         }
-        if (strategy === StrategyEnum.NAKED_OCTUPLET || strategy === StrategyEnum.HIDDEN_SEPTUPLET) {
-            prereqs.push(StrategyEnum.NAKED_SEPTUPLET);
-            strategy = StrategyEnum.NAKED_SEPTUPLET;
+        if (strategy === StrategyEnum.OBVIOUS_OCTUPLET || strategy === StrategyEnum.HIDDEN_SEPTUPLET) {
+            prereqs.push(StrategyEnum.OBVIOUS_SEPTUPLET);
+            strategy = StrategyEnum.OBVIOUS_SEPTUPLET;
         }
-        if (strategy === StrategyEnum.NAKED_SEPTUPLET || strategy === StrategyEnum.HIDDEN_SEXTUPLET) {
-            prereqs.push(StrategyEnum.NAKED_SEXTUPLET);
-            strategy = StrategyEnum.NAKED_SEXTUPLET;
+        if (strategy === StrategyEnum.OBVIOUS_SEPTUPLET || strategy === StrategyEnum.HIDDEN_SEXTUPLET) {
+            prereqs.push(StrategyEnum.OBVIOUS_SEXTUPLET);
+            strategy = StrategyEnum.OBVIOUS_SEXTUPLET;
         }
-        if (strategy === StrategyEnum.NAKED_SEXTUPLET || strategy === StrategyEnum.HIDDEN_QUINTUPLET) {
-            prereqs.push(StrategyEnum.NAKED_QUINTUPLET);
-            strategy = StrategyEnum.NAKED_QUINTUPLET;
+        if (strategy === StrategyEnum.OBVIOUS_SEXTUPLET || strategy === StrategyEnum.HIDDEN_QUINTUPLET) {
+            prereqs.push(StrategyEnum.OBVIOUS_QUINTUPLET);
+            strategy = StrategyEnum.OBVIOUS_QUINTUPLET;
         }
-        if (strategy === StrategyEnum.NAKED_QUINTUPLET || strategy === StrategyEnum.HIDDEN_QUADRUPLET) {
-            prereqs.push(StrategyEnum.NAKED_QUADRUPLET);
-            strategy = StrategyEnum.NAKED_QUADRUPLET;
+        if (strategy === StrategyEnum.OBVIOUS_QUINTUPLET || strategy === StrategyEnum.HIDDEN_QUADRUPLET) {
+            prereqs.push(StrategyEnum.OBVIOUS_QUADRUPLET);
+            strategy = StrategyEnum.OBVIOUS_QUADRUPLET;
         }
-        if (strategy === StrategyEnum.NAKED_QUADRUPLET || strategy === StrategyEnum.HIDDEN_TRIPLET) {
-            prereqs.push(StrategyEnum.NAKED_TRIPLET);
-            strategy = StrategyEnum.NAKED_TRIPLET;
+        if (strategy === StrategyEnum.OBVIOUS_QUADRUPLET || strategy === StrategyEnum.HIDDEN_TRIPLET) {
+            prereqs.push(StrategyEnum.OBVIOUS_TRIPLET);
+            strategy = StrategyEnum.OBVIOUS_TRIPLET;
         }
-        if (strategy === StrategyEnum.NAKED_TRIPLET || strategy === StrategyEnum.HIDDEN_PAIR) {
-            prereqs.push(StrategyEnum.NAKED_PAIR);
-            strategy = StrategyEnum.NAKED_PAIR;
+        if (strategy === StrategyEnum.OBVIOUS_TRIPLET || strategy === StrategyEnum.HIDDEN_PAIR) {
+            prereqs.push(StrategyEnum.OBVIOUS_PAIR);
+            strategy = StrategyEnum.OBVIOUS_PAIR;
         }
         if (strategy === StrategyEnum.POINTING_TRIPLET) {
             prereqs.push(StrategyEnum.POINTING_PAIR);
@@ -197,8 +197,8 @@ export class Board{
             prereqs.push(StrategyEnum.HIDDEN_SINGLE);
             strategy = StrategyEnum.HIDDEN_SINGLE;
         }
-        if (strategy === StrategyEnum.NAKED_PAIR || strategy === StrategyEnum.HIDDEN_SINGLE) {
-            prereqs.push(StrategyEnum.NAKED_SINGLE);
+        if (strategy === StrategyEnum.OBVIOUS_PAIR || strategy === StrategyEnum.HIDDEN_SINGLE) {
+            prereqs.push(StrategyEnum.OBVIOUS_SINGLE);
         }
         return prereqs;
     }
@@ -217,7 +217,7 @@ export class Board{
             // Records what strategies were used for each move
             let move:boolean[] = this.getDrillStrategies();
             // Moves are classified as one per value insertion (so 80 is last move)
-            // drills array index 0 is naked single and index 9 is hidden quadruplet
+            // drills array index 0 is obvious single and index 9 is hidden quadruplet
             // each index stores the last time the strategy can be used as a drill or -1 if never
             for (let i:number = 0; i < move.length; i++) {
                 if (move[i]) {

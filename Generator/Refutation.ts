@@ -9,7 +9,7 @@ import { SudokuEnum, checkBoardForDuplicates, checkBoardForMissingValues, copy2d
  * Inspired by https://www.fi.muni.cz/~xpelanek/publications/flairs-sudoku.pdf
  * Calculates difficulty based on the complexity of the what-if reasoning needed to solve the board.
  * The what-if reasoning complexity is calculated by how many calculations are needed to determine if a candidate is valid.
- * In addition to the what-if reasoning (which is refuting the possibility of other candidates) naked and hidden singles are used along with related notes.
+ * In addition to the what-if reasoning (which is refuting the possibility of other candidates) obvious and hidden singles are used along with related notes.
  */
 export class Refutation{
     /**
@@ -21,13 +21,13 @@ export class Refutation{
      */
     public static getRefutationScore(board: Cell[][], solution: string[][], boost: number): number{
         let refutationScore:number = 0;
-        // Sums refutation score from 30 runs to account for randomness (e.g. random cell selection when solving with naked and hidden singles)
+        // Sums refutation score from 30 runs to account for randomness (e.g. random cell selection when solving with obvious and hidden singles)
         for (let i:number = 0; i < 30; i++) {
             // Create copy of board
             let boardCopy:Cell[][] = copy2dCellArray(board);
             // Increment refutation score until board is solved
             while (!isSolved(boardCopy)) {
-                // Solve board step by step until naked and hidden singles can no longer be used
+                // Solve board step by step until obvious and hidden singles can no longer be used
                 while (SimpleSolver.solveStep(boardCopy)){}
                 // Loop over every empty cell
                 let lowestRefutationScore:number = 1000000, lowestScoreRow:number = -1, lowestScoreColumn:number = -1;
