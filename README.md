@@ -7,8 +7,13 @@
 [![Coveralls Coverage](https://coveralls.io/repos/github/SudoKuru/Sudokuru/badge.svg?branch=main)](https://coveralls.io/github/SudoKuru/Sudokuru?branch=main)
 [![Codecov Coverage](https://codecov.io/gh/SudoKuru/Sudokuru/graph/badge.svg?token=SISS85TX20)](https://codecov.io/gh/SudoKuru/Sudokuru)
 
+[![Common Changelog](https://common-changelog.org/badge.svg)](https://common-changelog.org)
 
-> Generate data about Sudoku puzzles and upload it via POST requests
+
+> Generate data about Sudoku puzzles
+
+> [!NOTE]  
+> This project uses [BreakVer](https://www.taoensso.com/break-versioning) for project versioning. 
 
 # Table of Contents
 
