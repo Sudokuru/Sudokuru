@@ -4,8 +4,8 @@
 
 ### Changed
 
-**Breaking:** Naked strategies renamed to Obvious strategies. This affects NAKED_SINGLE, NAKED_PAIR, NAKED_TRIPLET, and NAKED_QUADRUPLET.
+**Breaking:** Rename Naked strategies to Obvious strategies. This affects NAKED_SINGLE, NAKED_PAIR, NAKED_TRIPLET, and NAKED_QUADRUPLET. ([#99](https://github.com/Sudokuru/Sudokuru/pull/99)) (Thomas Gallant)
 
 ### Removed
 
-**Breaking:** The type `SudokuStrategyArray` is removed. Instead, use `SudokuStrategy[]`.
+**Breaking:** Remove type `SudokuStrategyArray`. Instead, use `SudokuStrategy[]`. ([#99](https://github.com/Sudokuru/Sudokuru/pull/99)) (Thomas Gallant)
