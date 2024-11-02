@@ -6,8 +6,8 @@ import { getHint } from "./lib/Hint";
 import { getPuzzleData } from "./lib/PuzzleData";
 import { calculateNotes } from "./lib/Drill";
 // Types
-import {SudokuStrategy, SudokuStrategyArray, SUDOKU_STRATEGY_ARRAY } from "./lib/Api";
+import {SudokuStrategy, SUDOKU_STRATEGY_ARRAY } from "./lib/Api";
 
 
 export { Board, StrategyEnum, getHint, getPuzzleData, calculateNotes };
-export { SudokuStrategy, SudokuStrategyArray, SUDOKU_STRATEGY_ARRAY };
+export { SudokuStrategy, SUDOKU_STRATEGY_ARRAY };

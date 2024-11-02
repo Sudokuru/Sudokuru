@@ -9,33 +9,33 @@ interface nextStepResponse {
 
 const NEXT_STEP_ENDPOINT:string = "http://localhost:3100/solver/nextStep?board=";
 const NEXT_NOTES:string = "&notes=";
-const NEXT_NAKED_SINGLE:string = "&nakedSingle=";
+const NEXT_OBVIOUS_SINGLE:string = "&obviousSingle=";
 const NEXT_HIDDEN_SINGLE:string = "&hiddenSingle=";
-const NEXT_NAKED_PAIR:string = "&nakedPair=";
+const NEXT_OBVIOUS_PAIR:string = "&obviousPair=";
 const NEXT_HIDDEN_PAIR:string = "&hiddenPair=";
 const NEXT_POINTING_PAIR:string = "&pointingPair=";
-const NEXT_NAKED_TRIPLET:string = "&nakedTriplet=";
+const NEXT_OBVIOUS_TRIPLET:string = "&obviousTriplet=";
 const NEXT_HIDDEN_TRIPLET:string = "&hiddenTriplet=";
 const NEXT_POINTING_TRIPLET:string = "&pointingTriplet=";
-const NEXT_NAKED_QUADRUPLET:string = "&nakedQuadruplet=";
+const NEXT_OBVIOUS_QUADRUPLET:string = "&obviousQuadruplet=";
 const NEXT_HIDDEN_QUADRUPLET:string = "&hiddenQuadruplet=";
-const NEXT_NAKED_QUINTUPLET:string = "&nakedQuintuplet=";
+const NEXT_OBVIOUS_QUINTUPLET:string = "&obviousQuintuplet=";
 const NEXT_HIDDEN_QUINTUPLET:string = "&hiddenQuintuplet=";
-const NEXT_NAKED_SEXTUPLET:string = "&nakedSextuplet=";
+const NEXT_OBVIOUS_SEXTUPLET:string = "&obviousSextuplet=";
 const NEXT_HIDDEN_SEXTUPLET:string = "&hiddenSextuplet=";
-const NEXT_NAKED_SEPTUPLET:string = "&nakedSeptuplet=";
+const NEXT_OBVIOUS_SEPTUPLET:string = "&obviousSeptuplet=";
 const NEXT_HIDDEN_SEPTUPLET:string = "&hiddenSeptuplet=";
-const NEXT_NAKED_OCTUPLET:string = "&nakedOctuplet=";
+const NEXT_OBVIOUS_OCTUPLET:string = "&obviousOctuplet=";
 const NEXT_HIDDEN_OCTUPLET:string = "&hiddenOctuplet=";
 const NEXT_SIMPLIFY_NOTES:string = "&simplifyNotes=";
 const NEXT_AMEND_NOTES:string = "&amendNotes=";
 const CANDIDATES:string = "123456789";
 const EMPTY_CELL = "0";
-const SINGLE_NAKED_SINGLE = "439275618051896437876143592342687951185329746697451283928734165563912874714568329";
-const ONLY_NAKED_SINGLES = "310084002200150006570003010423708095760030000009562030050006070007000900000001500";
+const SINGLE_OBVIOUS_SINGLE = "439275618051896437876143592342687951185329746697451283928734165563912874714568329";
+const ONLY_OBVIOUS_SINGLES = "310084002200150006570003010423708095760030000009562030050006070007000900000001500";
 const HIDDEN_SINGLES = "902100860075000001001080000600300048054809600108060900500401000000050002089000050";
-const COLUMN_NAKED_PAIR = "030000506000098071000000490009800000002010000380400609800030960100000004560982030";
-const BOX_NAKED_PAIR = "700000006000320900000000054205060070197400560060000000010000000000095401630100020";
+const COLUMN_OBVIOUS_PAIR = "030000506000098071000000490009800000002010000380400609800030960100000004560982030";
+const BOX_OBVIOUS_PAIR = "700000006000320900000000054205060070197400560060000000010000000000095401630100020";
 
 /**
  * Given a board array returns the equivalent board string
@@ -321,14 +321,14 @@ function getNotes():string {
 function getStrategyOrder():string {
     let algorithm:string = "";
 
-    algorithm += NEXT_NAKED_SINGLE;
-    algorithm += (<HTMLInputElement>document.getElementById("nakedSingle")).value;
+    algorithm += NEXT_OBVIOUS_SINGLE;
+    algorithm += (<HTMLInputElement>document.getElementById("obviousSingle")).value;
 
     algorithm += NEXT_HIDDEN_SINGLE;
     algorithm += (<HTMLInputElement>document.getElementById("hiddenSingle")).value;
 
-    algorithm += NEXT_NAKED_PAIR;
-    algorithm += (<HTMLInputElement>document.getElementById("nakedPair")).value;
+    algorithm += NEXT_OBVIOUS_PAIR;
+    algorithm += (<HTMLInputElement>document.getElementById("obviousPair")).value;
 
     algorithm += NEXT_HIDDEN_PAIR;
     algorithm += (<HTMLInputElement>document.getElementById("hiddenPair")).value;
@@ -336,8 +336,8 @@ function getStrategyOrder():string {
     algorithm += NEXT_POINTING_PAIR;
     algorithm += (<HTMLInputElement>document.getElementById("pointingPair")).value;
 
-    algorithm += NEXT_NAKED_TRIPLET;
-    algorithm += (<HTMLInputElement>document.getElementById("nakedTriplet")).value;
+    algorithm += NEXT_OBVIOUS_TRIPLET;
+    algorithm += (<HTMLInputElement>document.getElementById("obviousTriplet")).value;
 
     algorithm += NEXT_HIDDEN_TRIPLET;
     algorithm += (<HTMLInputElement>document.getElementById("hiddenTriplet")).value;
@@ -345,32 +345,32 @@ function getStrategyOrder():string {
     algorithm += NEXT_POINTING_TRIPLET;
     algorithm += (<HTMLInputElement>document.getElementById("pointingTriplet")).value;
 
-    algorithm += NEXT_NAKED_QUADRUPLET;
-    algorithm += (<HTMLInputElement>document.getElementById("nakedQuadruplet")).value;
+    algorithm += NEXT_OBVIOUS_QUADRUPLET;
+    algorithm += (<HTMLInputElement>document.getElementById("obviousQuadruplet")).value;
 
     algorithm += NEXT_HIDDEN_QUADRUPLET;
     algorithm += (<HTMLInputElement>document.getElementById("hiddenQuadruplet")).value;
 
-    algorithm += NEXT_NAKED_QUINTUPLET;
-    algorithm += (<HTMLInputElement>document.getElementById("nakedQuintuplet")).value;
+    algorithm += NEXT_OBVIOUS_QUINTUPLET;
+    algorithm += (<HTMLInputElement>document.getElementById("obviousQuintuplet")).value;
 
     algorithm += NEXT_HIDDEN_QUINTUPLET;
     algorithm += (<HTMLInputElement>document.getElementById("hiddenQuintuplet")).value;
 
-    algorithm += NEXT_NAKED_SEXTUPLET;
-    algorithm += (<HTMLInputElement>document.getElementById("nakedSextuplet")).value;
+    algorithm += NEXT_OBVIOUS_SEXTUPLET;
+    algorithm += (<HTMLInputElement>document.getElementById("obviousSextuplet")).value;
 
     algorithm += NEXT_HIDDEN_SEXTUPLET;
     algorithm += (<HTMLInputElement>document.getElementById("hiddenSextuplet")).value;
 
-    algorithm += NEXT_NAKED_SEPTUPLET;
-    algorithm += (<HTMLInputElement>document.getElementById("nakedSeptuplet")).value;
+    algorithm += NEXT_OBVIOUS_SEPTUPLET;
+    algorithm += (<HTMLInputElement>document.getElementById("obviousSeptuplet")).value;
 
     algorithm += NEXT_HIDDEN_SEPTUPLET;
     algorithm += (<HTMLInputElement>document.getElementById("hiddenSeptuplet")).value;
 
-    algorithm += NEXT_NAKED_OCTUPLET;
-    algorithm += (<HTMLInputElement>document.getElementById("nakedOctuplet")).value;
+    algorithm += NEXT_OBVIOUS_OCTUPLET;
+    algorithm += (<HTMLInputElement>document.getElementById("obviousOctuplet")).value;
 
     algorithm += NEXT_HIDDEN_OCTUPLET;
     algorithm += (<HTMLInputElement>document.getElementById("hiddenOctuplet")).value;
@@ -495,20 +495,20 @@ async function rewind10():Promise<void> {
 function loadPuzzle():void {
     let puzzle:string = (<HTMLSelectElement>document.getElementById("puzzleSelect")).value;
     let boardInput:HTMLInputElement = <HTMLInputElement>document.getElementById("board");
-    if (puzzle === "SINGLE_NAKED_SINGLE") {
-        boardInput.value = SINGLE_NAKED_SINGLE;
+    if (puzzle === "SINGLE_OBVIOUS_SINGLE") {
+        boardInput.value = SINGLE_OBVIOUS_SINGLE;
     }
-    else if (puzzle === "ONLY_NAKED_SINGLES") {
-        boardInput.value = ONLY_NAKED_SINGLES;
+    else if (puzzle === "ONLY_OBVIOUS_SINGLES") {
+        boardInput.value = ONLY_OBVIOUS_SINGLES;
     }
     else if (puzzle === "HIDDEN_SINGLES") {
         boardInput.value = HIDDEN_SINGLES;
     }
-    else if (puzzle === "COLUMN_NAKED_PAIR") {
-        boardInput.value = COLUMN_NAKED_PAIR;
+    else if (puzzle === "COLUMN_OBVIOUS_PAIR") {
+        boardInput.value = COLUMN_OBVIOUS_PAIR;
     }
     else {
-        boardInput.value = BOX_NAKED_PAIR;
+        boardInput.value = BOX_OBVIOUS_PAIR;
     }
     sessionStorage.clear();
     nextStep();

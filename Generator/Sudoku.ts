@@ -24,23 +24,23 @@ export enum StrategyEnum {
     INVALID = -1,
     AMEND_NOTES,
     SIMPLIFY_NOTES,
-    NAKED_SINGLE,
+    OBVIOUS_SINGLE,
     HIDDEN_SINGLE,
-    NAKED_PAIR,
+    OBVIOUS_PAIR,
     HIDDEN_PAIR,
     POINTING_PAIR,
-    NAKED_TRIPLET,
+    OBVIOUS_TRIPLET,
     HIDDEN_TRIPLET,
     POINTING_TRIPLET,
-    NAKED_QUADRUPLET,
+    OBVIOUS_QUADRUPLET,
     HIDDEN_QUADRUPLET,
-    NAKED_QUINTUPLET,
+    OBVIOUS_QUINTUPLET,
     HIDDEN_QUINTUPLET,
-    NAKED_SEXTUPLET,
+    OBVIOUS_SEXTUPLET,
     HIDDEN_SEXTUPLET,
-    NAKED_SEPTUPLET,
+    OBVIOUS_SEPTUPLET,
     HIDDEN_SEPTUPLET,
-    NAKED_OCTUPLET,
+    OBVIOUS_OCTUPLET,
     HIDDEN_OCTUPLET,
     COUNT
 }
@@ -57,7 +57,7 @@ export enum GroupEnum {
 }
 
 /**
- * Includes constants representing the various tuples e.g. naked single, pair, ...
+ * Includes constants representing the various tuples e.g. obvious single, pair, ...
  */
 export enum TupleEnum {
     SINGLE = 1,
@@ -180,7 +180,7 @@ export function getCandidateIndex(candidate: unknown):number {
  * @returns union of all notes in the set
  */
 export function getUnionOfSetNotes(set: Cell[]):Group {
-    // Stores notes contained by cells in naked set
+    // Stores notes contained by cells in obvious set
     let setNotes:Group[] = new Array();
     for (let k:number = 0; k < set.length; k++) {
         if ((set[k].getNotes()).getSize() > 0) {

@@ -84,47 +84,47 @@ export class Strategy{
     }
 
     /**
-     * Given a strategy type returns its tuple type e.g naked triplet returns triplet
+     * Given a strategy type returns its tuple type e.g obvious triplet returns triplet
      * @param strategyType - strategy type
      * @returns tuple type for given strategy type
      */
     public getStrategyTuple(strategyType: StrategyEnum):TupleEnum {
-        if (strategyType === StrategyEnum.NAKED_SINGLE || strategyType === StrategyEnum.HIDDEN_SINGLE) {
+        if (strategyType === StrategyEnum.OBVIOUS_SINGLE || strategyType === StrategyEnum.HIDDEN_SINGLE) {
             return TupleEnum.SINGLE;
         }
-        else if (strategyType === StrategyEnum.NAKED_PAIR || strategyType === StrategyEnum.HIDDEN_PAIR) {
+        else if (strategyType === StrategyEnum.OBVIOUS_PAIR || strategyType === StrategyEnum.HIDDEN_PAIR) {
             return TupleEnum.PAIR;
         }
-        else if (strategyType === StrategyEnum.NAKED_TRIPLET || strategyType === StrategyEnum.HIDDEN_TRIPLET) {
+        else if (strategyType === StrategyEnum.OBVIOUS_TRIPLET || strategyType === StrategyEnum.HIDDEN_TRIPLET) {
             return TupleEnum.TRIPLET;
         }
-        else if (strategyType === StrategyEnum.NAKED_QUADRUPLET || strategyType === StrategyEnum.HIDDEN_QUADRUPLET) {
+        else if (strategyType === StrategyEnum.OBVIOUS_QUADRUPLET || strategyType === StrategyEnum.HIDDEN_QUADRUPLET) {
             return TupleEnum.QUADRUPLET;
         }
-        else if (strategyType === StrategyEnum.NAKED_QUINTUPLET || strategyType === StrategyEnum.HIDDEN_QUINTUPLET) {
+        else if (strategyType === StrategyEnum.OBVIOUS_QUINTUPLET || strategyType === StrategyEnum.HIDDEN_QUINTUPLET) {
             return TupleEnum.QUINTUPLET;
         }
-        else if (strategyType === StrategyEnum.NAKED_SEXTUPLET || strategyType === StrategyEnum.HIDDEN_SEXTUPLET) {
+        else if (strategyType === StrategyEnum.OBVIOUS_SEXTUPLET || strategyType === StrategyEnum.HIDDEN_SEXTUPLET) {
             return TupleEnum.SEXTUPLET;
         }
-        else if (strategyType === StrategyEnum.NAKED_SEPTUPLET || strategyType === StrategyEnum.HIDDEN_SEPTUPLET) {
+        else if (strategyType === StrategyEnum.OBVIOUS_SEPTUPLET || strategyType === StrategyEnum.HIDDEN_SEPTUPLET) {
             return TupleEnum.SEPTUPLET;
         }
-        else if (strategyType === StrategyEnum.NAKED_OCTUPLET || strategyType === StrategyEnum.HIDDEN_OCTUPLET) {
+        else if (strategyType === StrategyEnum.OBVIOUS_OCTUPLET || strategyType === StrategyEnum.HIDDEN_OCTUPLET) {
             return TupleEnum.OCTUPLET;
         }
     }
 
     /**
-     * Returns true if strategy is a naked set strategy
+     * Returns true if strategy is a obvious set strategy
      * @param strategyType - strategy type
-     * @returns true if strategy type is a naked set strategy
+     * @returns true if strategy type is a obvious set strategy
      */
-    public isNakedSetStrategy(strategyType: StrategyEnum):boolean {
-        if (strategyType === StrategyEnum.NAKED_SINGLE || strategyType === StrategyEnum.NAKED_PAIR || 
-            strategyType === StrategyEnum.NAKED_TRIPLET || strategyType === StrategyEnum.NAKED_QUADRUPLET || 
-            strategyType === StrategyEnum.NAKED_QUINTUPLET || strategyType === StrategyEnum.NAKED_SEXTUPLET || 
-            strategyType === StrategyEnum.NAKED_SEPTUPLET || strategyType === StrategyEnum.NAKED_OCTUPLET) {
+    public isObviousSetStrategy(strategyType: StrategyEnum):boolean {
+        if (strategyType === StrategyEnum.OBVIOUS_SINGLE || strategyType === StrategyEnum.OBVIOUS_PAIR || 
+            strategyType === StrategyEnum.OBVIOUS_TRIPLET || strategyType === StrategyEnum.OBVIOUS_QUADRUPLET || 
+            strategyType === StrategyEnum.OBVIOUS_QUINTUPLET || strategyType === StrategyEnum.OBVIOUS_SEXTUPLET || 
+            strategyType === StrategyEnum.OBVIOUS_SEPTUPLET || strategyType === StrategyEnum.OBVIOUS_OCTUPLET) {
             return true;
         }
         return false;
@@ -188,7 +188,7 @@ export class Strategy{
                 this.cellBoard.setSearchedGroups(strategyType, GroupEnum.BOX, i, !used);
             }
         }
-        else if (this.isNakedSetStrategy(strategyType) || this.isHiddenSetStrategy(strategyType)) {
+        else if (this.isObviousSetStrategy(strategyType) || this.isHiddenSetStrategy(strategyType)) {
             let tuple:TupleEnum = this.getStrategyTuple(strategyType);
             let subsets:Group[] = Group.getSubset(tuple);
             for (let group:GroupEnum = 0; group < GroupEnum.COUNT; group++) {
@@ -205,7 +205,7 @@ export class Strategy{
                     // Contains cells in the same row, column, or box
                     let cells: Cell[] = this.cellBoard.getEmptyCellsInGroup(group, i);
                     for (let j:number = 0; j < subsets.length; j++) {
-                        if ((this.isNakedSetStrategy(strategyType) && this.isNakedSet(tuple, group, i, cells, subsets[j])) ||
+                        if ((this.isObviousSetStrategy(strategyType) && this.isObviousSet(tuple, group, i, cells, subsets[j])) ||
                             (this.isHiddenSetStrategy(strategyType) && this.isHiddenSet(tuple, group, i, cells, subsets[j]))) {
                             if (!drill) {
                                 return true;
@@ -337,38 +337,38 @@ export class Strategy{
     }
 
     /**
-     * Checks if strategy is a naked set of given tuple and if so adds values to be placed and notes to remove
-     * @param tuple - e.g. could be single or pair for naked single or naked pair respectively
-     * @param group - group type being check for a naked set e.g. row
+     * Checks if strategy is a obvious set of given tuple and if so adds values to be placed and notes to remove
+     * @param tuple - e.g. could be single or pair for obvious single or obvious pair respectively
+     * @param group - group type being check for a obvious set e.g. row
      * @param i - index of group being checked e.g. 3 for 4th group e.g. 4th row
      * @param cells - array of cells in the given row, column, or box
-     * @param inNakedSet - stores indexes of the cells that make up the naked set
-     * @returns true if strategy is a naked tuple
+     * @param isObviousSet - stores indexes of the cells that make up the obvious set
+     * @returns true if strategy is a obvious tuple
      */
-    private isNakedSet(tuple: TupleEnum, group: GroupEnum, i: number, cells: Cell[], inNakedSet: Group):boolean {
+    private isObviousSet(tuple: TupleEnum, group: GroupEnum, i: number, cells: Cell[], isObviousSet: Group):boolean {
         // used to prevent adding cells to notes to remove a second time when evaluating box after finding row/column set
         let usedRow:number = -1, usedColumn = -1;
-        // Tries to build a naked set of size tuple for each possible size tuple subset of candidates
-        // Is naked set iff union of all cells has notes size equal to tuple
-        // Stores the cellls that make up the naked set
-        let nakedSet:Cell[] = getSubsetOfCells(cells, inNakedSet);
-        // Check if naked set is correct size (i.e. every element in subset was in cells)
-        if (nakedSet.length !== tuple) {
+        // Tries to build a obvious set of size tuple for each possible size tuple subset of candidates
+        // Is obvious set iff union of all cells has notes size equal to tuple
+        // Stores the cellls that make up the obvious set
+        let obviousSet:Cell[] = getSubsetOfCells(cells, isObviousSet);
+        // Check if obvious set is correct size (i.e. every element in subset was in cells)
+        if (obviousSet.length !== tuple) {
             return false;
         }
-        // Calculates all notes in naked set
-        let nakedSetCandidates:Group = getUnionOfSetNotes(nakedSet);
-        // Check if naked set has correct number of notes
-        if (nakedSetCandidates.getSize() !== tuple) {
+        // Calculates all notes in obvious set
+        let obviousSetCandidates:Group = getUnionOfSetNotes(obviousSet);
+        // Check if obvious set has correct number of notes
+        if (obviousSetCandidates.getSize() !== tuple) {
             return false;
         }
-        // If it is a naked single places value
+        // If it is a obvious single places value
         if (tuple === TupleEnum.SINGLE) {
-            let row:number = nakedSet[0].getRow();
-            let column:number = nakedSet[0].getColumn();
+            let row:number = obviousSet[0].getRow();
+            let column:number = obviousSet[0].getColumn();
             let single:string = undefined;
             for (let singleCandidate:number = 0; singleCandidate < SudokuEnum.ROW_LENGTH; singleCandidate++) {
-                if (nakedSetCandidates.contains(singleCandidate)) {
+                if (obviousSetCandidates.contains(singleCandidate)) {
                     single = (singleCandidate+1).toString();
                 }
             }
@@ -379,27 +379,27 @@ export class Strategy{
         }
         // Adds notes to remove if there are any to remove
         for (let k:number = 0; k < cells.length; k++) {
-            // If cell isn't part of naked set itself and it contains some of the same values as naked set remove them
+            // If cell isn't part of obvious set itself and it contains some of the same values as obvious set remove them
             // Skip if row or column is 'used' i.e. removed due to shared row or column already and checking for others in shared box
-            if (!inNakedSet.contains(k) && (cells[k].getNotes().intersection(nakedSetCandidates)).getSize() > 0) {
+            if (!isObviousSet.contains(k) && (cells[k].getNotes().intersection(obviousSetCandidates)).getSize() > 0) {
                 let notes:Group = new Group(false, cells[k].getRow(), cells[k].getColumn());
-                notes.insert(nakedSetCandidates);
+                notes.insert(obviousSetCandidates);
                 this.notes.push(notes);
             }
         }
-        // Check if notes can be removed as result of naked set
+        // Check if notes can be removed as result of obvious set
         if (this.notes.length === 0) {
             return false;
         }
         this.identified = true;
-        for (let k:number = 0; k < nakedSet.length; k++) {
-            this.cause.push(new Cell(nakedSet[k].getRow(), nakedSet[k].getColumn()));
+        for (let k:number = 0; k < obviousSet.length; k++) {
+            this.cause.push(new Cell(obviousSet[k].getRow(), obviousSet[k].getColumn()));
         }
         let groups:number[] = new Array(2);
         groups[0] = group;
         groups[1] = i;
         this.groups.push(groups);
-        // If naked set shares a row or column it might also share a box so skip to check that
+        // If obvious set shares a row or column it might also share a box so skip to check that
         if (group !== GroupEnum.BOX) {
             // Set used row or column to avoiding adding same cells notes twice
             if (group === GroupEnum.ROW) {
@@ -408,21 +408,21 @@ export class Strategy{
             else {
                 usedColumn = this.notes[0].getColumn();
             }
-            // Check if naked set shares a box
+            // Check if obvious set shares a box
             let boxes:Group = new Group(false);
             let box:number;
-            for (let k:number = 0; k < nakedSet.length; k++) {
-                box = nakedSet[k].getBox();
+            for (let k:number = 0; k < obviousSet.length; k++) {
+                box = obviousSet[k].getBox();
                 boxes.insert(box);
             }
             if (boxes.getSize() === 1) {
-                // Since the naked set also all share the same box add to notes any notes you can remove from cells in the shared box
+                // Since the obvious set also all share the same box add to notes any notes you can remove from cells in the shared box
                 let boxCells: Cell[] = this.cellBoard.getEmptyCellsInGroup(GroupEnum.BOX, box);
                 for (let k:number = 0; k < boxCells.length; k++) {
                     if (boxCells[k].getRow() !== usedRow && boxCells[k].getColumn() !== usedColumn) {
-                        if ((boxCells[k].getNotes().intersection(nakedSetCandidates)).getSize() > 0) {
+                        if ((boxCells[k].getNotes().intersection(obviousSetCandidates)).getSize() > 0) {
                             let notes:Group = new Group(false, boxCells[k].getRow(), boxCells[k].getColumn());
-                            notes.insert(nakedSetCandidates);
+                            notes.insert(obviousSetCandidates);
                             this.notes.push(notes);
                             if (this.groups.length === 1) {
                                 let boxGroup:number[] = new Array(2);
@@ -441,7 +441,7 @@ export class Strategy{
     /**
      * Checks if strategy is a hidden set of given tuple and if so adds notes to remove
      * @param tuple - e.g. could be single or pair for hidden single or hidden pair respectively
-     * @param group - group type being check for a naked set e.g. row
+     * @param group - group type being check for a obvious set e.g. row
      * @param i - index of group being checked e.g. 3 for 4th group e.g. 4th row
      * @param cells - array of cells in the given row, column, or box
      * @param inHiddenSet - stores indexes of the cells that make up the hidden set
@@ -724,8 +724,8 @@ export class Strategy{
         let algorithm:StrategyEnum[] = new Array();
         // Adds strategies in order of least to most complex
         for (let strategy: number = 0; strategy < StrategyEnum.COUNT; strategy++) {
-            if (strategy !== StrategyEnum.NAKED_QUINTUPLET && strategy !== StrategyEnum.NAKED_SEXTUPLET &&
-                strategy !== StrategyEnum.NAKED_SEPTUPLET && strategy !== StrategyEnum.NAKED_OCTUPLET &&
+            if (strategy !== StrategyEnum.OBVIOUS_QUINTUPLET && strategy !== StrategyEnum.OBVIOUS_SEXTUPLET &&
+                strategy !== StrategyEnum.OBVIOUS_SEPTUPLET && strategy !== StrategyEnum.OBVIOUS_OCTUPLET &&
                 strategy !== StrategyEnum.HIDDEN_QUINTUPLET && strategy !== StrategyEnum.HIDDEN_SEXTUPLET &&
                 strategy !== StrategyEnum.HIDDEN_SEPTUPLET && strategy !== StrategyEnum.HIDDEN_OCTUPLET &&
                 strategy !== StrategyEnum.POINTING_TRIPLET) {

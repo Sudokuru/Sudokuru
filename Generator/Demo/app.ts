@@ -23,15 +23,15 @@ const activeGame = {
     numHintsAskedFor: 0,
     numWrongCellsPlayed: 0,
     numWrongCellsPlayedPerStrategy: {
-        NAKED_SINGLE: 0,
+        OBVIOUS_SINGLE: 0,
         HIDDEN_SINGLE: 0,
-        NAKED_PAIR: 0,
-        NAKED_TRIPLET: 0,
-        NAKED_QUADRUPLET: 0,
-        NAKED_QUINTUPLET: 0,
-        NAKED_SEXTUPLET: 0,
-        NAKED_SEPTUPLET: 0,
-        NAKED_OCTUPLET: 0,
+        OBVIOUS_PAIR: 0,
+        OBVIOUS_TRIPLET: 0,
+        OBVIOUS_QUADRUPLET: 0,
+        OBVIOUS_QUINTUPLET: 0,
+        OBVIOUS_SEXTUPLET: 0,
+        OBVIOUS_SEPTUPLET: 0,
+        OBVIOUS_OCTUPLET: 0,
         HIDDEN_PAIR: 0,
         HIDDEN_TRIPLET: 0,
         HIDDEN_QUADRUPLET: 0,
@@ -59,14 +59,14 @@ app.get('/solver/nextStep', (req, res) => {
         if (Number(req.query.amendNotes) === i) {
             algorithm.push(StrategyEnum.AMEND_NOTES);
         }
-        else if (Number(req.query.nakedSingle) === i) {
-            algorithm.push(StrategyEnum.NAKED_SINGLE);
+        else if (Number(req.query.obviousSingle) === i) {
+            algorithm.push(StrategyEnum.OBVIOUS_SINGLE);
         }
         else if (Number(req.query.hiddenSingle) === i) {
             algorithm.push(StrategyEnum.HIDDEN_SINGLE);
         }
-        else if (Number(req.query.nakedPair) === i) {
-            algorithm.push(StrategyEnum.NAKED_PAIR);
+        else if (Number(req.query.obviousPair) === i) {
+            algorithm.push(StrategyEnum.OBVIOUS_PAIR);
         }
         else if (Number(req.query.hiddenPair) === i) {
             algorithm.push(StrategyEnum.HIDDEN_PAIR);
@@ -74,8 +74,8 @@ app.get('/solver/nextStep', (req, res) => {
         else if (Number(req.query.pointingPair) === i) {
             algorithm.push(StrategyEnum.POINTING_PAIR);
         }
-        else if (Number(req.query.nakedTriplet) === i) {
-            algorithm.push(StrategyEnum.NAKED_TRIPLET);
+        else if (Number(req.query.obviousTriplet) === i) {
+            algorithm.push(StrategyEnum.OBVIOUS_TRIPLET);
         }
         else if (Number(req.query.hiddenTriplet) === i) {
             algorithm.push(StrategyEnum.HIDDEN_TRIPLET);
@@ -83,32 +83,32 @@ app.get('/solver/nextStep', (req, res) => {
         else if (Number(req.query.pointingTriplet) === i) {
             algorithm.push(StrategyEnum.POINTING_TRIPLET);
         }
-        else if (Number(req.query.nakedQuadruplet) === i) {
-            algorithm.push(StrategyEnum.NAKED_QUADRUPLET);
+        else if (Number(req.query.obviousQuadruplet) === i) {
+            algorithm.push(StrategyEnum.OBVIOUS_QUADRUPLET);
         }
         else if (Number(req.query.hiddenQuadruplet) === i) {
             algorithm.push(StrategyEnum.HIDDEN_QUADRUPLET);
         }
-        else if (Number(req.query.nakedQuintuplet) === i) {
-            algorithm.push(StrategyEnum.NAKED_QUINTUPLET);
+        else if (Number(req.query.obviousQuintuplet) === i) {
+            algorithm.push(StrategyEnum.OBVIOUS_QUINTUPLET);
         }
         else if (Number(req.query.hiddenQuintuplet) === i) {
             algorithm.push(StrategyEnum.HIDDEN_QUINTUPLET);
         }
-        else if (Number(req.query.nakedSextuplet) === i) {
-            algorithm.push(StrategyEnum.NAKED_SEXTUPLET);
+        else if (Number(req.query.obviousSextuplet) === i) {
+            algorithm.push(StrategyEnum.OBVIOUS_SEXTUPLET);
         }
         else if (Number(req.query.hiddenSextuplet) === i) {
             algorithm.push(StrategyEnum.HIDDEN_SEXTUPLET);
         }
-        else if (Number(req.query.nakedSeptuplet) === i) {
-            algorithm.push(StrategyEnum.NAKED_SEPTUPLET);
+        else if (Number(req.query.obviousSeptuplet) === i) {
+            algorithm.push(StrategyEnum.OBVIOUS_SEPTUPLET);
         }
         else if (Number(req.query.hiddenSeptuplet) === i) {
             algorithm.push(StrategyEnum.HIDDEN_SEPTUPLET);
         }
-        else if (Number(req.query.nakedOctuplet) === i) {
-            algorithm.push(StrategyEnum.NAKED_OCTUPLET);
+        else if (Number(req.query.obviousOctuplet) === i) {
+            algorithm.push(StrategyEnum.OBVIOUS_OCTUPLET);
         }
         else if (Number(req.query.hiddenOctuplet) === i) {
             algorithm.push(StrategyEnum.HIDDEN_OCTUPLET);

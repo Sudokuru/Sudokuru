@@ -7,8 +7,13 @@
 [![Coveralls Coverage](https://coveralls.io/repos/github/SudoKuru/Sudokuru/badge.svg?branch=main)](https://coveralls.io/github/SudoKuru/Sudokuru?branch=main)
 [![Codecov Coverage](https://codecov.io/gh/SudoKuru/Sudokuru/graph/badge.svg?token=SISS85TX20)](https://codecov.io/gh/SudoKuru/Sudokuru)
 
+[![Common Changelog](https://common-changelog.org/badge.svg)](https://common-changelog.org)
 
-> Generate data about Sudoku puzzles and upload it via POST requests
+
+> Generate data about Sudoku puzzles
+
+> [!NOTE]  
+> This project uses [BreakVer](https://www.taoensso.com/break-versioning) for project versioning. 
 
 # Table of Contents
 
@@ -36,7 +41,7 @@
         *   [removals](#removals-1)
         *   [info](#info-1)
         *   [action](#action-1)
-    *   [Example 3: Naked Single](#example-3-naked-single)
+    *   [Example 3: Obvious Single](#example-3-obvious-single)
         *   [strategy](#strategy-2)
         *   [cause](#cause-2)
         *   [groups](#groups-2)
@@ -44,7 +49,7 @@
         *   [removals](#removals-2)
         *   [info](#info-2)
         *   [action](#action-2)
-    *   [Example 4: Naked Pair](#example-4-naked-pair)
+    *   [Example 4: Obvious Pair](#example-4-obvious-pair)
         *   [strategy](#strategy-3)
         *   [cause](#cause-3)
         *   [groups](#groups-3)
@@ -52,7 +57,7 @@
         *   [removals](#removals-3)
         *   [info](#info-3)
         *   [action](#action-3)
-    *   [Example 5: Other Naked Sets](#example-5-other-naked-sets)
+    *   [Example 5: Other Obvious Sets](#example-5-other-obvious-sets)
         *   [strategy](#strategy-4)
         *   [strategy](#strategy-5)
     *   [Example 6: Hidden Single](#example-6-hidden-single)
@@ -205,13 +210,13 @@ Info about the strategy being used by the hint.
 "When there is a value already placed in a cell than it can be removed from all other cells notes in its row, column, and box"
 ```
 Describes the action that the hint is suggesting.
-## Example 3: Naked Single
+## Example 3: Obvious Single
 ![Example 3](https://sudokuru.s3.amazonaws.com/hintExample3-V1.png)
 ### strategy
 ```json
-"NAKED_SINGLE"
+"OBVIOUS_SINGLE"
 ```
-Name of strategy used by the hint. Naked single works by placing a value in a cell where it is the only remaining possibility. In the example the green highlighted 2 is the last remaining possibility in the blue highlighted cell.
+Name of strategy used by the hint. Obvious single works by placing a value in a cell where it is the only remaining possibility. In the example the green highlighted 2 is the last remaining possibility in the blue highlighted cell.
 ### cause
 ```json
 [[7,2]]
@@ -234,21 +239,21 @@ Row, column, and values for cells that have had values placed in them as result 
 Notes that can be removed from cells along with their row and columns. This does not apply to this strategy.
 ### info
 ```json
-"Naked singles are when you only have one number left as a possibility in a cell"
+"Obvious singles are when you only have one number left as a possibility in a cell"
 ```
 Info about the strategy being used by the hint.
 ### action
 ```json
-"When you see a naked single you can fill it in with its last remaining possibility"
+"When you see a obvious single you can fill it in with its last remaining possibility"
 ```
 Describes the action that the hint is suggesting.
-## Example 4: Naked Pair
+## Example 4: Obvious Pair
 ![Example 4](https://sudokuru.s3.amazonaws.com/hintExample4-V1.png)
 ### strategy
 ```json
-"NAKED_PAIR"
+"OBVIOUS_PAIR"
 ```
-Name of strategy used by the hint. Naked pair works using two cells that share a group and only have the same two notes left as possibilities to eliminate those notes from other cells in the group. In the example 7 and 8 are the last remaining possibilities in the blue highlighted cells which are used to remove all the other 7 and 8s in the column shown highlighted in red.
+Name of strategy used by the hint. Obvious pair works using two cells that share a group and only have the same two notes left as possibilities to eliminate those notes from other cells in the group. In the example 7 and 8 are the last remaining possibilities in the blue highlighted cells which are used to remove all the other 7 and 8s in the column shown highlighted in red.
 ### cause
 ```json
 [[1,8],[6,8]]
@@ -271,31 +276,31 @@ Row, column, and values for cells that have had values placed in them as result 
 Notes that can be removed from cells along with their row and columns. The first two values in each subarray represent the row and column respectively so removals[0][0] and removals[0][1] refer to the 9th cell in the 4th row. The rest of the numbers in the subarray are the notes to be removed which is 7 and 8 (although only 8 is there to begin with and is highlighted in red).
 ### info
 ```json
-"Naked pairs are when you only have the same two numbers left as a possibility in two cells in the same row, column, or box"
+"Obvious pairs are when you only have the same two numbers left as a possibility in two cells in the same row, column, or box"
 ```
 Info about the strategy being used by the hint.
 ### action
 ```json
-"When you see a naked pair you can remove them from the notes of every other cell in the row, column, or box that they share"
+"When you see a obvious pair you can remove them from the notes of every other cell in the row, column, or box that they share"
 ```
 Describes the action that the hint is suggesting.
-## Example 5: Other Naked Sets
+## Example 5: Other Obvious Sets
 ### strategy
 ```json
-"NAKED_TRIPLET"
+"OBVIOUS_TRIPLET"
 ```
 ### strategy
 ```json
-"NAKED_QUADRUPLET"
+"OBVIOUS_QUADRUPLET"
 ```
-Name of strategy used by the hint. Naked triplets through octuplets are scaled up versions of naked pairs except instead of using two cells and notes they share 3-8. Note: while cells in say a naked quadruplet must share the same 4 notes the 4 cells don't have to individually have all 4 notes they just can't have any other notes.
+Name of strategy used by the hint. Obvious triplets through octuplets are scaled up versions of obvious pairs except instead of using two cells and notes they share 3-8. Note: while cells in say a obvious quadruplet must share the same 4 notes the 4 cells don't have to individually have all 4 notes they just can't have any other notes.
 ## Example 6: Hidden Single
 ![Example 6](https://sudokuru.s3.amazonaws.com/hintExample5-V1.png)
 ### strategy
 ```json
 "HIDDEN_SINGLE"
 ```
-Name of strategy used by the hint. Hidden single works by having only one cell in a group that still has a number as a possibility in which case all other notes can be removed from it. This is shown by the 8 naked single which in the only 8 note in the box with the green border. Therefore, the other notes highlighted in red can be removed.
+Name of strategy used by the hint. Hidden single works by having only one cell in a group that still has a number as a possibility in which case all other notes can be removed from it. This is shown by the 8 obvious single which in the only 8 note in the box with the green border. Therefore, the other notes highlighted in red can be removed.
 ### cause
 ```json
 [[3,8],[4,8],[5,6],[5,8]]
@@ -332,7 +337,7 @@ Describes the action that the hint is suggesting.
 ```json
 "HIDDEN_PAIR"
 ```
-Name of strategy used by the hint. Hidden pair works by having only two cells in a group that still have two specific numbers as possibilities in which case all other notes can be removed from the pair of cells. This is shown by the naked pair in the top right in which they have the only 2 and 3's in the box with the green border. Therefore, the other notes highlighted in red can be removed.
+Name of strategy used by the hint. Hidden pair works by having only two cells in a group that still have two specific numbers as possibilities in which case all other notes can be removed from the pair of cells. This is shown by the obvious pair in the top right in which they have the only 2 and 3's in the box with the green border. Therefore, the other notes highlighted in red can be removed.
 ### cause
 ```json
 [[0,7],[1,7],[1,8]]
@@ -419,20 +424,20 @@ Number representing the difficulty of the puzzle (higher is harder)
 Number representing the number of givens i.e. pre-filled cells in the puzzle
 ## puzzleStrategies
 Boolean array representing which strategies were used to solve the puzzle in following order (subset of StrategyEnum):
-- 0: NAKED_SINGLE,
+- 0: OBVIOUS_SINGLE,
 - 1: HIDDEN_SINGLE,
-- 2: NAKED_PAIR,
+- 2: OBVIOUS_PAIR,
 - 3: HIDDEN_PAIR,
 - 4: POINTING_PAIR,
-- 5: NAKED_TRIPLET,
+- 5: OBVIOUS_TRIPLET,
 - 6: HIDDEN_TRIPLET,
 - 7: POINTING_TRIPLET,
-- 8: NAKED_QUADRUPLET,
+- 8: OBVIOUS_QUADRUPLET,
 - 9: HIDDEN_QUADRUPLET,
 ## drills
 - 1D number array representing last time strategy can be reasonably used as drill or -1 if it can't be used as a drill
 - Each index is defined as the puzzle when it has a certain number of cells filled in (so index 30 has 30 cells filled in including givens).
-- Reasonably is defined as to mean removing strategies if they overlap with their prereqs (i.e. if a naked pair is made up of two naked singles the pair will be excluded) and not counting a strategy if multiple instances of it are present so their is only one correct answer.
+- Reasonably is defined as to mean removing strategies if they overlap with their prereqs (i.e. if a obvious pair is made up of two obvious singles the pair will be excluded) and not counting a strategy if multiple instances of it are present so their is only one correct answer.
 - The same number index to strategy mapping as puzzleStrategies is used.
 
 # Developer Tools
