@@ -1,6 +1,6 @@
 ## Checklist for completing pull request:
-- [ ] Verify that package version is incremented. You can do this with the command ```npm version [major|minor|patch]```
-- [ ] Verify that CHANGELOG.md has been updated following https://common-changelog.org/ format
+- [ ] Verify that package version is incremented following [BreakVer](https://www.taoensso.com/break-versioning) rules. You can do this with the command ```npm version [major|minor|patch]```
+- [ ] Verify that CHANGELOG.md has been updated following [Common Changelog](https://common-changelog.org/) format
 - [ ] Verify that any unit tests for new functionality are created and functional.
 - [ ] If needed, update the Readme
 
