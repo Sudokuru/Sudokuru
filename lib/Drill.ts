@@ -11,12 +11,8 @@ export function getDrillPuzzleString(puzzleString: string, moveNumber: number): 
     // Create solver with the initial puzzle
     let solver: Solver = new Solver(getBoardArray(puzzleString));
 
-    // Get initial placed count (givens)
-    let initialPlacedCount: number = solver.getPlacedCount();
-    let targetPlacedCount: number = initialPlacedCount + moveNumber;
-
     // Validate moveNumber
-    if (moveNumber < 0 || targetPlacedCount > 81) {
+    if (moveNumber < 0 || moveNumber > 80) {
         throw new Error("Invalid move number: " + moveNumber);
     }
 
@@ -26,7 +22,7 @@ export function getDrillPuzzleString(puzzleString: string, moveNumber: number): 
     }
 
     // Execute solver steps until target placed count is reached
-    while (solver.getPlacedCount() < targetPlacedCount) {
+    while (solver.getPlacedCount() < moveNumber) {
         let hint = solver.nextStep();
         if (hint === null) {
             break;
