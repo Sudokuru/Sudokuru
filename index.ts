@@ -4,10 +4,10 @@ import {StrategyEnum} from "./Generator/Sudoku";
 // Functions
 import { getHint } from "./lib/Hint";
 import { getPuzzleData } from "./lib/PuzzleData";
-import { calculateNotes } from "./lib/Drill";
+import { getDrillPuzzleString } from "./lib/Drill";
 // Types
 import {SudokuStrategy, SUDOKU_STRATEGY_ARRAY } from "./lib/Api";
 
 
-export { Board, StrategyEnum, getHint, getPuzzleData, calculateNotes };
+export { Board, StrategyEnum, getHint, getPuzzleData, getDrillPuzzleString };
 export { SudokuStrategy, SUDOKU_STRATEGY_ARRAY };
