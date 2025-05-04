@@ -24,6 +24,8 @@
             *   [getHint()](#gethint)
         *   [PuzzleData File](#puzzledata-file)
             *   [getPuzzleData()](#getpuzzledata)
+        *   [Drill File](#drill-file)
+            *   [getDrillPuzzleString()](#getdrillpuzzlestring)
 *   [hint Object Properties](#hint-object-properties)
     *   [Example 1: Amend Notes](#example-1-amend-notes)
         *   [strategy](#strategy)
@@ -122,6 +124,8 @@ npm install sudokuru
 5. Return Value: [hint](#hint-object-properties)
 
 ### PuzzleData File
+
+#### getPuzzleData()
 1. Setup: 
     ```typescript
     import {getPuzzleData} from 'sudokuru';
@@ -134,6 +138,23 @@ npm install sudokuru
 4. Parameters:
     - board: puzzle board string (81 characters, one for each cell containing each value or "0" if empty, left to right top to bottom)
 5. Return Value: [puzzleData](#puzzledata-object-properties)
+
+### Drill File
+
+#### getDrillPuzzleString()
+1. Setup:
+    ```typescript
+    import {getDrillPuzzleString} from 'sudokuru';
+    ```
+2. Description: Returns puzzle string updated to right before drill strategy move can be played
+3. Syntax
+    ```typescript
+    getDrillPuzzleString(puzzleString, moveNumber);
+    ```
+4. Parameters:
+    - puzzleString: puzzle board string (81 characters, one for each cell containing each value or "0" if empty, left to right top to bottom)
+    - moveNumber: number of cells filled in (so index 30 has 30 cells filled in including givens), returned by getPuzzleData
+5. Return Value: puzzle board string (81 characters, one for each cell containing each value or "0" if empty, left to right top to bottom)
 
 # hint Object Properties
 ## Example 1: Amend Notes
