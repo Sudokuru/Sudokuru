@@ -64,6 +64,11 @@ describe("get drill puzzle strings", () => {
 
             // Sometimes there are zero hints available which is a big issue
             // But somehow nextStep keeps on?
+            // only two differences between how nextStep gets a valid hint and how setAllHints
+            // for drills gets none or invalid one so must be one of these thigns at issue:
+            // 1. setHint creates new Hint(strategyObj) whereas
+            //    drills use strategyObj.getDrillHint()
+            // 2. drills setAllHints pass in 2nd arg drill to setStrategyType as true
             if (hints.length === 0) {
                 console.log("Uh oh, there are zero hints available?!");
             }
