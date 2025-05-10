@@ -1,4 +1,6 @@
 import { getDrillPuzzleString } from "../../../lib/Drill";
+import { getPuzzleData } from "../../../lib/PuzzleData";
+import { getHint } from "../../../lib/Hint";
 import { Solver } from "../../Solver";
 import { getBoardArray, StrategyEnum } from "../../Sudoku";
 import { TestBoards } from "../testResources";
@@ -9,9 +11,50 @@ describe("get drill puzzle strings", () => {
         expect(drillPuzzleString).toBe(TestBoards.SINGLE_OBVIOUS_SINGLE);
     });
 
+    it('end to end test of getting puzzle data -> drills -> drill puzzle string -> drill hint', () => {
+        // First get the puzzle data
+        const puzzleString = TestBoards.ONLY_OBVIOUS_SINGLES;
+        const puzzleData = getPuzzleData(puzzleString) as any;
+        const drills = puzzleData.drills;
+        const hiddenSingle = drills[StrategyEnum.HIDDEN_SINGLE - StrategyEnum.SIMPLIFY_NOTES - 1];
+        const pointingTriplet = drills[StrategyEnum.POINTING_TRIPLET - StrategyEnum.SIMPLIFY_NOTES - 1];
+        console.log("Here is all the puzzle data: " + JSON.stringify(puzzleData));
+        console.log("The pointing triplet occurs when there are " + pointingTriplet + " cells filled in.");
+        console.log("The hidden single occurs when there are " + hiddenSingle + " cells filled in.");
+
+        // Get the drill puzzle strings
+        const drillPuzzleHS = getDrillPuzzleString(puzzleString, hiddenSingle);
+        const drillPuzzlePT = getDrillPuzzleString(puzzleString, pointingTriplet);
+        // Verify the drill strings have the correct number of cells filled in
+        expect(drillPuzzleHS.split('0').length - 1).toBe(81 - hiddenSingle);
+        expect(drillPuzzlePT.split('0').length - 1).toBe(81 - pointingTriplet);
+
+        console.log("drill puzzle hidden single: " + drillPuzzleHS);
+
+        let solver = new Solver(getBoardArray(drillPuzzleHS));
+        do {
+            let hint = getHint(solver.getBoard(), solver.getNotes(), [
+                "HIDDEN_SINGLE",
+
+                "AMEND_NOTES",
+                "SIMPLIFY_NOTES",
+                "OBVIOUS_SINGLE", 
+                "OBVIOUS_PAIR",
+                "HIDDEN_PAIR",
+                "POINTING_PAIR",
+                "OBVIOUS_TRIPLET",
+                "HIDDEN_TRIPLET",
+                "POINTING_TRIPLET",
+                "OBVIOUS_QUADRUPLET",
+                "HIDDEN_QUADRUPLET",
+            ]);
+            console.log("Hint available: " + JSON.stringify(hint));
+        } while (solver.nextStep());
+    });
+
     it('get drill puzzle string works for a pointing triplet drill', () => {
         // double checking drills solver thingy works
-        let puzzle = TestBoards.POINTING_TRIPLET_DRILL_SEED;
+        /*let puzzle = TestBoards.POINTING_TRIPLET_DRILL_SEED;
         let solver = new Solver(getBoardArray(puzzle));
         let move = 1;
         while (solver.nextStep() !== null) {
@@ -53,7 +96,7 @@ describe("get drill puzzle strings", () => {
             }
 
             move++;
-        }
+        }*/
 /*
         let solver2 = new Solver(getBoardArray("197568423852394167634172598763285914429716835581943276348629751915837042276000000"), [StrategyEnum.HIDDEN_SINGLE, StrategyEnum.AMEND_NOTES, StrategyEnum.OBVIOUS_SINGLE]);
         let allHints = solver2.getAllHints();
