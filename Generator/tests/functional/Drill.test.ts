@@ -18,9 +18,9 @@ describe("get drill puzzle strings", () => {
         const drills = puzzleData.drills;
         const hiddenSingle = drills[StrategyEnum.HIDDEN_SINGLE - StrategyEnum.SIMPLIFY_NOTES - 1];
         const pointingTriplet = drills[StrategyEnum.POINTING_TRIPLET - StrategyEnum.SIMPLIFY_NOTES - 1];
-        console.log("Here is all the puzzle data: " + JSON.stringify(puzzleData));
-        console.log("The pointing triplet occurs when there are " + pointingTriplet + " cells filled in.");
-        console.log("The hidden single occurs when there are " + hiddenSingle + " cells filled in.");
+        //console.log("Here is all the puzzle data: " + JSON.stringify(puzzleData));
+        //console.log("The pointing triplet occurs when there are " + pointingTriplet + " cells filled in.");
+        //console.log("The hidden single occurs when there are " + hiddenSingle + " cells filled in.");
 
         // Get the drill puzzle strings
         const drillPuzzleHS = getDrillPuzzleString(puzzleString, hiddenSingle);
@@ -29,10 +29,10 @@ describe("get drill puzzle strings", () => {
         expect(drillPuzzleHS.split('0').length - 1).toBe(81 - hiddenSingle);
         expect(drillPuzzlePT.split('0').length - 1).toBe(81 - pointingTriplet);
 
-        console.log("drill puzzle hidden single: " + drillPuzzleHS);
+        //console.log("drill puzzle hidden single: " + drillPuzzleHS);
 
         let solver = new Solver(getBoardArray(drillPuzzleHS));
-        do {
+        /*do {
             let hint = getHint(solver.getBoard(), solver.getNotes(), [
                 "HIDDEN_SINGLE",
 
@@ -49,7 +49,45 @@ describe("get drill puzzle strings", () => {
                 "HIDDEN_QUADRUPLET",
             ]);
             console.log("Hint available: " + JSON.stringify(hint));
-        } while (solver.nextStep());
+        } while (solver.nextStep());*/
+    });
+
+    it('narrow issue', () => {
+        const drillPuzzleStringHS = "316984752298157346574623819423718695765439128189562437851396274637045980942001500";
+        const drillPuzzleHS = getBoardArray(drillPuzzleStringHS);
+
+        //let solver = new Solver(drillPuzzleHS);
+        let solver = new Solver(getBoardArray(TestBoards.ONLY_OBVIOUS_SINGLES));
+        let hint = solver.nextStep();
+        while (hint !== null) {
+            let hints = solver.getAllHints();
+
+            // Sometimes there are zero hints available which is a big issue
+            // But somehow nextStep keeps on?
+            if (hints.length === 0) {
+                console.log("Uh oh, there are zero hints available?!");
+            }
+
+            let strategies = "";
+            hints.forEach((hint) => {
+                strategies += hint.getStrategy() + ", ";
+            });
+            console.log("Hints available at this step are: " + strategies);
+
+            let board = solver.getBoard();
+            let boardString: string = "";
+            for (let row = 0; row < board.length; row++) {
+                for (let col = 0; col < board[row].length; col++) {
+                    boardString += board[row][col];
+                }
+            }
+
+            console.log("state of the board: " + boardString);
+            console.log("the placement count is: " + solver.getPlacedCount());
+            console.log("--------------------\n");
+
+            hint = solver.nextStep();
+        }
     });
 
     it('get drill puzzle string works for a pointing triplet drill', () => {
