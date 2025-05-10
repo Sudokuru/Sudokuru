@@ -14,13 +14,13 @@ import { CellBoard } from "./CellBoard";
  */
 export class Solver{
     // Stores representation of board being solved and maintains metadata about it
-    private cellBoard: CellBoard;
+    public cellBoard: CellBoard;
     // Stores representation of board being solved
-    private board: Cell[][];
+    public board: Cell[][];
     // Stores current number of placed values (including givens)
     private placedCount: number;
     // Stores empty cells in board
-    private emptyCells: Cell[][];
+    public emptyCells: Cell[][];
     // Stores whether or not the board has been successfully solved
     private solved: boolean;
     // Stores a hint corresponding to a step
@@ -30,7 +30,7 @@ export class Solver{
     // Stores order in which the Solver uses strategies to solve the Sudoku board (modified for testing strategies)
     private algorithm: StrategyEnum[];
     // Stores solution board if provided, AmendNotes Strategy can use it to correct players who remove "correct" notes
-    private solution: string[][];
+    public solution: string[][];
 
     /**
      * Creates solver object

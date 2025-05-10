@@ -4,6 +4,7 @@ import { getHint } from "../../../lib/Hint";
 import { Solver } from "../../Solver";
 import { getBoardArray, StrategyEnum } from "../../Sudoku";
 import { TestBoards } from "../testResources";
+import { Strategy } from "../../Strategy";
 
 describe("get drill puzzle strings", () => {
     it('get drill puzzle string works for simplest case', () => {
@@ -69,15 +70,41 @@ describe("get drill puzzle strings", () => {
             // 1. setHint creates new Hint(strategyObj) whereas
             //    drills use strategyObj.getDrillHint()
             // 2. drills setAllHints pass in 2nd arg drill to setStrategyType as true
+
+            // wait a minute, this is weird, if we find a second instance of a drill hint then
+            // we reset the strategy type but not the drill hint and still returns true from
+            // isStrategy! think should instead set drill hint back to null and if in hint then
+            // return whether or not drill hint is null!
+            // actually nvm that is expected it does return false if it's a diff drill but if
+            // it found the same drill twice it just resets
+
+            // So that was dead end so far, next step is to actually trace through the isStrategy
+            // call for the hidden single that does not exist
+
             if (hints.length === 0) {
-                console.log("Uh oh, there are zero hints available?!");
+                //console.log("Uh oh, there are zero hints available?!");
+                // actually this is ok cause some hints can't be drills
             }
 
             let strategies = "";
             hints.forEach((hint) => {
                 strategies += hint.getStrategy() + ", ";
             });
-            console.log("Hints available at this step are: " + strategies);
+            //console.log("Hints available at this step are: " + strategies);
+
+            if (solver.getPlacedCount() === 75 && hints.length > 1 && hints[1].getStrategy() === "HIDDEN_SINGLE") {
+                console.log("this is the place!");
+
+                // Creating strategy obj just like setAllHints does
+                let hs = new Strategy(solver.cellBoard, solver.board, solver.emptyCells, solver.solution);
+                //if (hs.setStrategyType(StrategyEnum.HIDDEN_SINGLE, true)) {
+                //    console.log("Replicated the error!");
+                //}
+                // going to follow it one step further to isStrategy:
+                if (hs.isStrategy(StrategyEnum.HIDDEN_SINGLE, true)) {
+                    console.log("followed issue to isStrategy");
+                }
+            }
 
             let board = solver.getBoard();
             let boardString: string = "";
@@ -87,9 +114,9 @@ describe("get drill puzzle strings", () => {
                 }
             }
 
-            console.log("state of the board: " + boardString);
-            console.log("the placement count is: " + solver.getPlacedCount());
-            console.log("--------------------\n");
+            //console.log("state of the board: " + boardString);
+            //console.log("the placement count is: " + solver.getPlacedCount());
+            //console.log("--------------------\n");
 
             hint = solver.nextStep();
         }
