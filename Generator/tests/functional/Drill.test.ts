@@ -32,8 +32,14 @@ describe("get drill puzzle strings", () => {
 
         //console.log("drill puzzle hidden single: " + drillPuzzleHS);
 
-        let solver = new Solver(getBoardArray(drillPuzzleHS));
-        /*do {
+        // think starting it that late amend notes removes the notes needed by the strategy!
+        //let solver = new Solver(getBoardArray(drillPuzzleHS));
+        let solver = new Solver(getBoardArray(TestBoards.ONLY_OBVIOUS_SINGLES));
+        do {
+            // maybe the following gives exceptions cause could have solved entire board? try early skip
+            if (solver.getPlacedCount() === 81) {
+                continue;
+            }
             let hint = getHint(solver.getBoard(), solver.getNotes(), [
                 "HIDDEN_SINGLE",
 
@@ -50,7 +56,7 @@ describe("get drill puzzle strings", () => {
                 "HIDDEN_QUADRUPLET",
             ]);
             console.log("Hint available: " + JSON.stringify(hint));
-        } while (solver.nextStep());*/
+        } while (solver.nextStep());
     });
 
     it('narrow issue', () => {
@@ -97,12 +103,38 @@ describe("get drill puzzle strings", () => {
 
                 // Creating strategy obj just like setAllHints does
                 let hs = new Strategy(solver.cellBoard, solver.board, solver.emptyCells, solver.solution);
-                //if (hs.setStrategyType(StrategyEnum.HIDDEN_SINGLE, true)) {
-                //    console.log("Replicated the error!");
-                //}
-                // going to follow it one step further to isStrategy:
-                if (hs.isStrategy(StrategyEnum.HIDDEN_SINGLE, true)) {
-                    console.log("followed issue to isStrategy");
+                console.log("about to set hidden single strategy type");
+                if (hs.setStrategyType(StrategyEnum.HIDDEN_SINGLE, true)) {
+                    const notesToRemove = hs.getNotesToRemove()
+                    notesToRemove.forEach((notes) => {
+                        let noteString = "";
+                        for (let i:number = 0; i < 9; i++) {
+                            if (notes.contains(i)) {
+                                noteString += i.toString() + ", ";
+                            }
+                        }
+                        console.log("From cell at row " + notes.getRow() + " and col " + notes.getColumn() + " removing notes: " + noteString);
+                    });
+                    const cause = hs.getCause();
+                    cause.forEach((cell) => {
+                        console.log("This is caused by cell at " + cell.getRow() + ", " + cell.getColumn());
+                    });
+                    // ok so this is really weird, the isHiddenSet code outputs three cells that cause the
+                    // hidden single but getCause() is returning nothing so somehow it got reset? oh actually
+                    // that makes sense it should be put into drill hint then reset
+                    const drillHint = hs.getDrillHint();
+                    drillHint.getCellsCause().forEach((cell) => {
+                        console.log("The cell that causes hidden single is at " + cell.getRow() + ", " + cell.getColumn())
+                    })
+                    drillHint.getEffectRemovals().forEach((removals) => {
+                        console.log("From cell at " + removals.getRow() + ", " + removals.getColumn() + " removing notes " + removals.getString())
+                    })
+                    console.log("There are " + drillHint.getEffectRemovals().length + " cells getting notes removed")
+                    // ok that is actually weird, no hidden single hint should be created without notes to remove
+                    // ohhhh wait it gets destroyed by the this.reset cause object oriented and share same strategy obj!
+                    // could create a Strategy copy function and use that in hint constructor
+                    // still not sure why regular getHint didn't work in above test tho
+                    console.log("set hidden single strategy type");
                 }
             }
 
