@@ -5,8 +5,29 @@ import { Solver } from "../../Solver";
 import { getBoardArray, StrategyEnum } from "../../Sudoku";
 import { TestBoards } from "../testResources";
 import { Strategy } from "../../Strategy";
+import { Board } from "../../Board";
+
+function getDrillIndex(drills: number[], strategy: StrategyEnum): number {
+    return drills[strategy - StrategyEnum.SIMPLIFY_NOTES - 1];
+}
 
 describe("get drill puzzle strings", () => {
+    it('drill indexes in puzzle data are correct', () => {
+        let boardObj: Board = new Board(TestBoards.HIDDEN_SINGLE_DRILL);
+        let drills: number[] = boardObj.getDrills();
+        let obviousSingleIndex: number = getDrillIndex(drills, StrategyEnum.OBVIOUS_SINGLE);
+        let hiddenSingleIndex: number = getDrillIndex(drills, StrategyEnum.HIDDEN_SINGLE);
+
+        expect(obviousSingleIndex).toBe(80);
+        let drillPuzzle = getDrillPuzzleString(TestBoards.HIDDEN_SINGLE_DRILL, 77);
+        //console.log("Supposedly the hidden single is found here: " + drillPuzzle);
+        // that returns: 547893216168427953293615487932156748851742639476389521684271395309564872005938160
+        // which is nothing but obvious singles so the issue where simplify notes is not being run
+        // before trying to find drills is there, think based on using a solver that 44 should be the
+        // real last move so this test should work once I fix that
+        expect(hiddenSingleIndex).toBe(44);
+    });
+
     it('get drill puzzle string works for simplest case', () => {
         const drillPuzzleString = getDrillPuzzleString(TestBoards.SINGLE_OBVIOUS_SINGLE, 80);
         expect(drillPuzzleString).toBe(TestBoards.SINGLE_OBVIOUS_SINGLE);
