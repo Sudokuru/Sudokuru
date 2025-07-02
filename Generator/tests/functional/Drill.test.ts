@@ -1,8 +1,8 @@
-import { getDrillPuzzleString } from "../../../lib/Drill";
+import { getDrillHint, getDrillPuzzleString } from "../../../lib/Drill";
 import { getPuzzleData } from "../../../lib/PuzzleData";
 import { getHint } from "../../../lib/Hint";
 import { Solver } from "../../Solver";
-import { getBoardArray, StrategyEnum } from "../../Sudoku";
+import { getBoardArray, StrategyEnum, SudokuEnum } from "../../Sudoku";
 import { TestBoards } from "../testResources";
 import { Strategy } from "../../Strategy";
 import { Board } from "../../Board";
@@ -55,9 +55,11 @@ describe("get drill puzzle strings", () => {
         expect(drillPuzzleHS.split('0').length - 1).toBe(81 - hiddenSingle);
         expect(drillPuzzlePT.split('0').length - 1).toBe(81 - pointingTriplet);
 
-        //console.log("drill puzzle hidden single: " + drillPuzzleHS);
-
-        // TODO: test getting the drill hints using the drill puzzles
+        // Verify can get the drill hints using the drill puzzles
+        let hint:any = getDrillHint(drillPuzzleHS, "HIDDEN_SINGLE");
+        expect(hint.strategy).toBe("HIDDEN_SINGLE");
+        // TODO: thoroughly assert aspects of both drill hints
+        // TODO: document getDrillHint in README and expose via API
     });
 
 });

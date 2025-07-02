@@ -1,5 +1,9 @@
+import { Hint } from "../Generator/Hint";
 import { Solver } from "../Generator/Solver";
-import { getBoardArray } from "../Generator/Sudoku";
+import { Strategy } from "../Generator/Strategy";
+import { getBoardArray, StrategyEnum } from "../Generator/Sudoku";
+import { SudokuStrategy } from "./Api";
+import { _getHint } from "./Hint";
 
 /**
  * Given a puzzle string and move number, returns the puzzle state after that moves
@@ -39,4 +43,36 @@ export function getDrillPuzzleString(puzzleString: string, moveNumber: number): 
     }
 
     return result;
+}
+
+function containsHintOfStrategy(hints: Hint[], strategy: string): boolean {
+    for (const hint of hints) {
+        if (hint.getStrategy() === strategy) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * Given a board string right before a strategy can be used and the strategy in question returns a hint for it
+ * @param drillPuzzleString - 1d representation of board right before hint that can be retrieved from getDrillPuzzleString
+ * @param drillStrategy - strategy to create a hint for
+ * @returns JSON object containing hint data
+ */
+export function getDrillHint(drillPuzzleString: string, drillStrategy: SudokuStrategy):JSON {
+    let algorithm:StrategyEnum[] = [];
+    algorithm.push(StrategyEnum[drillStrategy]);
+    let defaultAlgorithm:StrategyEnum[] = Strategy.getDefaultAlgorithm();
+    for (const strategy of defaultAlgorithm) {
+        if (strategy !== StrategyEnum[drillStrategy]) {
+            algorithm.push(strategy);
+        }
+    }
+    let boardArray:string[][] = getBoardArray(drillPuzzleString);
+    let solver:Solver = new Solver(boardArray);
+    while (!containsHintOfStrategy(solver.getAllHints(), drillStrategy)) {
+        solver.nextStep();
+    }
+    return _getHint(boardArray, algorithm, solver.getNotes());
 }
