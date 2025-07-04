@@ -59,7 +59,7 @@ describe("get drill puzzle strings", () => {
         let hint:any = getDrillHint(drillPuzzleHS, "HIDDEN_SINGLE");
         expect(hint.strategy).toBe("HIDDEN_SINGLE");
         // TODO: thoroughly assert aspects of both drill hints
-        // TODO: document getDrillHint in README and expose via API
+        // TODO: document getDrillHint in README
     });
 
 });
