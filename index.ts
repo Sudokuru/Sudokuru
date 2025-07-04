@@ -9,5 +9,7 @@ import { getDrillPuzzleString, getDrillHint } from "./lib/Drill";
 import {SudokuStrategy, SUDOKU_STRATEGY_ARRAY } from "./lib/Api";
 
 
-export { Board, StrategyEnum, getHint, getPuzzleData, getDrillPuzzleString, getDrillHint };
+// Exports
+export { Board, StrategyEnum };
+export { getHint, getPuzzleData, getDrillPuzzleString, getDrillHint };
 export { SudokuStrategy, SUDOKU_STRATEGY_ARRAY };
