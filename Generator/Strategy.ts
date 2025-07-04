@@ -172,7 +172,7 @@ export class Strategy{
                         }
 
                         // If this is first instance of the strategy found for drill we record it
-                        // If we have already found a instance of strategy for this drill we check if this is the same instance, if not return fales
+                        // If we have already found a instance of strategy for this drill we check if this is the same instance, if not return false
                         if (!used) {
                             this.strategyType = strategyType;
                             this.drillHint = new Hint(this, this.cause);
