@@ -26,7 +26,6 @@
             *   [getPuzzleData()](#getpuzzledata)
         *   [Drill File](#drill-file)
             *   [getDrillPuzzleString()](#getdrillpuzzlestring)
-            *   [getDrillHint()](#getdrillhint)
 *   [hint Object Properties](#hint-object-properties)
     *   [Example 1: Amend Notes](#example-1-amend-notes)
         *   [strategy](#strategy)
@@ -156,21 +155,6 @@ npm install sudokuru
     - puzzleString: puzzle board string (81 characters, one for each cell containing each value or "0" if empty, left to right top to bottom)
     - moveNumber: number of cells filled in (so index 30 has 30 cells filled in including givens), returned by getPuzzleData
 5. Return Value: puzzle board string (81 characters, one for each cell containing each value or "0" if empty, left to right top to bottom)
-
-#### getDrillHint()
-1. Setup: 
-    ```typescript
-    import {getDrillHint} from 'sudokuru';
-    ```
-2. Description: Returns a hint for the puzzle using the given strategy
-3. Syntax
-    ```typescript
-    getDrillHint(drillPuzzleString, drillStrategy);
-    ```
-4. Parameters:
-    - drillpuzzlestring: 1d representation of board right before hint that can be retrieved from getdrillpuzzlestring
-    - drillStrategy: strategy to create a hint for
-5. Return Value: [hint](#hint-object-properties)
 
 # hint Object Properties
 ## Example 1: Amend Notes

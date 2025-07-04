@@ -55,7 +55,7 @@ function containsHintOfStrategy(hints: Hint[], strategy: string): boolean {
 }
 
 /**
- * Given a board string right before a strategy can be used and the strategy in question returns a hint for it
+ * Given a board string right before a strategy can be used and the strategy in question returns a hint for it (after simplifying notes with other strategies)
  * @param drillPuzzleString - 1d representation of board right before hint that can be retrieved from getDrillPuzzleString
  * @param drillStrategy - strategy to create a hint for
  * @returns JSON object containing hint data
