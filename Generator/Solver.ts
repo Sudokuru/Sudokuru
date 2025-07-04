@@ -105,7 +105,8 @@ export class Solver{
             // If simplify notes is available as a strategy then skip checking for drill
             // This is because you can get invalid drills that just remove those notes using
             // much more powerful strategies
-            if (!strategyObj.setStrategyType(StrategyEnum.SIMPLIFY_NOTES, true) && strategyObj.setStrategyType(strategy, true)) {
+            if (!strategyObj.setStrategyType(StrategyEnum.SIMPLIFY_NOTES, true) &&
+                strategyObj.setStrategyType(strategy, true)) {
                 this.allHints.push(strategyObj.getDrillHint());
             }
         }
