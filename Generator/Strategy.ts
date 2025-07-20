@@ -167,17 +167,7 @@ export class Strategy{
                     }
                     if ((strategyType === StrategyEnum.AMEND_NOTES && this.isAmendNotes(r, c)) ||
                         (strategyType === StrategyEnum.SIMPLIFY_NOTES && this.isSimplifyNotes(r, c))) {
-                        if (!drill) {
-                            return true;
-                        }
-
-                        // If this is first instance of the strategy found for drill we record it
-                        // If we have already found a instance of strategy for this drill we check if this is the same instance, if not return false
-                        if (!used) {
-                            this.strategyType = strategyType;
-                            this.drillHint = new Hint(this, this.cause);
-                            return true;
-                        }
+                        return true;
                     }
                 }
             }
