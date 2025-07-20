@@ -642,6 +642,10 @@ export class Strategy{
      */
     private isAmendNotes(r: number, c: number):boolean {
         let cell:Cell = this.emptyCells[r][c];
+        // Following check shouldn't be needed outside of tests but good to be certain
+        if (!cell.isEmpty()) {
+            return false;
+        }
         let row:number = cell.getRow();
         let column:number = cell.getColumn();
         // Checks if correct number has been wrongly removed from a cell and if so removes all notes from it so it is amended in next if
