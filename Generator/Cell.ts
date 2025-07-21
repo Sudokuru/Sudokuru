@@ -178,6 +178,30 @@ export class Cell{
     }
 
     /**
+     * Sets all given notes (1 based index)
+     */
+    public setNotes(notes: number[]):void {
+        for (let note:number = 0; note < notes.length; note++) {
+            this.notes.insert(notes[note] - 1);
+        }
+    }
+
+    /**
+     * Print notes in pretty format
+     */
+    public printNotes():void {
+        let noteStr:string = "[";
+        for (let note:number = 0; note < SudokuEnum.ROW_LENGTH; note++) {
+            if (this.notes.contains(note)) {
+                noteStr += (note + 1);
+                noteStr += ", ";
+            }
+        }
+        noteStr += "]";
+        console.log(noteStr);
+    }
+
+    /**
      * Calculates box cell is in and sets it
      */
     private initializeBox():void {
