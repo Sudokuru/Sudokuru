@@ -29,7 +29,13 @@ describe("get drill puzzle strings", () => {
          * real last move so this test should work once I fix that
          */
 
-        expect(hiddenSingleIndex).toBe(44);
+        // You might expect to see hidden single at index 44 where board looks like this:
+        // 000003206168027053003600007932100748000040639006309521680000395309500800005038160
+        // This is an interesting edge case where that hidden single is used right after the
+        // final empty cell is filled in by amend notes (can't give drills while empty cells
+        // remain cause messes with logic) so it is used before it can be given as a drill
+        // This is cause drills are forward looking after applying current next step
+        expect(hiddenSingleIndex).toBe(-1);
     });
 
     it('get drill puzzle string works for simplest case', () => {
@@ -56,10 +62,16 @@ describe("get drill puzzle strings", () => {
         expect(drillPuzzlePT.split('0').length - 1).toBe(81 - pointingTriplet);
 
         // Verify can get the drill hints using the drill puzzles
+        console.log("drill puzzle pt: " + drillPuzzlePT)
         let hint:any = getDrillHint(drillPuzzleHS, "HIDDEN_SINGLE");
         expect(hint.strategy).toBe("HIDDEN_SINGLE");
-        // TODO: thoroughly assert aspects of both drill hints
-        // TODO: document getDrillHint in README
+        expect(hint.cause).toEqual([[0, 2], [0, 6], [0, 7]]);
+        expect(hint.groups).toEqual([[0, 0]]);
+        expect(hint.placements).toEqual([]);
+        expect(hint.removals).toEqual([[0, 3, 5, 6, 7]]);
+
+        hint = getDrillHint(drillPuzzlePT, "POINTING_TRIPLET");
+        console.log(hint);
     });
 
 });
