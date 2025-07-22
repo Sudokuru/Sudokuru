@@ -535,6 +535,32 @@ export class Strategy{
             if (!rowSet && !columnSet) {
                 continue;
             }
+            // Make sure the pointing set does not contain any obvious sets in it
+            // Manual prereq filtering fails for this sometimes because obvious sets are not
+            // included in drill list if there are multiple on board which there often are
+            let containsObviousSet: boolean = false;
+            for (let setTuple: number = 1; setTuple <= cells.length; setTuple++) {
+                for (let select: number = 1; select <= setTuple; select++) {
+                    let sets: Group[] = Group.getSubset(select, setTuple);
+                    // Verify sets aren't obvious sets by making sure intersection size
+                    // exceeds the tuple size i.e. total unique notes > total cell count
+                    for (let i: number = 0; i < sets.length; i++) {
+                        let notes: Group = new Group(false);
+                        for (let j: number = 0; j < setTuple; j++) {
+                            if (sets[i].contains(j)) {
+                                notes.insert(cells[j].getNotes());
+                            }
+                        }
+                        if (notes.getSize() == setTuple) {
+                            containsObviousSet = true;
+                        }
+                    }
+                }
+            }
+            if (containsObviousSet) {
+                continue;
+            }
+
             // Check if note is in the rest of the row or column, if so add to cause/groups and notes to remove arrays and return true
             let found:boolean = false;
             let notes:Group[] = new Array();
