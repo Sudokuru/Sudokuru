@@ -12,8 +12,9 @@ export class Group{
     // Optional row and column values corresponding to a Cell in a board
     private row: number;
     private column: number;
-    // Contains array for each subset size 1-9, each subarray stores every possible subset with given size
-    private static subsets: Group[][];
+    // Maps subset size to 2d array the index of which is array containing every Group possibility choosing
+    // index-1 (since no need for 0) selections from that set
+    private static subsets: Map<number, Group[][]> = new Map();
 
     /**
      * Creates Group object given value to initial candidates to
@@ -29,10 +30,19 @@ export class Group{
      */
     constructor(initialValue: boolean, row: number, column: number);
 
-    constructor(initialValue: boolean, row?: number, column?: number) {
-        this.candidates = new Array(SudokuEnum.ROW_LENGTH).fill(initialValue);
+    /**
+     * Creates Group object given value to initial candidates to
+     * @param initialValue - candidate initial value
+     * @param row - row to corresponding cell
+     * @param column - column to corresponding cell
+     * @param length - candidate array length, defaults to ROW_LENGTH
+     */
+    constructor(initialValue: boolean, row: number, column: number, length: number);
+
+    constructor(initialValue: boolean, row?: number, column?: number, length: number = SudokuEnum.ROW_LENGTH) {
+        this.candidates = new Array(length).fill(initialValue);
         if (initialValue === true) {
-            this.size = SudokuEnum.ROW_LENGTH;
+            this.size = length;
         }
         else {
             this.size = 0;
@@ -236,47 +246,50 @@ export class Group{
      * Adds every possible subset to subsets
      * @param index - index of candidate being decided upon addition to subsets
      * @param inSubset - stores candidates in current subset being computed
+     * @param size - number of elements to choose from in subset
      */
-    private static addSubsets(index: number, inSubset: Group):void {
+    private static addSubsets(index: number, inSubset: Group, size: number):void {
         // Recursively adds all subsets
-        if (index === SudokuEnum.ROW_LENGTH) {
+        if (index === size) {
             if (inSubset.getSize() > 0) {
-                Group.subsets[inSubset.getSize()-1].push(inSubset.clone());
+                Group.subsets.get(size)[inSubset.getSize()-1].push(inSubset.clone());
             }
         }
         else {
             // Add subsets including candidate at index
             inSubset.insert(index);
-            Group.addSubsets(index + 1, inSubset);
+            Group.addSubsets(index + 1, inSubset, size);
             // Add subsets excluding candidate at index
             inSubset.remove(index);
-            Group.addSubsets(index + 1, inSubset);
+            Group.addSubsets(index + 1, inSubset, size);
         }
         return;
     }
 
     /**
      * Initializes subsets to have subarrays for each subset size 1-9 storing all subsets with that size
+     * @param size - number of elements to choose from in subset
      */
-    private static initializeSubsets():void {
-        Group.subsets = new Array();
-        for (let i:number = 0; i < SudokuEnum.ROW_LENGTH; i++) {
-            Group.subsets.push([]);
+    private static initializeSubsets(size: number):void {
+        Group.subsets.set(size, new Array());
+        for (let i:number = 0; i < size; i++) {
+            Group.subsets.get(size).push([]);
         }
-        Group.addSubsets(0, new Group(false));
+        Group.addSubsets(0, new Group(false, undefined, undefined, size), size);
         return;
     }
 
     /**
      * Given a size returns array containing all subsets with that many candidates
-     * @param size - number of elements in desired subsets
+     * @param select - number of elements in desired subsets
+     * @param size - number of elements to choose from in subset, defaults to ROW_LENGTH
      * @returns array containg Groups with every possible subset of given size
      */
-    public static getSubset(size: number):Group[] {
-        if (Group.subsets === undefined) {
-            Group.initializeSubsets();
+    public static getSubset(select: number, size: number = SudokuEnum.ROW_LENGTH):Group[] {
+        if (!Group.subsets.get(size)) {
+            Group.initializeSubsets(size);
         }
-        return Group.subsets[size-1];
+        return Group.subsets.get(size)[select - 1];
     }
 
     /**
