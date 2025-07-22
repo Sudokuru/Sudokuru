@@ -297,6 +297,97 @@ describe("create obvious pair", () => {
         expect(groups[1][0]).toBe(GroupEnum.BOX);
         expect(groups[1][1]).toBe(0);
     });
+    it("should not be an obvious pair because it contains an obvious single", () => {
+        // Cells board[1][2] and board[1][6] would be an obvious pair except one of the cells
+        // only has one of the values in a pair thus being an obvious single
+        // board used is this one after amend or auto filling all the notes and removing the
+        // four note from the cell at board[1][2] with just 8 left:
+        // 316984752200157006570623010423718695765439000189562430050006070007000900000001500
+        let board:Cell[][] = getBlankCellBoard();
+        board[0][0].setValue("3");
+        board[0][1].setValue("1");
+        board[0][2].setValue("6");
+        board[0][3].setValue("9");
+        board[0][4].setValue("8");
+        board[0][5].setValue("4");
+        board[0][6].setValue("7");
+        board[0][7].setValue("5");
+        board[0][8].setValue("2");
+        board[1][0].setValue("2");
+        board[1][1].setNotes([4, 9]);
+        board[1][2].setNotes([8]);
+        board[1][3].setValue("1");
+        board[1][4].setValue("5");
+        board[1][5].setValue("7");
+        board[1][6].setNotes([3, 8]);
+        board[1][7].setNotes([4, 8]);
+        board[1][8].setValue("6");
+        board[2][0].setValue("5");
+        board[2][1].setValue("7");
+        board[2][2].setNotes([4, 8]);
+        board[2][3].setValue("6");
+        board[2][4].setValue("2");
+        board[2][5].setValue("3");
+        board[2][6].setNotes([8]);
+        board[2][7].setValue("1");
+        board[2][8].setNotes([4, 8, 9]);
+        board[3][0].setValue("4");
+        board[3][1].setValue("2");
+        board[3][2].setValue("3");
+        board[3][3].setValue("7");
+        board[3][4].setValue("1");
+        board[3][5].setValue("8");
+        board[3][6].setValue("6");
+        board[3][7].setValue("9");
+        board[3][8].setValue("5");
+        board[4][0].setValue("7");
+        board[4][1].setValue("6");
+        board[4][2].setValue("5");
+        board[4][3].setValue("4");
+        board[4][4].setValue("3");
+        board[4][5].setValue("9");
+        board[4][6].setNotes([1, 2, 8]);
+        board[4][7].setNotes([2, 8]);
+        board[4][8].setNotes([1, 8]);
+        board[5][0].setValue("1");
+        board[5][1].setValue("8");
+        board[5][2].setValue("9");
+        board[5][3].setValue("5");
+        board[5][4].setValue("6");
+        board[5][5].setValue("2");
+        board[5][6].setValue("4");
+        board[5][7].setValue("3");
+        board[5][8].setNotes([7]);
+        board[6][0].setNotes([8, 9]);
+        board[6][1].setValue("5");
+        board[6][2].setNotes([1, 2, 4, 8]);
+        board[6][3].setNotes([2, 3, 8]);
+        board[6][4].setNotes([4, 9]);
+        board[6][5].setValue("6");
+        board[6][6].setNotes([1, 2, 3, 8]);
+        board[6][7].setValue("7");
+        board[6][8].setNotes([1, 3, 4, 8]);
+        board[7][0].setNotes([6, 8]);
+        board[7][1].setNotes([3, 4]);
+        board[7][2].setValue("7");
+        board[7][3].setNotes([2, 3, 8]);
+        board[7][4].setNotes([4]);
+        board[7][5].setNotes([5]);
+        board[7][6].setValue("9");
+        board[7][7].setNotes([2, 4, 6, 8]);
+        board[7][8].setNotes([1, 3, 4, 8]);
+        board[8][0].setNotes([6, 8, 9]);
+        board[8][1].setNotes([3, 4, 9]);
+        board[8][2].setNotes([2, 4, 8]);
+        board[8][3].setNotes([2, 3, 8]);
+        board[8][4].setNotes([4, 7, 9]);
+        board[8][5].setValue("1");
+        board[8][6].setValue("5");
+        board[8][7].setNotes([2, 4, 6, 8]);
+        board[8][8].setNotes([3, 4, 8]);
+        let strategy:Strategy = new Strategy(new CellBoard(board), board, board);
+        expect(strategy.setStrategyType(StrategyEnum.OBVIOUS_PAIR)).toBeFalsy();
+    });
 });
 
 describe("create pointing pair", () => {
