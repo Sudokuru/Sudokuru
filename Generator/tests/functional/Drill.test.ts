@@ -1,10 +1,7 @@
 import { getDrillHint, getDrillPuzzleString } from "../../../lib/Drill";
 import { getPuzzleData } from "../../../lib/PuzzleData";
-import { getHint } from "../../../lib/Hint";
-import { Solver } from "../../Solver";
-import { getBoardArray, StrategyEnum, SudokuEnum } from "../../Sudoku";
+import { StrategyEnum } from "../../Sudoku";
 import { TestBoards } from "../testResources";
-import { Strategy } from "../../Strategy";
 import { Board } from "../../Board";
 
 function getDrillIndex(drills: number[], strategy: StrategyEnum): number {
