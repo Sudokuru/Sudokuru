@@ -333,9 +333,10 @@ export class Strategy{
      * @param i - index of group being checked e.g. 3 for 4th group e.g. 4th row
      * @param cells - array of cells in the given row, column, or box
      * @param isObviousSet - stores indexes of the cells that make up the obvious set
+     * @param checkOnly - exits early after determining if obvious set is found with no state changes, default to false
      * @returns true if strategy is a obvious tuple
      */
-    private isObviousSet(tuple: TupleEnum, group: GroupEnum, i: number, cells: Cell[], isObviousSet: Group):boolean {
+    private isObviousSet(tuple: TupleEnum, group: GroupEnum, i: number, cells: Cell[], isObviousSet: Group, checkOnly: boolean = false):boolean {
         // used to prevent adding cells to notes to remove a second time when evaluating box after finding row/column set
         let usedRow:number = -1, usedColumn = -1;
         // Tries to build a obvious set of size tuple for each possible size tuple subset of candidates
@@ -352,6 +353,25 @@ export class Strategy{
         if (obviousSetCandidates.getSize() !== tuple) {
             return false;
         }
+
+        // Verifies obvious set does not contain a smaller obvious set
+        if (tuple > TupleEnum.SINGLE) {
+            let tempSet: Group = isObviousSet.clone();
+            for (let j: number = 0; j < SudokuEnum.ROW_LENGTH; j++) {
+                if (tempSet.contains(j)) {
+                    tempSet.remove(j);
+                    if (this.isObviousSet(tuple - 1, group, i, cells, tempSet)) {
+                        return false;
+                    }
+                    tempSet.insert(j);
+                }
+            }
+        }
+        
+        if (checkOnly) {
+            return true;
+        }
+
         // If it is a obvious single places value
         if (tuple === TupleEnum.SINGLE) {
             let row:number = obviousSet[0].getRow();
