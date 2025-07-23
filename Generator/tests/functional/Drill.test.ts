@@ -83,6 +83,16 @@ describe("get drill puzzle strings", () => {
         expect(hint.placements).toEqual([]);
         expect(hint.removals).toEqual([[8, 1, 9]]);
 
+        const hiddenTriplet = drills[StrategyEnum.HIDDEN_TRIPLET - StrategyEnum.SIMPLIFY_NOTES - 1];
+        const htPuzzle = getDrillPuzzleString(puzzleString, hiddenTriplet);
+        expect(htPuzzle.split('0').length - 1).toBe(81 - hiddenTriplet);
+        hint = getDrillHint(htPuzzle, "HIDDEN_TRIPLET");
+        expect(hint.strategy).toBe("HIDDEN_TRIPLET");
+        expect(hint.cause).toEqual([[ 8, 1 ], [ 8, 2 ], [ 8, 4 ]]);
+        expect(hint.groups).toEqual([[0, 8]]);
+        expect(hint.placements).toEqual([]);
+        expect(hint.removals).toEqual([[ 8, 3, 2, 4, 7 ], [ 8, 7, 2, 4, 7 ], [ 8, 8, 2, 4, 7 ]]);
+
         // todo test the rest of the drills in this puzzle
     });
 
