@@ -360,7 +360,7 @@ export class Strategy{
             for (let j: number = 0; j < SudokuEnum.ROW_LENGTH; j++) {
                 if (tempSet.contains(j)) {
                     tempSet.remove(j);
-                    if (this.isObviousSet(tuple - 1, group, i, cells, tempSet)) {
+                    if (this.isObviousSet(tuple - 1, group, i, cells, tempSet, true)) {
                         return false;
                     }
                     tempSet.insert(j);
@@ -455,9 +455,10 @@ export class Strategy{
      * @param i - index of group being checked e.g. 3 for 4th group e.g. 4th row
      * @param cells - array of cells in the given row, column, or box
      * @param inHiddenSet - stores indexes of the cells that make up the hidden set
+     * @param checkOnly - exits early after determining if obvious set is found with no state changes, default to false
      * @returns true if strategy is a hidden tuple
      */
-    private isHiddenSet(tuple: TupleEnum, group: GroupEnum, i: number, cells: Cell[], inHiddenSet: Group):boolean {
+    private isHiddenSet(tuple: TupleEnum, group: GroupEnum, i: number, cells: Cell[], inHiddenSet: Group, checkOnly: boolean = false):boolean {
         // Tries to build a hidden set of size tuple for each possible size tuple subset of candidates
         // Is hidden single iff the number of candidates that don't exist outside of the hidden tuple
         // is equal to the tuple (e.g. hidden pair if there are two numbers only in the pair in the row)
@@ -492,6 +493,25 @@ export class Strategy{
         if ((hiddenSetCandidates.getSize() - (hiddenSetCandidates.intersection(notHiddenSetCandidates)).getSize()) !== tuple) {
             return false;
         }
+
+        // Verifies obvious set does not contain a smaller hidden set
+        if (tuple > TupleEnum.SINGLE) {
+            let tempSet: Group = inHiddenSet.clone();
+            for (let j: number = 0; j < SudokuEnum.ROW_LENGTH; j++) {
+                if (tempSet.contains(j)) {
+                    tempSet.remove(j);
+                    if (this.isHiddenSet(tuple - 1, group, i, cells, tempSet, true)) {
+                        return false;
+                    }
+                    tempSet.insert(j);
+                }
+            }
+        }
+       
+        if (checkOnly) {
+            return true;
+        }
+
         // Remove candidates that aren't part of the hidden set from the hidden sets notes
         for (let k:number = 0; k < tuple; k++) {
             if ((hiddenSet[k].getNotes().intersection(notHiddenSetCandidates)).getSize() > 0) {

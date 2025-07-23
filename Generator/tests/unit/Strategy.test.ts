@@ -248,7 +248,9 @@ describe("create hidden pair", () => {
     it("should not be a hidden pair because it is two hidden singles", () => {
         // The 9 and 3 notes in the second row are independently hidden singles but
         // were mistaken to be a hidden pair, this test verifies that is fixed
-        // board used is this one after amend or auto filling all the notes:
+        // board used is this one after amend or auto filling all the notes and adding back 1 note to
+        // the cell in bottom left corner of the top right box to prevent real hidden pair from being
+        // found in that column (1,2 notes):
         // 316984752200157006570623010423718695765439000189562430050006070007000900000001500
         let board:Cell[][] = getBlankCellBoard();
         board[0][0].setValue("3");
@@ -275,7 +277,7 @@ describe("create hidden pair", () => {
         board[2][3].setValue("6");
         board[2][4].setValue("2");
         board[2][5].setValue("3");
-        board[2][6].setNotes([8]);
+        board[2][6].setNotes([1, 8]);
         board[2][7].setValue("1");
         board[2][8].setNotes([4, 8, 9]);
         board[3][0].setValue("4");
