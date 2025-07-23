@@ -44,7 +44,6 @@ describe("get drill puzzle strings", () => {
         // First get the puzzle data
         const puzzleString = TestBoards.ONLY_OBVIOUS_SINGLES;
         const puzzleData = getPuzzleData(puzzleString) as any;
-        console.log(puzzleData); // todo remove this log
         const drills = puzzleData.drills;
 
         // For each drill assert the puzzle string has correct number of cells filled in and
