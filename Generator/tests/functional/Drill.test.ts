@@ -47,31 +47,23 @@ describe("get drill puzzle strings", () => {
         // First get the puzzle data
         const puzzleString = TestBoards.ONLY_OBVIOUS_SINGLES;
         const puzzleData = getPuzzleData(puzzleString) as any;
+        console.log(puzzleData); // todo remove this log
         const drills = puzzleData.drills;
-        const hiddenSingle = drills[StrategyEnum.HIDDEN_SINGLE - StrategyEnum.SIMPLIFY_NOTES - 1];
-        const pointingTriplet = drills[StrategyEnum.POINTING_TRIPLET - StrategyEnum.SIMPLIFY_NOTES - 1];
-        //console.log("Here is all the puzzle data: " + JSON.stringify(puzzleData));
-        //console.log("The pointing triplet occurs when there are " + pointingTriplet + " cells filled in.");
-        //console.log("The hidden single occurs when there are " + hiddenSingle + " cells filled in.");
 
-        // Get the drill puzzle strings
-        const drillPuzzleHS = getDrillPuzzleString(puzzleString, hiddenSingle);
-        const drillPuzzlePT = getDrillPuzzleString(puzzleString, pointingTriplet);
-        // Verify the drill strings have the correct number of cells filled in
-        expect(drillPuzzleHS.split('0').length - 1).toBe(81 - hiddenSingle);
-        expect(drillPuzzlePT.split('0').length - 1).toBe(81 - pointingTriplet);
+        // For each drill assert the puzzle string has correct number of cells filled in and
+        // verify the data in each of the drill hints
 
-        // Verify can get the drill hints using the drill puzzles
-        console.log("drill puzzle pt: " + drillPuzzlePT)
-        let hint:any = getDrillHint(drillPuzzleHS, "HIDDEN_SINGLE");
-        expect(hint.strategy).toBe("HIDDEN_SINGLE");
-        expect(hint.cause).toEqual([[0, 2], [0, 6], [0, 7]]);
-        expect(hint.groups).toEqual([[0, 0]]);
-        expect(hint.placements).toEqual([]);
-        expect(hint.removals).toEqual([[0, 3, 5, 6, 7]]);
+        const obviousSingle = drills[StrategyEnum.OBVIOUS_SINGLE - StrategyEnum.SIMPLIFY_NOTES - 1];
+        const osPuzzle = getDrillPuzzleString(puzzleString, obviousSingle);
+        expect(osPuzzle.split('0').length - 1).toBe(81 - obviousSingle);
+        let hint:any = getDrillHint(osPuzzle, "OBVIOUS_SINGLE");
+        expect(hint.strategy).toBe("OBVIOUS_SINGLE");
+        expect(hint.cause).toEqual([[8, 8]]);
+        expect(hint.groups).toEqual([]);
+        expect(hint.placements).toEqual([[8, 8, 3]]);
+        expect(hint.removals).toEqual([]);
 
-        hint = getDrillHint(drillPuzzlePT, "POINTING_TRIPLET");
-        console.log(hint);
+        // todo test the rest of the drills in this puzzle
     });
 
 });
