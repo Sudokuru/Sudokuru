@@ -103,7 +103,15 @@ describe("get drill puzzle strings", () => {
         expect(hint.placements).toEqual([]);
         expect(hint.removals).toEqual([[ 8, 7, 2, 3, 4, 8 ]]);
 
-        // todo test the rest of the drills in this puzzle
+        const hiddenQuad = drills[StrategyEnum.HIDDEN_QUADRUPLET - StrategyEnum.SIMPLIFY_NOTES - 1];
+        const hqPuzzle = getDrillPuzzleString(puzzleString, hiddenQuad);
+        expect(hqPuzzle.split('0').length - 1).toBe(81 - hiddenQuad);
+        hint = getDrillHint(hqPuzzle, "HIDDEN_QUADRUPLET");
+        expect(hint.strategy).toBe("HIDDEN_QUADRUPLET");
+        expect(hint.cause).toEqual([[ 7, 1 ], [ 7, 4 ], [ 7, 5 ]]);
+        expect(hint.groups).toEqual([[0, 7]]);
+        expect(hint.placements).toEqual([]);
+        expect(hint.removals).toEqual([[ 7, 3, 3, 4, 5 ], [ 7, 7, 3, 4, 5 ], [ 7, 8, 3, 4, 5 ]]);
     });
 
 });
