@@ -93,6 +93,16 @@ describe("get drill puzzle strings", () => {
         expect(hint.placements).toEqual([]);
         expect(hint.removals).toEqual([[ 8, 3, 2, 4, 7 ], [ 8, 7, 2, 4, 7 ], [ 8, 8, 2, 4, 7 ]]);
 
+        const obviousQuad = drills[StrategyEnum.OBVIOUS_QUADRUPLET - StrategyEnum.SIMPLIFY_NOTES - 1];
+        const oqPuzzle = getDrillPuzzleString(puzzleString, obviousQuad);
+        expect(oqPuzzle.split('0').length - 1).toBe(81 - obviousQuad);
+        hint = getDrillHint(oqPuzzle, "OBVIOUS_QUADRUPLET");
+        expect(hint.strategy).toBe("OBVIOUS_QUADRUPLET");
+        expect(hint.cause).toEqual([[ 8, 1 ], [ 8, 2 ], [ 8, 3 ], [8, 8]]);
+        expect(hint.groups).toEqual([[0, 8]]);
+        expect(hint.placements).toEqual([]);
+        expect(hint.removals).toEqual([[ 8, 7, 2, 3, 4, 8 ]]);
+
         // todo test the rest of the drills in this puzzle
     });
 
