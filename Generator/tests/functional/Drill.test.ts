@@ -73,6 +73,16 @@ describe("get drill puzzle strings", () => {
         expect(hint.placements).toEqual([]);
         expect(hint.removals).toEqual([[8, 7, 3, 8]]);
 
+        const hiddenPair = drills[StrategyEnum.HIDDEN_PAIR - StrategyEnum.SIMPLIFY_NOTES - 1];
+        const hpPuzzle = getDrillPuzzleString(puzzleString, hiddenPair);
+        expect(hpPuzzle.split('0').length - 1).toBe(81 - hiddenPair);
+        hint = getDrillHint(hpPuzzle, "HIDDEN_PAIR");
+        expect(hint.strategy).toBe("HIDDEN_PAIR");
+        expect(hint.cause).toEqual([[1, 1]]);
+        expect(hint.groups).toEqual([[1, 1]]);
+        expect(hint.placements).toEqual([]);
+        expect(hint.removals).toEqual([[8, 1, 9]]);
+
         // todo test the rest of the drills in this puzzle
     });
 
