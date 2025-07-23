@@ -63,6 +63,16 @@ describe("get drill puzzle strings", () => {
         expect(hint.placements).toEqual([[8, 8, 3]]);
         expect(hint.removals).toEqual([]);
 
+        const obviousPair = drills[StrategyEnum.OBVIOUS_PAIR - StrategyEnum.SIMPLIFY_NOTES - 1];
+        const opPuzzle = getDrillPuzzleString(puzzleString, obviousPair);
+        expect(opPuzzle.split('0').length - 1).toBe(81 - obviousPair);
+        hint = getDrillHint(opPuzzle, "OBVIOUS_PAIR");
+        expect(hint.strategy).toBe("OBVIOUS_PAIR");
+        expect(hint.cause).toEqual([[8, 3], [8, 8]]);
+        expect(hint.groups).toEqual([[0, 8]]);
+        expect(hint.placements).toEqual([]);
+        expect(hint.removals).toEqual([[8, 7, 3, 8]]);
+
         // todo test the rest of the drills in this puzzle
     });
 
