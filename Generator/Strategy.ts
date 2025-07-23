@@ -332,17 +332,17 @@ export class Strategy{
      * @param group - group type being check for a obvious set e.g. row
      * @param i - index of group being checked e.g. 3 for 4th group e.g. 4th row
      * @param cells - array of cells in the given row, column, or box
-     * @param isObviousSet - stores indexes of the cells that make up the obvious set
+     * @param inObviousSet - stores indexes of the cells that make up the obvious set
      * @param checkOnly - exits early after determining if obvious set is found with no state changes, default to false
      * @returns true if strategy is a obvious tuple
      */
-    private isObviousSet(tuple: TupleEnum, group: GroupEnum, i: number, cells: Cell[], isObviousSet: Group, checkOnly: boolean = false):boolean {
+    private isObviousSet(tuple: TupleEnum, group: GroupEnum, i: number, cells: Cell[], inObviousSet: Group, checkOnly: boolean = false):boolean {
         // used to prevent adding cells to notes to remove a second time when evaluating box after finding row/column set
         let usedRow:number = -1, usedColumn = -1;
         // Tries to build a obvious set of size tuple for each possible size tuple subset of candidates
         // Is obvious set iff union of all cells has notes size equal to tuple
         // Stores the cellls that make up the obvious set
-        let obviousSet:Cell[] = getSubsetOfCells(cells, isObviousSet);
+        let obviousSet:Cell[] = getSubsetOfCells(cells, inObviousSet);
         // Check if obvious set is correct size (i.e. every element in subset was in cells)
         if (obviousSet.length !== tuple) {
             return false;
@@ -356,7 +356,7 @@ export class Strategy{
 
         // Verifies obvious set does not contain a smaller obvious set
         if (tuple > TupleEnum.SINGLE) {
-            let tempSet: Group = isObviousSet.clone();
+            let tempSet: Group = inObviousSet.clone();
             for (let j: number = 0; j < SudokuEnum.ROW_LENGTH; j++) {
                 if (tempSet.contains(j)) {
                     tempSet.remove(j);
@@ -391,7 +391,7 @@ export class Strategy{
         for (let k:number = 0; k < cells.length; k++) {
             // If cell isn't part of obvious set itself and it contains some of the same values as obvious set remove them
             // Skip if row or column is 'used' i.e. removed due to shared row or column already and checking for others in shared box
-            if (!isObviousSet.contains(k) && (cells[k].getNotes().intersection(obviousSetCandidates)).getSize() > 0) {
+            if (!inObviousSet.contains(k) && (cells[k].getNotes().intersection(obviousSetCandidates)).getSize() > 0) {
                 let notes:Group = new Group(false, cells[k].getRow(), cells[k].getColumn());
                 notes.insert(obviousSetCandidates);
                 this.notes.push(notes);
