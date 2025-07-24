@@ -657,7 +657,6 @@ describe("create obvious quadruplet through octuplet", () => {
 
             // Test that is obvious set and can remove notes from every cell in shared row and box except obvious tuplet themself
             let strategy:Strategy = new Strategy(new CellBoard(board), board, board);
-            //expect(strategy.setStrategyType()).toBeTruthy();
             if (tuple === TupleEnum.QUADRUPLET) {
                 expect(strategy.setStrategyType(StrategyEnum.OBVIOUS_QUADRUPLET));
             }
