@@ -14,7 +14,7 @@ export class Group{
     private column: number;
     // Maps subset size to 2d array the index of which is array containing every Group possibility choosing
     // index-1 (since no need for 0) selections from that set
-    private static subsets: Map<number, Group[][]> = new Map();
+    private static readonly subsets: Map<number, Group[][]> = new Map();
 
     /**
      * Creates Group object given value to initial candidates to
