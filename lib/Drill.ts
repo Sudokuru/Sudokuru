@@ -36,9 +36,9 @@ export function getDrillPuzzleString(puzzleString: string, moveNumber: number): 
     // Build result string from current board
     let result: string = "";
     let board: string[][] = solver.getBoard();
-    for (let row = 0; row < board.length; row++) {
-        for (let col = 0; col < board[row].length; col++) {
-            result += board[row][col];
+    for (const row of board) {
+        for (const cell of row) {
+            result += cell;
         }
     }
 
