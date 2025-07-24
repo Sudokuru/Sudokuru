@@ -188,18 +188,28 @@ export class Cell{
     }
 
     /**
-     * Print notes in pretty format
+     * Generates note string for logging
+     * @returns note string in format for logging
      */
-    public printNotes():void {
+    public getNotesString():string {
         let noteStr:string = "[";
+        let first = true;
         for (let note:number = 0; note < SudokuEnum.ROW_LENGTH; note++) {
             if (this.notes.contains(note)) {
+                if (!first) noteStr += ", ";
                 noteStr += (note + 1);
-                noteStr += ", ";
+                first = false;
             }
         }
         noteStr += "]";
-        console.log(noteStr);
+        return noteStr;
+    }
+
+    /**
+     * Prints notes in pretty format
+     */
+    public printNotes():void {
+        console.log(this.getNotesString());
     }
 
     /**
