@@ -40,13 +40,14 @@ export function getDrillPuzzleString(puzzleString: string, moveNumber: number): 
     return result;
 }
 
+/**
+ * Checks if any of the given hints uses the given strategy
+ * @param hints - hints to check for strategy
+ * @param strategy - strategy to check for
+ * @returns true if any hint has given stratey, false otherwise
+ */
 function containsHintOfStrategy(hints: Hint[], strategy: string): boolean {
-    for (const hint of hints) {
-        if (hint.getStrategy() === strategy) {
-            return true;
-        }
-    }
-    return false;
+    return hints.some(hint => hint.getStrategy() === strategy);
 }
 
 /**
