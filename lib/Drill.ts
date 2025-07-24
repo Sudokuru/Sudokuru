@@ -72,7 +72,11 @@ export function getDrillHint(drillPuzzleString: string, drillStrategy: SudokuStr
     let boardArray:string[][] = getBoardArray(drillPuzzleString);
     let solver:Solver = new Solver(boardArray);
     while (!containsHintOfStrategy(solver.getAllHints(), drillStrategy)) {
-        solver.nextStep();
+        if (solver.nextStep() == null) {
+            return <JSON><unknown>{
+                "error": "Drill strategy not found for that puzzle string."
+            };
+        }
     }
     return _getHint(boardArray, algorithm, solver.getNotes());
 }
