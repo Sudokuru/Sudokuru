@@ -584,10 +584,10 @@ export class Strategy{
                     let sets: Group[] = Group.getSubset(select, setTuple);
                     // Verify sets aren't obvious sets by making sure intersection size
                     // exceeds the tuple size i.e. total unique notes > total cell count
-                    for (let i: number = 0; i < sets.length; i++) {
+                    for (const subset of sets) {
                         let notes: Group = new Group(false);
                         for (let j: number = 0; j < setTuple; j++) {
-                            if (sets[i].contains(j)) {
+                            if (subset.contains(j)) {
                                 notes.insert(cells[j].getNotes());
                             }
                         }
