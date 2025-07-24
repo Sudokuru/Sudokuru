@@ -4,6 +4,12 @@ import { StrategyEnum } from "../../Sudoku";
 import { TestBoards } from "../testResources";
 import { Board } from "../../Board";
 
+/**
+ * Gets the drill index for a specific strategy from the drills array.
+ * @param drills - Array of drill indexes from puzzle data
+ * @param strategy - Strategy enum value
+ * @returns Drill index for the strategy
+ */
 function getDrillIndex(drills: number[], strategy: StrategyEnum): number {
     return drills[strategy - StrategyEnum.SIMPLIFY_NOTES - 1];
 }
@@ -49,7 +55,7 @@ describe("get drill puzzle strings", () => {
         // For each drill assert the puzzle string has correct number of cells filled in and
         // verify the data in each of the drill hints
 
-        const obviousSingle = drills[StrategyEnum.OBVIOUS_SINGLE - StrategyEnum.SIMPLIFY_NOTES - 1];
+        const obviousSingle = getDrillIndex(drills, StrategyEnum.OBVIOUS_SINGLE);
         const osPuzzle = getDrillPuzzleString(puzzleString, obviousSingle);
         expect(osPuzzle.split('0').length - 1).toBe(81 - obviousSingle);
         let hint:any = getDrillHint(osPuzzle, "OBVIOUS_SINGLE");
@@ -59,7 +65,7 @@ describe("get drill puzzle strings", () => {
         expect(hint.placements).toEqual([[8, 8, 3]]);
         expect(hint.removals).toEqual([]);
 
-        const obviousPair = drills[StrategyEnum.OBVIOUS_PAIR - StrategyEnum.SIMPLIFY_NOTES - 1];
+        const obviousPair = getDrillIndex(drills, StrategyEnum.OBVIOUS_PAIR);
         const opPuzzle = getDrillPuzzleString(puzzleString, obviousPair);
         expect(opPuzzle.split('0').length - 1).toBe(81 - obviousPair);
         hint = getDrillHint(opPuzzle, "OBVIOUS_PAIR");
@@ -69,7 +75,7 @@ describe("get drill puzzle strings", () => {
         expect(hint.placements).toEqual([]);
         expect(hint.removals).toEqual([[8, 7, 3, 8]]);
 
-        const hiddenPair = drills[StrategyEnum.HIDDEN_PAIR - StrategyEnum.SIMPLIFY_NOTES - 1];
+        const hiddenPair = getDrillIndex(drills, StrategyEnum.HIDDEN_PAIR);
         const hpPuzzle = getDrillPuzzleString(puzzleString, hiddenPair);
         expect(hpPuzzle.split('0').length - 1).toBe(81 - hiddenPair);
         hint = getDrillHint(hpPuzzle, "HIDDEN_PAIR");
@@ -79,7 +85,7 @@ describe("get drill puzzle strings", () => {
         expect(hint.placements).toEqual([]);
         expect(hint.removals).toEqual([[8, 1, 9]]);
 
-        const hiddenTriplet = drills[StrategyEnum.HIDDEN_TRIPLET - StrategyEnum.SIMPLIFY_NOTES - 1];
+        const hiddenTriplet = getDrillIndex(drills, StrategyEnum.HIDDEN_TRIPLET);
         const htPuzzle = getDrillPuzzleString(puzzleString, hiddenTriplet);
         expect(htPuzzle.split('0').length - 1).toBe(81 - hiddenTriplet);
         hint = getDrillHint(htPuzzle, "HIDDEN_TRIPLET");
@@ -89,7 +95,7 @@ describe("get drill puzzle strings", () => {
         expect(hint.placements).toEqual([]);
         expect(hint.removals).toEqual([[ 8, 3, 2, 4, 7 ], [ 8, 7, 2, 4, 7 ], [ 8, 8, 2, 4, 7 ]]);
 
-        const obviousQuad = drills[StrategyEnum.OBVIOUS_QUADRUPLET - StrategyEnum.SIMPLIFY_NOTES - 1];
+        const obviousQuad = getDrillIndex(drills, StrategyEnum.OBVIOUS_QUADRUPLET);
         const oqPuzzle = getDrillPuzzleString(puzzleString, obviousQuad);
         expect(oqPuzzle.split('0').length - 1).toBe(81 - obviousQuad);
         hint = getDrillHint(oqPuzzle, "OBVIOUS_QUADRUPLET");
@@ -99,7 +105,7 @@ describe("get drill puzzle strings", () => {
         expect(hint.placements).toEqual([]);
         expect(hint.removals).toEqual([[ 8, 7, 2, 3, 4, 8 ]]);
 
-        const hiddenQuad = drills[StrategyEnum.HIDDEN_QUADRUPLET - StrategyEnum.SIMPLIFY_NOTES - 1];
+        const hiddenQuad = getDrillIndex(drills, StrategyEnum.HIDDEN_QUADRUPLET);
         const hqPuzzle = getDrillPuzzleString(puzzleString, hiddenQuad);
         expect(hqPuzzle.split('0').length - 1).toBe(81 - hiddenQuad);
         hint = getDrillHint(hqPuzzle, "HIDDEN_QUADRUPLET");
