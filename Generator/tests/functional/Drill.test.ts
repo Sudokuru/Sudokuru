@@ -14,6 +14,15 @@ function getDrillIndex(drills: number[], strategy: StrategyEnum): number {
     return drills[strategy - StrategyEnum.SIMPLIFY_NOTES - 1];
 }
 
+/**
+ * Makes expect assert of the number of filled in cells in puzzle string equals given count
+ * @param puzzleString - 81 char long puzzle string with 0s representing empty cells
+ * @param filledInCellCount - number of filled in cells expected
+ */
+function expectPuzzleToHaveFilledInCellCount(puzzleString: string, filledInCellCount: number) {
+    expect(puzzleString.split('0').length - 1).toBe(81 - filledInCellCount);
+}
+
 describe("get drill puzzle strings", () => {
     it('drill indexes in puzzle data are correct', () => {
         let boardObj: Board = new Board(TestBoards.HIDDEN_SINGLE_DRILL);
@@ -57,7 +66,7 @@ describe("get drill puzzle strings", () => {
 
         const obviousSingle = getDrillIndex(drills, StrategyEnum.OBVIOUS_SINGLE);
         const osPuzzle = getDrillPuzzleString(puzzleString, obviousSingle);
-        expect(osPuzzle.split('0').length - 1).toBe(81 - obviousSingle);
+        expectPuzzleToHaveFilledInCellCount(osPuzzle, obviousSingle);
         let hint:any = getDrillHint(osPuzzle, "OBVIOUS_SINGLE");
         expect(hint.strategy).toBe("OBVIOUS_SINGLE");
         expect(hint.cause).toEqual([[8, 8]]);
@@ -67,7 +76,7 @@ describe("get drill puzzle strings", () => {
 
         const obviousPair = getDrillIndex(drills, StrategyEnum.OBVIOUS_PAIR);
         const opPuzzle = getDrillPuzzleString(puzzleString, obviousPair);
-        expect(opPuzzle.split('0').length - 1).toBe(81 - obviousPair);
+        expectPuzzleToHaveFilledInCellCount(opPuzzle, obviousPair);
         hint = getDrillHint(opPuzzle, "OBVIOUS_PAIR");
         expect(hint.strategy).toBe("OBVIOUS_PAIR");
         expect(hint.cause).toEqual([[8, 3], [8, 8]]);
@@ -77,7 +86,7 @@ describe("get drill puzzle strings", () => {
 
         const hiddenPair = getDrillIndex(drills, StrategyEnum.HIDDEN_PAIR);
         const hpPuzzle = getDrillPuzzleString(puzzleString, hiddenPair);
-        expect(hpPuzzle.split('0').length - 1).toBe(81 - hiddenPair);
+        expectPuzzleToHaveFilledInCellCount(hpPuzzle, hiddenPair);
         hint = getDrillHint(hpPuzzle, "HIDDEN_PAIR");
         expect(hint.strategy).toBe("HIDDEN_PAIR");
         expect(hint.cause).toEqual([[1, 1]]);
@@ -87,7 +96,7 @@ describe("get drill puzzle strings", () => {
 
         const hiddenTriplet = getDrillIndex(drills, StrategyEnum.HIDDEN_TRIPLET);
         const htPuzzle = getDrillPuzzleString(puzzleString, hiddenTriplet);
-        expect(htPuzzle.split('0').length - 1).toBe(81 - hiddenTriplet);
+        expectPuzzleToHaveFilledInCellCount(htPuzzle, hiddenTriplet);
         hint = getDrillHint(htPuzzle, "HIDDEN_TRIPLET");
         expect(hint.strategy).toBe("HIDDEN_TRIPLET");
         expect(hint.cause).toEqual([[ 8, 1 ], [ 8, 2 ], [ 8, 4 ]]);
@@ -97,7 +106,7 @@ describe("get drill puzzle strings", () => {
 
         const obviousQuad = getDrillIndex(drills, StrategyEnum.OBVIOUS_QUADRUPLET);
         const oqPuzzle = getDrillPuzzleString(puzzleString, obviousQuad);
-        expect(oqPuzzle.split('0').length - 1).toBe(81 - obviousQuad);
+        expectPuzzleToHaveFilledInCellCount(oqPuzzle, obviousQuad);
         hint = getDrillHint(oqPuzzle, "OBVIOUS_QUADRUPLET");
         expect(hint.strategy).toBe("OBVIOUS_QUADRUPLET");
         expect(hint.cause).toEqual([[ 8, 1 ], [ 8, 2 ], [ 8, 3 ], [8, 8]]);
@@ -107,7 +116,7 @@ describe("get drill puzzle strings", () => {
 
         const hiddenQuad = getDrillIndex(drills, StrategyEnum.HIDDEN_QUADRUPLET);
         const hqPuzzle = getDrillPuzzleString(puzzleString, hiddenQuad);
-        expect(hqPuzzle.split('0').length - 1).toBe(81 - hiddenQuad);
+        expectPuzzleToHaveFilledInCellCount(hqPuzzle, hiddenQuad);
         hint = getDrillHint(hqPuzzle, "HIDDEN_QUADRUPLET");
         expect(hint.strategy).toBe("HIDDEN_QUADRUPLET");
         expect(hint.cause).toEqual([[ 7, 1 ], [ 7, 4 ], [ 7, 5 ]]);
