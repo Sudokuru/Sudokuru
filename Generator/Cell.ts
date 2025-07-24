@@ -181,6 +181,7 @@ export class Cell{
      * Sets all given notes (1 based index)
      */
     public setNotes(notes: number[]):void {
+        this.notes = new Group(false); // Clear existing notes first
         for (const note of notes) {
             this.notes.insert(note - 1);
         }
