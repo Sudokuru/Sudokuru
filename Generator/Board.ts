@@ -191,10 +191,14 @@ export class Board{
         }
         if (strategy === StrategyEnum.POINTING_TRIPLET) {
             prereqs.push(StrategyEnum.POINTING_PAIR);
+            prereqs.push(StrategyEnum.OBVIOUS_TRIPLET);
+            prereqs.push(StrategyEnum.HIDDEN_TRIPLET);
             strategy = StrategyEnum.POINTING_PAIR;
         }
         if (strategy === StrategyEnum.POINTING_PAIR) {
             prereqs.push(StrategyEnum.HIDDEN_SINGLE);
+            prereqs.push(StrategyEnum.OBVIOUS_PAIR);
+            prereqs.push(StrategyEnum.HIDDEN_PAIR);
             strategy = StrategyEnum.HIDDEN_SINGLE;
         }
         if (strategy === StrategyEnum.OBVIOUS_PAIR || strategy === StrategyEnum.HIDDEN_SINGLE) {

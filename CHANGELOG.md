@@ -1,5 +1,16 @@
 # Changelog
 
+## 3.4.0 - 2025-07-22
+
+### Changed
+
+- Fixed various bugs with the ways drills were generated
+- Tightened strategy finding logic to remove low quality drills like obvious pair that contains an obvious single
+
+### Added
+
+- Added getDrillPuzzleString function to Drill API
+
 ## 3.3.0 - 2024-11-02
 
 ### Changed

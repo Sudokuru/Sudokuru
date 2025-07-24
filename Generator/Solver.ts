@@ -100,8 +100,23 @@ export class Solver{
      */
     private setAllHints():void {
         this.allHints = new Array();
-        for (let strategy: StrategyEnum = (StrategyEnum.INVALID + 1); strategy < StrategyEnum.COUNT; strategy++) {
-            let strategyObj:Strategy = new Strategy(this.cellBoard, this.board, this.emptyCells, this.solution);
+        // If amend notes is available as a strategy then skip checking for drill because
+        // having empty cells can result in flawed logic in other strategy checking
+        // If simplify notes is available as a strategy then skip checking for drill
+        // This is because you can get invalid drills that just remove those notes using
+        // much more powerful strategies
+        let strategyObj:Strategy = new Strategy(this.cellBoard, this.board, this.emptyCells, this.solution);
+        if (strategyObj.setStrategyType(StrategyEnum.AMEND_NOTES, true)) {
+            return;
+        }
+
+        strategyObj = new Strategy(this.cellBoard, this.board, this.emptyCells, this.solution);
+        if (strategyObj.setStrategyType(StrategyEnum.SIMPLIFY_NOTES, true)) {
+            return;
+        }
+
+        for (let strategy: StrategyEnum = (StrategyEnum.SIMPLIFY_NOTES + 1); strategy < StrategyEnum.COUNT; strategy++) {
+            strategyObj = new Strategy(this.cellBoard, this.board, this.emptyCells, this.solution);
             if (strategyObj.setStrategyType(strategy, true)) {
                 this.allHints.push(strategyObj.getDrillHint());
             }

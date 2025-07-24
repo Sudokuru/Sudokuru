@@ -167,17 +167,7 @@ export class Strategy{
                     }
                     if ((strategyType === StrategyEnum.AMEND_NOTES && this.isAmendNotes(r, c)) ||
                         (strategyType === StrategyEnum.SIMPLIFY_NOTES && this.isSimplifyNotes(r, c))) {
-                        if (!drill) {
-                            return true;
-                        }
-
-                        // If this is first instance of the strategy found for drill we record it
-                        // If we have already found a instance of strategy for this drill we check if this is the same instance, if not return fales
-                        if (!used) {
-                            this.strategyType = strategyType;
-                            this.drillHint = new Hint(this, this.cause);
-                            return true;
-                        }
+                        return true;
                     }
                 }
             }
@@ -212,7 +202,7 @@ export class Strategy{
                             }
 
                             // If this is first instance of the strategy found for drill we record it
-                            // If we have already found a instance of strategy for this drill we check if this is the same instance, if not return fales
+                            // If we have already found a instance of strategy for this drill we check if this is the same instance, if not return false
                             if (!used) {
                                 this.strategyType = strategyType;
                                 this.drillHint = new Hint(this, this.cause);
@@ -342,16 +332,17 @@ export class Strategy{
      * @param group - group type being check for a obvious set e.g. row
      * @param i - index of group being checked e.g. 3 for 4th group e.g. 4th row
      * @param cells - array of cells in the given row, column, or box
-     * @param isObviousSet - stores indexes of the cells that make up the obvious set
+     * @param inObviousSet - stores indexes of the cells that make up the obvious set
+     * @param checkOnly - exits early after determining if obvious set is found with no state changes, default to false
      * @returns true if strategy is a obvious tuple
      */
-    private isObviousSet(tuple: TupleEnum, group: GroupEnum, i: number, cells: Cell[], isObviousSet: Group):boolean {
+    private isObviousSet(tuple: TupleEnum, group: GroupEnum, i: number, cells: Cell[], inObviousSet: Group, checkOnly: boolean = false):boolean {
         // used to prevent adding cells to notes to remove a second time when evaluating box after finding row/column set
         let usedRow:number = -1, usedColumn = -1;
         // Tries to build a obvious set of size tuple for each possible size tuple subset of candidates
         // Is obvious set iff union of all cells has notes size equal to tuple
         // Stores the cellls that make up the obvious set
-        let obviousSet:Cell[] = getSubsetOfCells(cells, isObviousSet);
+        let obviousSet:Cell[] = getSubsetOfCells(cells, inObviousSet);
         // Check if obvious set is correct size (i.e. every element in subset was in cells)
         if (obviousSet.length !== tuple) {
             return false;
@@ -362,6 +353,25 @@ export class Strategy{
         if (obviousSetCandidates.getSize() !== tuple) {
             return false;
         }
+
+        // Verifies obvious set does not contain a smaller obvious set
+        if (tuple > TupleEnum.SINGLE) {
+            let tempSet: Group = inObviousSet.clone();
+            for (let j: number = 0; j < SudokuEnum.ROW_LENGTH; j++) {
+                if (tempSet.contains(j)) {
+                    tempSet.remove(j);
+                    if (this.isObviousSet(tuple - 1, group, i, cells, tempSet, true)) {
+                        return false;
+                    }
+                    tempSet.insert(j);
+                }
+            }
+        }
+        
+        if (checkOnly) {
+            return true;
+        }
+
         // If it is a obvious single places value
         if (tuple === TupleEnum.SINGLE) {
             let row:number = obviousSet[0].getRow();
@@ -381,7 +391,7 @@ export class Strategy{
         for (let k:number = 0; k < cells.length; k++) {
             // If cell isn't part of obvious set itself and it contains some of the same values as obvious set remove them
             // Skip if row or column is 'used' i.e. removed due to shared row or column already and checking for others in shared box
-            if (!isObviousSet.contains(k) && (cells[k].getNotes().intersection(obviousSetCandidates)).getSize() > 0) {
+            if (!inObviousSet.contains(k) && (cells[k].getNotes().intersection(obviousSetCandidates)).getSize() > 0) {
                 let notes:Group = new Group(false, cells[k].getRow(), cells[k].getColumn());
                 notes.insert(obviousSetCandidates);
                 this.notes.push(notes);
@@ -445,9 +455,10 @@ export class Strategy{
      * @param i - index of group being checked e.g. 3 for 4th group e.g. 4th row
      * @param cells - array of cells in the given row, column, or box
      * @param inHiddenSet - stores indexes of the cells that make up the hidden set
+     * @param checkOnly - exits early after determining if obvious set is found with no state changes, default to false
      * @returns true if strategy is a hidden tuple
      */
-    private isHiddenSet(tuple: TupleEnum, group: GroupEnum, i: number, cells: Cell[], inHiddenSet: Group):boolean {
+    private isHiddenSet(tuple: TupleEnum, group: GroupEnum, i: number, cells: Cell[], inHiddenSet: Group, checkOnly: boolean = false):boolean {
         // Tries to build a hidden set of size tuple for each possible size tuple subset of candidates
         // Is hidden single iff the number of candidates that don't exist outside of the hidden tuple
         // is equal to the tuple (e.g. hidden pair if there are two numbers only in the pair in the row)
@@ -482,6 +493,25 @@ export class Strategy{
         if ((hiddenSetCandidates.getSize() - (hiddenSetCandidates.intersection(notHiddenSetCandidates)).getSize()) !== tuple) {
             return false;
         }
+
+        // Verifies obvious set does not contain a smaller hidden set
+        if (tuple > TupleEnum.SINGLE) {
+            let tempSet: Group = inHiddenSet.clone();
+            for (let j: number = 0; j < SudokuEnum.ROW_LENGTH; j++) {
+                if (tempSet.contains(j)) {
+                    tempSet.remove(j);
+                    if (this.isHiddenSet(tuple - 1, group, i, cells, tempSet, true)) {
+                        return false;
+                    }
+                    tempSet.insert(j);
+                }
+            }
+        }
+       
+        if (checkOnly) {
+            return true;
+        }
+
         // Remove candidates that aren't part of the hidden set from the hidden sets notes
         for (let k:number = 0; k < tuple; k++) {
             if ((hiddenSet[k].getNotes().intersection(notHiddenSetCandidates)).getSize() > 0) {
@@ -545,6 +575,32 @@ export class Strategy{
             if (!rowSet && !columnSet) {
                 continue;
             }
+            // Make sure the pointing set does not contain any obvious sets in it
+            // Manual prereq filtering fails for this sometimes because obvious sets are not
+            // included in drill list if there are multiple on board which there often are
+            let containsObviousSet: boolean = false;
+            for (let setTuple: number = 1; setTuple <= cells.length; setTuple++) {
+                for (let select: number = 1; select <= setTuple; select++) {
+                    let sets: Group[] = Group.getSubset(select, setTuple);
+                    // Verify sets aren't obvious sets by making sure intersection size
+                    // exceeds the tuple size i.e. total unique notes > total cell count
+                    for (const subset of sets) {
+                        let notes: Group = new Group(false);
+                        for (let j: number = 0; j < setTuple; j++) {
+                            if (subset.contains(j)) {
+                                notes.insert(cells[j].getNotes());
+                            }
+                        }
+                        if (notes.getSize() == setTuple) {
+                            containsObviousSet = true;
+                        }
+                    }
+                }
+            }
+            if (containsObviousSet) {
+                continue;
+            }
+
             // Check if note is in the rest of the row or column, if so add to cause/groups and notes to remove arrays and return true
             let found:boolean = false;
             let notes:Group[] = new Array();
@@ -652,6 +708,10 @@ export class Strategy{
      */
     private isAmendNotes(r: number, c: number):boolean {
         let cell:Cell = this.emptyCells[r][c];
+        // Following check shouldn't be needed outside of tests but good to be certain
+        if (!cell.isEmpty()) {
+            return false;
+        }
         let row:number = cell.getRow();
         let column:number = cell.getColumn();
         // Checks if correct number has been wrongly removed from a cell and if so removes all notes from it so it is amended in next if
