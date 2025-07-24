@@ -110,4 +110,9 @@ describe("get drill puzzle strings", () => {
         expect(hint.removals).toEqual([[ 7, 3, 3, 4, 5 ], [ 7, 7, 3, 4, 5 ], [ 7, 8, 3, 4, 5 ]]);
     });
 
+    it('verify error message is returned if drill hint not found', () => {
+        const hint: any = getDrillHint(TestBoards.ONLY_OBVIOUS_SINGLES, "HIDDEN_SINGLE");
+        expect(hint.error).toBe("Drill strategy not found for that puzzle string.");
+    });
+
 });
