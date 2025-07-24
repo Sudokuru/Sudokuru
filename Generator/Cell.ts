@@ -181,8 +181,8 @@ export class Cell{
      * Sets all given notes (1 based index)
      */
     public setNotes(notes: number[]):void {
-        for (let note:number = 0; note < notes.length; note++) {
-            this.notes.insert(notes[note] - 1);
+        for (const note of notes) {
+            this.notes.insert(note - 1);
         }
     }
 
