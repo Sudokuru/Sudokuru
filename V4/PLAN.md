@@ -518,45 +518,43 @@ For each strategy:
 
 ## Roadmap (Checklist Table)
 
-> Each row ideally corresponds to a PR with acceptance criteria.
-
-| Status | Item                                         | Acceptance Criteria                                                |
-| ------ | -------------------------------------------- | ------------------------------------------------------------------ |
-| ☐      | Principles & Plan doc                        | This document merged; diagrams render; terminology section agreed  |
-| ☐      | `Types.ts`                                   | Exports stable public types; Frontend can import without internals |
-| ☐      | Validation/Solving module                    | Supports multiple grid sizes; descriptive errors; tests            |
-| ☐      | `getPuzzle`                                  | Parses puzzle string; returns `CellProps[][]`; tests               |
-| ☐      | `getPuzzleSolution`                          | Solves validated puzzle; returns `number[][]`; tests               |
-| ☐      | Difficulty module                            | `getRawDifficulty` returns stable number; tests                    |
-| ☐      | `getGameDifficulty` (placeholder ok)         | Returns `GameDifficulty`; boundaries documented                    |
-| ☐      | Wrong value hint docs                        | Example hint stages + screenshot in Frontend                       |
-| ☐      | Amend notes hint docs                        | Example hint stages + screenshot in Frontend                       |
-| ☐      | Obvious single docs                          | Example hint stages + screenshot in Frontend                       |
-| ☐      | Implement wrong value                        | Strategy module + tests match docs                                 |
-| ☐      | Implement amend notes                        | Strategy module + tests match docs                                 |
-| ☐      | Implement obvious single                     | Strategy module + tests match docs                                 |
-| ☐      | `getHint`                                    | Deterministic; staged hints; strategy ordering; tests              |
-| ☐      | `applyHint`                                  | Pure; correct diffs; tests                                         |
-| ☐      | `SudokuVision` interface                     | Documented and implemented                                         |
-| ☐      | Queue-based SudokuVision impl                | Deterministic fallback scan; tests                                 |
-| ☐      | `getGivensCount`                             | Correct count; tests                                               |
-| ☐      | `getSudokuData`                              | Produces SudokuData; drill loop stable; tests                      |
-| ☐      | `getSudokuDrill`                             | Index validation; returns drill bundle; tests                      |
-| ☐      | Simplify notes doc                           | Example + approval                                                 |
-| ☐      | Obvious pair/triplet/quad docs               | Example + approval                                                 |
-| ☐      | Hidden single/pair/triplet/quad docs         | Example + approval                                                 |
-| ☐      | Pointing pair/triplet docs                   | Example + approval                                                 |
-| ☐      | Implement simplify notes                     | Tests match docs                                                   |
-| ☐      | Implement Obvious set (pair/trip/quad)       | Tests match docs                                                   |
-| ☐      | Implement Hidden set (single/pair/trip/quad) | Tests match docs                                                   |
-| ☐      | Implement Pointing pair/triplet              | Tests match docs                                                   |
-| ☐      | Box-line reduction docs                      | Example + approval                                                 |
-| ☐      | X-Wing docs                                  | Example + approval                                                 |
-| ☐      | Swordfish docs                               | Example + approval                                                 |
-| ☐      | Implement Box-line reduction                 | Tests match docs                                                   |
-| ☐      | Implement X-Wing                             | Tests match docs                                                   |
-| ☐      | Implement Swordfish                          | Tests match docs                                                   |
-| ☐      | Remove legacy + publish 4.0                  | Old code removed; semver bump; migration notes                     |
+| Status | Item                                         | Acceptance Criteria                                                | PR Link |
+| ------ | -------------------------------------------- | ------------------------------------------------------------------ | ------- |
+| ☐      | Principles & Plan doc                        | This document merged; diagrams render; terminology section agreed  | —       |
+| ☐      | `Types.ts`                                   | Exports stable public types; Frontend can import without internals | —       |
+| ☐      | Validation/Solving module                    | Supports multiple grid sizes; descriptive errors; tests            | —       |
+| ☐      | `getPuzzle`                                  | Parses puzzle string; returns `CellProps[][]`; tests               | —       |
+| ☐      | `getPuzzleSolution`                          | Solves validated puzzle; returns `number[][]`; tests               | —       |
+| ☐      | Difficulty module                            | `getRawDifficulty` returns stable number; tests                    | —       |
+| ☐      | `getGameDifficulty` (placeholder ok)         | Returns `GameDifficulty`; boundaries documented                    | —       |
+| ☐      | Wrong value hint docs                        | Example hint stages + screenshot in Frontend                       | —       |
+| ☐      | Amend notes hint docs                        | Example hint stages + screenshot in Frontend                       | —       |
+| ☐      | Obvious single docs                          | Example hint stages + screenshot in Frontend                       | —       |
+| ☐      | Implement wrong value                        | Strategy module + tests match docs                                 | —       |
+| ☐      | Implement amend notes                        | Strategy module + tests match docs                                 | —       |
+| ☐      | Implement obvious single                     | Strategy module + tests match docs                                 | —       |
+| ☐      | `getHint`                                    | Deterministic; staged hints; strategy ordering; tests              | —       |
+| ☐      | `applyHint`                                  | Pure; correct diffs; tests                                         | —       |
+| ☐      | `SudokuVision` interface                     | Documented and implemented                                         | —       |
+| ☐      | Queue-based SudokuVision impl                | Deterministic fallback scan; tests                                 | —       |
+| ☐      | `getGivensCount`                             | Correct count; tests                                               | —       |
+| ☐      | `getSudokuData`                              | Produces SudokuData; drill loop stable; tests                      | —       |
+| ☐      | `getSudokuDrill`                             | Index validation; returns drill bundle; tests                      | —       |
+| ☐      | Simplify notes doc                           | Example + approval                                                 | —       |
+| ☐      | Obvious pair/triplet/quad docs               | Example + approval                                                 | —       |
+| ☐      | Hidden single/pair/triplet/quad docs         | Example + approval                                                 | —       |
+| ☐      | Pointing pair/triplet docs                   | Example + approval                                                 | —       |
+| ☐      | Implement simplify notes                     | Tests match docs                                                   | —       |
+| ☐      | Implement Obvious set (pair/trip/quad)       | Tests match docs                                                   | —       |
+| ☐      | Implement Hidden set (single/pair/trip/quad) | Tests match docs                                                   | —       |
+| ☐      | Implement Pointing pair/triplet              | Tests match docs                                                   | —       |
+| ☐      | Box-line reduction docs                      | Example + approval                                                 | —       |
+| ☐      | X-Wing docs                                  | Example + approval                                                 | —       |
+| ☐      | Swordfish docs                               | Example + approval                                                 | —       |
+| ☐      | Implement Box-line reduction                 | Tests match docs                                                   | —       |
+| ☐      | Implement X-Wing                             | Tests match docs                                                   | —       |
+| ☐      | Implement Swordfish                          | Tests match docs                                                   | —       |
+| ☐      | Remove legacy + publish 4.0                  | Old code removed; semver bump; migration notes                     | —       |
 
 ---
 
