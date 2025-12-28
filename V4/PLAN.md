@@ -438,7 +438,6 @@ flowchart TB
     TESTS[tests.ts]
     CLEAR[clear.ts]
     STOP[stop.ts]
-    EXPORT[GenerateInsert.ts<br/>export or insert generator]
     FEEDS[feeds builders<br/>selection and ordering]
     STREAMS[streams builders<br/>batching and jobs]
   end
@@ -452,8 +451,7 @@ flowchart TB
   end
 
   subgraph OUT[Downstream consumers]
-    FRONTEND[Sudokuru Frontend<br/>puzzle feeds and drills]
-    DB[Backend database<br/>seed or insert]
+    FRONTEND[Sudokuru Frontend<br/>puzzles and/or drills depending on real-time generation viability]
     REPORT[reports<br/>ranges and difficulty stats]
   end
 
@@ -474,11 +472,8 @@ flowchart TB
   API -->|cache SudokuData| KEY
   KEY --> FEEDS
   KEY --> STREAMS
-  KEY --> EXPORT
-
   FEEDS --> FRONTEND
   STREAMS --> FRONTEND
-  EXPORT --> DB
   KEY --> REPORT
 
   %% Operational scripts
@@ -493,10 +488,10 @@ flowchart TB
   classDef out fill:#f0fff4,stroke:#2f855a,stroke-width:1.5px;
   classDef redis fill:#fff5f5,stroke:#c53030,stroke-width:1.5px;
 
-  class START,WORK,TIMER,TESTS,CLEAR,STOP,EXPORT,FEEDS,STREAMS ch;
+  class START,WORK,TIMER,TESTS,CLEAR,STOP,FEEDS,STREAMS ch;
   class API v4;
   class SOLVED,UNSOLVED,GEN,KAG ds;
-  class FRONTEND,DB,REPORT out;
+  class FRONTEND,REPORT out;
   class KEY redis;
 ```
 
