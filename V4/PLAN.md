@@ -361,16 +361,26 @@ A replaceable internal component that guides which cells/regions to check next.
 
 ```mermaid
 flowchart LR
-  U([User])
-  UI[Frontend UI - Sudoku board]
-  S[(State store - puzzle, solution, hint)]
-  HF[Hint controller - HintFunctions]
-  API[Sudokuru API - getHint]
-  ENG[Hint engine - SudokuVision and strategies]
-  HINT[(Hint object - stages array)]
-  R[Renderer - stage to highlights and text]
-  DISP[Hint displayed]
+  %% Actors / endpoints
+  U([🧍 User])
+  DISP[🖥️ Hint displayed]
 
+  %% Frontend
+  subgraph FE[Frontend]
+    UI[📱 UI - Sudoku board]
+    HF[🧠 Hint controller - HintFunctions]
+    R[🎨 Renderer - stage to highlights and text]
+    S[🗂️ State store - puzzle, solution, hint]
+  end
+
+  %% Backend / library
+  subgraph SU[Sudokuru library]
+    API[📦 API - getHint]
+    ENG[⚙️ Hint engine - SudokuVision and strategies]
+    HINT[🧾 Hint object - stages array]
+  end
+
+  %% Main flow
   U -->|Press Hint| UI
   UI -->|Read puzzle and solution| S
   UI -->|Request hint| HF
@@ -385,10 +395,22 @@ flowchart LR
   R --> DISP
   DISP -->|Shown to user| U
 
+  %% Stage stepping
   U -.->|Next stage| UI
   UI -.->|Increment stage index| S
   UI -.->|Render next stage| R
   R -.-> DISP
+
+  %% Styling
+  classDef actor fill:#ffffff,stroke:#111111,stroke-width:2px;
+  classDef frontend fill:#f0f7ff,stroke:#2b6cb0,stroke-width:1.5px;
+  classDef sudokuru fill:#f7f5ff,stroke:#6b46c1,stroke-width:1.5px;
+  classDef output fill:#f0fff4,stroke:#2f855a,stroke-width:1.5px;
+
+  class U actor;
+  class DISP output;
+  class UI,HF,R,S frontend;
+  class API,ENG,HINT sudokuru;
 ```
 
 ---
