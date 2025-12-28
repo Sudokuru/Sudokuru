@@ -421,7 +421,7 @@ flowchart LR
 flowchart TB
   %% =========================
   %% Clearinghouse -> Sudokuru v4 integration map
-  %% Uses getPuzzleData as the primary endpoint
+  %% Simplified: Clearinghouse primarily calls getSudokuData
   %% =========================
 
   subgraph DS[Puzzle inputs]
@@ -444,15 +444,10 @@ flowchart TB
   end
 
   subgraph V4[Sudokuru v4 npm package]
-    T[Types.ts<br/>shared types]
-    P[getPuzzle<br/>parse and validate]
-    DATA[getPuzzleData<br/>PuzzleData replacement<br/>returns SudokuData]
-    DRILL[getSudokuDrill<br/>index to drill bundle]
-    HINT[getHint and HintStage<br/>optional direct use]
-    APPLY[applyHint<br/>optional direct use]
+    API[getSudokuData<br/>input: puzzle grid<br/>output: SudokuData<br/>solution + difficulty + drills]
   end
 
-  subgraph REDIS[Redis docker<br/>local cache and staging]
+  subgraph REDIS[Redis cache]
     KEY[solved keys<br/>solved:*]
   end
 
@@ -472,22 +467,11 @@ flowchart TB
   START --> TIMER
   TIMER --> WORK
 
-  %% Primary v4 usage path in Clearinghouse
-  WORK --> T
-  WORK -->|parse input puzzle| P
-  P -->|validated puzzle grid| DATA
-
-  %% Optional: drill lookup endpoint
-  DATA --> DRILL
-
-  %% Optional: direct hint/apply usage (if Clearinghouse ever needs it)
-  DATA -.-> HINT
-  HINT -.-> APPLY
+  %% Primary v4 usage
+  WORK -->|compute SudokuData for each puzzle| API
 
   %% Storage + outputs
-  DATA -->|cache full SudokuData| KEY
-  DRILL -->|cache drill bundles| KEY
-
+  API -->|cache SudokuData| KEY
   KEY --> FEEDS
   KEY --> STREAMS
   KEY --> EXPORT
@@ -495,13 +479,12 @@ flowchart TB
   FEEDS --> FRONTEND
   STREAMS --> FRONTEND
   EXPORT --> DB
-
   KEY --> REPORT
 
-  %% Operational scripts touch Redis and verify outputs
-  TESTS --> V4
-  CLEAR --> REDIS
-  STOP --> REDIS
+  %% Operational scripts
+  TESTS --> API
+  CLEAR --> KEY
+  STOP --> KEY
 
   %% Styling
   classDef ch fill:#f0f7ff,stroke:#2b6cb0,stroke-width:1.5px;
@@ -511,7 +494,7 @@ flowchart TB
   classDef redis fill:#fff5f5,stroke:#c53030,stroke-width:1.5px;
 
   class START,WORK,TIMER,TESTS,CLEAR,STOP,EXPORT,FEEDS,STREAMS ch;
-  class T,P,DATA,DRILL,HINT,APPLY v4;
+  class API v4;
   class SOLVED,UNSOLVED,GEN,KAG ds;
   class FRONTEND,DB,REPORT out;
   class KEY redis;
