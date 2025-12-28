@@ -359,121 +359,36 @@ A replaceable internal component that guides which cells/regions to check next.
 
 ## Mermaid Diagrams
 
-### 1) System Overview (Public API + Modules)
-
 ```mermaid
 flowchart LR
-  FE[Frontend] -->|calls| API[Sudokuru Public API]
+  U([User])
+  UI[Frontend UI - Sudoku board]
+  S[(State store - puzzle, solution, hint)]
+  HF[Hint controller - HintFunctions]
+  API[Sudokuru API - getHint]
+  ENG[Hint engine - SudokuVision and strategies]
+  HINT[(Hint object - stages array)]
+  R[Renderer - stage to highlights and text]
+  DISP[Hint displayed]
 
-  subgraph Public_API
-    API --> getPuzzle[getPuzzle]
-    API --> getPuzzleSolution[getPuzzleSolution]
-    API --> getRawDifficulty[getRawDifficulty]
-    API --> getGameDifficulty[getGameDifficulty]
-    API --> getHint[getHint]
-    API --> applyHint[applyHint]
-    API --> getSudokuData[getSudokuData]
-    API --> getSudokuDrill[getSudokuDrill]
-    API --> getGivensCount[getGivensCount]
-    API --> Types[Types.ts exports]
-  end
+  U -->|Press Hint| UI
+  UI -->|Read puzzle and solution| S
+  UI -->|Request hint| HF
+  HF -->|Call getHint| API
+  API -->|Run deterministic scan| ENG
+  ENG -->|Build staged hint| HINT
+  HINT -->|Return hint| API
+  API -->|Return hint| HF
+  HF -->|Return hint| UI
+  UI -->|Store active hint, stage 0| S
+  UI -->|Render stage 0| R
+  R --> DISP
+  DISP -->|Shown to user| U
 
-  subgraph Internal_Modules
-    V[Validation / Parsing]
-    S[Solver]
-    D[Difficulty]
-    STRAT[Strategy Modules]
-    APP[Hint Applicator]
-    VIS[SudokuVision (Queue/Scan)]
-  end
-
-  getPuzzle --> V
-  getPuzzleSolution --> S
-  getRawDifficulty --> D
-  getHint --> STRAT
-  getHint --> VIS
-  applyHint --> APP
-  getSudokuData --> V
-  getSudokuData --> S
-  getSudokuData --> D
-  getSudokuData --> STRAT
-  getSudokuData --> APP
-  getSudokuData --> VIS
-```
-
----
-
-### 2) Hint Lifecycle (Generate → Render → Apply)
-
-```mermaid
-sequenceDiagram
-  participant FE as Frontend
-  participant API as Sudokuru API
-  participant STRAT as Strategies
-  participant VIS as SudokuVision
-  participant APP as Hint Applicator
-
-  FE->>API: getHint(puzzle, solution, strategies?)
-  API->>VIS: nextMove() / choose target
-  API->>STRAT: run strategies (deterministic order)
-  STRAT-->>API: Hint(stages[]) OR null
-  API-->>FE: Hint(stages[])
-
-  FE->>API: applyHint(puzzle, hint)
-  API->>APP: applyHint(board, hint)
-  APP-->>API: newPuzzle
-  API-->>FE: newPuzzle
-  FE->>API: (optional) VIS.setLastMove(newPuzzle, hint)
-```
-
----
-
-### 3) `getSudokuData` Drill Generation Loop
-
-```mermaid
-flowchart TD
-  A[getSudokuData(puzzle)] --> B[Validate puzzle / ensure grid OK]
-  B -->|ok| C[Solve: getPuzzleSolution]
-  C -->|ok| D[Compute givens: getGivensCount]
-  D --> E[Raw difficulty: getRawDifficulty]
-  E --> F[Map difficulty: getGameDifficulty]
-
-  F --> G[Initialize drills = []]
-  G --> H{Board solved?}
-  H -->|no| I[getHint(board, solution)]
-  I -->|no hint| J[Stop: cannot progress]
-  I -->|hint| K[Append hint to drills]
-  K --> L[board = applyHint(board, hint)]
-  L --> H
-
-  H -->|yes| M[Return SudokuData incl drills]
-```
-
----
-
-### 4) SudokuVision Queue / Scan Mechanics
-
-```mermaid
-stateDiagram-v2
-  [*] --> Idle
-
-  Idle --> QueueHasItems: enqueue(cells)
-  Idle --> QueueEmpty: queue empty
-
-  QueueHasItems --> SelectCell: nextMove()
-  SelectCell --> TryStrategies: choose (strategy, cell)
-  TryStrategies --> Success: found hint
-  TryStrategies --> NoHint: none found
-
-  NoHint --> QueueHasItems: advance within queue (peek/scan)
-  NoHint --> QueueEmpty: if exhausted
-
-  QueueEmpty --> DeterministicScan: nextMove()
-  DeterministicScan --> TryStrategies
-
-  Success --> UpdateVision: setLastMove(board, hint)
-  UpdateVision --> QueueHasItems: enqueue affected cells
-  UpdateVision --> QueueEmpty: if none
+  U -.->|Next stage| UI
+  UI -.->|Increment stage index| S
+  UI -.->|Render next stage| R
+  R -.-> DISP
 ```
 
 ---
