@@ -533,6 +533,7 @@ For each strategy:
 | ☐      | Implement wrong value                        | Strategy module + tests match docs                                 | —       |
 | ☐      | Implement amend notes                        | Strategy module + tests match docs                                 | —       |
 | ☐      | Implement obvious single                     | Strategy module + tests match docs                                 | —       |
+| ☐      | Strategy implementation PR checklist         | Strategy has sufficient docs/tests/etc link to example PRs         | —       |
 | ☐      | `getHint`                                    | Deterministic; staged hints; strategy ordering; tests              | —       |
 | ☐      | `applyHint`                                  | Pure; correct diffs; tests                                         | —       |
 | ☐      | `SudokuVision` interface                     | Documented and implemented                                         | —       |
