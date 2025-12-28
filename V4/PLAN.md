@@ -359,6 +359,7 @@ A replaceable internal component that guides which cells/regions to check next.
 
 ## Mermaid Diagrams
 
+### User Hint Interaction
 ```mermaid
 flowchart LR
   %% Actors / endpoints
@@ -411,6 +412,109 @@ flowchart LR
   class DISP output;
   class UI,HF,R,S frontend;
   class API,ENG,HINT sudokuru;
+```
+
+---
+
+### Clearinghouse Data Generation
+```mermaid
+flowchart TB
+  %% =========================
+  %% Clearinghouse -> Sudokuru v4 integration map
+  %% Uses getPuzzleData as the primary endpoint
+  %% =========================
+
+  subgraph DS[Puzzle inputs]
+    SOLVED[solved puzzles file<br/>SOLVED_PUZZLE_FILE]
+    UNSOLVED[unsolved puzzles file optional<br/>UNSOLVED_PUZZLE_FILE]
+    GEN[sudoku.js fork<br/>puzzle generator]
+    KAG[kaggle datasets<br/>optional source]
+  end
+
+  subgraph CH[Clearinghouse]
+    START[start.ts<br/>orchestrator]
+    WORK[worker pool<br/>GENERATE_THREADS]
+    TIMER[time limit<br/>GENERATE_TIME_LIMIT]
+    TESTS[tests.ts]
+    CLEAR[clear.ts]
+    STOP[stop.ts]
+    EXPORT[GenerateInsert.ts<br/>export or insert generator]
+    FEEDS[feeds builders<br/>selection and ordering]
+    STREAMS[streams builders<br/>batching and jobs]
+  end
+
+  subgraph V4[Sudokuru v4 npm package]
+    T[Types.ts<br/>shared types]
+    P[getPuzzle<br/>parse and validate]
+    DATA[getPuzzleData<br/>PuzzleData replacement<br/>returns SudokuData]
+    DRILL[getSudokuDrill<br/>index to drill bundle]
+    HINT[getHint and HintStage<br/>optional direct use]
+    APPLY[applyHint<br/>optional direct use]
+  end
+
+  subgraph REDIS[Redis docker<br/>local cache and staging]
+    KEY[solved keys<br/>solved:*]
+  end
+
+  subgraph OUT[Downstream consumers]
+    FRONTEND[Sudokuru Frontend<br/>puzzle feeds and drills]
+    DB[Backend database<br/>seed or insert]
+    REPORT[reports<br/>ranges and difficulty stats]
+  end
+
+  %% Data origin
+  GEN --> SOLVED
+  KAG --> UNSOLVED
+
+  %% Orchestration
+  SOLVED --> START
+  UNSOLVED --> START
+  START --> TIMER
+  TIMER --> WORK
+
+  %% Primary v4 usage path in Clearinghouse
+  WORK --> T
+  WORK -->|parse input puzzle| P
+  P -->|validated puzzle grid| DATA
+
+  %% Optional: drill lookup endpoint
+  DATA --> DRILL
+
+  %% Optional: direct hint/apply usage (if Clearinghouse ever needs it)
+  DATA -.-> HINT
+  HINT -.-> APPLY
+
+  %% Storage + outputs
+  DATA -->|cache full SudokuData| KEY
+  DRILL -->|cache drill bundles| KEY
+
+  KEY --> FEEDS
+  KEY --> STREAMS
+  KEY --> EXPORT
+
+  FEEDS --> FRONTEND
+  STREAMS --> FRONTEND
+  EXPORT --> DB
+
+  KEY --> REPORT
+
+  %% Operational scripts touch Redis and verify outputs
+  TESTS --> V4
+  CLEAR --> REDIS
+  STOP --> REDIS
+
+  %% Styling
+  classDef ch fill:#f0f7ff,stroke:#2b6cb0,stroke-width:1.5px;
+  classDef v4 fill:#f7f5ff,stroke:#6b46c1,stroke-width:1.5px;
+  classDef ds fill:#fffaf0,stroke:#b7791f,stroke-width:1.5px;
+  classDef out fill:#f0fff4,stroke:#2f855a,stroke-width:1.5px;
+  classDef redis fill:#fff5f5,stroke:#c53030,stroke-width:1.5px;
+
+  class START,WORK,TIMER,TESTS,CLEAR,STOP,EXPORT,FEEDS,STREAMS ch;
+  class T,P,DATA,DRILL,HINT,APPLY v4;
+  class SOLVED,UNSOLVED,GEN,KAG ds;
+  class FRONTEND,DB,REPORT out;
+  class KEY redis;
 ```
 
 ---
