@@ -247,6 +247,23 @@ Return a hint that is immediately renderable as staged UI steps.
 
 ---
 
+### `getAllHints`
+
+**Input**
+
+* `puzzle: CellProps[][]`
+* `solution: number[][]`
+* `strategies?: SudokuStrategy[]` (default provided)
+
+**Output**
+
+* `Hint[]` each containing `HintStage[]`
+
+**Goal**
+Return an array of hints representing every possible application of the requested strategies (or the default strategy set if none is provided) to the current puzzle state.
+
+---
+
 ### `applyHint`
 
 **Input**
@@ -535,6 +552,7 @@ For each strategy:
 | ☐      | Implement obvious single                     | Strategy module + tests match docs                                 | —       |
 | ☐      | Strategy implementation PR checklist         | Strategy has sufficient docs/tests/etc link to example PRs         | —       |
 | ☐      | `getHint`                                    | Deterministic; staged hints; strategy ordering; tests              | —       |
+| ☐      | `getAllHints`                                | Deterministic; uses strategy set; tests                            | —       |
 | ☐      | `applyHint`                                  | Pure; correct diffs; tests                                         | —       |
 | ☐      | `SudokuVision` interface                     | Documented and implemented                                         | —       |
 | ☐      | Queue-based SudokuVision impl                | Deterministic fallback scan; tests                                 | —       |
