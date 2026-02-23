@@ -1,11 +1,10 @@
-```md
-> ⚠️ **Sudokuru v4.0 (in progress)**
+> [!WARNING]
+> **Sudokuru v4.0 (in progress)**
 >
 > Active development is currently focused on a **breaking** rewrite for **Sudokuru 4.0** under the [`V4/`](./V4) folder.
 > Start here: **[`V4/PLAN.md`](./V4/PLAN.md)** — the design document describing the new API, types, hint schema, and roadmap.
 >
 > The existing code outside `V4/` is legacy (`3.x`) and will be replaced when v4.0 is ready.
-```
 
 ![Sudokuru Logo](https://sudokuru.s3.amazonaws.com/goldLogoText.png)
 # Sudoku Puzzle Generator
