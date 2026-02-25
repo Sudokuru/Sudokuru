@@ -93,6 +93,9 @@ jobs:
         id: npm_registry
         run: |
           echo "version=$(npm view sudokuru version)"
+      - name: print version comparison
+        run: | 
+          echo "npm registry version: ${{ steps.npm_registry.outputs.version }}, package.json version: ${{ steps.version.outputs.value }}"
       - run: npm run build
         if: ${{ contains(steps.npm_registry.outputs.version, steps.version.outputs.value) == false }}
       - run: npm publish
