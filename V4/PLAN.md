@@ -20,13 +20,13 @@ Rebuild the `Sudokuru` package (v4.0) as a **modular, functional, immutable** Su
 
 * Current Sudokuru API:
 
-  * [https://github.com/Sudokuru/Sudokuru/blob/main/lib/Api.ts](https://github.com/Sudokuru/Sudokuru/blob/main/lib/Api.ts)
-  * [https://github.com/Sudokuru/Sudokuru/blob/main/lib/Hint.ts](https://github.com/Sudokuru/Sudokuru/blob/main/lib/Hint.ts)
-  * [https://github.com/Sudokuru/Sudokuru/blob/main/lib/PuzzleData.ts](https://github.com/Sudokuru/Sudokuru/blob/main/lib/PuzzleData.ts)
-  * [https://github.com/Sudokuru/Sudokuru/blob/main/lib/Drill.ts](https://github.com/Sudokuru/Sudokuru/blob/main/lib/Drill.ts)
+  * [https://github.com/Sudokuru/Sudokuru/blob/ec9f4ae7ac82d458e4cb2c3fba99b40a322a546c/lib/Api.ts](https://github.com/Sudokuru/Sudokuru/blob/ec9f4ae7ac82d458e4cb2c3fba99b40a322a546c/lib/Api.ts)
+  * [https://github.com/Sudokuru/Sudokuru/blob/ec9f4ae7ac82d458e4cb2c3fba99b40a322a546c/lib/Hint.ts](https://github.com/Sudokuru/Sudokuru/blob/ec9f4ae7ac82d458e4cb2c3fba99b40a322a546c/lib/Hint.ts)
+  * [https://github.com/Sudokuru/Sudokuru/blob/ec9f4ae7ac82d458e4cb2c3fba99b40a322a546c/lib/PuzzleData.ts](https://github.com/Sudokuru/Sudokuru/blob/ec9f4ae7ac82d458e4cb2c3fba99b40a322a546c/lib/PuzzleData.ts)
+  * [https://github.com/Sudokuru/Sudokuru/blob/ec9f4ae7ac82d458e4cb2c3fba99b40a322a546c/lib/Drill.ts](https://github.com/Sudokuru/Sudokuru/blob/ec9f4ae7ac82d458e4cb2c3fba99b40a322a546c/lib/Drill.ts)
 * Frontend types reference:
 
-  * [https://github.com/Sudokuru/Frontend/blob/main/sudokuru/app/Api/Puzzle.Types.ts](https://github.com/Sudokuru/Frontend/blob/main/sudokuru/app/Api/Puzzle.Types.ts)
+  * [https://github.com/Sudokuru/Frontend/blob/6278302400a02ec9dd0e56301d0e059f17128f20/sudokuru/app/Api/Puzzle.Types.ts](https://github.com/Sudokuru/Frontend/blob/6278302400a02ec9dd0e56301d0e059f17128f20/sudokuru/app/Api/Puzzle.Types.ts)
 
 ---
 
@@ -105,24 +105,24 @@ A “simple” migration path from Sudokuru `3.4 → 4.0`, focused on making the
 **Existing Frontend sources (for reference mapping)**
 
 * `CellType`, `SUDOKU_CELL_TYPES`:
-  [https://github.com/Sudokuru/Frontend/blob/main/sudokuru/app/Functions/LocalDatabase.ts#L144](https://github.com/Sudokuru/Frontend/blob/main/sudokuru/app/Functions/LocalDatabase.ts#L144)
-  [https://github.com/Sudokuru/Frontend/blob/main/sudokuru/app/Functions/LocalDatabase.ts#L146](https://github.com/Sudokuru/Frontend/blob/main/sudokuru/app/Functions/LocalDatabase.ts#L146)
+  [https://github.com/Sudokuru/Frontend/blob/6278302400a02ec9dd0e56301d0e059f17128f20/sudokuru/app/Functions/LocalDatabase.ts#L144](https://github.com/Sudokuru/Frontend/blob/6278302400a02ec9dd0e56301d0e059f17128f20/sudokuru/app/Functions/LocalDatabase.ts#L144)
+  [https://github.com/Sudokuru/Frontend/blob/6278302400a02ec9dd0e56301d0e059f17128f20/sudokuru/app/Functions/LocalDatabase.ts#L146](https://github.com/Sudokuru/Frontend/blob/6278302400a02ec9dd0e56301d0e059f17128f20/sudokuru/app/Functions/LocalDatabase.ts#L146)
 * `CellProps`, `CellWithValue`, `CellWithNotes`:
-  [https://github.com/Sudokuru/Frontend/blob/main/sudokuru/app/Functions/LocalDatabase.ts#L132-L142](https://github.com/Sudokuru/Frontend/blob/main/sudokuru/app/Functions/LocalDatabase.ts#L132-L142)
+  [https://github.com/Sudokuru/Frontend/blob/6278302400a02ec9dd0e56301d0e059f17128f20/sudokuru/app/Functions/LocalDatabase.ts#L132-L142](https://github.com/Sudokuru/Frontend/blob/6278302400a02ec9dd0e56301d0e059f17128f20/sudokuru/app/Functions/LocalDatabase.ts#L132-L142)
 * `SudokuStrategy`, `SUDOKU_STRATEGY_ARRAY`:
-  [https://github.com/Sudokuru/Sudokuru/blob/main/lib/Api.ts#L5-L24](https://github.com/Sudokuru/Sudokuru/blob/main/lib/Api.ts#L5-L24)
+  [https://github.com/Sudokuru/Sudokuru/blob/ec9f4ae7ac82d458e4cb2c3fba99b40a322a546c/lib/Api.ts#L5-L24](https://github.com/Sudokuru/Sudokuru/blob/ec9f4ae7ac82d458e4cb2c3fba99b40a322a546c/lib/Api.ts#L5-L24)
 * `GameVariants`, `SUDOKU_GAME_VARIANTS`:
-  [https://github.com/Sudokuru/Frontend/blob/main/sudokuru/app/Functions/LocalDatabase.ts#L128-L130](https://github.com/Sudokuru/Frontend/blob/main/sudokuru/app/Functions/LocalDatabase.ts#L128-L130)
+  [https://github.com/Sudokuru/Frontend/blob/6278302400a02ec9dd0e56301d0e059f17128f20/sudokuru/app/Functions/LocalDatabase.ts#L128-L130](https://github.com/Sudokuru/Frontend/blob/6278302400a02ec9dd0e56301d0e059f17128f20/sudokuru/app/Functions/LocalDatabase.ts#L128-L130)
 * `CellLocation`:
-  [https://github.com/Sudokuru/Frontend/blob/main/sudokuru/app/Functions/LocalDatabase.ts#L110-L113](https://github.com/Sudokuru/Frontend/blob/main/sudokuru/app/Functions/LocalDatabase.ts#L110-L113)
+  [https://github.com/Sudokuru/Frontend/blob/6278302400a02ec9dd0e56301d0e059f17128f20/sudokuru/app/Functions/LocalDatabase.ts#L110-L113](https://github.com/Sudokuru/Frontend/blob/6278302400a02ec9dd0e56301d0e059f17128f20/sudokuru/app/Functions/LocalDatabase.ts#L110-L113)
 * `GameDifficulty`:
-  [https://github.com/Sudokuru/Frontend/blob/main/sudokuru/app/Components/SudokuBoard/Core/Functions/DifficultyFunctions.ts#L16-L25](https://github.com/Sudokuru/Frontend/blob/main/sudokuru/app/Components/SudokuBoard/Core/Functions/DifficultyFunctions.ts#L16-L25)
+  [https://github.com/Sudokuru/Frontend/blob/6278302400a02ec9dd0e56301d0e059f17128f20/sudokuru/app/Components/SudokuBoard/Core/Functions/DifficultyFunctions.ts#L16-L25](https://github.com/Sudokuru/Frontend/blob/6278302400a02ec9dd0e56301d0e059f17128f20/sudokuru/app/Components/SudokuBoard/Core/Functions/DifficultyFunctions.ts#L16-L25)
 * `GameStatistics`:
-  [https://github.com/Sudokuru/Frontend/blob/main/sudokuru/app/Functions/LocalDatabase.ts#L115-L126](https://github.com/Sudokuru/Frontend/blob/main/sudokuru/app/Functions/LocalDatabase.ts#L115-L126)
+  [https://github.com/Sudokuru/Frontend/blob/6278302400a02ec9dd0e56301d0e059f17128f20/sudokuru/app/Functions/LocalDatabase.ts#L115-L126](https://github.com/Sudokuru/Frontend/blob/6278302400a02ec9dd0e56301d0e059f17128f20/sudokuru/app/Functions/LocalDatabase.ts#L115-L126)
 * `GameAction` (to be replaced with `CellWithLocation`):
-  [https://github.com/Sudokuru/Frontend/blob/main/sudokuru/app/Functions/LocalDatabase.ts#L100-L103](https://github.com/Sudokuru/Frontend/blob/main/sudokuru/app/Functions/LocalDatabase.ts#L100-L103)
+  [https://github.com/Sudokuru/Frontend/blob/6278302400a02ec9dd0e56301d0e059f17128f20/sudokuru/app/Functions/LocalDatabase.ts#L100-L103](https://github.com/Sudokuru/Frontend/blob/6278302400a02ec9dd0e56301d0e059f17128f20/sudokuru/app/Functions/LocalDatabase.ts#L100-L103)
 * `SudokuObjectProps`:
-  [https://github.com/Sudokuru/Frontend/blob/main/sudokuru/app/Functions/LocalDatabase.ts#L89-L98](https://github.com/Sudokuru/Frontend/blob/main/sudokuru/app/Functions/LocalDatabase.ts#L89-L98)
+  [https://github.com/Sudokuru/Frontend/blob/6278302400a02ec9dd0e56301d0e059f17128f20/sudokuru/app/Functions/LocalDatabase.ts#L89-L98](https://github.com/Sudokuru/Frontend/blob/6278302400a02ec9dd0e56301d0e059f17128f20/sudokuru/app/Functions/LocalDatabase.ts#L89-L98)
 
 #### New / adjusted types
 
@@ -229,8 +229,8 @@ A stage may include any of the following (each optional):
 
 ### `getHint`
 
-Legacy: [https://github.com/Sudokuru/Sudokuru/blob/main/lib/Hint.ts](https://github.com/Sudokuru/Sudokuru/blob/main/lib/Hint.ts)
-Frontend call site: [https://github.com/Sudokuru/Frontend/blob/main/sudokuru/app/Components/SudokuBoard/Core/Functions/HintFunctions.ts#L6-L30](https://github.com/Sudokuru/Frontend/blob/main/sudokuru/app/Components/SudokuBoard/Core/Functions/HintFunctions.ts#L6-L30)
+Legacy: [https://github.com/Sudokuru/Sudokuru/blob/ec9f4ae7ac82d458e4cb2c3fba99b40a322a546c/lib/Hint.ts](https://github.com/Sudokuru/Sudokuru/blob/ec9f4ae7ac82d458e4cb2c3fba99b40a322a546c/lib/Hint.ts)
+Frontend call site: [https://github.com/Sudokuru/Frontend/blob/6278302400a02ec9dd0e56301d0e059f17128f20/sudokuru/app/Components/SudokuBoard/Core/Functions/HintFunctions.ts#L6-L30](https://github.com/Sudokuru/Frontend/blob/6278302400a02ec9dd0e56301d0e059f17128f20/sudokuru/app/Components/SudokuBoard/Core/Functions/HintFunctions.ts#L6-L30)
 
 **Input**
 
