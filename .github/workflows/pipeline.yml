@@ -65,11 +65,12 @@ jobs:
       with:
         message: ${{ steps.coverage.outputs.markdownReport }}
 
+  # https://gist.github.com/cferdinandi/8d3132220b02c2d3fd762c9c11c64a17
   build_and_publish:
     name: Publish Package
     needs: build
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' }}
+    # if: ${{ github.ref == 'refs/heads/main' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -81,8 +82,19 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - run: npm i --ignore-scripts
+      - name: Extract version from package.json
+        uses: sergeysova/jq-action@v2
+        id: version
+        with:
+          cmd: 'jq .version package.json -r'
+      - name: Extract version from npm registry
+        id: npm_registry
+        run: |
+          echo "version=$(npm view sudokuru version)"
       - run: npm run build
+        if: ${{ contains(steps.npm_registry.outputs.version, steps.version.outputs.value) == false }}
       - run: npm publish
+        if: ${{ contains(steps.npm_registry.outputs.version, steps.version.outputs.value) == false }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_API_KEY }}
 
