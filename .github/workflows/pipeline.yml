@@ -92,7 +92,7 @@ jobs:
       - name: Extract version from npm registry
         id: npm_registry
         run: |
-          echo "version=$(npm view sudokuru version)"
+          echo "version=$(npm view sudokuru version)" >> "$GITHUB_OUTPUT"
       - name: print version comparison
         run: | 
           echo "npm registry version: ${{ steps.npm_registry.outputs.version }}, package.json version: ${{ steps.version.outputs.value }}"
