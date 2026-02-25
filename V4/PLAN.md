@@ -220,7 +220,8 @@ A stage may include any of the following (each optional):
 
 **Notes**
 
-* Should map to *observed* difficulty in 3rd-party solvers (e.g., Sudoku Coach).
+* Returns the associated difficulty bracket name of the raw difficulty.
+* Should be within the ballpark of other 3rd party solvers (e.g., Sudoku Coach)
 * Current “grandmaster” naming likely gets toned down.
 * Potential future feature: tiered labels (I/II/III + Gold/Silver/Bronze).
 * Keep v4.0 scope small: return a stable label, keep tiers as future toggle.
