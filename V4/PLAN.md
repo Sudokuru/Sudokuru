@@ -136,7 +136,7 @@ A “simple” migration path from Sudokuru `3.4 → 4.0`, focused on making the
 * **`HintStage`**: atomic renderable steps within a hint
 * **`HintData`** *(internal)*: `Hint + queue metadata` (cells to enqueue)
 * **`SudokuData`**: replaces legacy `PuzzleData.ts` JSON return shape
-* **`SudokuDrill`**: packages `SudokuObjectProps` with a SudokuStrategy and an ordered set of `Hint`s (last one is drill itself, rest are getting the board into the proper state)
+* **`SudokuDrill`**: `SudokuStrategy` plus an index indicating which `Hint` in `SudokuData.hintsToSolve` is the drill
 
 ---
 
@@ -305,7 +305,7 @@ Return an array of hints representing every possible application of the requeste
 * validate / solve (`getPuzzleSolution`)
 * compute difficulty (`getRawDifficulty` → `getGameDifficulty`)
 * count givens (`getGivensCount`)
-* generate drills by repeatedly running `getHint` + `applyHint`
+* generate drills by repeatedly running `getHint` + `applyHint` to build a `Hint[]` until the puzzle is solved, then create `SudokuDrill` entries from those hints using heuristics (for example, empty-cell count or note count) so drills are not too hard (many empty cells/notes) or too easy (late-game, nearly filled board)
 
 **Drills strategy**
 
