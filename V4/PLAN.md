@@ -136,7 +136,7 @@ A “simple” migration path from Sudokuru `3.4 → 4.0`, focused on making the
 * **`HintStage`**: atomic renderable steps within a hint
 * **`HintData`** *(internal)*: `Hint + queue metadata` (cells to enqueue)
 * **`SudokuData`**: replaces legacy `PuzzleData.ts` JSON return shape
-* **`SudokuDrill`**: packages `SudokuObjectProps` with an ordered set of `Hint`s
+* **`SudokuDrill`**: packages `SudokuObjectProps` with a SudokuStrategy and an ordered set of `Hint`s (last one is drill itself, rest are getting the board into the proper state)
 
 ---
 
@@ -311,20 +311,7 @@ Return an array of hints representing every possible application of the requeste
 
 * Initially: drills are “real” solving steps from running hints repeatedly.
 * If that fails to yield enough drills, add drill-specific logic later (avoid overcomplication up front).
-* Drills are returned as ordered `Hint[]` inside `SudokuData`.
-
----
-
-### `getSudokuDrill`
-
-**Input**
-
-* `puzzle: CellProps[][]`
-* `index: number` *(0..80 inclusive else error)*
-
-**Output**
-
-* `SudokuDrill` containing `SudokuObjectProps` and related `Hint`s
+* Drills are returned as SudokuStrategy with corresponding ordered `Hint[]` inside `SudokuData` (last hint is drill, rest are setting up the board).
 
 ---
 
@@ -559,7 +546,6 @@ For each strategy:
 | ☐      | Queue-based SudokuVision impl                | Deterministic fallback scan; tests                                 | —       |
 | ☐      | `getGivensCount`                             | Correct count; tests                                               | —       |
 | ☐      | `getSudokuData`                              | Produces SudokuData; drill loop stable; tests                      | —       |
-| ☐      | `getSudokuDrill`                             | Index validation; returns drill bundle; tests                      | —       |
 | ☐      | Simplify notes doc                           | Example + approval                                                 | —       |
 | ☐      | Obvious pair/triplet/quad docs               | Example + approval                                                 | —       |
 | ☐      | Hidden single/pair/triplet/quad docs         | Example + approval                                                 | —       |
@@ -586,4 +572,3 @@ For each strategy:
   * “golden” emphasis cells (separate field vs highlight mode)
 * Define exact `HintStage` shape fields (recommended: keep minimal + composable)
 * Decide how `SudokuVision` selects strategies (tiered: simple first, advanced later)
-* Decide how drills are packaged in `SudokuData` (full `Hint[]` vs summarized + full separately)
