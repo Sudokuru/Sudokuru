@@ -14,9 +14,12 @@ concurrency: main_workflow
 jobs:
   build:
     permissions:
+      # for test reporter
       contents: read
       actions: read
       checks: write
+      # for pull request comment
+      pull-requests: write
     name: Build
     runs-on: ubuntu-latest
     steps:
