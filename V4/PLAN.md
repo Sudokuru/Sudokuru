@@ -159,7 +159,7 @@ A stage may include any of the following (each optional):
 * **Removing notes**
 * **Placing values**
 * **Placing notes**
-* **Highlighting cells** with a `HighlightColor` (cells only; Frontend does not need “box 5” semantics)
+* **Highlighting cells** with a `HighlightType` (cells only; Frontend does not need “box 5” semantics)
 * **Highlighting numbers** tagged with `HighlightType`
 * **Highlighting notes** tagged with `HighlightType`
 * **Text**: explanation string
