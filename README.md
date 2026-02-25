@@ -15,6 +15,9 @@
 > [!NOTE]  
 > This project uses [BreakVer](https://www.taoensso.com/break-versioning) for project versioning. 
 
+
+Official TypeDoc Documentation is Hosted Here: https://sudokuru.github.io/Sudokuru/
+
 # Table of Contents
 
 *   [Installation](#installation)
@@ -550,5 +553,4 @@ bun start
 4. Add the new strategies name (same as uploaded file name) to strategies.json locally
 5. Upload the json file (it will overwrite the old version)
 ```
-Official TypeDoc Documentation is Hosted Here: https://sudokuru.github.io/SudokuPuzzleGenerator/
 
