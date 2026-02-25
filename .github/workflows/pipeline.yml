@@ -41,10 +41,6 @@ jobs:
         path: junit.xml    
         reporter: jest-junit
 
-    # todo commenting out due to api outage https://status.coveralls.io/
-    # - name: Coveralls
-    #   uses: coverallsapp/github-action@ba6dae83310bbd6d33ff77092650dc40bd444a2a
-
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de
       with:

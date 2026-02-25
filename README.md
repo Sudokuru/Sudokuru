@@ -4,7 +4,6 @@
 [![NPM downloads](https://img.shields.io/npm/dm/sudokuru.svg?style=flat)](https://npmjs.org/package/sudokuru)
 ![NPM License](https://img.shields.io/npm/l/sudokuru)
 [![Pipeline](https://github.com/SudoKuru/Sudokuru/actions/workflows/pipeline.yml/badge.svg)](https://github.com/SudoKuru/Sudokuru/actions/workflows/pipeline.yml)
-[![Coveralls Coverage](https://coveralls.io/repos/github/SudoKuru/Sudokuru/badge.svg?branch=main)](https://coveralls.io/github/SudoKuru/Sudokuru?branch=main)
 [![Codecov Coverage](https://codecov.io/gh/SudoKuru/Sudokuru/graph/badge.svg?token=SISS85TX20)](https://codecov.io/gh/SudoKuru/Sudokuru)
 
 [![Common Changelog](https://common-changelog.org/badge.svg)](https://common-changelog.org)
