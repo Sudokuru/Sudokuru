@@ -24,12 +24,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v6
       
     - name: Install Node
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v6
       with:
-        node-version: 16.x
+        node-version: 24
         
     - run: npm i --ignore-scripts
     - run: npm run test
@@ -75,12 +75,12 @@ jobs:
     # if: ${{ github.ref == 'refs/heads/main' }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Install Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6
         with:
-          node-version: 16.x
+          node-version: 24
           registry-url: 'https://registry.npmjs.org'
 
       - run: npm i --ignore-scripts
@@ -101,26 +101,30 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_API_KEY }}
 
   deploy_documentation:
+    permissions:
+      # for deploy-pages
+      pages: write
+      id-token: write
     name: Deploy Documentation
     needs: build
     runs-on: ubuntu-latest
     # if: ${{ github.ref == 'refs/heads/main' }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Install Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6
         with:
-          node-version: 16.x
+          node-version: 24
 
       - run: npm i --ignore-scripts
       - run: npm run update-docs
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v3
         with:
           path: 'docs/'
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v4
