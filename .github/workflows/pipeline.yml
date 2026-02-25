@@ -10,13 +10,6 @@ on:
       - main
       
 concurrency: main_workflow
-
-permissions:
-  contents: read
-  pages: write
-  checks: write
-  id-token: write
-  pull-requests: write
     
 jobs:
   build:
@@ -102,7 +95,7 @@ jobs:
     name: Deploy Documentation
     needs: build
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' }}
+    # if: ${{ github.ref == 'refs/heads/main' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
