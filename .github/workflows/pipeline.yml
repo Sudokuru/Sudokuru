@@ -10,46 +10,44 @@ on:
       - main
       
 concurrency: main_workflow
-
-permissions:
-  contents: read
-  pages: write
-  checks: write
-  id-token: write
-  pull-requests: write
     
 jobs:
   build:
+    permissions:
+      # for test reporter
+      contents: read
+      actions: read
+      checks: write
+      # for pull request comment
+      pull-requests: write
     name: Build
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v6
       
     - name: Install Node
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v6
       with:
-        node-version: 16.x
+        node-version: 24
         
     - run: npm i --ignore-scripts
     - run: npm run test
     - name: Test Reporter
-      uses: dorny/test-reporter@v1
+      uses: dorny/test-reporter@a810f9bf83f2344124a920a7a0a85a6716e791f0
       if: success() || failure()    
       with:
         name: JEST Tests            
         path: junit.xml    
         reporter: jest-junit
 
-    - name: Coveralls
-      uses: coverallsapp/github-action@v2
-
     - name: Upload coverage reports to Codecov
-      uses: codecov/codecov-action@v3
-      env:
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de
+      with:
+        fail_ci_if_error: true
+        token: ${{ secrets.CODECOV_TOKEN }}
 
-    - uses: fingerprintjs/action-coverage-report-md@v1
+    - uses: fingerprintjs/action-coverage-report-md@baa8e11ceed766f5aedf68055738e0e5e168269b
       id: coverage
       with:
         textReportPath: './jest-coverage/coverage-final.txt'
@@ -60,11 +58,12 @@ jobs:
         echo "## Code Coverage" >> $GITHUB_STEP_SUMMARY
         echo "${{ steps.coverage.outputs.markdownReport }}" >> $GITHUB_STEP_SUMMARY
 
-    - uses: marocchino/sticky-pull-request-comment@v2
+    - uses: marocchino/sticky-pull-request-comment@5060d4700a91de252c87eeddd2da026382d9298a
       if: ${{ contains(fromJSON('["pull_request"]'), github.event_name)}}
       with:
         message: ${{ steps.coverage.outputs.markdownReport }}
 
+  # https://gist.github.com/cferdinandi/8d3132220b02c2d3fd762c9c11c64a17
   build_and_publish:
     name: Publish Package
     needs: build
@@ -72,41 +71,59 @@ jobs:
     if: ${{ github.ref == 'refs/heads/main' }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Install Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6
         with:
-          node-version: 16.x
+          node-version: 24
           registry-url: 'https://registry.npmjs.org'
 
       - run: npm i --ignore-scripts
+      - name: Extract version from package.json
+        uses: sergeysova/jq-action@a3f0d4ff59cc1dddf023fc0b325dd75b10deec58
+        id: version
+        with:
+          cmd: 'jq .version package.json -r'
+      - name: Extract version from npm registry
+        id: npm_registry
+        run: |
+          echo "version=$(npm view sudokuru version)" >> "$GITHUB_OUTPUT"
+      - name: print version comparison
+        run: | 
+          echo "npm registry version: ${{ steps.npm_registry.outputs.version }}, package.json version: ${{ steps.version.outputs.value }}"
       - run: npm run build
+        if: ${{ contains(steps.npm_registry.outputs.version, steps.version.outputs.value) == false }}
       - run: npm publish
+        if: ${{ contains(steps.npm_registry.outputs.version, steps.version.outputs.value) == false }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_API_KEY }}
 
   deploy_documentation:
+    permissions:
+      # for deploy-pages
+      pages: write
+      id-token: write
     name: Deploy Documentation
     needs: build
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/main' }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Install Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6
         with:
-          node-version: 16.x
+          node-version: 24
 
       - run: npm i --ignore-scripts
       - run: npm run update-docs
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v3
         with:
           path: 'docs/'
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v4
