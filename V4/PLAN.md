@@ -135,7 +135,7 @@ A “simple” migration path from Sudokuru `3.4 → 4.0`, focused on making the
 * **`Hint`**: public type returned by `getHint()`
 * **`HintStage`**: atomic renderable steps within a hint
 * **`HintData`** *(internal)*: `Hint + queue metadata` (cells to enqueue)
-* **`SudokuData`**: replaces legacy `PuzzleData.ts` JSON return shape
+* **`SudokuData`**: replaces legacy `PuzzleData.ts` JSON return shape with TypeScript class. An array of hints that were used to solve the puzzle are also added and the drills output maps SudokuStrategy's to indexes of the position of the drill hint in the array.
 * **`SudokuDrill`**: `SudokuStrategy` plus an index indicating which `Hint` in `SudokuData.hintsToSolve` is the drill
 
 ---
@@ -311,7 +311,7 @@ Return an array of hints representing every possible application of the requeste
 
 * Initially: drills are “real” solving steps from running hints repeatedly.
 * If that fails to yield enough drills, add drill-specific logic later (avoid overcomplication up front).
-* Drills are returned as SudokuStrategy with corresponding ordered `Hint[]` inside `SudokuData` (last hint is drill, rest are setting up the board).
+* Drills are returned as SudokuStrategy with corresponding index to ordered `Hint[]` that solved the puzzle inside `SudokuData` (indexed hint is drill, ones before it setting up the board).
 
 ---
 
