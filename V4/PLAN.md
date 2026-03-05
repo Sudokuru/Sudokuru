@@ -1,4 +1,4 @@
-# Sudokuru 4.0 Rebuild Plan Revision 1.0
+# Sudokuru 4.0 Rebuild Plan Revision 1.1
 
 ## TL;DR
 
@@ -12,7 +12,8 @@ Rebuild the `Sudokuru` package (v4.0) as a **modular, functional, immutable** Su
 
 ## Changelog
 
-* None so far, it must be a perfect plan :)
+* 1.1
+  * Solidified Hint type section
 
 ---
 
