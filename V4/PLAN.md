@@ -528,7 +528,7 @@ For each strategy:
 | Status | Item                                         | Acceptance Criteria                                                | PR Link |
 | ------ | -------------------------------------------- | ------------------------------------------------------------------ | ------- |
 | ☑      | Principles & Plan doc                        | This document merged; diagrams render; terminology section agreed  | https://github.com/Sudokuru/Sudokuru/pull/103 |
-| ☐      | `Types.ts`                                   | Exports stable public types; Frontend can import without internals | —       |
+| ☑      | `Types.ts`                                   | Exports stable public types; Frontend can import without internals | https://github.com/Sudokuru/Sudokuru/pull/105 |
 | ☐      | Validation/Solving module                    | Supports multiple grid sizes; descriptive errors; tests            | —       |
 | ☐      | `getPuzzle`                                  | Parses puzzle string; returns `CellProps[][]`; tests               | —       |
 | ☐      | `getPuzzleSolution`                          | Solves validated puzzle; returns `number[][]`; tests               | —       |
