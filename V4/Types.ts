@@ -123,7 +123,7 @@ export interface SudokuObjectProps {
   selectedCells: CellLocation[];
   statistics: GameStatistics;
   puzzle: CellProps[][];
-  puzzleSolution: number[][];
+  puzzleSolution: SudokuValue[][];
   actionHistory: CellWithLocation[][];
   inNoteMode: boolean;
 }
