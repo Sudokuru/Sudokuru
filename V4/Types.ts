@@ -4,8 +4,8 @@ export const SUDOKU_CELL_TYPES = ["note", "value", "given"] as const;
 export type CellType = (typeof SUDOKU_CELL_TYPES)[number];
 
 export interface CellLocation {
-  r: number; # row (0 indexed)
-  c: number; # column (0 indexed)
+  r: number; // row (0 indexed)
+  c: number; // column (0 indexed)
 }
 
 export interface CellWithValue {
@@ -125,3 +125,28 @@ export interface SudokuObjectProps {
   actionHistory: CellWithLocation[][];
   inNoteMode: boolean;
 }
+
+/**
+ * Aggregated puzzle analysis returned by getSudokuData in v4.
+ *
+ * Includes legacy PuzzleData concepts:
+ * - solution
+ * - rawDifficulty
+ * - givensCount
+ * - puzzleStrategies
+ * - drills
+ *
+ * And v4 additions:
+ * - hintsToSolve (ordered hints used to solve)
+ * - drills with hintIndex mapping into hintsToSolve
+ */
+export type SudokuData = {
+  puzzle: CellProps[][];
+  solution: SudokuValue[][];
+  givensCount: number;
+  rawDifficulty: number;
+  difficulty: GameDifficulty;
+  puzzleStrategies: SudokuStrategy[];
+  hintsToSolve: Hint[];
+  drills: SudokuDrill[];
+};

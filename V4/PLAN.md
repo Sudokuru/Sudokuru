@@ -14,6 +14,7 @@ Rebuild the `Sudokuru` package (v4.0) as a **modular, functional, immutable** Su
 
 * 1.1
   * Solidified Hint type section
+  * Clarified SudokuData to be a TypeScript type rather than a class
 
 ---
 
@@ -136,7 +137,7 @@ A “simple” migration path from Sudokuru `3.4 → 4.0`, focused on making the
 * **`Hint`**: public type returned by `getHint()`
 * **`HintStage`**: atomic renderable steps within a hint
 * **`HintData`** *(internal)*: `Hint + queue metadata` (cells to enqueue)
-* **`SudokuData`**: replaces legacy `PuzzleData.ts` JSON return shape with TypeScript class. An array of hints that were used to solve the puzzle are also added and the drills output maps SudokuStrategy to indexes of the position of the drill hint in the array.
+* **`SudokuData`**: replaces legacy `PuzzleData.ts` JSON return shape with TypeScript type. An array of hints that were used to solve the puzzle are also added and the drills output maps SudokuStrategy to indexes of the position of the drill hint in the array.
 * **`SudokuDrill`**: `SudokuStrategy` plus an index indicating which `Hint` in `SudokuData.hintsToSolve` is the drill
 
 ---
