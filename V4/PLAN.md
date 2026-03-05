@@ -149,7 +149,7 @@ Frontend should be able to render hints as a sequence of **stages**, without nee
 ### `Hint`
 
 * `stages: HintStage[]`
-* optional metadata fields (strategy name, difficulty contribution, etc.) as needed later
+* `strategy: SudokuStrategy`
 
 ### `HintStage` (proposed capabilities)
 
