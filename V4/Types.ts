@@ -21,6 +21,8 @@ export interface CellWithNotes {
 export type CellProps = CellWithValue | CellWithNotes;
 
 export type CellWithLocation = CellProps & CellLocation;
+export type ValueCellWithLocation = CellWithValue & CellLocation;
+export type NoteCellWithLocation = CellWithNotes & CellLocation;
 
 export const SUDOKU_GAME_VARIANTS = ["demo", "drill", "classic"] as const;
 export type GameVariant = (typeof SUDOKU_GAME_VARIANTS)[number];
@@ -90,10 +92,10 @@ export interface HighlightedNote {
  * Each field is optional so strategies can emit compact, composable stages.
  */
 export interface HintStage {
-  removeValues?: CellWithLocation[];
-  removeNotes?: CellWithLocation[];
-  placeValues?: CellWithLocation[];
-  placeNotes?: CellWithLocation[];
+  removeValues?: ValueCellWithLocation[];
+  removeNotes?: NoteCellWithLocation[];
+  placeValues?: ValueCellWithLocation[];
+  placeNotes?: NoteCellWithLocation[];
   highlightCells?: HighlightedCell[];
   highlightNumbers?: HighlightedNumber[];
   highlightNotes?: HighlightedNote[];
