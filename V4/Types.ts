@@ -76,7 +76,7 @@ export interface HighlightedCell {
   highlightType: HighlightType;
 }
 
-export interface HighlightedNumber {
+export interface HighlightedValue {
   location: CellLocation;
   highlightType: HighlightType;
 }
@@ -97,7 +97,7 @@ export interface HintStage {
   placeValues?: ValueCellWithLocation[];
   placeNotes?: NoteCellWithLocation[];
   highlightCells?: HighlightedCell[];
-  highlightNumbers?: HighlightedNumber[];
+  highlightValues?: HighlightedValue[];
   highlightNotes?: HighlightedNote[];
   text?: string;
 }
