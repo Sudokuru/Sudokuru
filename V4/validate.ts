@@ -1,12 +1,12 @@
 import { CellProps } from "./Types";
 
-type BoxLayout = {
+export type BoxLayout = {
   boxHeight: number;
   boxWidth: number;
 };
 
-const SUPPORTED_BOARD_SIZES = [1, 2, 4, 6, 8, 9] as const;
-const BOX_LAYOUTS: Record<number, BoxLayout> = {
+export const SUPPORTED_BOARD_SIZES = [1, 2, 4, 6, 8, 9] as const;
+export const BOX_LAYOUTS: Record<number, BoxLayout> = {
   1: { boxHeight: 1, boxWidth: 1 },
   2: { boxHeight: 1, boxWidth: 2 },
   4: { boxHeight: 2, boxWidth: 2 },

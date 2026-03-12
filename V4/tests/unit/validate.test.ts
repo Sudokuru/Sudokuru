@@ -1,26 +1,19 @@
 import { CellProps } from "../../Types";
 import {
+  BOX_LAYOUTS,
   getPuzzleSolution,
   PuzzleValidationError,
   PuzzleValidationErrorCode,
+  SUPPORTED_BOARD_SIZES,
 } from "../../validate";
 
-type BoxLayout = {
-  boxHeight: number;
-  boxWidth: number;
-};
-
-const SUPPORTED_BOARD_SIZES = [1, 2, 4, 6, 8, 9] as const;
 type SupportedBoardSize = (typeof SUPPORTED_BOARD_SIZES)[number];
 
-const BOX_LAYOUTS: Record<SupportedBoardSize, BoxLayout> = {
-  1: { boxHeight: 1, boxWidth: 1 },
-  2: { boxHeight: 1, boxWidth: 2 },
-  4: { boxHeight: 2, boxWidth: 2 },
-  6: { boxHeight: 2, boxWidth: 3 },
-  8: { boxHeight: 2, boxWidth: 4 },
-  9: { boxHeight: 3, boxWidth: 3 },
-};
+function createPlacedCell(rowIndex: number, columnIndex: number, value: number): CellProps {
+  return (rowIndex + columnIndex) % 2 === 0
+    ? { type: "given", value }
+    : { type: "value", value };
+}
 
 function generateSolvedGrid(size: SupportedBoardSize): number[][] {
   const { boxHeight, boxWidth } = BOX_LAYOUTS[size];
@@ -40,10 +33,7 @@ function generateSolvedGrid(size: SupportedBoardSize): number[][] {
 
 function createSolvedPuzzle(grid: number[][]): CellProps[][] {
   return grid.map((row, rowIndex) =>
-    row.map((value, columnIndex) => ({
-      type: (rowIndex + columnIndex) % 2 === 0 ? "given" : "value",
-      value,
-    }))
+    row.map((value, columnIndex) => createPlacedCell(rowIndex, columnIndex, value))
   );
 }
 
@@ -65,10 +55,7 @@ function createPuzzleWithSingleNote(
         };
       }
 
-      return {
-        type: (rowIndex + columnIndex) % 2 === 0 ? "given" : "value",
-        value,
-      };
+      return createPlacedCell(rowIndex, columnIndex, value);
     })
   );
 
@@ -82,10 +69,7 @@ function createPuzzleFromNumbers(grid: number[][]): CellProps[][] {
         return { type: "note", notes: [] };
       }
 
-      return {
-        type: (rowIndex + columnIndex) % 2 === 0 ? "given" : "value",
-        value,
-      };
+      return createPlacedCell(rowIndex, columnIndex, value);
     })
   );
 }
