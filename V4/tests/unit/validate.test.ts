@@ -249,4 +249,42 @@ describe("getPuzzleSolution", () => {
       ["multiple valid solutions"]
     );
   });
+
+  it("throws INTERNAL_ERROR when solver state becomes inconsistent", () => {
+    const { puzzle } = createPuzzleWithSingleNote(4);
+    const originalMap = Array.prototype.map;
+    let numericBoardCloneCount = 0;
+
+    Array.prototype.map = function patchedMap<T, U>(
+      this: T[],
+      callback: (value: T, index: number, array: T[]) => U,
+      thisArg?: unknown
+    ): U[] {
+      const isNumericBoard =
+        this.length > 0 &&
+        Array.isArray(this[0]) &&
+        this.every(
+          (row) => Array.isArray(row) && row.every((value) => typeof value === "number")
+        );
+
+      if (isNumericBoard) {
+        numericBoardCloneCount += 1;
+
+        if (numericBoardCloneCount === 2) {
+          return null as unknown as U[];
+        }
+      }
+
+      return originalMap.call(this, callback, thisArg);
+    };
+
+    try {
+      expectPuzzleError(puzzle, PuzzleValidationErrorCode.INTERNAL_ERROR, [
+        "Internal solver error",
+        "without capturing the solution grid",
+      ]);
+    } finally {
+      Array.prototype.map = originalMap;
+    }
+  });
 });
