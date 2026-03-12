@@ -15,7 +15,6 @@ Rebuild the `Sudokuru` package (v4.0) as a **modular, functional, immutable** Su
 * 1.2
   * Added the V4 typed validation/solving error contract via `PuzzleValidationError`
   * Documented supported board sizes and canonical box layouts for validation/solving
-  * Completed the validation/solving roadmap milestone and `getPuzzleSolution`
 * 1.1
   * Solidified Hint type section
   * Clarified SudokuData to be a TypeScript type rather than a class
