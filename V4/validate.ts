@@ -1,11 +1,21 @@
 import { CellProps } from "./Types";
 
+/**
+ * Describes the rectangular sub-grid dimensions for a supported board size.
+ */
 export type BoxLayout = {
   boxHeight: number;
   boxWidth: number;
 };
 
+/**
+ * Board sizes currently supported by the V4 validation/solving module.
+ */
 export const SUPPORTED_BOARD_SIZES = [1, 2, 4, 6, 8, 9] as const;
+
+/**
+ * Maps each supported board size to its canonical rectangular box layout.
+ */
 export const BOX_LAYOUTS: Record<number, BoxLayout> = {
   1: { boxHeight: 1, boxWidth: 1 },
   2: { boxHeight: 1, boxWidth: 2 },
@@ -15,6 +25,9 @@ export const BOX_LAYOUTS: Record<number, BoxLayout> = {
   9: { boxHeight: 3, boxWidth: 3 },
 };
 
+/**
+ * Stable error codes returned by the validation/solving module.
+ */
 export enum PuzzleValidationErrorCode {
   INVALID_PUZZLE_SHAPE = "INVALID_PUZZLE_SHAPE",
   UNSUPPORTED_BOARD_SIZE = "UNSUPPORTED_BOARD_SIZE",
@@ -30,9 +43,15 @@ export enum PuzzleValidationErrorCode {
   INTERNAL_ERROR = "INTERNAL_ERROR",
 }
 
+/**
+ * Error type thrown by `getPuzzleSolution` for validation and solving failures.
+ */
 export class PuzzleValidationError extends Error {
   public readonly code: PuzzleValidationErrorCode;
 
+  /**
+   * Creates a typed validation error with a stable code and descriptive message.
+   */
   constructor(code: PuzzleValidationErrorCode, message: string) {
     super(message);
     this.code = code;
@@ -41,6 +60,12 @@ export class PuzzleValidationError extends Error {
   }
 }
 
+/**
+ * Validates and solves a puzzle represented as `CellProps[][]`.
+ *
+ * Notes are validated as user state but are not used as solver constraints.
+ * The returned board is always a fresh `number[][]` instance.
+ */
 export function getPuzzleSolution(puzzle: CellProps[][]): number[][] {
   const size = getPuzzleSize(puzzle);
   const layout = getBoxLayout(size);
@@ -87,6 +112,9 @@ export function getPuzzleSolution(puzzle: CellProps[][]): number[][] {
   return solveState.solution;
 }
 
+/**
+ * Validates that the input is a non-empty square matrix and returns its size.
+ */
 function getPuzzleSize(puzzle: unknown): number {
   if (!Array.isArray(puzzle) || puzzle.length === 0) {
     throw new PuzzleValidationError(
@@ -118,6 +146,9 @@ function getPuzzleSize(puzzle: unknown): number {
   return size;
 }
 
+/**
+ * Looks up the canonical box layout for a supported board size.
+ */
 function getBoxLayout(size: number): BoxLayout {
   const layout = BOX_LAYOUTS[size];
 
@@ -131,12 +162,18 @@ function getBoxLayout(size: number): BoxLayout {
   return layout;
 }
 
+/**
+ * Converts `CellProps[][]` into a numeric board where note cells become `0`.
+ */
 function normalizePuzzle(puzzle: CellProps[][], size: number): number[][] {
   return puzzle.map((row, rowIndex) =>
     row.map((cell, columnIndex) => normalizeCell(cell, size, rowIndex, columnIndex))
   );
 }
 
+/**
+ * Validates a single cell and converts it to its numeric solver representation.
+ */
 function normalizeCell(
   cell: unknown,
   size: number,
@@ -192,6 +229,9 @@ function normalizeCell(
   );
 }
 
+/**
+ * Validates that every note is unique and within the board's candidate range.
+ */
 function areValidNotes(notes: unknown[], size: number): boolean {
   const uniqueNotes = new Set<number>();
 
@@ -206,6 +246,10 @@ function areValidNotes(notes: unknown[], size: number): boolean {
   return true;
 }
 
+/**
+ * Rejects duplicate placed values while preserving the legacy error precedence:
+ * rows first, then columns, then boxes.
+ */
 function assertNoDuplicateValues(board: number[][], size: number, layout: BoxLayout): void {
   for (let rowIndex = 0; rowIndex < size; rowIndex += 1) {
     const seen = new Set<number>();
@@ -249,6 +293,7 @@ function assertNoDuplicateValues(board: number[][], size: number, layout: BoxLay
     }
   }
 
+  // Box validation runs last so row/column failures remain the first reported issue.
   for (let boxRow = 0; boxRow < size; boxRow += layout.boxHeight) {
     for (let boxColumn = 0; boxColumn < size; boxColumn += layout.boxWidth) {
       const seen = new Set<number>();
@@ -281,14 +326,26 @@ function assertNoDuplicateValues(board: number[][], size: number, layout: BoxLay
   }
 }
 
+/**
+ * Returns true when the normalized board contains no empty cells.
+ */
 function isSolved(board: number[][]): boolean {
   return board.every((row) => row.every((value) => value !== 0));
 }
 
+/**
+ * Produces a deep-enough copy for the mutable backtracking search.
+ */
 function cloneBoard(board: number[][]): number[][] {
   return board.map((row) => [...row]);
 }
 
+/**
+ * Performs deterministic backtracking and captures up to the first two solutions.
+ *
+ * Stopping at two solutions is enough to distinguish unique puzzles from ambiguous ones
+ * without exploring the entire search tree.
+ */
 function searchForSolutions(
   board: number[][],
   size: number,
@@ -300,6 +357,7 @@ function searchForSolutions(
     return;
   }
 
+  // A completed traversal means the current board is a valid full solution.
   if (index === size * size) {
     solveState.solutionCount += 1;
 
@@ -313,11 +371,13 @@ function searchForSolutions(
   const rowIndex = Math.floor(index / size);
   const columnIndex = index % size;
 
+  // Filled cells are part of the fixed puzzle state, so continue to the next position.
   if (board[rowIndex][columnIndex] !== 0) {
     searchForSolutions(board, size, layout, index + 1, solveState);
     return;
   }
 
+  // Candidates are tried in ascending order to keep the solver deterministic.
   for (let candidate = 1; candidate <= size; candidate += 1) {
     if (!isCandidate(board, size, layout, rowIndex, columnIndex, candidate)) {
       continue;
@@ -333,6 +393,9 @@ function searchForSolutions(
   }
 }
 
+/**
+ * Checks whether a candidate can be placed in a cell under row, column, and box rules.
+ */
 function isCandidate(
   board: number[][],
   size: number,
@@ -369,6 +432,9 @@ function isCandidate(
   return true;
 }
 
+/**
+ * Formats unknown runtime values so error messages stay readable.
+ */
 function formatValue(value: unknown): string {
   if (typeof value === "string") {
     return JSON.stringify(value);

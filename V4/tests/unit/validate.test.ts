@@ -9,12 +9,21 @@ import {
 
 type SupportedBoardSize = (typeof SUPPORTED_BOARD_SIZES)[number];
 
+/**
+ * Alternates `given` and `value` cells so tests exercise both placed-cell variants.
+ */
 function createPlacedCell(rowIndex: number, columnIndex: number, value: number): CellProps {
   return (rowIndex + columnIndex) % 2 === 0
     ? { type: "given", value }
     : { type: "value", value };
 }
 
+/**
+ * Builds a valid solved board for each supported size using a closed-form Sudoku pattern.
+ *
+ * The tests intentionally keep this generator separate from production code so the
+ * expected solutions do not rely on solver internals.
+ */
 function generateSolvedGrid(size: SupportedBoardSize): number[][] {
   const { boxHeight, boxWidth } = BOX_LAYOUTS[size];
 
@@ -31,12 +40,18 @@ function generateSolvedGrid(size: SupportedBoardSize): number[][] {
   );
 }
 
+/**
+ * Converts a solved numeric board into placed `CellProps`.
+ */
 function createSolvedPuzzle(grid: number[][]): CellProps[][] {
   return grid.map((row, rowIndex) =>
     row.map((value, columnIndex) => createPlacedCell(rowIndex, columnIndex, value))
   );
 }
 
+/**
+ * Creates an almost-solved puzzle with exactly one note cell and the matching solution.
+ */
 function createPuzzleWithSingleNote(
   size: SupportedBoardSize,
   noteRow = size - 1,
@@ -62,6 +77,9 @@ function createPuzzleWithSingleNote(
   return { puzzle, solution };
 }
 
+/**
+ * Converts a numeric board into puzzle cells where `0` becomes an empty note cell.
+ */
 function createPuzzleFromNumbers(grid: number[][]): CellProps[][] {
   return grid.map((row, rowIndex) =>
     row.map((value, columnIndex) => {
@@ -74,12 +92,18 @@ function createPuzzleFromNumbers(grid: number[][]): CellProps[][] {
   );
 }
 
+/**
+ * Creates an all-empty puzzle for shape, size, and ambiguity tests.
+ */
 function createEmptyPuzzle(size: number): CellProps[][] {
   return Array.from({ length: size }, () =>
     Array.from({ length: size }, () => ({ type: "note", notes: [] }))
   );
 }
 
+/**
+ * Captures the thrown error from a synchronous call or fails if nothing was thrown.
+ */
 function getThrownError(call: () => unknown): unknown {
   try {
     call();
@@ -90,6 +114,9 @@ function getThrownError(call: () => unknown): unknown {
   throw new Error("Expected getPuzzleSolution to throw.");
 }
 
+/**
+ * Asserts the typed error contract and selected message details for a puzzle failure.
+ */
 function expectPuzzleError(
   puzzle: CellProps[][],
   code: PuzzleValidationErrorCode,
@@ -255,6 +282,9 @@ describe("getPuzzleSolution", () => {
     const originalMap = Array.prototype.map;
     let numericBoardCloneCount = 0;
 
+    // Force the second numeric board clone to fail so the solver records a solution count
+    // without storing the solved grid. That exercises the invariant-violation branch
+    // without changing the public API just for tests.
     Array.prototype.map = function patchedMap<T, U>(
       this: T[],
       callback: (value: T, index: number, array: T[]) => U,
