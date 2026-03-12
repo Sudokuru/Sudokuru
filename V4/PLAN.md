@@ -1,4 +1,4 @@
-# Sudokuru 4.0 Rebuild Plan Revision 1.1
+# Sudokuru 4.0 Rebuild Plan Revision 1.2
 
 ## TL;DR
 
@@ -12,6 +12,10 @@ Rebuild the `Sudokuru` package (v4.0) as a **modular, functional, immutable** Su
 
 ## Changelog
 
+* 1.2
+  * Added the V4 typed validation/solving error contract via `PuzzleValidationError`
+  * Documented supported board sizes and canonical box layouts for validation/solving
+  * Completed the validation/solving roadmap milestone and `getPuzzleSolution`
 * 1.1
   * Solidified Hint type section
   * Clarified SudokuData to be a TypeScript type rather than a class
@@ -194,7 +198,7 @@ A stage may include any of the following (each optional):
 **Output**
 
 * `solution: number[][]`
-* or descriptive error
+* or descriptive `PuzzleValidationError`
 
 ---
 
@@ -323,12 +327,15 @@ Return an array of hints representing every possible application of the requeste
 
 * `getPuzzle(puzzleString)`
 
-  * infer grid size (support arbitrary sizes; test multiple sizes)
+  * infer supported grid size (`1x1`, `2x2`, `4x4`, `6x6`, `8x8`, `9x9`; test multiple sizes)
   * return `CellProps[][]` or descriptive error
 * `getPuzzleSolution(puzzle)`
 
+  * supports board sizes `1x1`, `2x2`, `4x4`, `6x6`, `8x8`, and `9x9`
+  * canonical box layouts: `1x1`, `1x2`, `2x2`, `2x3`, `2x4`, `3x3`
   * quick backtracking solver
-  * return `number[][]` or descriptive error
+  * returns `number[][]` on success
+  * throws `PuzzleValidationError` with descriptive failure messages
 
 ### Difficulty Module
 
@@ -529,9 +536,9 @@ For each strategy:
 | ------ | -------------------------------------------- | ------------------------------------------------------------------ | ------- |
 | ☑      | Principles & Plan doc                        | This document merged; diagrams render; terminology section agreed  | https://github.com/Sudokuru/Sudokuru/pull/103 |
 | ☑      | `Types.ts`                                   | Exports stable public types; Frontend can import without internals | https://github.com/Sudokuru/Sudokuru/pull/105 |
-| ☐      | Validation/Solving module                    | Supports multiple grid sizes; descriptive errors; tests            | —       |
+| ☑      | Validation/Solving module                    | Supports multiple grid sizes; descriptive errors; tests            | —       |
 | ☐      | `getPuzzle`                                  | Parses puzzle string; returns `CellProps[][]`; tests               | —       |
-| ☐      | `getPuzzleSolution`                          | Solves validated puzzle; returns `number[][]`; tests               | —       |
+| ☑      | `getPuzzleSolution`                          | Solves validated puzzle; returns `number[][]`; tests               | —       |
 | ☐      | Difficulty module                            | `getRawDifficulty` returns stable number; tests                    | —       |
 | ☐      | `getGameDifficulty` (placeholder ok)         | Returns `GameDifficulty`; boundaries documented                    | —       |
 | ☐      | Wrong value hint docs                        | Example hint stages + screenshot in Frontend                       | —       |
