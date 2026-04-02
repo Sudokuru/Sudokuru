@@ -14,9 +14,14 @@ export type BoxLayout = {
 export const SUPPORTED_BOARD_SIZES = [1, 2, 4, 6, 8, 9] as const;
 
 /**
+ * Union of the board sizes supported by the V4 validation/solving module.
+ */
+export type SupportedBoardSize = (typeof SUPPORTED_BOARD_SIZES)[number];
+
+/**
  * Maps each supported board size to its canonical rectangular box layout.
  */
-export const BOX_LAYOUTS: Record<number, BoxLayout> = {
+export const BOX_LAYOUTS: Record<SupportedBoardSize, BoxLayout> = {
   1: { boxHeight: 1, boxWidth: 1 },
   2: { boxHeight: 1, boxWidth: 2 },
   4: { boxHeight: 2, boxWidth: 2 },
@@ -150,7 +155,7 @@ function getPuzzleSize(puzzle: unknown): number {
  * Looks up the canonical box layout for a supported board size.
  */
 function getBoxLayout(size: number): BoxLayout {
-  const layout = BOX_LAYOUTS[size];
+  const layout = BOX_LAYOUTS[size as SupportedBoardSize];
 
   if (!layout) {
     throw new PuzzleValidationError(

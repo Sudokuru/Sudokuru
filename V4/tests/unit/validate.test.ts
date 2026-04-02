@@ -4,10 +4,9 @@ import {
   getPuzzleSolution,
   PuzzleValidationError,
   PuzzleValidationErrorCode,
+  SupportedBoardSize,
   SUPPORTED_BOARD_SIZES,
 } from "../../validate";
-
-type SupportedBoardSize = (typeof SUPPORTED_BOARD_SIZES)[number];
 
 /**
  * Alternates `given` and `value` cells so tests exercise both placed-cell variants.
