@@ -172,7 +172,10 @@ function getBoxLayout(size: number): BoxLayout {
  */
 function normalizePuzzle(puzzle: CellProps[][], size: number): number[][] {
   return puzzle.map((row, rowIndex) =>
-    row.map((cell, columnIndex) => normalizeCell(cell, size, rowIndex, columnIndex))
+    Array.from({ length: size }, (_, columnIndex) =>
+      // Iterate by index so sparse array holes are validated as invalid cells.
+      normalizeCell(row[columnIndex], size, rowIndex, columnIndex)
+    )
   );
 }
 

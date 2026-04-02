@@ -157,6 +157,17 @@ describe("getPuzzleSolution", () => {
     ]);
   });
 
+  it("throws INVALID_CELL_TYPE for sparse row holes", () => {
+    const puzzle = createEmptyPuzzle(4);
+    delete (puzzle as unknown as Array<Array<unknown>>)[1][2];
+
+    expectPuzzleError(puzzle, PuzzleValidationErrorCode.INVALID_CELL_TYPE, [
+      "row 2, column 3",
+      "undefined",
+      '"note", "value", or "given"',
+    ]);
+  });
+
   it("throws INVALID_CELL_VALUE for placed values outside the allowed range", () => {
     const puzzle = createEmptyPuzzle(4);
     puzzle[0][0] = { type: "given", value: 5 };
