@@ -1,10 +1,12 @@
-import { CellProps } from "../../Types";
+import {
+  CellProps,
+  SupportedBoardSize,
+  SUPPORTED_BOARD_SIZES,
+} from "../../Types";
 import {
   getPuzzleSolution,
   PuzzleValidationError,
   PuzzleValidationErrorCode,
-  SupportedBoardSize,
-  SUPPORTED_BOARD_SIZES,
 } from "../../validate";
 import {
   MISLEADING_NOTE_PATCH_4X4,

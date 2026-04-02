@@ -1,5 +1,4 @@
-import { CellProps, SudokuValue } from "../../Types";
-import { SupportedBoardSize } from "../../validate";
+import { CellProps, SudokuValue, SupportedBoardSize } from "../../Types";
 
 /**
  * Canonical solved boards used by V4 unit tests.

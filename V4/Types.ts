@@ -24,6 +24,36 @@ export type CellWithLocation = CellProps & CellLocation;
 export type ValueCellWithLocation = CellWithValue & CellLocation;
 export type NoteCellWithLocation = CellWithNotes & CellLocation;
 
+/**
+ * Describes the rectangular sub-grid dimensions for a supported board size.
+ */
+export type BoxLayout = {
+  boxHeight: number;
+  boxWidth: number;
+};
+
+/**
+ * Board sizes currently supported by the V4 validation/solving module.
+ */
+export const SUPPORTED_BOARD_SIZES = [1, 2, 4, 6, 8, 9] as const;
+
+/**
+ * Union of the board sizes supported by the V4 validation/solving module.
+ */
+export type SupportedBoardSize = (typeof SUPPORTED_BOARD_SIZES)[number];
+
+/**
+ * Maps each supported board size to its canonical rectangular box layout.
+ */
+export const BOX_LAYOUTS: Record<SupportedBoardSize, BoxLayout> = {
+  1: { boxHeight: 1, boxWidth: 1 },
+  2: { boxHeight: 1, boxWidth: 2 },
+  4: { boxHeight: 2, boxWidth: 2 },
+  6: { boxHeight: 2, boxWidth: 3 },
+  8: { boxHeight: 2, boxWidth: 4 },
+  9: { boxHeight: 3, boxWidth: 3 },
+};
+
 export const SUDOKU_GAME_VARIANTS = ["demo", "drill", "classic"] as const;
 export type GameVariant = (typeof SUDOKU_GAME_VARIANTS)[number];
 
