@@ -15,6 +15,7 @@ import {
 
 /**
  * Converts a numeric board into puzzle cells where `0` becomes an empty note cell.
+ * TODO: delete this function and replace usage with getPuzzle helper function once it is implemented
  */
 function createPuzzleFromNumbers(grid: number[][]): CellProps[][] {
   return grid.map((row) =>

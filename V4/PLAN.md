@@ -535,9 +535,9 @@ For each strategy:
 | ------ | -------------------------------------------- | ------------------------------------------------------------------ | ------- |
 | ☑      | Principles & Plan doc                        | This document merged; diagrams render; terminology section agreed  | https://github.com/Sudokuru/Sudokuru/pull/103 |
 | ☑      | `Types.ts`                                   | Exports stable public types; Frontend can import without internals | https://github.com/Sudokuru/Sudokuru/pull/105 |
-| ☑      | Validation/Solving module                    | Supports multiple grid sizes; descriptive errors; tests            | —       |
+| ☑      | Validation/Solving module                    | Supports multiple grid sizes; descriptive errors; tests            | https://github.com/Sudokuru/Sudokuru/pull/106 |
+| ☑      | `getPuzzleSolution`                          | Solves validated puzzle; returns `number[][]`; tests               | https://github.com/Sudokuru/Sudokuru/pull/106 |
 | ☐      | `getPuzzle`                                  | Parses puzzle string; returns `CellProps[][]`; tests               | —       |
-| ☑      | `getPuzzleSolution`                          | Solves validated puzzle; returns `number[][]`; tests               | —       |
 | ☐      | Difficulty module                            | `getRawDifficulty` returns stable number; tests                    | —       |
 | ☐      | `getGameDifficulty` (placeholder ok)         | Returns `GameDifficulty`; boundaries documented                    | —       |
 | ☐      | Wrong value hint docs                        | Example hint stages + screenshot in Frontend                       | —       |
