@@ -12,6 +12,10 @@ import {
   SOLVED_TEST_BOARDS,
   TestBoardCellPatch,
 } from "./testBoards";
+import {
+  ADDITIONAL_SOLVABLE_PUZZLES,
+  ADDITIONAL_SOLVABLE_SOLUTIONS,
+} from "./additionalBoards";
 
 /**
  * Converts a numeric board into puzzle cells where `0` becomes an empty note cell.
@@ -235,6 +239,16 @@ describe("getPuzzleSolution", () => {
       PuzzleValidationErrorCode.MULTIPLE_SOLUTIONS,
       ["multiple valid solutions"]
     );
+  });
+
+  it("solves every additional solvable board to the expected solution", () => {
+    expect(ADDITIONAL_SOLVABLE_PUZZLES.length).toBe(ADDITIONAL_SOLVABLE_SOLUTIONS.length);
+
+    for (let index = 0; index < ADDITIONAL_SOLVABLE_PUZZLES.length; index += 1) {
+      const puzzle = createPuzzleFromNumbers(ADDITIONAL_SOLVABLE_PUZZLES[index]);
+      const expectedSolution = ADDITIONAL_SOLVABLE_SOLUTIONS[index];
+      expect(getPuzzleSolution(puzzle)).toEqual(expectedSolution);
+    }
   });
 
 });
