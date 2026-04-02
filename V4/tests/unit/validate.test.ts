@@ -6,7 +6,12 @@ import {
   SupportedBoardSize,
   SUPPORTED_BOARD_SIZES,
 } from "../../validate";
-import { SOLVED_TEST_BOARDS } from "./testBoards";
+import {
+  MISLEADING_NOTE_PATCH_4X4,
+  SINGLE_NOTE_PATCH_BY_SIZE,
+  SOLVED_TEST_BOARDS,
+  TestBoardCellPatch,
+} from "./testBoards";
 
 /**
  * Alternates `given` and `value` cells so tests exercise both placed-cell variants.
@@ -15,34 +20,6 @@ function createPlacedCell(rowIndex: number, columnIndex: number, value: number):
   return (rowIndex + columnIndex) % 2 === 0
     ? { type: "given", value }
     : { type: "value", value };
-}
-
-/**
- * Creates an almost-solved puzzle with exactly one note cell and the matching solution.
- */
-function createPuzzleWithSingleNote(
-  size: SupportedBoardSize,
-  noteRow = size - 1,
-  noteColumn = size - 1,
-  noteValues?: number[]
-): { puzzle: CellProps[][]; solution: number[][] } {
-  const solution = SOLVED_TEST_BOARDS[size];
-  const fallbackNotes = [solution[noteRow][noteColumn]];
-
-  const puzzle = solution.map((row, rowIndex) =>
-    row.map((value, columnIndex) => {
-      if (rowIndex === noteRow && columnIndex === noteColumn) {
-        return {
-          type: "note" as const,
-          notes: noteValues ?? fallbackNotes,
-        };
-      }
-
-      return createPlacedCell(rowIndex, columnIndex, value);
-    })
-  );
-
-  return { puzzle, solution };
 }
 
 /**
@@ -58,6 +35,23 @@ function createPuzzleFromNumbers(grid: number[][]): CellProps[][] {
       return createPlacedCell(rowIndex, columnIndex, value);
     })
   );
+}
+
+/**
+ * Applies static cell patches on top of a solved test board and returns puzzle + solution.
+ */
+function createPatchedPuzzleFromSolvedBoard(
+  size: SupportedBoardSize,
+  patches: TestBoardCellPatch[]
+): { puzzle: CellProps[][]; solution: number[][] } {
+  const solution = SOLVED_TEST_BOARDS[size];
+  const puzzle = createPuzzleFromNumbers(solution);
+
+  for (const patch of patches) {
+    puzzle[patch.row][patch.column] = patch.cell;
+  }
+
+  return { puzzle, solution };
 }
 
 /**
@@ -104,21 +98,27 @@ describe("getPuzzleSolution", () => {
   it.each(SUPPORTED_BOARD_SIZES)(
     "solves a %ix%i puzzle with a single note cell",
     (size) => {
-      const { puzzle, solution } = createPuzzleWithSingleNote(size);
+      const { puzzle, solution } = createPatchedPuzzleFromSolvedBoard(
+        size,
+        SINGLE_NOTE_PATCH_BY_SIZE[size]
+      );
 
       expect(getPuzzleSolution(puzzle)).toEqual(solution);
     }
   );
 
   it("ignores note contents while solving", () => {
-    const { puzzle, solution } = createPuzzleWithSingleNote(4, 0, 1, [1]);
+    const { puzzle, solution } = createPatchedPuzzleFromSolvedBoard(
+      4,
+      MISLEADING_NOTE_PATCH_4X4
+    );
 
     expect(solution[0][1]).toBe(2);
     expect(getPuzzleSolution(puzzle)).toEqual(solution);
   });
 
   it("does not mutate the input puzzle", () => {
-    const { puzzle } = createPuzzleWithSingleNote(6);
+    const { puzzle } = createPatchedPuzzleFromSolvedBoard(6, SINGLE_NOTE_PATCH_BY_SIZE[6]);
     const originalPuzzle = structuredClone(puzzle);
 
     getPuzzleSolution(puzzle);
@@ -246,7 +246,7 @@ describe("getPuzzleSolution", () => {
   });
 
   it("throws INTERNAL_ERROR when solver state becomes inconsistent", () => {
-    const { puzzle } = createPuzzleWithSingleNote(4);
+    const { puzzle } = createPatchedPuzzleFromSolvedBoard(4, SINGLE_NOTE_PATCH_BY_SIZE[4]);
     const originalMap = Array.prototype.map;
     let numericBoardCloneCount = 0;
 
