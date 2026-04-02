@@ -2,15 +2,6 @@ import { CellProps, SudokuValue } from "../../Types";
 import { SupportedBoardSize } from "../../validate";
 
 /**
- * Static replacement for one cell in a numeric solved board converted to `CellProps[][]`.
- */
-export type TestBoardCellPatch = {
-  row: number;
-  column: number;
-  cell: CellProps;
-};
-
-/**
  * Canonical solved boards used by V4 unit tests.
  *
  * Keeping these explicit removes puzzle-generation logic from tests so intent stays clear.
@@ -56,6 +47,15 @@ export const SOLVED_TEST_BOARDS: Record<SupportedBoardSize, SudokuValue[][]> = {
     [9, 1, 2, 3, 4, 5, 6, 7, 8],
     [3, 4, 5, 6, 7, 8, 9, 1, 2],
   ],
+};
+
+/**
+ * Static replacement for one cell in a numeric solved board converted to `CellProps[][]`.
+ */
+export type TestBoardCellPatch = {
+  row: number;
+  column: number;
+  cell: CellProps;
 };
 
 /**
