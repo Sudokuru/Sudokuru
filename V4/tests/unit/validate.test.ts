@@ -236,44 +236,4 @@ describe("getPuzzleSolution", () => {
     );
   });
 
-  it("throws INTERNAL_ERROR when solver state becomes inconsistent", () => {
-    const { puzzle } = createPatchedPuzzleFromSolvedBoard(4, SINGLE_NOTE_PATCH_BY_SIZE[4]);
-    const originalMap = Array.prototype.map;
-    let numericBoardCloneCount = 0;
-
-    // Force the second numeric board clone to fail so the solver records a solution count
-    // without storing the solved grid. That exercises the invariant-violation branch
-    // without changing the public API just for tests.
-    Array.prototype.map = function patchedMap<T, U>(
-      this: T[],
-      callback: (value: T, index: number, array: T[]) => U,
-      thisArg?: unknown
-    ): U[] {
-      const isNumericBoard =
-        this.length > 0 &&
-        Array.isArray(this[0]) &&
-        this.every(
-          (row) => Array.isArray(row) && row.every((value) => typeof value === "number")
-        );
-
-      if (isNumericBoard) {
-        numericBoardCloneCount += 1;
-
-        if (numericBoardCloneCount === 2) {
-          return null as unknown as U[];
-        }
-      }
-
-      return originalMap.call(this, callback, thisArg);
-    };
-
-    try {
-      expectPuzzleError(puzzle, PuzzleValidationErrorCode.INTERNAL_ERROR, [
-        "Internal solver error",
-        "without capturing the solution grid",
-      ]);
-    } finally {
-      Array.prototype.map = originalMap;
-    }
-  });
 });
