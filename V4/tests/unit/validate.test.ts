@@ -1,12 +1,12 @@
 import { CellProps } from "../../Types";
 import {
-  BOX_LAYOUTS,
   getPuzzleSolution,
   PuzzleValidationError,
   PuzzleValidationErrorCode,
   SupportedBoardSize,
   SUPPORTED_BOARD_SIZES,
 } from "../../validate";
+import { SOLVED_TEST_BOARDS } from "./testBoards";
 
 /**
  * Alternates `given` and `value` cells so tests exercise both placed-cell variants.
@@ -15,28 +15,6 @@ function createPlacedCell(rowIndex: number, columnIndex: number, value: number):
   return (rowIndex + columnIndex) % 2 === 0
     ? { type: "given", value }
     : { type: "value", value };
-}
-
-/**
- * Builds a valid solved board for each supported size using a closed-form Sudoku pattern.
- *
- * The tests intentionally keep this generator separate from production code so the
- * expected solutions do not rely on solver internals.
- */
-function generateSolvedGrid(size: SupportedBoardSize): number[][] {
-  const { boxHeight, boxWidth } = BOX_LAYOUTS[size];
-
-  return Array.from({ length: size }, (_, rowIndex) =>
-    Array.from(
-      { length: size },
-      (_, columnIndex) =>
-        ((boxWidth * (rowIndex % boxHeight) +
-          Math.floor(rowIndex / boxHeight) +
-          columnIndex) %
-          size) +
-        1
-    )
-  );
 }
 
 /**
@@ -57,7 +35,7 @@ function createPuzzleWithSingleNote(
   noteColumn = size - 1,
   noteValues?: number[]
 ): { puzzle: CellProps[][]; solution: number[][] } {
-  const solution = generateSolvedGrid(size);
+  const solution = SOLVED_TEST_BOARDS[size];
   const fallbackNotes = [solution[noteRow][noteColumn]];
 
   const puzzle = solution.map((row, rowIndex) =>
@@ -248,7 +226,7 @@ describe("getPuzzleSolution", () => {
   });
 
   it("throws BOARD_ALREADY_SOLVED for solved puzzles", () => {
-    const puzzle = createSolvedPuzzle(generateSolvedGrid(4));
+    const puzzle = createSolvedPuzzle(SOLVED_TEST_BOARDS[4]);
 
     expectPuzzleError(puzzle, PuzzleValidationErrorCode.BOARD_ALREADY_SOLVED, [
       "already solved",
