@@ -14,25 +14,16 @@ import {
 } from "./testBoards";
 
 /**
- * Alternates `given` and `value` cells so tests exercise both placed-cell variants.
- */
-function createPlacedCell(rowIndex: number, columnIndex: number, value: number): CellProps {
-  return (rowIndex + columnIndex) % 2 === 0
-    ? { type: "given", value }
-    : { type: "value", value };
-}
-
-/**
  * Converts a numeric board into puzzle cells where `0` becomes an empty note cell.
  */
 function createPuzzleFromNumbers(grid: number[][]): CellProps[][] {
-  return grid.map((row, rowIndex) =>
-    row.map((value, columnIndex) => {
+  return grid.map((row) =>
+    row.map((value) => {
       if (value === 0) {
         return { type: "note", notes: [] };
       }
 
-      return createPlacedCell(rowIndex, columnIndex, value);
+      return { type: "given", value };
     })
   );
 }
