@@ -18,15 +18,6 @@ function createPlacedCell(rowIndex: number, columnIndex: number, value: number):
 }
 
 /**
- * Converts a solved numeric board into placed `CellProps`.
- */
-function createSolvedPuzzle(grid: number[][]): CellProps[][] {
-  return grid.map((row, rowIndex) =>
-    row.map((value, columnIndex) => createPlacedCell(rowIndex, columnIndex, value))
-  );
-}
-
-/**
  * Creates an almost-solved puzzle with exactly one note cell and the matching solution.
  */
 function createPuzzleWithSingleNote(
@@ -226,7 +217,7 @@ describe("getPuzzleSolution", () => {
   });
 
   it("throws BOARD_ALREADY_SOLVED for solved puzzles", () => {
-    const puzzle = createSolvedPuzzle(SOLVED_TEST_BOARDS[4]);
+    const puzzle = createPuzzleFromNumbers(SOLVED_TEST_BOARDS[4]);
 
     expectPuzzleError(puzzle, PuzzleValidationErrorCode.BOARD_ALREADY_SOLVED, [
       "already solved",
