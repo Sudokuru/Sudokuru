@@ -20,6 +20,34 @@ import {
 } from "./additionalBoards";
 
 /**
+ * Explicit runtime fixture type for values that intentionally violate CellProps.
+ */
+type RuntimeTestValue =
+  | CellProps
+  | RuntimeTestObject
+  | RuntimeTestValue[]
+  | string
+  | number
+  | boolean
+  | null
+  | undefined;
+
+/**
+ * Object shape used by malformed runtime fixtures in validation tests.
+ */
+type RuntimeTestObject = {
+  puzzle?: RuntimeTestValue;
+  type?: RuntimeTestValue;
+  value?: RuntimeTestValue;
+  notes?: RuntimeTestValue;
+};
+
+/**
+ * Runtime puzzle fixtures include deliberate non-API inputs for validation tests.
+ */
+type RuntimePuzzleFixture = CellProps[][] | RuntimeTestObject | Array<CellProps[] | string>;
+
+/**
  * Converts a numeric board into puzzle cells where `0` becomes an empty note cell.
  * TODO: delete this function and replace usage with getPuzzle helper function once it is implemented
  */
@@ -64,11 +92,11 @@ function createEmptyPuzzle(size: number): CellProps[][] {
 /**
  * Captures the thrown error from a synchronous call or fails if nothing was thrown.
  */
-function getThrownError(call: () => unknown): unknown {
+function getThrownError(call: () => void): Error {
   try {
     call();
   } catch (error) {
-    return error;
+    return error as Error;
   }
 
   throw new Error("Expected getPuzzleSolution to throw.");
@@ -78,11 +106,13 @@ function getThrownError(call: () => unknown): unknown {
  * Asserts the typed error contract and selected message details for a puzzle failure.
  */
 function expectPuzzleError(
-  puzzle: unknown,
+  puzzle: RuntimePuzzleFixture,
   code: PuzzleValidationErrorCode,
   messageParts: string[]
 ): void {
-  const error = getThrownError(() => getPuzzleSolution(puzzle as CellProps[][]));
+  const error: Error = getThrownError(() => {
+    getPuzzleSolution(puzzle as CellProps[][]);
+  });
 
   expect(error).toBeInstanceOf(PuzzleValidationError);
   expect((error as PuzzleValidationError).code).toBe(code);
@@ -126,12 +156,12 @@ describe("getPuzzleSolution", () => {
 
   it("throws INVALID_PUZZLE_SHAPE for ragged puzzles", () => {
     const puzzle = createEmptyPuzzle(4);
-    const raggedPuzzle = [
+    const raggedPuzzle: CellProps[][] = [
       puzzle[0],
       puzzle[1],
       puzzle[2].slice(0, 3),
       puzzle[3],
-    ] as unknown as CellProps[][];
+    ];
 
     expectPuzzleError(raggedPuzzle, PuzzleValidationErrorCode.INVALID_PUZZLE_SHAPE, [
       "non-empty square matrix",
@@ -155,7 +185,7 @@ describe("getPuzzleSolution", () => {
   });
 
   it("throws INVALID_PUZZLE_SHAPE when a row is not an array", () => {
-    const puzzle = createEmptyPuzzle(2) as unknown[];
+    const puzzle: Array<CellProps[] | string> = createEmptyPuzzle(2);
     puzzle[1] = "not a row";
 
     expectPuzzleError(puzzle, PuzzleValidationErrorCode.INVALID_PUZZLE_SHAPE, [
@@ -175,7 +205,8 @@ describe("getPuzzleSolution", () => {
 
   it("throws UNSUPPORTED_BOARD_SIZE before validating unsupported-size cells", () => {
     const puzzle = createEmptyPuzzle(5);
-    (puzzle as unknown as Array<Array<unknown>>)[0][0] = { type: "mystery" };
+    const runtimePuzzle: RuntimeTestValue[][] = puzzle;
+    runtimePuzzle[0][0] = { type: "mystery" };
 
     expectPuzzleError(puzzle, PuzzleValidationErrorCode.UNSUPPORTED_BOARD_SIZE, [
       "Unsupported board size 5",
@@ -185,7 +216,8 @@ describe("getPuzzleSolution", () => {
 
   it("throws INVALID_CELL_TYPE for runtime-invalid cell objects", () => {
     const puzzle = createEmptyPuzzle(4);
-    (puzzle as unknown as Array<Array<unknown>>)[1][2] = { type: "mystery" };
+    const runtimePuzzle: RuntimeTestValue[][] = puzzle;
+    runtimePuzzle[1][2] = { type: "mystery" };
 
     expectPuzzleError(puzzle, PuzzleValidationErrorCode.INVALID_CELL_TYPE, [
       "row 2, column 3",
@@ -196,7 +228,8 @@ describe("getPuzzleSolution", () => {
 
   it("throws INVALID_CELL_TYPE for sparse row holes", () => {
     const puzzle = createEmptyPuzzle(4);
-    delete (puzzle as unknown as Array<Array<unknown>>)[1][2];
+    const runtimePuzzle: RuntimeTestValue[][] = puzzle;
+    delete runtimePuzzle[1][2];
 
     expectPuzzleError(puzzle, PuzzleValidationErrorCode.INVALID_CELL_TYPE, [
       "row 2, column 3",
@@ -207,7 +240,8 @@ describe("getPuzzleSolution", () => {
 
   it("throws INVALID_CELL_TYPE for runtime-invalid cell primitives", () => {
     const puzzle = createEmptyPuzzle(4);
-    (puzzle as unknown as Array<Array<unknown>>)[0][1] = null;
+    const runtimePuzzle: RuntimeTestValue[][] = puzzle;
+    runtimePuzzle[0][1] = null;
 
     expectPuzzleError(puzzle, PuzzleValidationErrorCode.INVALID_CELL_TYPE, [
       "row 1, column 2",
@@ -218,7 +252,8 @@ describe("getPuzzleSolution", () => {
 
   it("throws INVALID_CELL_TYPE for runtime-invalid cell arrays", () => {
     const puzzle = createEmptyPuzzle(4);
-    (puzzle as unknown as Array<Array<unknown>>)[2][3] = [];
+    const runtimePuzzle: RuntimeTestValue[][] = puzzle;
+    runtimePuzzle[2][3] = [];
 
     expectPuzzleError(puzzle, PuzzleValidationErrorCode.INVALID_CELL_TYPE, [
       "row 3, column 4",
@@ -234,7 +269,8 @@ describe("getPuzzleSolution", () => {
     { value: 5, detail: "5" },
   ])("throws INVALID_CELL_VALUE for bad placed value $detail", ({ value, detail }) => {
     const puzzle = createEmptyPuzzle(4);
-    (puzzle as unknown as Array<Array<unknown>>)[0][0] = { type: "given", value };
+    const runtimePuzzle: RuntimeTestValue[][] = puzzle;
+    runtimePuzzle[0][0] = { type: "given", value };
 
     expectPuzzleError(puzzle, PuzzleValidationErrorCode.INVALID_CELL_VALUE, [
       "row 1, column 1",
@@ -251,7 +287,8 @@ describe("getPuzzleSolution", () => {
     { notes: [5], detail: "[5]" },
   ])("throws INVALID_NOTE_VALUE for bad notes $detail", ({ notes, detail }) => {
     const puzzle = createEmptyPuzzle(4);
-    (puzzle as unknown as Array<Array<unknown>>)[0][0] = { type: "note", notes };
+    const runtimePuzzle: RuntimeTestValue[][] = puzzle;
+    runtimePuzzle[0][0] = { type: "note", notes };
 
     expectPuzzleError(puzzle, PuzzleValidationErrorCode.INVALID_NOTE_VALUE, [
       "row 1, column 1",

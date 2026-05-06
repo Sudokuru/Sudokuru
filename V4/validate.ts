@@ -93,7 +93,7 @@ export function getPuzzleSolution(puzzle: CellProps[][]): number[][] {
 /**
  * Validates that the input is a non-empty square matrix and returns its size.
  */
-function getPuzzleSize(puzzle: unknown): number {
+function getPuzzleSize(puzzle: CellProps[][]): number {
   if (!Array.isArray(puzzle) || puzzle.length === 0) {
     throw new PuzzleValidationError(
       PuzzleValidationErrorCode.INVALID_PUZZLE_SHAPE,
@@ -104,7 +104,7 @@ function getPuzzleSize(puzzle: unknown): number {
   const size: number = puzzle.length;
 
   for (let rowIndex: number = 0; rowIndex < size; rowIndex += 1) {
-    const row: unknown = puzzle[rowIndex];
+    const row: CellProps[] = puzzle[rowIndex];
 
     if (!Array.isArray(row)) {
       throw new PuzzleValidationError(
@@ -143,7 +143,7 @@ function getBoxLayout(size: SupportedBoardSize): BoxLayout {
  */
 function normalizePuzzle(puzzle: CellProps[][], size: number): number[][] {
   return puzzle.map((row: CellProps[], rowIndex: number) =>
-    Array.from({ length: size }, (_: unknown, columnIndex: number) =>
+    Array.from({ length: size }, (_: undefined, columnIndex: number) =>
       // Iterate by index so sparse array holes are validated as invalid cells.
       normalizeCell(row[columnIndex], size, rowIndex, columnIndex)
     )
@@ -154,7 +154,7 @@ function normalizePuzzle(puzzle: CellProps[][], size: number): number[][] {
  * Validates a single cell and converts it to its numeric solver representation.
  */
 function normalizeCell(
-  cell: unknown,
+  cell: CellProps,
   size: number,
   rowIndex: number,
   columnIndex: number
@@ -168,12 +168,10 @@ function normalizeCell(
     );
   }
 
-  const cellType: unknown = (cell as { type?: unknown }).type;
+  if (cell.type === "given" || cell.type === "value") {
+    const value: number = cell.value;
 
-  if (cellType === "given" || cellType === "value") {
-    const value: unknown = (cell as { value?: unknown }).value;
-
-    if (!Number.isInteger(value) || value < 1 || value > size) {
+    if (!isIntegerInRange(value, 1, size)) {
       throw new PuzzleValidationError(
         PuzzleValidationErrorCode.INVALID_CELL_VALUE,
         `Invalid cell value at row ${rowIndex + 1}, column ${columnIndex + 1}: ${formatValue(
@@ -182,11 +180,11 @@ function normalizeCell(
       );
     }
 
-    return value as number;
+    return value;
   }
 
-  if (cellType === "note") {
-    const notes: unknown = (cell as { notes?: unknown }).notes;
+  if (cell.type === "note") {
+    const notes: number[] = cell.notes;
 
     if (!Array.isArray(notes) || !areValidNotes(notes, size)) {
       throw new PuzzleValidationError(
@@ -203,23 +201,30 @@ function normalizeCell(
   throw new PuzzleValidationError(
     PuzzleValidationErrorCode.INVALID_CELL_TYPE,
     `Invalid cell type at row ${rowIndex + 1}, column ${columnIndex + 1}: ${formatValue(
-      cellType
+      cell.type
     )}. Expected one of "note", "value", or "given".`
   );
 }
 
 /**
+ * Narrows runtime values to integers in the inclusive Sudoku value range.
+ */
+function isIntegerInRange(value: number, min: number, max: number): boolean {
+  return Number.isInteger(value) && value >= min && value <= max;
+}
+
+/**
  * Validates that every note is unique and within the board's candidate range.
  */
-function areValidNotes(notes: unknown[], size: number): boolean {
+function areValidNotes(notes: number[], size: number): boolean {
   const uniqueNotes: Set<number> = new Set<number>();
 
   for (const note of notes) {
-    if (!Number.isInteger(note) || note < 1 || note > size || uniqueNotes.has(note as number)) {
+    if (!isIntegerInRange(note, 1, size) || uniqueNotes.has(note)) {
       return false;
     }
 
-    uniqueNotes.add(note as number);
+    uniqueNotes.add(note);
   }
 
   return true;
@@ -471,9 +476,9 @@ function isCandidate(
 }
 
 /**
- * Formats unknown runtime values so error messages stay readable.
+ * Formats runtime values so error messages stay readable.
  */
-function formatValue(value: unknown): string {
+function formatValue(value: CellProps | string | number | number[] | null | undefined): string {
   if (typeof value === "string") {
     return JSON.stringify(value);
   }
