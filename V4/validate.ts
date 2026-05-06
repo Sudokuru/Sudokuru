@@ -385,10 +385,6 @@ function searchForSolutions(
   index: number,
   solveState: SolveState
 ): SolveState {
-  if (solveState.solutionCount > 1) {
-    return solveState;
-  }
-
   // A completed traversal means the current board is a valid full solution.
   if (index === size * size) {
     return recordSolution(board, solveState);
