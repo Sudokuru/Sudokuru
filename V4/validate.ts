@@ -479,10 +479,6 @@ function formatValue(value: CellProps | string | number | number[] | null | unde
     return JSON.stringify(value);
   }
 
-  try {
-    const json: string | undefined = JSON.stringify(value);
-    return json === undefined ? String(value) : json;
-  } catch {
-    return String(value);
-  }
+  const json: string | undefined = JSON.stringify(value);
+  return json === undefined ? String(value) : json;
 }
