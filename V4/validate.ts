@@ -87,7 +87,7 @@ export function getPuzzleSolution(puzzle: CellProps[][]): number[][] {
     );
   }
 
-  return solveState.solution as number[][];
+  return solveState.solution;
 }
 
 /**
