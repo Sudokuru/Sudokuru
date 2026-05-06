@@ -48,6 +48,14 @@ export class PuzzleValidationError extends Error {
  */
 export function getPuzzleSolution(puzzle: CellProps[][]): number[][] {
   const size = getPuzzleSize(puzzle);
+
+  if (!isSupportedBoardSize(size)) {
+    throw new PuzzleValidationError(
+      PuzzleValidationErrorCode.UNSUPPORTED_BOARD_SIZE,
+      `Unsupported board size ${size}. Supported sizes are ${SUPPORTED_BOARD_SIZES.join(", ")}.`
+    );
+  }
+
   const layout = getBoxLayout(size);
   const normalizedPuzzle = normalizePuzzle(puzzle, size);
 
@@ -117,19 +125,17 @@ function getPuzzleSize(puzzle: unknown): number {
 }
 
 /**
+ * Narrows an arbitrary square puzzle size to the supported board-size union.
+ */
+function isSupportedBoardSize(size: number): size is SupportedBoardSize {
+  return SUPPORTED_BOARD_SIZES.includes(size as SupportedBoardSize);
+}
+
+/**
  * Looks up the canonical box layout for a supported board size.
  */
-function getBoxLayout(size: number): BoxLayout {
-  const layout = BOX_LAYOUTS[size as SupportedBoardSize];
-
-  if (!layout) {
-    throw new PuzzleValidationError(
-      PuzzleValidationErrorCode.UNSUPPORTED_BOARD_SIZE,
-      `Unsupported board size ${size}. Supported sizes are ${SUPPORTED_BOARD_SIZES.join(", ")}.`
-    );
-  }
-
-  return layout;
+function getBoxLayout(size: SupportedBoardSize): BoxLayout {
+  return BOX_LAYOUTS[size];
 }
 
 /**

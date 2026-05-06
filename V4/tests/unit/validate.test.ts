@@ -173,6 +173,16 @@ describe("getPuzzleSolution", () => {
     );
   });
 
+  it("throws UNSUPPORTED_BOARD_SIZE before validating unsupported-size cells", () => {
+    const puzzle = createEmptyPuzzle(5);
+    (puzzle as unknown as Array<Array<unknown>>)[0][0] = { type: "mystery" };
+
+    expectPuzzleError(puzzle, PuzzleValidationErrorCode.UNSUPPORTED_BOARD_SIZE, [
+      "Unsupported board size 5",
+      "1, 2, 4, 6, 8, 9",
+    ]);
+  });
+
   it("throws INVALID_CELL_TYPE for runtime-invalid cell objects", () => {
     const puzzle = createEmptyPuzzle(4);
     (puzzle as unknown as Array<Array<unknown>>)[1][2] = { type: "mystery" };
