@@ -21,7 +21,6 @@ export enum PuzzleValidationErrorCode {
   BOARD_ALREADY_SOLVED = "BOARD_ALREADY_SOLVED",
   UNSOLVABLE = "UNSOLVABLE",
   MULTIPLE_SOLUTIONS = "MULTIPLE_SOLUTIONS",
-  INTERNAL_ERROR = "INTERNAL_ERROR",
 }
 
 /**
@@ -80,14 +79,7 @@ export function getPuzzleSolution(puzzle: CellProps[][]): number[][] {
     );
   }
 
-  if (solveState.solution === null) {
-    throw new PuzzleValidationError(
-      PuzzleValidationErrorCode.INTERNAL_ERROR,
-      "Internal solver error: a solution count was recorded without capturing the solution grid."
-    );
-  }
-
-  return solveState.solution;
+  return solveState.solution as number[][];
 }
 
 /**

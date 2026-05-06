@@ -78,11 +78,11 @@ function getThrownError(call: () => unknown): unknown {
  * Asserts the typed error contract and selected message details for a puzzle failure.
  */
 function expectPuzzleError(
-  puzzle: CellProps[][],
+  puzzle: unknown,
   code: PuzzleValidationErrorCode,
   messageParts: string[]
 ): void {
-  const error = getThrownError(() => getPuzzleSolution(puzzle));
+  const error = getThrownError(() => getPuzzleSolution(puzzle as CellProps[][]));
 
   expect(error).toBeInstanceOf(PuzzleValidationError);
   expect((error as PuzzleValidationError).code).toBe(code);
@@ -140,6 +140,31 @@ describe("getPuzzleSolution", () => {
     ]);
   });
 
+  it("throws INVALID_PUZZLE_SHAPE for non-array puzzles", () => {
+    expectPuzzleError(
+      { puzzle: createEmptyPuzzle(4) },
+      PuzzleValidationErrorCode.INVALID_PUZZLE_SHAPE,
+      ["non-empty square matrix"]
+    );
+  });
+
+  it("throws INVALID_PUZZLE_SHAPE for empty puzzles", () => {
+    expectPuzzleError([], PuzzleValidationErrorCode.INVALID_PUZZLE_SHAPE, [
+      "non-empty square matrix",
+    ]);
+  });
+
+  it("throws INVALID_PUZZLE_SHAPE when a row is not an array", () => {
+    const puzzle = createEmptyPuzzle(2) as unknown[];
+    puzzle[1] = "not a row";
+
+    expectPuzzleError(puzzle, PuzzleValidationErrorCode.INVALID_PUZZLE_SHAPE, [
+      "non-empty square matrix",
+      "Row 2",
+      "not an array",
+    ]);
+  });
+
   it("throws UNSUPPORTED_BOARD_SIZE for unsupported square sizes", () => {
     expectPuzzleError(
       createEmptyPuzzle(5),
@@ -170,24 +195,57 @@ describe("getPuzzleSolution", () => {
     ]);
   });
 
-  it("throws INVALID_CELL_VALUE for placed values outside the allowed range", () => {
+  it("throws INVALID_CELL_TYPE for runtime-invalid cell primitives", () => {
     const puzzle = createEmptyPuzzle(4);
-    puzzle[0][0] = { type: "given", value: 5 };
+    (puzzle as unknown as Array<Array<unknown>>)[0][1] = null;
+
+    expectPuzzleError(puzzle, PuzzleValidationErrorCode.INVALID_CELL_TYPE, [
+      "row 1, column 2",
+      "null",
+      '"note", "value", or "given"',
+    ]);
+  });
+
+  it("throws INVALID_CELL_TYPE for runtime-invalid cell arrays", () => {
+    const puzzle = createEmptyPuzzle(4);
+    (puzzle as unknown as Array<Array<unknown>>)[2][3] = [];
+
+    expectPuzzleError(puzzle, PuzzleValidationErrorCode.INVALID_CELL_TYPE, [
+      "row 3, column 4",
+      "[]",
+      '"note", "value", or "given"',
+    ]);
+  });
+
+  it.each([
+    { value: undefined, detail: "undefined" },
+    { value: 0, detail: "0" },
+    { value: 1.5, detail: "1.5" },
+    { value: 5, detail: "5" },
+  ])("throws INVALID_CELL_VALUE for bad placed value $detail", ({ value, detail }) => {
+    const puzzle = createEmptyPuzzle(4);
+    (puzzle as unknown as Array<Array<unknown>>)[0][0] = { type: "given", value };
 
     expectPuzzleError(puzzle, PuzzleValidationErrorCode.INVALID_CELL_VALUE, [
       "row 1, column 1",
-      "5",
+      detail,
       "between 1 and 4",
     ]);
   });
 
-  it("throws INVALID_NOTE_VALUE for duplicate or out-of-range notes", () => {
+  it.each([
+    { notes: "1,2", detail: '"1,2"' },
+    { notes: [1, 1], detail: "[1,1]" },
+    { notes: [0], detail: "[0]" },
+    { notes: [1.5], detail: "[1.5]" },
+    { notes: [5], detail: "[5]" },
+  ])("throws INVALID_NOTE_VALUE for bad notes $detail", ({ notes, detail }) => {
     const puzzle = createEmptyPuzzle(4);
-    puzzle[0][0] = { type: "note", notes: [1, 1, 5] };
+    (puzzle as unknown as Array<Array<unknown>>)[0][0] = { type: "note", notes };
 
     expectPuzzleError(puzzle, PuzzleValidationErrorCode.INVALID_NOTE_VALUE, [
       "row 1, column 1",
-      "[1,1,5]",
+      detail,
       "unique integers between 1 and 4",
     ]);
   });
