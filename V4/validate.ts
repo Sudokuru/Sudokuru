@@ -61,13 +61,10 @@ export function getPuzzleSolution(puzzle: CellProps[][]): number[][] {
     );
   }
 
-  const solvingBoard = cloneBoard(normalizedPuzzle);
-  const solveState = {
+  const solveState = searchForSolutions(normalizedPuzzle, size, layout, 0, {
     solutionCount: 0,
     solution: null as number[][] | null,
-  };
-
-  searchForSolutions(solvingBoard, size, layout, 0, solveState);
+  });
 
   if (solveState.solutionCount === 0) {
     throw new PuzzleValidationError(
@@ -318,14 +315,58 @@ function isSolved(board: number[][]): boolean {
 }
 
 /**
- * Produces a deep-enough copy for the mutable backtracking search.
+ * Produces a deep-enough copy for solver snapshots and immutable branch updates.
  */
 function cloneBoard(board: number[][]): number[][] {
   return board.map((row) => [...row]);
 }
 
 /**
- * Performs deterministic backtracking and captures up to the first two solutions.
+ * Immutable solver state captured while traversing the backtracking tree.
+ */
+type SolveState = {
+  solutionCount: number;
+  solution: number[][] | null;
+};
+
+/**
+ * Returns a new board with one value changed while preserving other row references.
+ *
+ * This keeps backtracking purely functional and avoids mutating parent recursion frames.
+ */
+function withPlacedValue(
+  board: number[][],
+  rowIndex: number,
+  columnIndex: number,
+  value: number
+): number[][] {
+  const nextRow = [...board[rowIndex]];
+  nextRow[columnIndex] = value;
+
+  return board.map((row, index) => (index === rowIndex ? nextRow : row));
+}
+
+/**
+ * Creates the next immutable solve state when a full solution board is found.
+ */
+function recordSolution(board: number[][], solveState: SolveState): SolveState {
+  const nextSolutionCount = solveState.solutionCount + 1;
+
+  if (solveState.solution !== null) {
+    return {
+      solutionCount: nextSolutionCount,
+      solution: solveState.solution,
+    };
+  }
+
+  return {
+    solutionCount: nextSolutionCount,
+    solution: cloneBoard(board),
+  };
+}
+
+/**
+ * Performs deterministic backtracking and returns an immutable solve state.
  *
  * Stopping at two solutions is enough to distinguish unique puzzles from ambiguous ones
  * without exploring the entire search tree.
@@ -335,21 +376,15 @@ function searchForSolutions(
   size: number,
   layout: BoxLayout,
   index: number,
-  solveState: { solutionCount: number; solution: number[][] | null }
-): void {
+  solveState: SolveState
+): SolveState {
   if (solveState.solutionCount > 1) {
-    return;
+    return solveState;
   }
 
   // A completed traversal means the current board is a valid full solution.
   if (index === size * size) {
-    solveState.solutionCount += 1;
-
-    if (solveState.solution === null) {
-      solveState.solution = cloneBoard(board);
-    }
-
-    return;
+    return recordSolution(board, solveState);
   }
 
   const rowIndex = Math.floor(index / size);
@@ -357,9 +392,10 @@ function searchForSolutions(
 
   // Filled cells are part of the fixed puzzle state, so continue to the next position.
   if (board[rowIndex][columnIndex] !== 0) {
-    searchForSolutions(board, size, layout, index + 1, solveState);
-    return;
+    return searchForSolutions(board, size, layout, index + 1, solveState);
   }
+
+  let nextSolveState = solveState;
 
   // Candidates are tried in ascending order to keep the solver deterministic.
   for (let candidate = 1; candidate <= size; candidate += 1) {
@@ -367,14 +403,21 @@ function searchForSolutions(
       continue;
     }
 
-    board[rowIndex][columnIndex] = candidate;
-    searchForSolutions(board, size, layout, index + 1, solveState);
-    board[rowIndex][columnIndex] = 0;
+    const boardWithCandidate = withPlacedValue(board, rowIndex, columnIndex, candidate);
+    nextSolveState = searchForSolutions(
+      boardWithCandidate,
+      size,
+      layout,
+      index + 1,
+      nextSolveState
+    );
 
-    if (solveState.solutionCount > 1) {
-      return;
+    if (nextSolveState.solutionCount > 1) {
+      return nextSolveState;
     }
   }
+
+  return nextSolveState;
 }
 
 /**
