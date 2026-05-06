@@ -47,7 +47,7 @@ export class PuzzleValidationError extends Error {
  * The returned board is always a fresh `number[][]` instance.
  */
 export function getPuzzleSolution(puzzle: CellProps[][]): number[][] {
-  const size = getPuzzleSize(puzzle);
+  const size: number = getPuzzleSize(puzzle);
 
   if (!isSupportedBoardSize(size)) {
     throw new PuzzleValidationError(
@@ -56,8 +56,8 @@ export function getPuzzleSolution(puzzle: CellProps[][]): number[][] {
     );
   }
 
-  const layout = getBoxLayout(size);
-  const normalizedPuzzle = normalizePuzzle(puzzle, size);
+  const layout: BoxLayout = getBoxLayout(size);
+  const normalizedPuzzle: number[][] = normalizePuzzle(puzzle, size);
 
   assertNoDuplicateValues(normalizedPuzzle, size, layout);
 
@@ -68,7 +68,7 @@ export function getPuzzleSolution(puzzle: CellProps[][]): number[][] {
     );
   }
 
-  const solveState = searchForSolutions(normalizedPuzzle, size, layout, 0, {
+  const solveState: SolveState = searchForSolutions(normalizedPuzzle, size, layout, 0, {
     solutionCount: 0,
     solution: null as number[][] | null,
   });
@@ -101,10 +101,10 @@ function getPuzzleSize(puzzle: unknown): number {
     );
   }
 
-  const size = puzzle.length;
+  const size: number = puzzle.length;
 
-  for (let rowIndex = 0; rowIndex < size; rowIndex += 1) {
-    const row = puzzle[rowIndex];
+  for (let rowIndex: number = 0; rowIndex < size; rowIndex += 1) {
+    const row: unknown = puzzle[rowIndex];
 
     if (!Array.isArray(row)) {
       throw new PuzzleValidationError(
@@ -142,8 +142,8 @@ function getBoxLayout(size: SupportedBoardSize): BoxLayout {
  * Converts `CellProps[][]` into a numeric board where note cells become `0`.
  */
 function normalizePuzzle(puzzle: CellProps[][], size: number): number[][] {
-  return puzzle.map((row, rowIndex) =>
-    Array.from({ length: size }, (_, columnIndex) =>
+  return puzzle.map((row: CellProps[], rowIndex: number) =>
+    Array.from({ length: size }, (_: unknown, columnIndex: number) =>
       // Iterate by index so sparse array holes are validated as invalid cells.
       normalizeCell(row[columnIndex], size, rowIndex, columnIndex)
     )
@@ -168,10 +168,10 @@ function normalizeCell(
     );
   }
 
-  const cellType = (cell as { type?: unknown }).type;
+  const cellType: unknown = (cell as { type?: unknown }).type;
 
   if (cellType === "given" || cellType === "value") {
-    const value = (cell as { value?: unknown }).value;
+    const value: unknown = (cell as { value?: unknown }).value;
 
     if (!Number.isInteger(value) || value < 1 || value > size) {
       throw new PuzzleValidationError(
@@ -186,7 +186,7 @@ function normalizeCell(
   }
 
   if (cellType === "note") {
-    const notes = (cell as { notes?: unknown }).notes;
+    const notes: unknown = (cell as { notes?: unknown }).notes;
 
     if (!Array.isArray(notes) || !areValidNotes(notes, size)) {
       throw new PuzzleValidationError(
@@ -212,7 +212,7 @@ function normalizeCell(
  * Validates that every note is unique and within the board's candidate range.
  */
 function areValidNotes(notes: unknown[], size: number): boolean {
-  const uniqueNotes = new Set<number>();
+  const uniqueNotes: Set<number> = new Set<number>();
 
   for (const note of notes) {
     if (!Number.isInteger(note) || note < 1 || note > size || uniqueNotes.has(note as number)) {
@@ -230,11 +230,11 @@ function areValidNotes(notes: unknown[], size: number): boolean {
  * rows first, then columns, then boxes.
  */
 function assertNoDuplicateValues(board: number[][], size: number, layout: BoxLayout): void {
-  for (let rowIndex = 0; rowIndex < size; rowIndex += 1) {
-    const seen = new Set<number>();
+  for (let rowIndex: number = 0; rowIndex < size; rowIndex += 1) {
+    const seen: Set<number> = new Set<number>();
 
-    for (let columnIndex = 0; columnIndex < size; columnIndex += 1) {
-      const value = board[rowIndex][columnIndex];
+    for (let columnIndex: number = 0; columnIndex < size; columnIndex += 1) {
+      const value: number = board[rowIndex][columnIndex];
 
       if (value === 0) {
         continue;
@@ -251,11 +251,11 @@ function assertNoDuplicateValues(board: number[][], size: number, layout: BoxLay
     }
   }
 
-  for (let columnIndex = 0; columnIndex < size; columnIndex += 1) {
-    const seen = new Set<number>();
+  for (let columnIndex: number = 0; columnIndex < size; columnIndex += 1) {
+    const seen: Set<number> = new Set<number>();
 
-    for (let rowIndex = 0; rowIndex < size; rowIndex += 1) {
-      const value = board[rowIndex][columnIndex];
+    for (let rowIndex: number = 0; rowIndex < size; rowIndex += 1) {
+      const value: number = board[rowIndex][columnIndex];
 
       if (value === 0) {
         continue;
@@ -273,17 +273,21 @@ function assertNoDuplicateValues(board: number[][], size: number, layout: BoxLay
   }
 
   // Box validation runs last so row/column failures remain the first reported issue.
-  for (let boxRow = 0; boxRow < size; boxRow += layout.boxHeight) {
-    for (let boxColumn = 0; boxColumn < size; boxColumn += layout.boxWidth) {
-      const seen = new Set<number>();
+  for (let boxRow: number = 0; boxRow < size; boxRow += layout.boxHeight) {
+    for (let boxColumn: number = 0; boxColumn < size; boxColumn += layout.boxWidth) {
+      const seen: Set<number> = new Set<number>();
 
-      for (let rowIndex = boxRow; rowIndex < boxRow + layout.boxHeight; rowIndex += 1) {
+      for (
+        let rowIndex: number = boxRow;
+        rowIndex < boxRow + layout.boxHeight;
+        rowIndex += 1
+      ) {
         for (
-          let columnIndex = boxColumn;
+          let columnIndex: number = boxColumn;
           columnIndex < boxColumn + layout.boxWidth;
           columnIndex += 1
         ) {
-          const value = board[rowIndex][columnIndex];
+          const value: number = board[rowIndex][columnIndex];
 
           if (value === 0) {
             continue;
@@ -309,14 +313,14 @@ function assertNoDuplicateValues(board: number[][], size: number, layout: BoxLay
  * Returns true when the normalized board contains no empty cells.
  */
 function isSolved(board: number[][]): boolean {
-  return board.every((row) => row.every((value) => value !== 0));
+  return board.every((row: number[]) => row.every((value: number) => value !== 0));
 }
 
 /**
  * Produces a deep-enough copy for solver snapshots and immutable branch updates.
  */
 function cloneBoard(board: number[][]): number[][] {
-  return board.map((row) => [...row]);
+  return board.map((row: number[]) => [...row]);
 }
 
 /**
@@ -338,17 +342,17 @@ function withPlacedValue(
   columnIndex: number,
   value: number
 ): number[][] {
-  const nextRow = [...board[rowIndex]];
+  const nextRow: number[] = [...board[rowIndex]];
   nextRow[columnIndex] = value;
 
-  return board.map((row, index) => (index === rowIndex ? nextRow : row));
+  return board.map((row: number[], index: number) => (index === rowIndex ? nextRow : row));
 }
 
 /**
  * Creates the next immutable solve state when a full solution board is found.
  */
 function recordSolution(board: number[][], solveState: SolveState): SolveState {
-  const nextSolutionCount = solveState.solutionCount + 1;
+  const nextSolutionCount: number = solveState.solutionCount + 1;
 
   if (solveState.solution !== null) {
     return {
@@ -385,23 +389,28 @@ function searchForSolutions(
     return recordSolution(board, solveState);
   }
 
-  const rowIndex = Math.floor(index / size);
-  const columnIndex = index % size;
+  const rowIndex: number = Math.floor(index / size);
+  const columnIndex: number = index % size;
 
   // Filled cells are part of the fixed puzzle state, so continue to the next position.
   if (board[rowIndex][columnIndex] !== 0) {
     return searchForSolutions(board, size, layout, index + 1, solveState);
   }
 
-  let nextSolveState = solveState;
+  let nextSolveState: SolveState = solveState;
 
   // Candidates are tried in ascending order to keep the solver deterministic.
-  for (let candidate = 1; candidate <= size; candidate += 1) {
+  for (let candidate: number = 1; candidate <= size; candidate += 1) {
     if (!isCandidate(board, size, layout, rowIndex, columnIndex, candidate)) {
       continue;
     }
 
-    const boardWithCandidate = withPlacedValue(board, rowIndex, columnIndex, candidate);
+    const boardWithCandidate: number[][] = withPlacedValue(
+      board,
+      rowIndex,
+      columnIndex,
+      candidate
+    );
     nextSolveState = searchForSolutions(
       boardWithCandidate,
       size,
@@ -429,7 +438,7 @@ function isCandidate(
   columnIndex: number,
   candidate: number
 ): boolean {
-  for (let offset = 0; offset < size; offset += 1) {
+  for (let offset: number = 0; offset < size; offset += 1) {
     if (board[rowIndex][offset] === candidate) {
       return false;
     }
@@ -439,12 +448,16 @@ function isCandidate(
     }
   }
 
-  const boxRowStart = Math.floor(rowIndex / layout.boxHeight) * layout.boxHeight;
-  const boxColumnStart = Math.floor(columnIndex / layout.boxWidth) * layout.boxWidth;
+  const boxRowStart: number = Math.floor(rowIndex / layout.boxHeight) * layout.boxHeight;
+  const boxColumnStart: number = Math.floor(columnIndex / layout.boxWidth) * layout.boxWidth;
 
-  for (let boxRow = boxRowStart; boxRow < boxRowStart + layout.boxHeight; boxRow += 1) {
+  for (
+    let boxRow: number = boxRowStart;
+    boxRow < boxRowStart + layout.boxHeight;
+    boxRow += 1
+  ) {
     for (
-      let boxColumn = boxColumnStart;
+      let boxColumn: number = boxColumnStart;
       boxColumn < boxColumnStart + layout.boxWidth;
       boxColumn += 1
     ) {
@@ -466,7 +479,7 @@ function formatValue(value: unknown): string {
   }
 
   try {
-    const json = JSON.stringify(value);
+    const json: string | undefined = JSON.stringify(value);
     return json === undefined ? String(value) : json;
   } catch {
     return String(value);
