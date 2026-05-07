@@ -474,11 +474,6 @@ function isCandidate(
 /**
  * Formats runtime values so error messages stay readable.
  */
-function formatValue(value: CellProps | string | number | number[] | null | undefined): string {
-  if (typeof value === "string") {
-    return JSON.stringify(value);
-  }
-
-  const json: string | undefined = JSON.stringify(value);
-  return json === undefined ? String(value) : json;
+function formatValue(value: CellProps | string | number | number[]): string {
+  return String(JSON.stringify(value));
 }
