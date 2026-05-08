@@ -70,7 +70,7 @@ export function getPuzzleSolution(puzzle: CellProps[][]): number[][] {
 
   const solveState: SolveState = searchForSolutions(normalizedPuzzle, size, layout, 0, {
     solutionCount: 0,
-    solution: null as number[][] | null,
+    solution: null,
   });
 
   if (solveState.solutionCount === 0) {
