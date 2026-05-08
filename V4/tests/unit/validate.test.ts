@@ -123,9 +123,9 @@ function expectPuzzleError(
 }
 
 describe("getPuzzleSolution", () => {
-  it.each(SUPPORTED_BOARD_SIZES)(
+  it.each(SUPPORTED_BOARD_SIZES.map((size: SupportedBoardSize) => [size, size] as const))(
     "solves a %ix%i puzzle with a single note cell",
-    (size) => {
+    (size: SupportedBoardSize) => {
       const { puzzle, solution } = createPatchedPuzzleFromSolvedBoard(
         size,
         SINGLE_NOTE_PATCH_BY_SIZE[size]
