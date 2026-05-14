@@ -1,9 +1,11 @@
 import {
   CellProps,
+  SudokuValue,
   SupportedBoardSize,
   SUPPORTED_BOARD_SIZES,
 } from "../../Types";
 import {
+  getPuzzle,
   getPuzzleSolution,
   PuzzleValidationError,
   PuzzleValidationErrorCode,
@@ -48,12 +50,30 @@ type RuntimeTestObject = {
 type RuntimePuzzleFixture = CellProps[][] | RuntimeTestObject | Array<CellProps[] | string>;
 
 /**
- * Converts a numeric board into puzzle cells where `0` becomes an empty note cell.
- * TODO: delete this function and replace usage with getPuzzle helper function once it is implemented
+ * Runtime puzzle-string fixtures include deliberate non-API inputs for parser tests.
  */
-function createPuzzleFromNumbers(grid: number[][]): CellProps[][] {
-  return grid.map((row) =>
-    row.map((value) => {
+type RuntimePuzzleStringFixture =
+  | string
+  | RuntimeTestObject
+  | number
+  | boolean
+  | null
+  | undefined;
+
+/**
+ * Converts a numeric board into the compact public puzzle string format.
+ * TODO: rename this to getPuzzleString and input to puzzle and move this to validate.ts as part of public API and update PLAN.md accordingly
+ */
+function createPuzzleStringFromNumbers(grid: SudokuValue[][]): string {
+  return grid.map((row: SudokuValue[]) => row.join("")).join("");
+}
+
+/**
+ * Converts a numeric board into the expected public puzzle shape.
+ */
+function createExpectedPuzzleFromNumbers(grid: SudokuValue[][]): CellProps[][] {
+  return grid.map((row: SudokuValue[]) =>
+    row.map((value: SudokuValue) => {
       if (value === 0) {
         return { type: "note", notes: [] };
       }
@@ -71,7 +91,7 @@ function createPatchedPuzzleFromSolvedBoard(
   patches: TestBoardCellPatch[]
 ): { puzzle: CellProps[][]; solution: number[][] } {
   const solution = SOLVED_TEST_BOARDS[size];
-  const puzzle = createPuzzleFromNumbers(solution);
+  const puzzle = getPuzzle(createPuzzleStringFromNumbers(solution));
 
   for (const patch of patches) {
     puzzle[patch.row][patch.column] = patch.cell;
@@ -92,14 +112,14 @@ function createEmptyPuzzle(size: number): CellProps[][] {
 /**
  * Captures the thrown error from a synchronous call or fails if nothing was thrown.
  */
-function getThrownError(call: () => void): Error {
+function getThrownError(call: () => void, functionName: string): Error {
   try {
     call();
   } catch (error) {
     return error as Error;
   }
 
-  throw new Error("Expected getPuzzleSolution to throw.");
+  throw new Error(`Expected ${functionName} to throw.`);
 }
 
 /**
@@ -112,7 +132,7 @@ function expectPuzzleError(
 ): void {
   const error: Error = getThrownError(() => {
     getPuzzleSolution(puzzle as CellProps[][]);
-  });
+  }, "getPuzzleSolution");
 
   expect(error).toBeInstanceOf(PuzzleValidationError);
   expect((error as PuzzleValidationError).code).toBe(code);
@@ -121,6 +141,129 @@ function expectPuzzleError(
     expect((error as PuzzleValidationError).message).toContain(messagePart);
   }
 }
+
+/**
+ * Asserts the typed error contract and selected message details for parser failures.
+ */
+function expectGetPuzzleError(
+  puzzle: RuntimePuzzleStringFixture,
+  code: PuzzleValidationErrorCode,
+  messageParts: string[]
+): void {
+  const error: Error = getThrownError(() => {
+    getPuzzle(puzzle as string);
+  }, "getPuzzle");
+
+  expect(error).toBeInstanceOf(PuzzleValidationError);
+  expect((error as PuzzleValidationError).code).toBe(code);
+
+  for (const messagePart of messageParts) {
+    expect((error as PuzzleValidationError).message).toContain(messagePart);
+  }
+}
+
+describe("getPuzzle", () => {
+  it.each(SUPPORTED_BOARD_SIZES.map((size: SupportedBoardSize) => [size, size] as const))(
+    "parses a %ix%i solved test board",
+    (size: SupportedBoardSize) => {
+      const board: SudokuValue[][] = SOLVED_TEST_BOARDS[size];
+
+      expect(getPuzzle(createPuzzleStringFromNumbers(board))).toEqual(
+        createExpectedPuzzleFromNumbers(board)
+      );
+    }
+  );
+
+  it("parses additional 9x9 boards with empty cells", () => {
+    for (const board of ADDITIONAL_SOLVABLE_PUZZLES) {
+      expect(getPuzzle(createPuzzleStringFromNumbers(board))).toEqual(
+        createExpectedPuzzleFromNumbers(board)
+      );
+    }
+  });
+
+  it("maps zeros to empty note cells and placed digits to givens", () => {
+    expect(getPuzzle("1034000000000000")[0]).toEqual([
+      { type: "given", value: 1 },
+      { type: "note", notes: [] },
+      { type: "given", value: 3 },
+      { type: "given", value: 4 },
+    ]);
+  });
+
+  it("throws INVALID_PUZZLE_SHAPE for non-string puzzle input", () => {
+    expectGetPuzzleError(
+      { puzzle: "0" },
+      PuzzleValidationErrorCode.INVALID_PUZZLE_SHAPE,
+      ["Puzzle string", "Received", '{"puzzle":"0"}']
+    );
+  });
+
+  it("throws INVALID_PUZZLE_SHAPE for empty puzzle strings", () => {
+    expectGetPuzzleError("", PuzzleValidationErrorCode.INVALID_PUZZLE_SHAPE, [
+      "must not be empty",
+    ]);
+  });
+
+  it("throws INVALID_PUZZLE_SHAPE for non-square puzzle string lengths", () => {
+    expectGetPuzzleError("000", PuzzleValidationErrorCode.INVALID_PUZZLE_SHAPE, [
+      "length 3",
+      "square board",
+    ]);
+  });
+
+  it("throws UNSUPPORTED_BOARD_SIZE for unsupported square puzzle strings", () => {
+    expectGetPuzzleError("0".repeat(9), PuzzleValidationErrorCode.UNSUPPORTED_BOARD_SIZE, [
+      "Unsupported board size 3",
+      "1, 2, 4, 6, 8, 9",
+    ]);
+  });
+
+  it("throws UNSUPPORTED_BOARD_SIZE before validating unsupported-size characters", () => {
+    expectGetPuzzleError("x00000000", PuzzleValidationErrorCode.UNSUPPORTED_BOARD_SIZE, [
+      "Unsupported board size 3",
+      "1, 2, 4, 6, 8, 9",
+    ]);
+  });
+
+  it("throws INVALID_CELL_VALUE for non-digit puzzle string values", () => {
+    expectGetPuzzleError("x000000000000000", PuzzleValidationErrorCode.INVALID_CELL_VALUE, [
+      "row 1, column 1",
+      '"x"',
+      "between 1 and 4",
+    ]);
+  });
+
+  it("throws INVALID_CELL_VALUE for digits outside the inferred board range", () => {
+    expectGetPuzzleError("5000000000000000", PuzzleValidationErrorCode.INVALID_CELL_VALUE, [
+      "row 1, column 1",
+      '"5"',
+      "between 1 and 4",
+    ]);
+  });
+
+  it("throws DUPLICATE_VALUE_IN_ROW for repeated row values", () => {
+    expectGetPuzzleError("1010000000000000", PuzzleValidationErrorCode.DUPLICATE_VALUE_IN_ROW, [
+      "Duplicate value 1",
+      "row 1",
+    ]);
+  });
+
+  it("throws DUPLICATE_VALUE_IN_COLUMN for repeated column values", () => {
+    expectGetPuzzleError(
+      "1000000010000000",
+      PuzzleValidationErrorCode.DUPLICATE_VALUE_IN_COLUMN,
+      ["Duplicate value 1", "column 1"]
+    );
+  });
+
+  it("throws DUPLICATE_VALUE_IN_BOX for repeated box values", () => {
+    expectGetPuzzleError("1000010000000000", PuzzleValidationErrorCode.DUPLICATE_VALUE_IN_BOX, [
+      "Duplicate value 1",
+      "row 1, column 1",
+    ]);
+  });
+});
 
 describe("getPuzzleSolution", () => {
   it.each(SUPPORTED_BOARD_SIZES.map((size: SupportedBoardSize) => [size, size] as const))(
@@ -331,7 +474,7 @@ describe("getPuzzleSolution", () => {
   });
 
   it("throws BOARD_ALREADY_SOLVED for solved puzzles", () => {
-    const puzzle = createPuzzleFromNumbers(SOLVED_TEST_BOARDS[4]);
+    const puzzle = getPuzzle(createPuzzleStringFromNumbers(SOLVED_TEST_BOARDS[4]));
 
     expectPuzzleError(puzzle, PuzzleValidationErrorCode.BOARD_ALREADY_SOLVED, [
       "already solved",
@@ -339,12 +482,12 @@ describe("getPuzzleSolution", () => {
   });
 
   it("throws UNSOLVABLE for puzzles with no valid solutions", () => {
-    const puzzle = createPuzzleFromNumbers([
+    const puzzle = getPuzzle(createPuzzleStringFromNumbers([
       [0, 0, 1, 4],
       [3, 0, 0, 0],
       [0, 0, 0, 0],
       [0, 0, 0, 0],
-    ]);
+    ]));
 
     expectPuzzleError(puzzle, PuzzleValidationErrorCode.UNSOLVABLE, [
       "no valid solution",
@@ -363,7 +506,9 @@ describe("getPuzzleSolution", () => {
     expect(ADDITIONAL_SOLVABLE_PUZZLES.length).toBe(ADDITIONAL_SOLVABLE_SOLUTIONS.length);
 
     for (let index = 0; index < ADDITIONAL_SOLVABLE_PUZZLES.length; index += 1) {
-      const puzzle = createPuzzleFromNumbers(ADDITIONAL_SOLVABLE_PUZZLES[index]);
+      const puzzle = getPuzzle(
+        createPuzzleStringFromNumbers(ADDITIONAL_SOLVABLE_PUZZLES[index])
+      );
       const expectedSolution = ADDITIONAL_SOLVABLE_SOLUTIONS[index];
       expect(getPuzzleSolution(puzzle)).toEqual(expectedSolution);
     }

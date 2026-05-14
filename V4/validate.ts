@@ -24,7 +24,7 @@ export enum PuzzleValidationErrorCode {
 }
 
 /**
- * Error type thrown by `getPuzzleSolution` for validation and solving failures.
+ * Error type thrown by validation and solving functions for user-facing failures.
  */
 export class PuzzleValidationError extends Error {
   public readonly code: PuzzleValidationErrorCode;
@@ -38,6 +38,30 @@ export class PuzzleValidationError extends Error {
     this.name = "PuzzleValidationError";
     Object.setPrototypeOf(this, PuzzleValidationError.prototype);
   }
+}
+
+/**
+ * Parses a compact puzzle string into a fresh `CellProps[][]`.
+ *
+ * The board size is inferred from string length. A `0` creates an empty note cell,
+ * and every placed digit creates a given cell.
+ */
+export function getPuzzle(puzzle: string): CellProps[][] {
+  const size: number = getPuzzleStringSize(puzzle);
+
+  if (!isSupportedBoardSize(size)) {
+    throw new PuzzleValidationError(
+      PuzzleValidationErrorCode.UNSUPPORTED_BOARD_SIZE,
+      `Unsupported board size ${size}. Supported sizes are ${SUPPORTED_BOARD_SIZES.join(", ")}.`
+    );
+  }
+
+  const layout: BoxLayout = getBoxLayout(size);
+  const values: number[][] = parsePuzzleStringValues(puzzle, size);
+
+  assertNoDuplicateValues(values, size, layout);
+
+  return valuesToPuzzle(values);
 }
 
 /**
@@ -125,6 +149,36 @@ function getPuzzleSize(puzzle: CellProps[][]): number {
 }
 
 /**
+ * Validates compact string shape and returns the inferred square board size.
+ */
+function getPuzzleStringSize(puzzle: string): number {
+  if (typeof puzzle !== "string") {
+    throw new PuzzleValidationError(
+      PuzzleValidationErrorCode.INVALID_PUZZLE_SHAPE,
+      `Puzzle string must be a string of cell values. Received ${formatValue(puzzle)}.`
+    );
+  }
+
+  if (puzzle.length === 0) {
+    throw new PuzzleValidationError(
+      PuzzleValidationErrorCode.INVALID_PUZZLE_SHAPE,
+      "Puzzle string must not be empty."
+    );
+  }
+
+  const size: number = Math.sqrt(puzzle.length);
+
+  if (!Number.isInteger(size)) {
+    throw new PuzzleValidationError(
+      PuzzleValidationErrorCode.INVALID_PUZZLE_SHAPE,
+      `Puzzle string length ${puzzle.length} does not describe a square board.`
+    );
+  }
+
+  return size;
+}
+
+/**
  * Narrows an arbitrary square puzzle size to the supported board-size union.
  */
 function isSupportedBoardSize(size: number): size is SupportedBoardSize {
@@ -136,6 +190,70 @@ function isSupportedBoardSize(size: number): size is SupportedBoardSize {
  */
 function getBoxLayout(size: SupportedBoardSize): BoxLayout {
   return BOX_LAYOUTS[size];
+}
+
+/**
+ * Converts a compact puzzle string into numeric cell values after validating each character.
+ */
+function parsePuzzleStringValues(puzzle: string, size: number): number[][] {
+  return Array.from({ length: size }, (_: undefined, rowIndex: number) =>
+    Array.from({ length: size }, (_inner: undefined, columnIndex: number) =>
+      parsePuzzleStringCharacter(
+        puzzle[rowIndex * size + columnIndex],
+        size,
+        rowIndex,
+        columnIndex
+      )
+    )
+  );
+}
+
+/**
+ * Validates one compact puzzle character and converts it to a numeric value.
+ */
+function parsePuzzleStringCharacter(
+  character: string,
+  size: number,
+  rowIndex: number,
+  columnIndex: number
+): number {
+  const value: number = Number(character);
+
+  if (!isDigit(character) || !isIntegerInRange(value, 0, size)) {
+    throw new PuzzleValidationError(
+      PuzzleValidationErrorCode.INVALID_CELL_VALUE,
+      `Invalid puzzle string value at row ${rowIndex + 1}, column ${
+        columnIndex + 1
+      }: ${formatValue(character)}. Expected "0" for empty or a digit between 1 and ${size}.`
+    );
+  }
+
+  return value;
+}
+
+/**
+ * Returns true when the string is exactly one decimal digit.
+ */
+function isDigit(character: string): boolean {
+  return character.length === 1 && character >= "0" && character <= "9";
+}
+
+/**
+ * Converts numeric values into public puzzle cells while preserving empty cells as notes.
+ */
+function valuesToPuzzle(values: number[][]): CellProps[][] {
+  return values.map((row: number[]) => row.map(valueToCell));
+}
+
+/**
+ * Converts one numeric value into the matching public cell shape.
+ */
+function valueToCell(value: number): CellProps {
+  if (value === 0) {
+    return { type: "note", notes: [] };
+  }
+
+  return { type: "given", value };
 }
 
 /**
