@@ -620,11 +620,11 @@ describe("getPuzzleSolution", () => {
   });
 
   it.each([
-    { value: undefined, detail: "undefined" },
-    { value: 0, detail: "0" },
-    { value: 1.5, detail: "1.5" },
-    { value: 5, detail: "5" },
-  ])("throws INVALID_CELL_VALUE for bad placed value $detail", ({ value, detail }) => {
+    ["undefined", undefined],
+    ["0", 0],
+    ["1.5", 1.5],
+    ["5", 5],
+  ])("throws INVALID_CELL_VALUE for bad placed value %s", (detail, value) => {
     const puzzle = createEmptyPuzzle(4);
     const runtimePuzzle: RuntimeTestValue[][] = puzzle;
     runtimePuzzle[0][0] = { type: "given", value };
@@ -637,12 +637,12 @@ describe("getPuzzleSolution", () => {
   });
 
   it.each([
-    { notes: "1,2", detail: '"1,2"' },
-    { notes: [1, 1], detail: "[1,1]" },
-    { notes: [0], detail: "[0]" },
-    { notes: [1.5], detail: "[1.5]" },
-    { notes: [5], detail: "[5]" },
-  ])("throws INVALID_NOTE_VALUE for bad notes $detail", ({ notes, detail }) => {
+    ['"1,2"', "1,2"],
+    ["[1,1]", [1, 1]],
+    ["[0]", [0]],
+    ["[1.5]", [1.5]],
+    ["[5]", [5]],
+  ])("throws INVALID_NOTE_VALUE for bad notes %s", (detail, notes) => {
     const puzzle = createEmptyPuzzle(4);
     const runtimePuzzle: RuntimeTestValue[][] = puzzle;
     runtimePuzzle[0][0] = { type: "note", notes };
