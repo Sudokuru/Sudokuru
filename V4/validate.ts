@@ -2,6 +2,7 @@ import {
   BOX_LAYOUTS,
   BoxLayout,
   CellProps,
+  SudokuValue,
   SUPPORTED_BOARD_SIZES,
   SupportedBoardSize,
 } from "./Types";
@@ -41,6 +42,23 @@ export class PuzzleValidationError extends Error {
 }
 
 /**
+ * Converts a numeric puzzle board into the compact public puzzle string format.
+ *
+ * The board must be a supported square matrix. A `0` is written as an empty cell,
+ * and every placed value is written as its digit.
+ */
+export function getPuzzleString(puzzle: SudokuValue[][]): string {
+  const size: number = getPuzzleSize(puzzle);
+  const layout: BoxLayout = getSupportedBoxLayout(size);
+  const puzzleString: string = stringifyPuzzleValues(puzzle, size);
+  const values: number[][] = parsePuzzleStringValues(puzzleString, size);
+
+  assertNoDuplicateValues(values, size, layout);
+
+  return puzzleString;
+}
+
+/**
  * Parses a compact puzzle string into a fresh `CellProps[][]`.
  *
  * The board size is inferred from string length. A `0` creates an empty note cell,
@@ -48,15 +66,7 @@ export class PuzzleValidationError extends Error {
  */
 export function getPuzzle(puzzle: string): CellProps[][] {
   const size: number = getPuzzleStringSize(puzzle);
-
-  if (!isSupportedBoardSize(size)) {
-    throw new PuzzleValidationError(
-      PuzzleValidationErrorCode.UNSUPPORTED_BOARD_SIZE,
-      `Unsupported board size ${size}. Supported sizes are ${SUPPORTED_BOARD_SIZES.join(", ")}.`
-    );
-  }
-
-  const layout: BoxLayout = getBoxLayout(size);
+  const layout: BoxLayout = getSupportedBoxLayout(size);
   const values: number[][] = parsePuzzleStringValues(puzzle, size);
 
   assertNoDuplicateValues(values, size, layout);
@@ -72,15 +82,7 @@ export function getPuzzle(puzzle: string): CellProps[][] {
  */
 export function getPuzzleSolution(puzzle: CellProps[][]): number[][] {
   const size: number = getPuzzleSize(puzzle);
-
-  if (!isSupportedBoardSize(size)) {
-    throw new PuzzleValidationError(
-      PuzzleValidationErrorCode.UNSUPPORTED_BOARD_SIZE,
-      `Unsupported board size ${size}. Supported sizes are ${SUPPORTED_BOARD_SIZES.join(", ")}.`
-    );
-  }
-
-  const layout: BoxLayout = getBoxLayout(size);
+  const layout: BoxLayout = getSupportedBoxLayout(size);
   const normalizedPuzzle: number[][] = normalizePuzzle(puzzle, size);
 
   assertNoDuplicateValues(normalizedPuzzle, size, layout);
@@ -117,7 +119,7 @@ export function getPuzzleSolution(puzzle: CellProps[][]): number[][] {
 /**
  * Validates that the input is a non-empty square matrix and returns its size.
  */
-function getPuzzleSize(puzzle: CellProps[][]): number {
+function getPuzzleSize(puzzle: (CellProps | SudokuValue)[][]): number {
   if (!Array.isArray(puzzle) || puzzle.length === 0) {
     throw new PuzzleValidationError(
       PuzzleValidationErrorCode.INVALID_PUZZLE_SHAPE,
@@ -128,7 +130,7 @@ function getPuzzleSize(puzzle: CellProps[][]): number {
   const size: number = puzzle.length;
 
   for (let rowIndex: number = 0; rowIndex < size; rowIndex += 1) {
-    const row: CellProps[] = puzzle[rowIndex];
+    const row: (CellProps | SudokuValue)[] = puzzle[rowIndex];
 
     if (!Array.isArray(row)) {
       throw new PuzzleValidationError(
@@ -186,10 +188,60 @@ function isSupportedBoardSize(size: number): size is SupportedBoardSize {
 }
 
 /**
+ * Validates support for a square board size and returns the matching box layout.
+ */
+function getSupportedBoxLayout(size: number): BoxLayout {
+  if (!isSupportedBoardSize(size)) {
+    throw new PuzzleValidationError(
+      PuzzleValidationErrorCode.UNSUPPORTED_BOARD_SIZE,
+      `Unsupported board size ${size}. Supported sizes are ${SUPPORTED_BOARD_SIZES.join(", ")}.`
+    );
+  }
+
+  return getBoxLayout(size);
+}
+
+/**
  * Looks up the canonical box layout for a supported board size.
  */
 function getBoxLayout(size: SupportedBoardSize): BoxLayout {
   return BOX_LAYOUTS[size];
+}
+
+/**
+ * Converts numeric puzzle values into a compact string with one character per cell.
+ */
+function stringifyPuzzleValues(puzzle: SudokuValue[][], size: number): string {
+  return puzzle
+    .map((row: SudokuValue[], rowIndex: number) =>
+      Array.from({ length: size }, (_: undefined, columnIndex: number) =>
+        stringifyPuzzleValue(row[columnIndex], size, rowIndex, columnIndex)
+      ).join("")
+    )
+    .join("");
+}
+
+/**
+ * Converts one numeric puzzle value to its compact string character.
+ */
+function stringifyPuzzleValue(
+  value: SudokuValue,
+  size: number,
+  rowIndex: number,
+  columnIndex: number
+): string {
+  const valueString: string = String(value);
+
+  if (valueString.length !== 1) {
+    throw new PuzzleValidationError(
+      PuzzleValidationErrorCode.INVALID_CELL_VALUE,
+      `Invalid puzzle value at row ${rowIndex + 1}, column ${
+        columnIndex + 1
+      }: ${formatValue(value)}. Expected an integer between 0 and ${size}.`
+    );
+  }
+
+  return valueString;
 }
 
 /**
