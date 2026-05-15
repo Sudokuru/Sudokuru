@@ -226,38 +226,22 @@ function stringifyPuzzleValues(puzzle: SudokuValue[][], size: number): string {
  */
 function parsePuzzleStringValues(puzzle: string, size: number): number[][] {
   return Array.from({ length: size }, (_: undefined, rowIndex: number) =>
-    Array.from({ length: size }, (_inner: undefined, columnIndex: number) =>
-      parsePuzzleStringCharacter(
-        puzzle[rowIndex * size + columnIndex],
-        size,
-        rowIndex,
-        columnIndex
-      )
-    )
+    Array.from({ length: size }, (_inner: undefined, columnIndex: number) => {
+      const character: string = puzzle[rowIndex * size + columnIndex];
+      const value: number = Number(character);
+
+      if (!isIntegerInRange(value, 0, size)) {
+        throw new PuzzleValidationError(
+          PuzzleValidationErrorCode.INVALID_CELL_VALUE,
+          `Invalid puzzle string value at row ${rowIndex + 1}, column ${
+            columnIndex + 1
+          }: ${formatValue(character)}. Expected "0" for empty or a digit between 1 and ${size}.`
+        );
+      }
+
+      return value;
+    })
   );
-}
-
-/**
- * Validates one compact puzzle character and converts it to a numeric value.
- */
-function parsePuzzleStringCharacter(
-  character: string,
-  size: number,
-  rowIndex: number,
-  columnIndex: number
-): number {
-  const value: number = Number(character);
-
-  if (!isIntegerInRange(value, 0, size)) {
-    throw new PuzzleValidationError(
-      PuzzleValidationErrorCode.INVALID_CELL_VALUE,
-      `Invalid puzzle string value at row ${rowIndex + 1}, column ${
-        columnIndex + 1
-      }: ${formatValue(character)}. Expected "0" for empty or a digit between 1 and ${size}.`
-    );
-  }
-
-  return value;
 }
 
 /**
