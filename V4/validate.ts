@@ -248,7 +248,7 @@ function parsePuzzleStringCharacter(
 ): number {
   const value: number = Number(character);
 
-  if (!isDigit(character) || !isIntegerInRange(value, 0, size)) {
+  if (!isIntegerInRange(value, 0, size)) {
     throw new PuzzleValidationError(
       PuzzleValidationErrorCode.INVALID_CELL_VALUE,
       `Invalid puzzle string value at row ${rowIndex + 1}, column ${
@@ -258,13 +258,6 @@ function parsePuzzleStringCharacter(
   }
 
   return value;
-}
-
-/**
- * Returns true when the string is exactly one decimal digit.
- */
-function isDigit(character: string): boolean {
-  return character.length === 1 && character >= "0" && character <= "9";
 }
 
 /**
