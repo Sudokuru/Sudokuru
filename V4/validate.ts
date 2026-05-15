@@ -123,7 +123,7 @@ function getPuzzleSize(puzzle: (CellProps | SudokuValue)[][]): number {
   if (!Array.isArray(puzzle) || puzzle.length === 0) {
     throw new PuzzleValidationError(
       PuzzleValidationErrorCode.INVALID_PUZZLE_SHAPE,
-      "Puzzle must be a non-empty square matrix of CellProps rows."
+      "Puzzle must be a non-empty square matrix of rows."
     );
   }
 
@@ -135,14 +135,14 @@ function getPuzzleSize(puzzle: (CellProps | SudokuValue)[][]): number {
     if (!Array.isArray(row)) {
       throw new PuzzleValidationError(
         PuzzleValidationErrorCode.INVALID_PUZZLE_SHAPE,
-        `Puzzle must be a non-empty square matrix of CellProps rows. Row ${rowIndex + 1} is not an array.`
+        `Puzzle must be a non-empty square matrix of rows. Row ${rowIndex + 1} is not an array.`
       );
     }
 
     if (row.length !== size) {
       throw new PuzzleValidationError(
         PuzzleValidationErrorCode.INVALID_PUZZLE_SHAPE,
-        `Puzzle must be a non-empty square matrix of CellProps rows. Row ${rowIndex + 1} has length ${row.length} instead of ${size}.`
+        `Puzzle must be a non-empty square matrix of rows. Row ${rowIndex + 1} has length ${row.length} instead of ${size}.`
       );
     }
   }
