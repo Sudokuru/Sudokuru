@@ -1,4 +1,4 @@
-# Sudokuru 4.0 Rebuild Plan Revision 1.2
+# Sudokuru 4.0 Rebuild Plan Revision 1.3
 
 ## TL;DR
 
@@ -12,6 +12,8 @@ Rebuild the `Sudokuru` package (v4.0) as a **modular, functional, immutable** Su
 
 ## Changelog
 
+* 1.3
+  * Added getPuzzleString helper function to validation module
 * 1.2
   * Added the V4 typed validation/solving error contract via `PuzzleValidationError`
   * Documented supported board sizes and canonical box layouts for validation/solving
@@ -188,6 +190,19 @@ A stage may include any of the following (each optional):
 
 ---
 
+### `getPuzzleString`
+
+**Input**
+
+* `puzzle: number[][]`
+
+**Output**
+
+* `puzzle: string`
+* or descriptive validation error
+
+---
+
 ### `getPuzzleSolution`
 
 **Input**
@@ -324,6 +339,11 @@ Return an array of hints representing every possible application of the requeste
 
 ### Validation / Solving Module
 
+* `getPuzzleString(puzzle)`
+
+  * validate supported numeric grid size (`1x1`, `2x2`, `4x4`, `6x6`, `8x8`, `9x9`)
+  * validate values and duplicates
+  * return compact puzzle string or descriptive error
 * `getPuzzle(puzzleString)`
 
   * infer supported grid size (`1x1`, `2x2`, `4x4`, `6x6`, `8x8`, `9x9`; test multiple sizes)
@@ -537,7 +557,7 @@ For each strategy:
 | ☑      | `Types.ts`                                   | Exports stable public types; Frontend can import without internals | https://github.com/Sudokuru/Sudokuru/pull/105 |
 | ☑      | Validation/Solving module                    | Supports multiple grid sizes; descriptive errors; tests            | https://github.com/Sudokuru/Sudokuru/pull/106 |
 | ☑      | `getPuzzleSolution`                          | Solves validated puzzle; returns `number[][]`; tests               | https://github.com/Sudokuru/Sudokuru/pull/106 |
-| ☐      | `getPuzzle`                                  | Parses puzzle string; returns `CellProps[][]`; tests               | —       |
+| ☑      | `getPuzzle`                                  | Parses puzzle string; returns `CellProps[][]`; tests               | https://github.com/Sudokuru/Sudokuru/pull/107 |
 | ☐      | Difficulty module                            | `getRawDifficulty` returns stable number; tests                    | —       |
 | ☐      | `getGameDifficulty` (placeholder ok)         | Returns `GameDifficulty`; boundaries documented                    | —       |
 | ☐      | Wrong value hint docs                        | Example hint stages + screenshot in Frontend                       | —       |
