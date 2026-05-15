@@ -213,35 +213,12 @@ function getBoxLayout(size: SupportedBoardSize): BoxLayout {
  */
 function stringifyPuzzleValues(puzzle: SudokuValue[][], size: number): string {
   return puzzle
-    .map((row: SudokuValue[], rowIndex: number) =>
+    .map((row: SudokuValue[], _rowIndex: number) =>
       Array.from({ length: size }, (_: undefined, columnIndex: number) =>
-        stringifyPuzzleValue(row[columnIndex], size, rowIndex, columnIndex)
+        String(row[columnIndex])
       ).join("")
     )
     .join("");
-}
-
-/**
- * Converts one numeric puzzle value to its compact string character.
- */
-function stringifyPuzzleValue(
-  value: SudokuValue,
-  size: number,
-  rowIndex: number,
-  columnIndex: number
-): string {
-  const valueString: string = String(value);
-
-  if (valueString.length !== 1) {
-    throw new PuzzleValidationError(
-      PuzzleValidationErrorCode.INVALID_CELL_VALUE,
-      `Invalid puzzle value at row ${rowIndex + 1}, column ${
-        columnIndex + 1
-      }: ${formatValue(value)}. Expected an integer between 0 and ${size}.`
-    );
-  }
-
-  return valueString;
 }
 
 /**

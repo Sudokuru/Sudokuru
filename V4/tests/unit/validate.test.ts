@@ -298,8 +298,8 @@ describe("getPuzzleString", () => {
 
     expectGetPuzzleStringError(puzzle, PuzzleValidationErrorCode.INVALID_CELL_VALUE, [
       "row 2, column 3",
-      "undefined",
-      "between 0 and 4",
+      '"u"',
+      "between 1 and 4",
     ]);
   });
 
