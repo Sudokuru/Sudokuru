@@ -15,3 +15,8 @@ export type BoardWithDifficulty = {
   board: SudokuValue[][];
   difficulty: number;
 };
+
+export type BoardStringWithDifficulty = {
+  board: string;
+  difficulty: number;
+};
