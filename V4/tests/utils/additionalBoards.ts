@@ -1,5 +1,5 @@
 import { SudokuValue } from "../../Types";
-import type { BoardWithDependencyScore, BoardWithRefutationScore } from "./TestTypes";
+import type { BoardWithDependencyScore, BoardWithDifficulty, BoardWithRefutationScore } from "./TestTypes";
 
 /**
  * 9x9 additional test boards copied from historical test resources and
@@ -345,6 +345,21 @@ export const ALL_ADDITIONAL_BOARDS_WITH_REFUTATION_SCORES: BoardWithRefutationSc
   { board: ADDITIONAL_TEST_BOARDS_BY_NAME.POINTING_PAIR, solution: ADDITIONAL_TEST_BOARDS_BY_NAME.POINTING_PAIR_SOLUTION, refutationScore: 59 },
   { board: ADDITIONAL_TEST_BOARDS_BY_NAME.MULTIPLE_SOLUTIONS, solution: ADDITIONAL_TEST_BOARDS_BY_NAME.MULTIPLE_SOLUTIONS_REFUTATION_SOLUTION, refutationScore: 58 },
   { board: ADDITIONAL_TEST_BOARDS_BY_NAME.HIDDEN_SINGLE_DRILL, solution: ADDITIONAL_TEST_BOARDS_BY_NAME.HIDDEN_SINGLE_DRILL_SOLUTION, refutationScore: 56 },
+];
+
+/** Additional boards that can construct Board objects, paired with hardcoded Board.getDifficulty values. */
+export const ALL_ADDITIONAL_BOARDS_WITH_DIFFICULTIES: BoardWithDifficulty[] = [
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.SINGLE_OBVIOUS_SINGLE, difficulty: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ONLY_OBVIOUS_SINGLES, difficulty: -6930 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_HIDDEN_SINGLES, difficulty: -3707 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_COLUMN_BOX_HIDDEN_SINGLES, difficulty: 66998817 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_OBVIOUS_SOLUTION, difficulty: -15295 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.COLUMN_OBVIOUS_PAIR, difficulty: 57998291 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.BOX_OBVIOUS_PAIR, difficulty: 76998467 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.OBVIOUS_TRIPLET, difficulty: 48000000 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.OBVIOUS_OCTUPLET, difficulty: 77997634 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.POINTING_PAIR, difficulty: 59000000 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.HIDDEN_SINGLE_DRILL, difficulty: 55998952 },
 ];
 
 /**

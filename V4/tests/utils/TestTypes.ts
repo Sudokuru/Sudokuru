@@ -10,3 +10,8 @@ export type BoardWithRefutationScore = {
   solution: SudokuValue[][];
   refutationScore: number;
 };
+
+export type BoardWithDifficulty = {
+  board: SudokuValue[][];
+  difficulty: number;
+};
