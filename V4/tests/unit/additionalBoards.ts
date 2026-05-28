@@ -1,4 +1,5 @@
 import { SudokuValue } from "../../Types";
+import type { BoardWithDependencyScore } from "../utils/TestTypes";
 
 /**
  * 9x9 additional test boards copied from historical test resources and
@@ -261,6 +262,31 @@ export const ALL_ADDITIONAL_BOARDS: SudokuValue[][][] = [
   ADDITIONAL_TEST_BOARDS_BY_NAME.POINTING_PAIR,
   ADDITIONAL_TEST_BOARDS_BY_NAME.MULTIPLE_SOLUTIONS,
   ADDITIONAL_TEST_BOARDS_BY_NAME.HIDDEN_SINGLE_DRILL,
+];
+
+/** All additional boards paired with hardcoded Dependency.getDependencyScore values. */
+export const ALL_ADDITIONAL_BOARDS_WITH_DEPENDENCY_SCORES: BoardWithDependencyScore[] = [
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.SINGLE_OBVIOUS_SINGLE, dependencyScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.SINGLE_OBVIOUS_SINGLE_SOLUTION, dependencyScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ONLY_OBVIOUS_SINGLES, dependencyScore: -10 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ONLY_OBVIOUS_SINGLES_SOLUTION, dependencyScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_HIDDEN_SINGLES, dependencyScore: -7 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_HIDDEN_SINGLES_SOLUTION, dependencyScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_COLUMN_BOX_HIDDEN_SINGLES, dependencyScore: -2 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_COLUMN_BOX_HIDDEN_SINGLES_SOLUTION, dependencyScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_OBVIOUS_SOLUTION, dependencyScore: -2 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_OBVIOUS_PAIR_SOLUTION, dependencyScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.COLUMN_OBVIOUS_PAIR, dependencyScore: -2 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.COLUMN_OBVIOUS_PAIR_SOLUTION, dependencyScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.BOX_OBVIOUS_PAIR, dependencyScore: -3 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.BOX_OBVIOUS_PAIR_SOLUTION, dependencyScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.OBVIOUS_TRIPLET, dependencyScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.OBVIOUS_TRIPLET_SOLUTION, dependencyScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.OBVIOUS_OCTUPLET, dependencyScore: -4 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.OBVIOUS_OCTUPLET_SOLUTION, dependencyScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.POINTING_PAIR, dependencyScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.MULTIPLE_SOLUTIONS, dependencyScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.HIDDEN_SINGLE_DRILL, dependencyScore: -1 },
 ];
 
 /**
