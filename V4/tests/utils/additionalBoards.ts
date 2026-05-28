@@ -1,5 +1,5 @@
 import { SudokuValue } from "../../Types";
-import type { BoardWithDependencyScore } from "../utils/TestTypes";
+import type { BoardWithDependencyScore } from "./TestTypes";
 
 /**
  * 9x9 additional test boards copied from historical test resources and

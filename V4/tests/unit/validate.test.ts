@@ -16,13 +16,13 @@ import {
   SINGLE_NOTE_PATCH_BY_SIZE,
   SOLVED_TEST_BOARDS,
   TestBoardCellPatch,
-} from "./testBoards";
+} from "../utils/testBoards";
 import {
   ALL_ADDITIONAL_BOARDS,
   ALL_ADDITIONAL_SOLUTIONS,
   ADDITIONAL_SOLVABLE_PUZZLES,
   ADDITIONAL_SOLVABLE_SOLUTIONS,
-} from "./additionalBoards";
+} from "../utils/additionalBoards";
 
 /**
  * Explicit runtime fixture type for values that intentionally violate CellProps.
