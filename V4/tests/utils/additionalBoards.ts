@@ -1,4 +1,5 @@
 import { SudokuValue } from "../../Types";
+import type { BoardWithDependencyScore, BoardWithDifficulty, BoardWithRefutationScore } from "./TestTypes";
 
 /**
  * 9x9 additional test boards copied from historical test resources and
@@ -214,6 +215,17 @@ export const ADDITIONAL_TEST_BOARDS_BY_NAME: Record<string, SudokuValue[][]> = {
     [0, 1, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 2, 8, 4],
   ],
+  POINTING_PAIR_SOLUTION:   [
+    [2, 6, 9, 3, 7, 8, 4, 1, 5],
+    [5, 8, 1, 4, 2, 9, 7, 6, 3],
+    [4, 7, 3, 5, 6, 1, 9, 2, 8],
+    [1, 3, 5, 9, 8, 4, 6, 7, 2],
+    [7, 2, 8, 6, 1, 3, 5, 4, 9],
+    [9, 4, 6, 2, 5, 7, 8, 3, 1],
+    [6, 9, 4, 8, 3, 2, 1, 5, 7],
+    [8, 1, 2, 7, 4, 5, 3, 9, 6],
+    [3, 5, 7, 1, 9, 6, 2, 8, 4],
+  ],
   MULTIPLE_SOLUTIONS:   [
     [0, 2, 3, 0, 7, 0, 0, 0, 0],
     [0, 5, 6, 0, 0, 2, 3, 0, 1],
@@ -225,6 +237,17 @@ export const ADDITIONAL_TEST_BOARDS_BY_NAME: Record<string, SudokuValue[][]> = {
     [0, 9, 5, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 2, 0, 0, 0, 0],
   ],
+  MULTIPLE_SOLUTIONS_REFUTATION_SOLUTION:   [
+    [1, 2, 3, 5, 7, 4, 6, 9, 8],
+    [4, 5, 6, 8, 9, 2, 3, 7, 1],
+    [7, 8, 9, 1, 3, 6, 2, 5, 4],
+    [6, 4, 2, 9, 5, 7, 1, 8, 3],
+    [5, 1, 7, 2, 8, 3, 9, 4, 6],
+    [9, 3, 8, 4, 6, 1, 5, 2, 7],
+    [2, 7, 1, 6, 4, 9, 8, 3, 5],
+    [3, 9, 5, 7, 1, 8, 4, 6, 2],
+    [8, 6, 4, 3, 2, 5, 7, 1, 9],
+  ],
   HIDDEN_SINGLE_DRILL:   [
     [0, 0, 0, 0, 0, 3, 2, 0, 6],
     [1, 6, 8, 0, 2, 7, 0, 5, 3],
@@ -235,6 +258,17 @@ export const ADDITIONAL_TEST_BOARDS_BY_NAME: Record<string, SudokuValue[][]> = {
     [6, 8, 0, 0, 0, 0, 3, 9, 5],
     [3, 0, 9, 5, 0, 0, 8, 0, 0],
     [0, 0, 5, 0, 3, 8, 1, 6, 0],
+  ],
+  HIDDEN_SINGLE_DRILL_SOLUTION:   [
+    [5, 4, 7, 8, 9, 3, 2, 1, 6],
+    [1, 6, 8, 4, 2, 7, 9, 5, 3],
+    [2, 9, 3, 6, 1, 5, 4, 8, 7],
+    [9, 3, 2, 1, 5, 6, 7, 4, 8],
+    [8, 5, 1, 7, 4, 2, 6, 3, 9],
+    [4, 7, 6, 3, 8, 9, 5, 2, 1],
+    [6, 8, 4, 2, 7, 1, 3, 9, 5],
+    [3, 1, 9, 5, 6, 4, 8, 7, 2],
+    [7, 2, 5, 9, 3, 8, 1, 6, 4],
   ],
 };
 
@@ -261,6 +295,71 @@ export const ALL_ADDITIONAL_BOARDS: SudokuValue[][][] = [
   ADDITIONAL_TEST_BOARDS_BY_NAME.POINTING_PAIR,
   ADDITIONAL_TEST_BOARDS_BY_NAME.MULTIPLE_SOLUTIONS,
   ADDITIONAL_TEST_BOARDS_BY_NAME.HIDDEN_SINGLE_DRILL,
+];
+
+/** All additional boards paired with hardcoded Dependency.getDependencyScore values. */
+export const ALL_ADDITIONAL_BOARDS_WITH_DEPENDENCY_SCORES: BoardWithDependencyScore[] = [
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.SINGLE_OBVIOUS_SINGLE, dependencyScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.SINGLE_OBVIOUS_SINGLE_SOLUTION, dependencyScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ONLY_OBVIOUS_SINGLES, dependencyScore: -10 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ONLY_OBVIOUS_SINGLES_SOLUTION, dependencyScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_HIDDEN_SINGLES, dependencyScore: -7 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_HIDDEN_SINGLES_SOLUTION, dependencyScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_COLUMN_BOX_HIDDEN_SINGLES, dependencyScore: -2 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_COLUMN_BOX_HIDDEN_SINGLES_SOLUTION, dependencyScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_OBVIOUS_SOLUTION, dependencyScore: -2 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_OBVIOUS_PAIR_SOLUTION, dependencyScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.COLUMN_OBVIOUS_PAIR, dependencyScore: -2 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.COLUMN_OBVIOUS_PAIR_SOLUTION, dependencyScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.BOX_OBVIOUS_PAIR, dependencyScore: -3 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.BOX_OBVIOUS_PAIR_SOLUTION, dependencyScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.OBVIOUS_TRIPLET, dependencyScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.OBVIOUS_TRIPLET_SOLUTION, dependencyScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.OBVIOUS_OCTUPLET, dependencyScore: -4 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.OBVIOUS_OCTUPLET_SOLUTION, dependencyScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.POINTING_PAIR, dependencyScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.MULTIPLE_SOLUTIONS, dependencyScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.HIDDEN_SINGLE_DRILL, dependencyScore: -1 },
+];
+
+/** All additional boards paired with hardcoded Refutation.getRefutationScore values. */
+export const ALL_ADDITIONAL_BOARDS_WITH_REFUTATION_SCORES: BoardWithRefutationScore[] = [
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.SINGLE_OBVIOUS_SINGLE, solution: ADDITIONAL_TEST_BOARDS_BY_NAME.SINGLE_OBVIOUS_SINGLE_SOLUTION, refutationScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.SINGLE_OBVIOUS_SINGLE_SOLUTION, solution: ADDITIONAL_TEST_BOARDS_BY_NAME.SINGLE_OBVIOUS_SINGLE_SOLUTION, refutationScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ONLY_OBVIOUS_SINGLES, solution: ADDITIONAL_TEST_BOARDS_BY_NAME.ONLY_OBVIOUS_SINGLES_SOLUTION, refutationScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ONLY_OBVIOUS_SINGLES_SOLUTION, solution: ADDITIONAL_TEST_BOARDS_BY_NAME.ONLY_OBVIOUS_SINGLES_SOLUTION, refutationScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_HIDDEN_SINGLES, solution: ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_HIDDEN_SINGLES_SOLUTION, refutationScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_HIDDEN_SINGLES_SOLUTION, solution: ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_HIDDEN_SINGLES_SOLUTION, refutationScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_COLUMN_BOX_HIDDEN_SINGLES, solution: ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_COLUMN_BOX_HIDDEN_SINGLES_SOLUTION, refutationScore: 67 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_COLUMN_BOX_HIDDEN_SINGLES_SOLUTION, solution: ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_COLUMN_BOX_HIDDEN_SINGLES_SOLUTION, refutationScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_OBVIOUS_SOLUTION, solution: ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_OBVIOUS_PAIR_SOLUTION, refutationScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_OBVIOUS_PAIR_SOLUTION, solution: ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_OBVIOUS_PAIR_SOLUTION, refutationScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.COLUMN_OBVIOUS_PAIR, solution: ADDITIONAL_TEST_BOARDS_BY_NAME.COLUMN_OBVIOUS_PAIR_SOLUTION, refutationScore: 58 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.COLUMN_OBVIOUS_PAIR_SOLUTION, solution: ADDITIONAL_TEST_BOARDS_BY_NAME.COLUMN_OBVIOUS_PAIR_SOLUTION, refutationScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.BOX_OBVIOUS_PAIR, solution: ADDITIONAL_TEST_BOARDS_BY_NAME.BOX_OBVIOUS_PAIR_SOLUTION, refutationScore: 77 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.BOX_OBVIOUS_PAIR_SOLUTION, solution: ADDITIONAL_TEST_BOARDS_BY_NAME.BOX_OBVIOUS_PAIR_SOLUTION, refutationScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.OBVIOUS_TRIPLET, solution: ADDITIONAL_TEST_BOARDS_BY_NAME.OBVIOUS_TRIPLET_SOLUTION, refutationScore: 48 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.OBVIOUS_TRIPLET_SOLUTION, solution: ADDITIONAL_TEST_BOARDS_BY_NAME.OBVIOUS_TRIPLET_SOLUTION, refutationScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.OBVIOUS_OCTUPLET, solution: ADDITIONAL_TEST_BOARDS_BY_NAME.OBVIOUS_OCTUPLET_SOLUTION, refutationScore: 78 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.OBVIOUS_OCTUPLET_SOLUTION, solution: ADDITIONAL_TEST_BOARDS_BY_NAME.OBVIOUS_OCTUPLET_SOLUTION, refutationScore: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.POINTING_PAIR, solution: ADDITIONAL_TEST_BOARDS_BY_NAME.POINTING_PAIR_SOLUTION, refutationScore: 59 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.MULTIPLE_SOLUTIONS, solution: ADDITIONAL_TEST_BOARDS_BY_NAME.MULTIPLE_SOLUTIONS_REFUTATION_SOLUTION, refutationScore: 58 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.HIDDEN_SINGLE_DRILL, solution: ADDITIONAL_TEST_BOARDS_BY_NAME.HIDDEN_SINGLE_DRILL_SOLUTION, refutationScore: 56 },
+];
+
+/** Additional boards that can construct Board objects, paired with hardcoded Board.getDifficulty values. */
+export const ALL_ADDITIONAL_BOARDS_WITH_DIFFICULTIES: BoardWithDifficulty[] = [
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.SINGLE_OBVIOUS_SINGLE, difficulty: 0 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ONLY_OBVIOUS_SINGLES, difficulty: -6930 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_HIDDEN_SINGLES, difficulty: -3707 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_COLUMN_BOX_HIDDEN_SINGLES, difficulty: 66998817 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_OBVIOUS_SOLUTION, difficulty: -15295 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.COLUMN_OBVIOUS_PAIR, difficulty: 57998291 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.BOX_OBVIOUS_PAIR, difficulty: 76998467 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.OBVIOUS_TRIPLET, difficulty: 48000000 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.OBVIOUS_OCTUPLET, difficulty: 77997634 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.POINTING_PAIR, difficulty: 59000000 },
+  { board: ADDITIONAL_TEST_BOARDS_BY_NAME.HIDDEN_SINGLE_DRILL, difficulty: 55998952 },
 ];
 
 /**
