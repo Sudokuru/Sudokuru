@@ -558,8 +558,6 @@ For each strategy:
 | ☑      | Validation/Solving module                    | Supports multiple grid sizes; descriptive errors; tests            | https://github.com/Sudokuru/Sudokuru/pull/106 |
 | ☑      | `getPuzzleSolution`                          | Solves validated puzzle; returns `number[][]`; tests               | https://github.com/Sudokuru/Sudokuru/pull/106 |
 | ☑      | `getPuzzle`                                  | Parses puzzle string; returns `CellProps[][]`; tests               | https://github.com/Sudokuru/Sudokuru/pull/107 |
-| ☐      | Difficulty module                            | `getRawDifficulty` returns stable number; tests                    | —       |
-| ☐      | `getGameDifficulty` (placeholder ok)         | Returns `GameDifficulty`; boundaries documented                    | —       |
 | ☐      | Wrong value hint docs                        | Example hint stages + screenshot in Frontend                       | —       |
 | ☐      | Amend notes hint docs                        | Example hint stages + screenshot in Frontend                       | —       |
 | ☐      | Obvious single docs                          | Example hint stages + screenshot in Frontend                       | —       |
@@ -570,6 +568,8 @@ For each strategy:
 | ☐      | `getHint`                                    | Deterministic; staged hints; strategy ordering; tests              | —       |
 | ☐      | `getAllHints`                                | Deterministic; uses strategy set; tests                            | —       |
 | ☐      | `applyHint`                                  | Pure; correct diffs; tests                                         | —       |
+| ☐      | Difficulty module                            | `getRawDifficulty` returns stable number; tests                    | —       |
+| ☐      | `getGameDifficulty` (placeholder ok)         | Returns `GameDifficulty`; boundaries documented                    | —       |
 | ☐      | `SudokuVision` interface                     | Documented and implemented                                         | —       |
 | ☐      | Queue-based SudokuVision impl                | Deterministic fallback scan; tests                                 | —       |
 | ☐      | `getGivensCount`                             | Correct count; tests                                               | —       |
