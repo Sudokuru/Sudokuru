@@ -6,11 +6,20 @@ state and return a staged hint that the Frontend can render directly.
 
 ## Source Fixture
 
-The example uses a standard 9x9 board from V4 test data:
+The examples use a standard 9x9 board from V4 test data:
 
 - Source: `ADDITIONAL_TEST_BOARDS_BY_NAME.ONLY_OBVIOUS_SINGLES`
+
+### Direct Row Conflict
+
 - User mistake: place `8` at `{ r: 0, c: 3 }`, which is row 1, column 4
 - Obvious conflict: the given `8` at `{ r: 0, c: 4 }`, in the same row
+
+### No Direct Conflict
+
+- User mistake: place `4` at `{ r: 1, c: 1 }`, which is row 2, column 2
+- No givens conflict: `4` is not currently present in that cell's row, column, or box
+- Verified against `ADDITIONAL_TEST_BOARDS_BY_NAME.ONLY_OBVIOUS_SINGLES_SOLUTION`; the correct value is intentionally omitted from this doc and hint text
 
 Cell locations use the V4 zero-indexed `{ r, c }` shape. User-facing text
 uses one-indexed row and column labels.
@@ -32,7 +41,7 @@ type WrongValueHint = Omit<Hint, "strategy"> & {
   strategy: "WRONG_VALUE";
 };
 
-const userWrongValue: ValueCellWithLocation = {
+const directConflictWrongValue: ValueCellWithLocation = {
   r: 0,
   c: 3,
   type: "value",
@@ -46,52 +55,100 @@ const conflictingGiven: ValueCellWithLocation = {
   value: 8,
 };
 
-const wrongValueHintStages: HintStage[] = [
+const noDirectConflictWrongValue: ValueCellWithLocation = {
+  r: 1,
+  c: 1,
+  type: "value",
+  value: 4,
+};
+
+const directConflictWrongValueHintStages: HintStage[] = [
   {
     highlightCells: [
-      { location: userWrongValue, highlightType: "removal" },
+      { location: directConflictWrongValue, highlightType: "removal" },
       { location: conflictingGiven, highlightType: "focus" },
     ],
     highlightValues: [
-      { location: userWrongValue, highlightType: "removal" },
+      { location: directConflictWrongValue, highlightType: "removal" },
       { location: conflictingGiven, highlightType: "focus" },
     ],
     text:
       "The 8 in row 1, column 4 conflicts with another 8 in the same row.",
   },
   {
-    removeValues: [userWrongValue],
+    removeValues: [directConflictWrongValue],
     highlightCells: [
-      { location: userWrongValue, highlightType: "removal" },
+      { location: directConflictWrongValue, highlightType: "removal" },
     ],
     highlightValues: [
-      { location: userWrongValue, highlightType: "removal" },
+      { location: directConflictWrongValue, highlightType: "removal" },
     ],
     text: "Remove the user-entered 8 from row 1, column 4.",
   },
 ];
 
-export const wrongValueHint: WrongValueHint = {
+const noDirectConflictWrongValueHintStages: HintStage[] = [
+  {
+    highlightCells: [
+      { location: noDirectConflictWrongValue, highlightType: "removal" },
+    ],
+    highlightValues: [
+      { location: noDirectConflictWrongValue, highlightType: "removal" },
+    ],
+    text: "The 4 in row 2, column 2 is not the right value for this cell.",
+  },
+  {
+    removeValues: [noDirectConflictWrongValue],
+    highlightCells: [
+      { location: noDirectConflictWrongValue, highlightType: "removal" },
+    ],
+    highlightValues: [
+      { location: noDirectConflictWrongValue, highlightType: "removal" },
+    ],
+    text: "Remove the user-entered 4 from row 2, column 2.",
+  },
+];
+
+export const directConflictWrongValueHint: WrongValueHint = {
   strategy: "WRONG_VALUE",
-  stages: wrongValueHintStages,
+  stages: directConflictWrongValueHintStages,
+};
+
+export const noDirectConflictWrongValueHint: WrongValueHint = {
+  strategy: "WRONG_VALUE",
+  stages: noDirectConflictWrongValueHintStages,
 };
 ```
 
 ## Expected Application
 
-Applying this hint should make exactly one board change:
+Applying either hint should make exactly one board change:
 
 ```ts
-const before: ValueCellWithLocation = {
+const directConflictBefore: ValueCellWithLocation = {
   r: 0,
   c: 3,
   type: "value",
   value: 8,
 };
 
-const after: NoteCellWithLocation = {
+const directConflictAfter: NoteCellWithLocation = {
   r: 0,
   c: 3,
+  type: "note",
+  notes: [],
+};
+
+const noDirectConflictBefore: ValueCellWithLocation = {
+  r: 1,
+  c: 1,
+  type: "value",
+  value: 4,
+};
+
+const noDirectConflictAfter: NoteCellWithLocation = {
+  r: 1,
+  c: 1,
   type: "note",
   notes: [],
 };
@@ -110,5 +167,7 @@ When the Frontend renders this static hint, save the screenshots under:
 
 | Stage | File | Expected capture |
 | ----- | ---- | ---------------- |
-| 1 | `stage-1-conflict.png` | Wrong `8` highlighted for removal, conflicting given `8` highlighted as focus |
-| 2 | `stage-2-remove-value.png` | User-entered `8` highlighted while the hint removes it |
+| Direct conflict, stage 1 | `direct-conflict-stage-1-conflict.png` | Wrong `8` highlighted for removal, conflicting given `8` highlighted as focus |
+| Direct conflict, stage 2 | `direct-conflict-stage-2-remove-value.png` | User-entered `8` highlighted while the hint removes it |
+| No direct conflict, stage 1 | `no-direct-conflict-stage-1-invalid-value.png` | Wrong `4` highlighted for removal without highlighting another cell |
+| No direct conflict, stage 2 | `no-direct-conflict-stage-2-remove-value.png` | User-entered `4` highlighted while the hint removes it |
