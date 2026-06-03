@@ -558,7 +558,7 @@ For each strategy:
 | ☑      | Validation/Solving module                    | Supports multiple grid sizes; descriptive errors; tests            | https://github.com/Sudokuru/Sudokuru/pull/106 |
 | ☑      | `getPuzzleSolution`                          | Solves validated puzzle; returns `number[][]`; tests               | https://github.com/Sudokuru/Sudokuru/pull/106 |
 | ☑      | `getPuzzle`                                  | Parses puzzle string; returns `CellProps[][]`; tests               | https://github.com/Sudokuru/Sudokuru/pull/107 |
-| ☐      | Wrong value hint docs                        | Example hint stages + screenshot in Frontend                       | —       |
+| ☑      | Wrong value hint docs                        | Example hint stages + screenshot in Frontend                       | https://github.com/Sudokuru/Sudokuru/pull/111 |
 | ☐      | Amend notes hint docs                        | Example hint stages + screenshot in Frontend                       | —       |
 | ☐      | Obvious single docs                          | Example hint stages + screenshot in Frontend                       | —       |
 | ☐      | Implement wrong value                        | Strategy module + tests match docs                                 | —       |
