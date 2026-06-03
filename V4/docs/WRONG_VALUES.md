@@ -24,6 +24,13 @@ The examples use a standard 9x9 board from V4 test data:
 Cell locations use the V4 zero-indexed `{ r, c }` shape. User-facing text
 uses one-indexed row and column labels.
 
+## Frontend Demo
+
+Demo PR: [Sudokuru/Frontend#394](https://github.com/Sudokuru/Frontend/pull/394)
+
+That PR contains the Frontend demo for these wrong value hints and includes a
+comment linking to the live dev site that hosts the demo.
+
 ## TypeScript Fixture
 
 The current `SudokuStrategy` union in `V4/Types.ts` does not yet include
