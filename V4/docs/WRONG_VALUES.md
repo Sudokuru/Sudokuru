@@ -159,15 +159,36 @@ restore that location to an unresolved empty cell. It should not place notes or
 reveal the correct value. The wrong value strategy is a correction hint, not a
 solving hint.
 
-## Frontend Screenshot Slots
+## Frontend Screenshots
 
-When the Frontend renders this static hint, save the screenshots under:
+Screenshots are saved under:
 
 `V4/docs/screenshots/wrong-values/`
 
-| Stage | File | Expected capture |
-| ----- | ---- | ---------------- |
-| Direct conflict, stage 1 | `direct-conflict-stage-1-conflict.png` | Wrong `8` highlighted for removal, conflicting given `8` highlighted as focus |
-| Direct conflict, stage 2 | `direct-conflict-stage-2-remove-value.png` | User-entered `8` highlighted while the hint removes it |
-| No direct conflict, stage 1 | `no-direct-conflict-stage-1-invalid-value.png` | Wrong `4` highlighted for removal without highlighting another cell |
-| No direct conflict, stage 2 | `no-direct-conflict-stage-2-remove-value.png` | User-entered `4` highlighted while the hint removes it |
+### Direct Row Conflict
+
+Initial board with the wrong `8` in row 1, column 4:
+
+![Direct conflict initial board](screenshots/wrong-values/1_direct_conflict.png)
+
+Stage 1 highlights the wrong `8` and the conflicting given `8` in the same row:
+
+![Direct conflict stage 1](screenshots/wrong-values/2_direct_conflict.png)
+
+Stage 2 removes the user-entered `8`:
+
+![Direct conflict stage 2](screenshots/wrong-values/3_direct_conflict.png)
+
+### No Direct Conflict
+
+Initial board with the wrong `4` in row 2, column 2:
+
+![No direct conflict initial board](screenshots/wrong-values/1_no_direct_conflict.png)
+
+Stage 1 highlights the wrong `4` without highlighting another conflicting cell:
+
+![No direct conflict stage 1](screenshots/wrong-values/2_no_direct_conflict.png)
+
+Stage 2 removes the user-entered `4`:
+
+![No direct conflict stage 2](screenshots/wrong-values/3_no_direct_conflict.png)
