@@ -7,3 +7,4 @@ dist/
 jest-coverage/
 junit.xml
 *.swp
+*.DS_STORE
