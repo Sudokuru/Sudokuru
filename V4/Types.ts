@@ -99,7 +99,7 @@ export const SUDOKU_STRATEGY_ARRAY = [
 ] as const;
 export type SudokuStrategy = (typeof SUDOKU_STRATEGY_ARRAY)[number];
 
-export type HighlightType = "removal" | "placement" | "focus";
+export type HighlightType = "removal" | "placement" | "focus" | "basis";
 
 export interface HighlightedCell {
   location: CellLocation;
