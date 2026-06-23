@@ -27,7 +27,7 @@ type CellProps = CellWithValue | CellWithNotes;
 type ValueCellWithLocation = CellWithValue & CellLocation;
 type NoteCellWithLocation = CellWithNotes & CellLocation;
 
-type HighlightType = "removal" | "placement" | "focus";
+type HighlightType = "removal" | "placement" | "focus" | "basis";
 
 type HighlightedCell = {
   location: CellLocation;
@@ -114,6 +114,16 @@ const noDirectConflictWrongValue: ValueCellWithLocation = {
   value: 4,
 };
 
+const directConflictRowFocusCells: CellLocation[] = [
+  { r: 0, c: 0 },
+  { r: 0, c: 1 },
+  { r: 0, c: 2 },
+  { r: 0, c: 5 },
+  { r: 0, c: 6 },
+  { r: 0, c: 7 },
+  { r: 0, c: 8 },
+];
+
 function numbersToPuzzle(numbers: SudokuValue[][]): CellProps[][] {
   return numbers.map((row) =>
     row.map((value): CellProps => {
@@ -169,22 +179,19 @@ export const directConflictWrongValueHint: WrongValueHint = {
   stages: [
     {
       highlightCells: [
+        ...directConflictRowFocusCells.map((location) => ({
+          location,
+          highlightType: "focus" as const,
+        })),
         { location: directConflictWrongValue, highlightType: "removal" },
-        { location: conflictingGiven, highlightType: "focus" },
-      ],
-      highlightValues: [
-        { location: directConflictWrongValue, highlightType: "removal" },
-        { location: conflictingGiven, highlightType: "focus" },
+        { location: conflictingGiven, highlightType: "basis" },
       ],
       text:
-        "The 8 in row 1, column 4 conflicts with another 8 in the same row.",
+        "The 8 in row 1, column 4 conflicts with the existing 8 in the same row.",
     },
     {
       removeValues: [directConflictWrongValue],
       highlightCells: [
-        { location: directConflictWrongValue, highlightType: "removal" },
-      ],
-      highlightValues: [
         { location: directConflictWrongValue, highlightType: "removal" },
       ],
       text: "Remove the user-entered 8 from row 1, column 4.",

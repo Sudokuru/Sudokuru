@@ -39,6 +39,7 @@ documented behavior is explicit before the public strategy type is updated.
 
 ```ts
 import type {
+  CellLocation,
   Hint,
   HintStage,
   ValueCellWithLocation,
@@ -69,25 +70,32 @@ const noDirectConflictWrongValue: ValueCellWithLocation = {
   value: 4,
 };
 
+const directConflictRowFocusCells: CellLocation[] = [
+  { r: 0, c: 0 },
+  { r: 0, c: 1 },
+  { r: 0, c: 2 },
+  { r: 0, c: 5 },
+  { r: 0, c: 6 },
+  { r: 0, c: 7 },
+  { r: 0, c: 8 },
+];
+
 const directConflictWrongValueHintStages: HintStage[] = [
   {
     highlightCells: [
+      ...directConflictRowFocusCells.map((location) => ({
+        location,
+        highlightType: "focus" as const,
+      })),
       { location: directConflictWrongValue, highlightType: "removal" },
-      { location: conflictingGiven, highlightType: "focus" },
-    ],
-    highlightValues: [
-      { location: directConflictWrongValue, highlightType: "removal" },
-      { location: conflictingGiven, highlightType: "focus" },
+      { location: conflictingGiven, highlightType: "basis" },
     ],
     text:
-      "The 8 in row 1, column 4 conflicts with another 8 in the same row.",
+      "The 8 in row 1, column 4 conflicts with the existing 8 in the same row.",
   },
   {
     removeValues: [directConflictWrongValue],
     highlightCells: [
-      { location: directConflictWrongValue, highlightType: "removal" },
-    ],
-    highlightValues: [
       { location: directConflictWrongValue, highlightType: "removal" },
     ],
     text: "Remove the user-entered 8 from row 1, column 4.",
@@ -178,7 +186,8 @@ Initial board with the wrong `8` in row 1, column 4:
 
 ![Direct conflict initial board](screenshots/wrong-values/1_direct_conflict.png)
 
-Stage 1 highlights the wrong `8` and the conflicting given `8` in the same row:
+Stage 1 highlights the first row as focus, the wrong `8` for removal, and the
+existing `8` as basis:
 
 ![Direct conflict stage 1](screenshots/wrong-values/2_direct_conflict.png)
 
