@@ -80,6 +80,18 @@ const directConflictRowFocusCells: CellLocation[] = [
   { r: 0, c: 8 },
 ];
 
+const directConflictFullRowFocusCells: CellLocation[] = [
+  { r: 0, c: 0 },
+  { r: 0, c: 1 },
+  { r: 0, c: 2 },
+  { r: 0, c: 3 },
+  { r: 0, c: 4 },
+  { r: 0, c: 5 },
+  { r: 0, c: 6 },
+  { r: 0, c: 7 },
+  { r: 0, c: 8 },
+];
+
 const directConflictWrongValueHintStages: HintStage[] = [
   {
     highlightCells: [
@@ -96,9 +108,12 @@ const directConflictWrongValueHintStages: HintStage[] = [
   {
     removeValues: [directConflictWrongValue],
     highlightCells: [
-      { location: directConflictWrongValue, highlightType: "removal" },
+      ...directConflictFullRowFocusCells.map((location) => ({
+        location,
+        highlightType: "focus" as const,
+      })),
     ],
-    text: "Remove the user-entered 8 from row 1, column 4.",
+    text: "Remove the 8 in row 1, column 4.",
   },
 ];
 
