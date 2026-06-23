@@ -221,20 +221,14 @@ export const noDirectConflictWrongValueHint: WrongValueHint = {
       highlightCells: [
         { location: noDirectConflictWrongValue, highlightType: "removal" },
       ],
-      highlightValues: [
-        { location: noDirectConflictWrongValue, highlightType: "removal" },
-      ],
-      text: "The 4 in row 2, column 2 is not the right value for this cell.",
+      text: "The 4 in row 2, column 2 is the wrong value for this cell.",
     },
     {
       removeValues: [noDirectConflictWrongValue],
       highlightCells: [
-        { location: noDirectConflictWrongValue, highlightType: "removal" },
+        { location: noDirectConflictWrongValue, highlightType: "focus" },
       ],
-      highlightValues: [
-        { location: noDirectConflictWrongValue, highlightType: "removal" },
-      ],
-      text: "Remove the user-entered 4 from row 2, column 2.",
+      text: "Remove the 4 in row 2, column 2.",
     },
   ],
 };
