@@ -1,7 +1,7 @@
 # Wrong Value Hint
 
 This is the docs-first fixture for the V4 wrong value strategy. The
-strategy should identify a user-entered value that contradicts the puzzle
+strategy should identify a value that contradicts the puzzle
 state and return a staged hint that the Frontend can render directly.
 
 ## Source Fixture
@@ -200,7 +200,7 @@ existing `8` as basis:
 
 ![Direct conflict stage 1](screenshots/wrong-values/2_direct_conflict.png)
 
-Stage 2 removes the user-entered `8`:
+Stage 2 removes the `8`:
 
 ![Direct conflict stage 2](screenshots/wrong-values/3_direct_conflict.png)
 
@@ -214,6 +214,6 @@ Stage 1 highlights the wrong `4` without highlighting another conflicting cell:
 
 ![No direct conflict stage 1](screenshots/wrong-values/2_no_direct_conflict.png)
 
-Stage 2 removes the user-entered `4`:
+Stage 2 removes the `4`:
 
 ![No direct conflict stage 2](screenshots/wrong-values/3_no_direct_conflict.png)
