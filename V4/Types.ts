@@ -84,6 +84,7 @@ export interface GameStatistics {
 }
 
 export const SUDOKU_STRATEGY_ARRAY = [
+  "WRONG_VALUE",
   "AMEND_NOTES",
   "SIMPLIFY_NOTES",
   "OBVIOUS_SINGLE",
