@@ -1,4 +1,4 @@
-# Sudokuru 4.0 Rebuild Plan Revision 1.3
+# Sudokuru 4.0 Rebuild Plan Revision 1.4
 
 ## TL;DR
 
@@ -12,6 +12,8 @@ Rebuild the `Sudokuru` package (v4.0) as a **modular, functional, immutable** Su
 
 ## Changelog
 
+* 1.4
+  * Added more info and a new "basis" value to HighlightType
 * 1.3
   * Added getPuzzleString helper function to validation module
 * 1.2
@@ -136,9 +138,14 @@ A “simple” migration path from Sudokuru `3.4 → 4.0`, focused on making the
 * **`CellWithLocation`**: bundles `CellProps + CellLocation` (replaces usage patterns like `GameAction` where appropriate).
 * **`HighlightType`** *(new)*: used in hint stages
 
-  * initial union: `"removal" | "placement" | "focus"`
-  * note: `"focus"` is a WIP name for “involved cells highlighted while others are dimmed”
-  * also need a distinct concept for “golden” emphasis cells (either another highlight mode or separate field)
+| Name      | Recommended Color | When It's Used                                        |
+| --------- | ----------------- | ----------------------------------------------------- |
+| focus     | white             | Emphasizing specific cells relevant to hint           |
+| removal   | red               | Indicating notes or values to remove                  |
+| basis     | golden            | Indicating notes or values comprise strategy instance |
+| placement | green             | Indicating notes or values to place                   |
+
+If no HighlightType is specified for a cell in a hint stage it is recommended to leave it a muted grey.
 * **`Hint`**: public type returned by `getHint()`
 * **`HintStage`**: atomic renderable steps within a hint
 * **`HintData`** *(internal)*: `Hint + queue metadata` (cells to enqueue)
@@ -558,7 +565,7 @@ For each strategy:
 | ☑      | Validation/Solving module                    | Supports multiple grid sizes; descriptive errors; tests            | https://github.com/Sudokuru/Sudokuru/pull/106 |
 | ☑      | `getPuzzleSolution`                          | Solves validated puzzle; returns `number[][]`; tests               | https://github.com/Sudokuru/Sudokuru/pull/106 |
 | ☑      | `getPuzzle`                                  | Parses puzzle string; returns `CellProps[][]`; tests               | https://github.com/Sudokuru/Sudokuru/pull/107 |
-| ☐      | Wrong value hint docs                        | Example hint stages + screenshot in Frontend                       | —       |
+| ☑      | Wrong value hint docs                        | Example hint stages + screenshot in Frontend                       | https://github.com/Sudokuru/Sudokuru/pull/111 |
 | ☐      | Amend notes hint docs                        | Example hint stages + screenshot in Frontend                       | —       |
 | ☐      | Obvious single docs                          | Example hint stages + screenshot in Frontend                       | —       |
 | ☐      | Implement wrong value                        | Strategy module + tests match docs                                 | —       |

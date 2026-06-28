@@ -1,7 +1,10 @@
 node_modules/
 docs/
+!V4/docs/
+!V4/docs/**
 .idea/
 dist/
 jest-coverage/
 junit.xml
 *.swp
+*.DS_STORE
