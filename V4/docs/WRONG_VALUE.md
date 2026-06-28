@@ -33,10 +33,6 @@ comment linking to the live dev site that hosts the demo.
 
 ## TypeScript Fixture
 
-The current `SudokuStrategy` union in `V4/Types.ts` does not yet include
-`"WRONG_VALUE"`. This fixture uses a local `WrongValueHint` type so the
-documented behavior is explicit before the public strategy type is updated.
-
 ```ts
 import type {
   CellLocation,
@@ -44,10 +40,6 @@ import type {
   HintStage,
   ValueCellWithLocation,
 } from "../Types";
-
-type WrongValueHint = Omit<Hint, "strategy"> & {
-  strategy: "WRONG_VALUE";
-};
 
 const directConflictWrongValue: ValueCellWithLocation = {
   r: 0,
@@ -133,12 +125,12 @@ const noDirectConflictWrongValueHintStages: HintStage[] = [
   },
 ];
 
-export const directConflictWrongValueHint: WrongValueHint = {
+export const directConflictWrongValueHint: Hint = {
   strategy: "WRONG_VALUE",
   stages: directConflictWrongValueHintStages,
 };
 
-export const noDirectConflictWrongValueHint: WrongValueHint = {
+export const noDirectConflictWrongValueHint: Hint = {
   strategy: "WRONG_VALUE",
   stages: noDirectConflictWrongValueHintStages,
 };
