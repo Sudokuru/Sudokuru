@@ -193,27 +193,27 @@ Screenshots are saved under:
 
 Initial board with the wrong `8` in row 1, column 4:
 
-![Direct conflict initial board](screenshots/wrong-values/1_direct_conflict.png)
+![Direct conflict initial board](screenshots/wrong-values/direct_conflict_1.png)
 
 Stage 1 highlights the first row as focus, the wrong `8` for removal, and the
 existing `8` as basis:
 
-![Direct conflict stage 1](screenshots/wrong-values/2_direct_conflict.png)
+![Direct conflict stage 1](screenshots/wrong-values/direct_conflict_2.png)
 
 Stage 2 removes the `8`:
 
-![Direct conflict stage 2](screenshots/wrong-values/3_direct_conflict.png)
+![Direct conflict stage 2](screenshots/wrong-values/direct_conflict_3.png)
 
 ### No Direct Conflict
 
 Initial board with the wrong `4` in row 2, column 2:
 
-![No direct conflict initial board](screenshots/wrong-values/1_no_direct_conflict.png)
+![No direct conflict initial board](screenshots/wrong-values/no_direct_conflict_1.png)
 
 Stage 1 highlights the wrong `4` without highlighting another conflicting cell:
 
-![No direct conflict stage 1](screenshots/wrong-values/2_no_direct_conflict.png)
+![No direct conflict stage 1](screenshots/wrong-values/no_direct_conflict_2.png)
 
 Stage 2 removes the `4`:
 
-![No direct conflict stage 2](screenshots/wrong-values/3_no_direct_conflict.png)
+![No direct conflict stage 2](screenshots/wrong-values/no_direct_conflict_3.png)
