@@ -108,13 +108,6 @@ const basicColumnRemovalNotes: NoteCellWithLocation = {
   notes: [3, 7, 9],
 };
 
-const basicAmendedCell: NoteCellWithLocation = {
-  r: 1,
-  c: 2,
-  type: "note",
-  notes: [4, 8],
-};
-
 const basicRowBasisCells: CellLocation[] = [
   { r: 1, c: 3 },
   { r: 1, c: 0 },
@@ -154,13 +147,6 @@ const correctiveColumnRemovalNotes: NoteCellWithLocation = {
   c: 6,
   type: "note",
   notes: [9],
-};
-
-const correctiveAmendedCell: NoteCellWithLocation = {
-  r: 1,
-  c: 6,
-  type: "note",
-  notes: [3, 4, 7, 8],
 };
 
 const correctiveRowBasisCells: CellLocation[] = [
@@ -274,11 +260,6 @@ export const basicAmendNotesHint: AmendNotesHint = {
       text:
         "Remove notes 3, 7, and 9 because those numbers are already in column 3.",
     },
-    {
-      placeNotes: [basicAmendedCell],
-      text:
-        "The box removes no additional notes, leaving row 2, column 3 with notes 4 and 8.",
-    },
   ],
 };
 
@@ -333,11 +314,6 @@ export const correctiveAmendNotesHint: AmendNotesHint = {
         highlightType: "removal" as const,
       })),
       text: "Remove note 9 because that number is already in column 7.",
-    },
-    {
-      placeNotes: [correctiveAmendedCell],
-      text:
-        "The box removes no additional notes, leaving row 2, column 7 with notes 3, 4, 7, and 8.",
     },
   ],
 };

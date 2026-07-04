@@ -72,13 +72,6 @@ const basicColumnRemovalNotes: NoteCellWithLocation = {
   notes: [3, 7, 9],
 };
 
-const basicAmendedCell: NoteCellWithLocation = {
-  r: 1,
-  c: 2,
-  type: "note",
-  notes: [4, 8],
-};
-
 const basicRowBasisCells: CellLocation[] = [
   { r: 1, c: 3 },
   { r: 1, c: 0 },
@@ -118,13 +111,6 @@ const filledColumnRemovalNotes: NoteCellWithLocation = {
   c: 6,
   type: "note",
   notes: [9],
-};
-
-const filledAmendedCell: NoteCellWithLocation = {
-  r: 1,
-  c: 6,
-  type: "note",
-  notes: [3, 4, 7, 8],
 };
 
 const filledRowBasisCells: CellLocation[] = [
@@ -186,10 +172,6 @@ const basicAmendNotesHintStages: HintStage[] = [
     })),
     text: "Remove notes 3, 7, and 9 because those numbers are already in column 3.",
   },
-  {
-    placeNotes: [basicAmendedCell],
-    text: "The box removes no additional notes, leaving row 2, column 3 with notes 4 and 8.",
-  },
 ];
 
 const filledAmendNotesHintStages: HintStage[] = [
@@ -239,10 +221,6 @@ const filledAmendNotesHintStages: HintStage[] = [
       highlightType: "removal" as const,
     })),
     text: "Remove note 9 because that number is already in column 7.",
-  },
-  {
-    placeNotes: [filledAmendedCell],
-    text: "The box removes no additional notes, leaving row 2, column 7 with notes 3, 4, 7, and 8.",
   },
 ];
 
@@ -297,7 +275,8 @@ const filledAfter: NoteCellWithLocation = {
 ```
 
 Amend notes adds all notes to the target note cell, then removes row, column,
-and box conflicts. It does not place a value.
+and box conflicts. It does not place a value. Omit any row, column, or box
+stage that would not remove notes.
 
 ## Frontend Screenshots
 
@@ -311,9 +290,7 @@ When the Frontend renders these static hints, save the screenshots under:
 | Basic amend notes, stage 2 | `basic_amend_notes_2.png` | Target focused; target contains notes 1 through 9 with placement highlighting |
 | Basic amend notes, stage 3 | `basic_amend_notes_3.png` | Target focused; row basis cells highlighted; notes 1, 2, 5, and 6 highlighted for removal |
 | Basic amend notes, stage 4 | `basic_amend_notes_4.png` | Target focused; column basis cells highlighted; notes 3, 7, and 9 highlighted for removal |
-| Basic amend notes, stage 5 | `basic_amend_notes_5.png` | Box pass has no notes left to remove; target cell is left with notes 4 and 8 |
 | Filled-cell amend notes, stage 1 | `corrective_amend_notes_1.png` | No highlighting; text only says what amend notes is |
 | Filled-cell amend notes, stage 2 | `corrective_amend_notes_2.png` | Target focused; target contains notes 1 through 9 with placement highlighting |
 | Filled-cell amend notes, stage 3 | `corrective_amend_notes_3.png` | Target focused; row basis cells highlighted; notes 1, 2, 5, and 6 highlighted for removal |
 | Filled-cell amend notes, stage 4 | `corrective_amend_notes_4.png` | Target focused; column basis cell highlighted; note 9 highlighted for removal |
-| Filled-cell amend notes, stage 5 | `corrective_amend_notes_5.png` | Box pass has no notes left to remove; target cell is left with notes 3, 4, 7, and 8 |
