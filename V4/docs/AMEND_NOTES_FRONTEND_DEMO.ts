@@ -87,11 +87,25 @@ const basicTargetCell: NoteCellWithLocation = {
   notes: [],
 };
 
-const basicClearedCell: NoteCellWithLocation = {
+const basicAllNotesCell: NoteCellWithLocation = {
   r: 1,
   c: 2,
   type: "note",
-  notes: [],
+  notes: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+};
+
+const basicRowRemovalNotes: NoteCellWithLocation = {
+  r: 1,
+  c: 2,
+  type: "note",
+  notes: [1, 2, 5, 6],
+};
+
+const basicColumnRemovalNotes: NoteCellWithLocation = {
+  r: 1,
+  c: 2,
+  type: "note",
+  notes: [3, 7, 9],
 };
 
 const basicAmendedCell: NoteCellWithLocation = {
@@ -101,18 +115,17 @@ const basicAmendedCell: NoteCellWithLocation = {
   notes: [4, 8],
 };
 
-const basicBasisCells: CellLocation[] = [
-  { r: 1, c: 0 },
+const basicRowBasisCells: CellLocation[] = [
   { r: 1, c: 3 },
+  { r: 1, c: 0 },
   { r: 1, c: 4 },
   { r: 1, c: 8 },
+];
+
+const basicColumnBasisCells: CellLocation[] = [
   { r: 3, c: 2 },
-  { r: 5, c: 2 },
   { r: 7, c: 2 },
-  { r: 0, c: 0 },
-  { r: 0, c: 1 },
-  { r: 2, c: 0 },
-  { r: 2, c: 1 },
+  { r: 5, c: 2 },
 ];
 
 const correctiveTargetCell: NoteCellWithLocation = {
@@ -122,11 +135,25 @@ const correctiveTargetCell: NoteCellWithLocation = {
   notes: [4, 7, 8],
 };
 
-const correctiveClearedCell: NoteCellWithLocation = {
+const correctiveAllNotesCell: NoteCellWithLocation = {
   r: 1,
   c: 6,
   type: "note",
-  notes: [4, 7, 8],
+  notes: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+};
+
+const correctiveRowRemovalNotes: NoteCellWithLocation = {
+  r: 1,
+  c: 6,
+  type: "note",
+  notes: [1, 2, 5, 6],
+};
+
+const correctiveColumnRemovalNotes: NoteCellWithLocation = {
+  r: 1,
+  c: 6,
+  type: "note",
+  notes: [9],
 };
 
 const correctiveAmendedCell: NoteCellWithLocation = {
@@ -136,15 +163,15 @@ const correctiveAmendedCell: NoteCellWithLocation = {
   notes: [3, 4, 7, 8],
 };
 
-const correctiveBasisCells: CellLocation[] = [
-  { r: 1, c: 0 },
+const correctiveRowBasisCells: CellLocation[] = [
   { r: 1, c: 3 },
+  { r: 1, c: 0 },
   { r: 1, c: 4 },
   { r: 1, c: 8 },
+];
+
+const correctiveColumnBasisCells: CellLocation[] = [
   { r: 7, c: 6 },
-  { r: 8, c: 6 },
-  { r: 0, c: 8 },
-  { r: 2, c: 7 },
 ];
 
 function numbersToPuzzle(numbers: SudokuValue[][]): CellProps[][] {
@@ -198,33 +225,59 @@ export const basicAmendNotesHint: AmendNotesHint = {
   strategy: "AMEND_NOTES",
   stages: [
     {
+      text:
+        "Amend notes makes a cell contain every note that does not conflict with its row, column, or box.",
+    },
+    {
+      placeNotes: [basicAllNotesCell],
       highlightCells: [
         { location: basicTargetCell, highlightType: "focus" },
-        ...basicBasisCells.map((location) => ({
+      ],
+      highlightNotes: basicAllNotesCell.notes.map((value) => ({
+        location: basicTargetCell,
+        value,
+        highlightType: "placement" as const,
+      })),
+      text: "Add notes 1 through 9 to row 2, column 3.",
+    },
+    {
+      removeNotes: [basicRowRemovalNotes],
+      highlightCells: [
+        { location: basicTargetCell, highlightType: "focus" },
+        ...basicRowBasisCells.map((location) => ({
           location,
           highlightType: "basis" as const,
         })),
       ],
+      highlightNotes: basicRowRemovalNotes.notes.map((value) => ({
+        location: basicTargetCell,
+        value,
+        highlightType: "removal" as const,
+      })),
       text:
-        "Row 2, column 3 should contain every note that does not conflict with its row, column, or box.",
+        "Remove notes 1, 2, 5, and 6 because those numbers are already in row 2.",
     },
     {
-      removeNotes: [basicClearedCell],
+      removeNotes: [basicColumnRemovalNotes],
       highlightCells: [
         { location: basicTargetCell, highlightType: "focus" },
+        ...basicColumnBasisCells.map((location) => ({
+          location,
+          highlightType: "basis" as const,
+        })),
       ],
-      text: "Clear the notes from row 2, column 3.",
+      highlightNotes: basicColumnRemovalNotes.notes.map((value) => ({
+        location: basicTargetCell,
+        value,
+        highlightType: "removal" as const,
+      })),
+      text:
+        "Remove notes 3, 7, and 9 because those numbers are already in column 3.",
     },
     {
       placeNotes: [basicAmendedCell],
-      highlightCells: [
-        { location: basicTargetCell, highlightType: "focus" },
-      ],
-      highlightNotes: [
-        { location: basicTargetCell, value: 4, highlightType: "placement" },
-        { location: basicTargetCell, value: 8, highlightType: "placement" },
-      ],
-      text: "Set row 2, column 3 to notes 4 and 8.",
+      text:
+        "The box removes no additional notes, leaving row 2, column 3 with notes 4 and 8.",
     },
   ],
 };
@@ -233,40 +286,58 @@ export const correctiveAmendNotesHint: AmendNotesHint = {
   strategy: "AMEND_NOTES",
   stages: [
     {
+      text:
+        "Amend notes makes a cell contain every note that does not conflict with its row, column, or box.",
+    },
+    {
+      placeNotes: [correctiveAllNotesCell],
       highlightCells: [
         { location: correctiveTargetCell, highlightType: "focus" },
-        ...correctiveBasisCells.map((location) => ({
+      ],
+      highlightNotes: correctiveAllNotesCell.notes.map((value) => ({
+        location: correctiveTargetCell,
+        value,
+        highlightType: "placement" as const,
+      })),
+      text: "Add notes 1 through 9 to row 2, column 7.",
+    },
+    {
+      removeNotes: [correctiveRowRemovalNotes],
+      highlightCells: [
+        { location: correctiveTargetCell, highlightType: "focus" },
+        ...correctiveRowBasisCells.map((location) => ({
           location,
           highlightType: "basis" as const,
         })),
       ],
+      highlightNotes: correctiveRowRemovalNotes.notes.map((value) => ({
+        location: correctiveTargetCell,
+        value,
+        highlightType: "removal" as const,
+      })),
       text:
-        "Row 2, column 7 should contain every note that does not conflict with its row, column, or box.",
+        "Remove notes 1, 2, 5, and 6 because those numbers are already in row 2.",
     },
     {
-      removeNotes: [correctiveClearedCell],
+      removeNotes: [correctiveColumnRemovalNotes],
       highlightCells: [
         { location: correctiveTargetCell, highlightType: "focus" },
+        ...correctiveColumnBasisCells.map((location) => ({
+          location,
+          highlightType: "basis" as const,
+        })),
       ],
-      highlightNotes: [
-        { location: correctiveTargetCell, value: 4, highlightType: "removal" },
-        { location: correctiveTargetCell, value: 7, highlightType: "removal" },
-        { location: correctiveTargetCell, value: 8, highlightType: "removal" },
-      ],
-      text: "Clear the notes from row 2, column 7.",
+      highlightNotes: correctiveColumnRemovalNotes.notes.map((value) => ({
+        location: correctiveTargetCell,
+        value,
+        highlightType: "removal" as const,
+      })),
+      text: "Remove note 9 because that number is already in column 7.",
     },
     {
       placeNotes: [correctiveAmendedCell],
-      highlightCells: [
-        { location: correctiveTargetCell, highlightType: "focus" },
-      ],
-      highlightNotes: [
-        { location: correctiveTargetCell, value: 3, highlightType: "placement" },
-        { location: correctiveTargetCell, value: 4, highlightType: "placement" },
-        { location: correctiveTargetCell, value: 7, highlightType: "placement" },
-        { location: correctiveTargetCell, value: 8, highlightType: "placement" },
-      ],
-      text: "Set row 2, column 7 to notes 3, 4, 7, and 8.",
+      text:
+        "The box removes no additional notes, leaving row 2, column 7 with notes 3, 4, 7, and 8.",
     },
   ],
 };
