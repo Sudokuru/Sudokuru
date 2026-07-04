@@ -160,6 +160,56 @@ const correctiveColumnBasisCells: CellLocation[] = [
   { r: 7, c: 6 },
 ];
 
+type AmendNotesGroup = "row" | "column" | "box";
+
+function sameLocation(a: CellLocation, b: CellLocation): boolean {
+  return a.r === b.r && a.c === b.c;
+}
+
+function includesLocation(
+  locations: CellLocation[],
+  locationToFind: CellLocation
+): boolean {
+  return locations.some((location) =>
+    sameLocation(location, locationToFind)
+  );
+}
+
+function getAmendNotesGroupCells(
+  target: CellLocation,
+  group: AmendNotesGroup
+): CellLocation[] {
+  if (group === "row") {
+    return Array.from({ length: 9 }, (_, c) => ({ r: target.r, c }));
+  }
+
+  if (group === "column") {
+    return Array.from({ length: 9 }, (_, r) => ({ r, c: target.c }));
+  }
+
+  const boxTop = Math.floor(target.r / 3) * 3;
+  const boxLeft = Math.floor(target.c / 3) * 3;
+
+  return Array.from({ length: 9 }, (_, index) => ({
+    r: boxTop + Math.floor(index / 3),
+    c: boxLeft + (index % 3),
+  }));
+}
+
+function getAmendNotesGroupFocusCells(
+  target: CellLocation,
+  group: AmendNotesGroup,
+  basisCells: CellLocation[]
+): HighlightedCell[] {
+  return getAmendNotesGroupCells(target, group)
+    .filter((location) => !sameLocation(location, target))
+    .filter((location) => !includesLocation(basisCells, location))
+    .map((location) => ({
+      location,
+      highlightType: "focus" as const,
+    }));
+}
+
 function numbersToPuzzle(numbers: SudokuValue[][]): CellProps[][] {
   return numbers.map((row) =>
     row.map((value): CellProps => {
@@ -231,6 +281,11 @@ export const basicAmendNotesHint: AmendNotesHint = {
       removeNotes: [basicRowRemovalNotes],
       highlightCells: [
         { location: basicTargetCell, highlightType: "focus" },
+        ...getAmendNotesGroupFocusCells(
+          basicTargetCell,
+          "row",
+          basicRowBasisCells
+        ),
         ...basicRowBasisCells.map((location) => ({
           location,
           highlightType: "basis" as const,
@@ -248,6 +303,11 @@ export const basicAmendNotesHint: AmendNotesHint = {
       removeNotes: [basicColumnRemovalNotes],
       highlightCells: [
         { location: basicTargetCell, highlightType: "focus" },
+        ...getAmendNotesGroupFocusCells(
+          basicTargetCell,
+          "column",
+          basicColumnBasisCells
+        ),
         ...basicColumnBasisCells.map((location) => ({
           location,
           highlightType: "basis" as const,
@@ -288,6 +348,11 @@ export const correctiveAmendNotesHint: AmendNotesHint = {
       removeNotes: [correctiveRowRemovalNotes],
       highlightCells: [
         { location: correctiveTargetCell, highlightType: "focus" },
+        ...getAmendNotesGroupFocusCells(
+          correctiveTargetCell,
+          "row",
+          correctiveRowBasisCells
+        ),
         ...correctiveRowBasisCells.map((location) => ({
           location,
           highlightType: "basis" as const,
@@ -305,6 +370,11 @@ export const correctiveAmendNotesHint: AmendNotesHint = {
       removeNotes: [correctiveColumnRemovalNotes],
       highlightCells: [
         { location: correctiveTargetCell, highlightType: "focus" },
+        ...getAmendNotesGroupFocusCells(
+          correctiveTargetCell,
+          "column",
+          correctiveColumnBasisCells
+        ),
         ...correctiveColumnBasisCells.map((location) => ({
           location,
           highlightType: "basis" as const,

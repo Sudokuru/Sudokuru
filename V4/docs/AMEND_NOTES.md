@@ -29,10 +29,9 @@ one-indexed row and column labels.
 
 ## Frontend Demo
 
-Frontend demo PR: TBD
+Demo PR: [Sudokuru/Frontend#394](https://github.com/Sudokuru/Frontend/pull/394)
 
-Add the Frontend demo PR link here when available, along with a note about the
-live dev-site comment once the demo is hosted.
+That PR contains the Frontend demo for hints and includes a comment linking to the live dev site that hosts the demo.
 
 ## TypeScript Fixture
 
@@ -41,6 +40,7 @@ import type {
   CellLocation,
   Hint,
   HintStage,
+  HighlightedCell,
   NoteCellWithLocation,
 } from "../Types";
 
@@ -124,6 +124,56 @@ const filledColumnBasisCells: CellLocation[] = [
   { r: 7, c: 6 },
 ];
 
+type AmendNotesGroup = "row" | "column" | "box";
+
+function sameLocation(a: CellLocation, b: CellLocation): boolean {
+  return a.r === b.r && a.c === b.c;
+}
+
+function includesLocation(
+  locations: CellLocation[],
+  locationToFind: CellLocation
+): boolean {
+  return locations.some((location) =>
+    sameLocation(location, locationToFind)
+  );
+}
+
+function getAmendNotesGroupCells(
+  target: CellLocation,
+  group: AmendNotesGroup
+): CellLocation[] {
+  if (group === "row") {
+    return Array.from({ length: 9 }, (_, c) => ({ r: target.r, c }));
+  }
+
+  if (group === "column") {
+    return Array.from({ length: 9 }, (_, r) => ({ r, c: target.c }));
+  }
+
+  const boxTop = Math.floor(target.r / 3) * 3;
+  const boxLeft = Math.floor(target.c / 3) * 3;
+
+  return Array.from({ length: 9 }, (_, index) => ({
+    r: boxTop + Math.floor(index / 3),
+    c: boxLeft + (index % 3),
+  }));
+}
+
+function getAmendNotesGroupFocusCells(
+  target: CellLocation,
+  group: AmendNotesGroup,
+  basisCells: CellLocation[]
+): HighlightedCell[] {
+  return getAmendNotesGroupCells(target, group)
+    .filter((location) => !sameLocation(location, target))
+    .filter((location) => !includesLocation(basisCells, location))
+    .map((location) => ({
+      location,
+      highlightType: "focus" as const,
+    }));
+}
+
 const basicAmendNotesHintStages: HintStage[] = [
   {
     text: "Amend notes makes a cell contain every note that does not conflict with its row, column, or box.",
@@ -144,6 +194,11 @@ const basicAmendNotesHintStages: HintStage[] = [
     removeNotes: [basicRowRemovalNotes],
     highlightCells: [
       { location: basicTargetCell, highlightType: "focus" },
+      ...getAmendNotesGroupFocusCells(
+        basicTargetCell,
+        "row",
+        basicRowBasisCells
+      ),
       ...basicRowBasisCells.map((location) => ({
         location,
         highlightType: "basis" as const,
@@ -160,6 +215,11 @@ const basicAmendNotesHintStages: HintStage[] = [
     removeNotes: [basicColumnRemovalNotes],
     highlightCells: [
       { location: basicTargetCell, highlightType: "focus" },
+      ...getAmendNotesGroupFocusCells(
+        basicTargetCell,
+        "column",
+        basicColumnBasisCells
+      ),
       ...basicColumnBasisCells.map((location) => ({
         location,
         highlightType: "basis" as const,
@@ -194,6 +254,11 @@ const filledAmendNotesHintStages: HintStage[] = [
     removeNotes: [filledRowRemovalNotes],
     highlightCells: [
       { location: filledTargetCell, highlightType: "focus" },
+      ...getAmendNotesGroupFocusCells(
+        filledTargetCell,
+        "row",
+        filledRowBasisCells
+      ),
       ...filledRowBasisCells.map((location) => ({
         location,
         highlightType: "basis" as const,
@@ -210,6 +275,11 @@ const filledAmendNotesHintStages: HintStage[] = [
     removeNotes: [filledColumnRemovalNotes],
     highlightCells: [
       { location: filledTargetCell, highlightType: "focus" },
+      ...getAmendNotesGroupFocusCells(
+        filledTargetCell,
+        "column",
+        filledColumnBasisCells
+      ),
       ...filledColumnBasisCells.map((location) => ({
         location,
         highlightType: "basis" as const,
@@ -275,22 +345,53 @@ const filledAfter: NoteCellWithLocation = {
 ```
 
 Amend notes adds all notes to the target note cell, then removes row, column,
-and box conflicts. It does not place a value. Omit any row, column, or box
-stage that would not remove notes.
+and box conflicts. Each removal stage highlights the target cell and the rest
+of the row, column, or box being used as focus cells, except for cells already
+highlighted as basis cells. It does not place a value. Omit any row, column, or
+box stage that would not remove notes.
 
 ## Frontend Screenshots
 
-When the Frontend renders these static hints, save the screenshots under:
+Screenshots are saved under:
 
 `V4/docs/screenshots/amend-notes/`
 
-| Example | File | Expected capture |
-| ------- | ---- | ---------------- |
-| Basic amend notes, stage 1 | `basic_amend_notes_1.png` | No highlighting; text only says what amend notes is |
-| Basic amend notes, stage 2 | `basic_amend_notes_2.png` | Target focused; target contains notes 1 through 9 with placement highlighting |
-| Basic amend notes, stage 3 | `basic_amend_notes_3.png` | Target focused; row basis cells highlighted; notes 1, 2, 5, and 6 highlighted for removal |
-| Basic amend notes, stage 4 | `basic_amend_notes_4.png` | Target focused; column basis cells highlighted; notes 3, 7, and 9 highlighted for removal |
-| Filled-cell amend notes, stage 1 | `corrective_amend_notes_1.png` | No highlighting; text only says what amend notes is |
-| Filled-cell amend notes, stage 2 | `corrective_amend_notes_2.png` | Target focused; target contains notes 1 through 9 with placement highlighting |
-| Filled-cell amend notes, stage 3 | `corrective_amend_notes_3.png` | Target focused; row basis cells highlighted; notes 1, 2, 5, and 6 highlighted for removal |
-| Filled-cell amend notes, stage 4 | `corrective_amend_notes_4.png` | Target focused; column basis cell highlighted; note 9 highlighted for removal |
+### Basic Amend Notes
+
+Initial board before any amend-notes highlighting:
+
+![Basic amend notes initial board](screenshots/amend-notes/basic_amend_notes_1.png)
+
+Stage 1 focuses the target cell and places notes 1 through 9:
+
+![Basic amend notes stage 1](screenshots/amend-notes/basic_amend_notes_2.png)
+
+Stage 2 highlights row focus cells, highlights the row basis cells, and removes
+notes 1, 2, 5, and 6:
+
+![Basic amend notes stage 2](screenshots/amend-notes/basic_amend_notes_3.png)
+
+Stage 3 highlights column focus cells, highlights the column basis cells, and
+removes notes 3, 7, and 9:
+
+![Basic amend notes stage 3](screenshots/amend-notes/basic_amend_notes_4.png)
+
+### Filled-Cell Amend Notes
+
+Initial board before any amend-notes highlighting:
+
+![Filled-cell amend notes initial board](screenshots/amend-notes/corrective_amend_notes_1.png)
+
+Stage 1 focuses the target cell and places notes 1 through 9:
+
+![Filled-cell amend notes stage 1](screenshots/amend-notes/corrective_amend_notes_2.png)
+
+Stage 2 highlights row focus cells, highlights the row basis cells, and removes
+notes 1, 2, 5, and 6:
+
+![Filled-cell amend notes stage 2](screenshots/amend-notes/corrective_amend_notes_3.png)
+
+Stage 3 highlights column focus cells, highlights the column basis cell, and
+removes note 9:
+
+![Filled-cell amend notes stage 3](screenshots/amend-notes/corrective_amend_notes_4.png)
