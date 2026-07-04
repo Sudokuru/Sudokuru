@@ -138,7 +138,7 @@ const basicAmendNotesHintStages: HintStage[] = [
       value,
       highlightType: "placement" as const,
     })),
-    text: "Add notes 1 through 9 to row 2, column 3.",
+    text: "Add all notes not already present to the cell in row 2, column 3.",
   },
   {
     removeNotes: [basicRowRemovalNotes],
@@ -188,7 +188,7 @@ const filledAmendNotesHintStages: HintStage[] = [
       value,
       highlightType: "placement" as const,
     })),
-    text: "Add notes 1 through 9 to row 2, column 7.",
+    text: "Add all notes not already present to the cell in row 2, column 7.",
   },
   {
     removeNotes: [filledRowRemovalNotes],
