@@ -28,8 +28,7 @@ uses one-indexed row and column labels.
 
 Demo PR: [Sudokuru/Frontend#394](https://github.com/Sudokuru/Frontend/pull/394)
 
-That PR contains the Frontend demo for these wrong value hints and includes a
-comment linking to the live dev site that hosts the demo.
+That PR contains the Frontend demo for hints and includes a comment linking to the live dev site that hosts the demo.
 
 ## TypeScript Fixture
 

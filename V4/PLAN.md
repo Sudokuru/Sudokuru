@@ -566,12 +566,12 @@ For each strategy:
 | ☑      | `getPuzzleSolution`                          | Solves validated puzzle; returns `number[][]`; tests               | https://github.com/Sudokuru/Sudokuru/pull/106 |
 | ☑      | `getPuzzle`                                  | Parses puzzle string; returns `CellProps[][]`; tests               | https://github.com/Sudokuru/Sudokuru/pull/107 |
 | ☑      | Wrong value hint docs                        | Example hint stages + screenshot in Frontend                       | https://github.com/Sudokuru/Sudokuru/pull/111 |
-| ☐      | Amend notes hint docs                        | Example hint stages + screenshot in Frontend                       | —       |
+| ☑      | Amend notes hint docs                        | Example hint stages + screenshot in Frontend                       | https://github.com/Sudokuru/Sudokuru/pull/112 |
 | ☐      | Obvious single docs                          | Example hint stages + screenshot in Frontend                       | —       |
+| ☐      | Strategy implementation PR checklist         | Strategy has sufficient docs/tests/etc link to example PRs         | —       |
 | ☐      | Implement wrong value                        | Strategy module + tests match docs                                 | —       |
 | ☐      | Implement amend notes                        | Strategy module + tests match docs                                 | —       |
 | ☐      | Implement obvious single                     | Strategy module + tests match docs                                 | —       |
-| ☐      | Strategy implementation PR checklist         | Strategy has sufficient docs/tests/etc link to example PRs         | —       |
 | ☐      | `getHint`                                    | Deterministic; staged hints; strategy ordering; tests              | —       |
 | ☐      | `getAllHints`                                | Deterministic; uses strategy set; tests                            | —       |
 | ☐      | `applyHint`                                  | Pure; correct diffs; tests                                         | —       |
