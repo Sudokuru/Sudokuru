@@ -122,6 +122,9 @@ export const obviousSingleHint: ObviousSingleHint = {
   strategy: "OBVIOUS_SINGLE",
   stages: [
     {
+      text: "An obvious single is a cell with only one note remaining.",
+    },
+    {
       highlightCells: [
         { location: obviousSingleNoteCell, highlightType: "focus" },
       ],
