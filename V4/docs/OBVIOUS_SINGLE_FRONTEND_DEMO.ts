@@ -135,9 +135,6 @@ export const obviousSingleHint: ObviousSingleHint = {
       highlightCells: [
         { location: obviousSingleValueCell, highlightType: "placement" },
       ],
-      highlightValues: [
-        { location: obviousSingleValueCell, highlightType: "placement" },
-      ],
       text: "Place 2 in row 2, column 1.",
     },
   ],
