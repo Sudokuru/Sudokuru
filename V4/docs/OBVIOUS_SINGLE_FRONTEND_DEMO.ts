@@ -128,13 +128,6 @@ export const obviousSingleHint: ObviousSingleHint = {
       highlightCells: [
         { location: obviousSingleNoteCell, highlightType: "focus" },
       ],
-      highlightNotes: [
-        {
-          location: obviousSingleNoteCell,
-          value: 2,
-          highlightType: "basis",
-        },
-      ],
       text: "Row 2, column 1 has only one note remaining: 2.",
     },
     {

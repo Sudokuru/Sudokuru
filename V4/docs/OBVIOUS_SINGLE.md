@@ -57,13 +57,6 @@ const obviousSingleHintStages: HintStage[] = [
     highlightCells: [
       { location: obviousSingleNoteCell, highlightType: "focus" },
     ],
-    highlightNotes: [
-      {
-        location: obviousSingleNoteCell,
-        value: 2,
-        highlightType: "basis",
-      },
-    ],
     text: "Row 2, column 1 has only one note remaining: 2.",
   },
   {
@@ -119,5 +112,5 @@ No screenshots exist yet. Add them in hint order using these filenames:
 | --- | --- |
 | `obvious_single_1.png` | Initial board with note `2` in row 2, column 1 |
 | `obvious_single_2.png` | Stage 1 showing the strategy overview without highlights |
-| `obvious_single_3.png` | Stage 2 focusing the target and highlighting note `2` as basis |
+| `obvious_single_3.png` | Stage 2 focusing the target cell |
 | `obvious_single_4.png` | Stage 3 placing `2` in the target cell |
