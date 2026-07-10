@@ -297,48 +297,40 @@ Screenshots are saved under:
 
 ### Placement Only
 
-Initial board with note `2` in row 2, column 1:
-
-![Placement-only obvious single initial board](screenshots/obvious-single/obvious_single_1.png)
-
 Stage 1 shows the strategy overview without highlights:
 
-![Placement-only obvious single stage 1](screenshots/obvious-single/obvious_single_2.png)
+![Placement-only obvious single stage 1](screenshots/obvious-single/obvious_single_1.png)
 
 Stage 2 focuses the target cell:
 
-![Placement-only obvious single stage 2](screenshots/obvious-single/obvious_single_3.png)
+![Placement-only obvious single stage 2](screenshots/obvious-single/obvious_single_2.png)
 
 Stage 3 places `2` in the target cell:
 
-![Placement-only obvious single stage 3](screenshots/obvious-single/obvious_single_4.png)
+![Placement-only obvious single stage 3](screenshots/obvious-single/obvious_single_3.png)
 
 ### Placement With Note Simplification
 
-Initial board with note `8` in row 6, column 2:
-
-![Obvious single with note simplification initial board](screenshots/obvious-single/note_simplification_1.png)
-
 Stage 1 shows the strategy overview without highlights:
 
-![Obvious single with note simplification stage 1](screenshots/obvious-single/note_simplification_2.png)
+![Obvious single with note simplification stage 1](screenshots/obvious-single/note_simplification_1.png)
 
 Stage 2 focuses the target cell:
 
-![Obvious single with note simplification stage 2](screenshots/obvious-single/note_simplification_3.png)
+![Obvious single with note simplification stage 2](screenshots/obvious-single/note_simplification_2.png)
 
 Stage 3 places `8` in the target cell:
 
-![Obvious single with note simplification stage 3](screenshots/obvious-single/note_simplification_4.png)
+![Obvious single with note simplification stage 3](screenshots/obvious-single/note_simplification_3.png)
 
 Stage 4 simplifies note `8` from row 6:
 
-![Obvious single with note simplification stage 4](screenshots/obvious-single/note_simplification_5.png)
+![Obvious single with note simplification stage 4](screenshots/obvious-single/note_simplification_4.png)
 
 Stage 5 simplifies note `8` from column 2:
 
-![Obvious single with note simplification stage 5](screenshots/obvious-single/note_simplification_6.png)
+![Obvious single with note simplification stage 5](screenshots/obvious-single/note_simplification_5.png)
 
 Stage 6 simplifies note `8` from the box:
 
-![Obvious single with note simplification stage 6](screenshots/obvious-single/note_simplification_7.png)
+![Obvious single with note simplification stage 6](screenshots/obvious-single/note_simplification_6.png)
