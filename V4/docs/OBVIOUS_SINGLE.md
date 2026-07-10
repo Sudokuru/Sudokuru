@@ -37,10 +37,9 @@ column labels.
 
 ## Frontend Demo
 
-Frontend demo PR: TBD
+Demo PR: [Sudokuru/Frontend#394](https://github.com/Sudokuru/Frontend/pull/394)
 
-Add the Frontend PR link here when the demo is available, and note whether the
-PR has a comment linking to a live dev site.
+That PR contains the Frontend demo for hints and includes a comment linking to the live dev site that hosts the demo.
 
 ## TypeScript Fixture
 
@@ -292,29 +291,54 @@ groups.
 
 ## Frontend Screenshots
 
-Screenshots should be saved under:
+Screenshots are saved under:
 
 `V4/docs/screenshots/obvious-single/`
 
-No screenshots exist yet. Add them in hint order using these filenames:
-
 ### Placement Only
 
-| Filename | Screenshot |
-| --- | --- |
-| `obvious_single_1.png` | Initial board with note `2` in row 2, column 1 |
-| `obvious_single_2.png` | Stage 1 showing the strategy overview without highlights |
-| `obvious_single_3.png` | Stage 2 focusing the target cell |
-| `obvious_single_4.png` | Stage 3 placing `2` in the target cell |
+Initial board with note `2` in row 2, column 1:
+
+![Placement-only obvious single initial board](screenshots/obvious-single/obvious_single_1.png)
+
+Stage 1 shows the strategy overview without highlights:
+
+![Placement-only obvious single stage 1](screenshots/obvious-single/obvious_single_2.png)
+
+Stage 2 focuses the target cell:
+
+![Placement-only obvious single stage 2](screenshots/obvious-single/obvious_single_3.png)
+
+Stage 3 places `2` in the target cell:
+
+![Placement-only obvious single stage 3](screenshots/obvious-single/obvious_single_4.png)
 
 ### Placement With Note Simplification
 
-| Filename | Screenshot |
-| --- | --- |
-| `note_simplification_1.png` | Initial board with note `8` in row 6, column 2 |
-| `note_simplification_2.png` | Stage 1 showing the strategy overview without highlights |
-| `note_simplification_3.png` | Stage 2 focusing the target cell |
-| `note_simplification_4.png` | Stage 3 placing `8` in the target cell |
-| `note_simplification_5.png` | Stage 4 simplifying note `8` from row 6 |
-| `note_simplification_6.png` | Stage 5 simplifying note `8` from column 2 |
-| `note_simplification_7.png` | Stage 6 simplifying note `8` from the box |
+Initial board with note `8` in row 6, column 2:
+
+![Obvious single with note simplification initial board](screenshots/obvious-single/note_simplification_1.png)
+
+Stage 1 shows the strategy overview without highlights:
+
+![Obvious single with note simplification stage 1](screenshots/obvious-single/note_simplification_2.png)
+
+Stage 2 focuses the target cell:
+
+![Obvious single with note simplification stage 2](screenshots/obvious-single/note_simplification_3.png)
+
+Stage 3 places `8` in the target cell:
+
+![Obvious single with note simplification stage 3](screenshots/obvious-single/note_simplification_4.png)
+
+Stage 4 simplifies note `8` from row 6:
+
+![Obvious single with note simplification stage 4](screenshots/obvious-single/note_simplification_5.png)
+
+Stage 5 simplifies note `8` from column 2:
+
+![Obvious single with note simplification stage 5](screenshots/obvious-single/note_simplification_6.png)
+
+Stage 6 simplifies note `8` from the box:
+
+![Obvious single with note simplification stage 6](screenshots/obvious-single/note_simplification_7.png)
