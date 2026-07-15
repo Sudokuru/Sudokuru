@@ -1,10 +1,4 @@
-/**
- * These location helpers are generic and useful enough that they will probably
- * eventually graduate into V4 production code. There is no reason to
- * standardize on them outside tests before production code actually needs them.
- */
-
-import type { CellLocation } from "../../Types";
+import type { CellLocation } from "./Types";
 
 /**
  * Returns every location in a row from left to right.

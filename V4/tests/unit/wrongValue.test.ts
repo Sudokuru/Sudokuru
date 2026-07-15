@@ -11,7 +11,7 @@ import {
   boxLocations,
   columnLocations,
   rowLocations,
-} from "../utils/cellLocations";
+} from "../../cellLocations";
 import { withValues } from "../utils/withValues";
 
 const BASE_PUZZLE = ADDITIONAL_TEST_BOARDS_BY_NAME.ONLY_OBVIOUS_SINGLES;
