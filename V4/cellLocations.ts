@@ -1,6 +1,16 @@
 import type { CellLocation } from "./Types";
 
 /**
+ * Returns true when two locations refer to the same puzzle cell.
+ */
+export function locationsEqual(
+  first: CellLocation,
+  second: CellLocation
+): boolean {
+  return first.r === second.r && first.c === second.c;
+}
+
+/**
  * Returns every location in a row from left to right.
  */
 export function rowLocations(row: number, size: number): CellLocation[] {
