@@ -32,6 +32,15 @@ export function locationsEqual(
 
 /**
  * Returns every location in a row from left to right.
+ *
+ * @example
+ * rowLocations(2, 4);
+ * // [
+ * //   { r: 2, c: 0 },
+ * //   { r: 2, c: 1 },
+ * //   { r: 2, c: 2 },
+ * //   { r: 2, c: 3 },
+ * // ]
  */
 export function rowLocations(row: number, size: number): CellLocation[] {
   return Array.from({ length: size }, (_, c) => ({ r: row, c }));
@@ -39,6 +48,15 @@ export function rowLocations(row: number, size: number): CellLocation[] {
 
 /**
  * Returns every location in a column from top to bottom.
+ *
+ * @example
+ * columnLocations(1, 4);
+ * // [
+ * //   { r: 0, c: 1 },
+ * //   { r: 1, c: 1 },
+ * //   { r: 2, c: 1 },
+ * //   { r: 3, c: 1 },
+ * // ]
  */
 export function columnLocations(column: number, size: number): CellLocation[] {
   return Array.from({ length: size }, (_, r) => ({ r, c: column }));
@@ -46,6 +64,14 @@ export function columnLocations(column: number, size: number): CellLocation[] {
 
 /**
  * Returns every location in the containing box in row-major order.
+ *
+ * @example
+ * boxLocations({ r: 4, c: 7 }, 3, 3);
+ * // [
+ * //   { r: 3, c: 6 }, { r: 3, c: 7 }, { r: 3, c: 8 },
+ * //   { r: 4, c: 6 }, { r: 4, c: 7 }, { r: 4, c: 8 },
+ * //   { r: 5, c: 6 }, { r: 5, c: 7 }, { r: 5, c: 8 },
+ * // ]
  */
 export function boxLocations(
   location: CellLocation,
