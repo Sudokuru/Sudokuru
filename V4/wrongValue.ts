@@ -144,8 +144,7 @@ export function getWrongValueHint(
   const wrongValue = getValueCell(puzzle, locationToCheck);
 
   if (
-    !wrongValue ||
-    wrongValue.type !== "value" ||
+    wrongValue?.type !== "value" ||
     wrongValue.value === solution[locationToCheck.r]?.[locationToCheck.c]
   ) {
     return null;
