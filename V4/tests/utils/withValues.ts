@@ -17,8 +17,10 @@ export function withValues(
     (nextPuzzle, { r, c, type, value }) => {
       const nextRow = [...nextPuzzle[r]];
       nextRow[c] = { type, value };
+      const updatedPuzzle = [...nextPuzzle];
+      updatedPuzzle[r] = nextRow;
 
-      return nextPuzzle.map((row, index) => (index === r ? nextRow : row));
+      return updatedPuzzle;
     },
     puzzle
   );
