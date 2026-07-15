@@ -16,6 +16,27 @@ import { withValues } from "../utils/withValues";
 
 const BASE_PUZZLE = ADDITIONAL_TEST_BOARDS_BY_NAME.ONLY_OBVIOUS_SINGLES;
 const SOLUTION = ADDITIONAL_TEST_BOARDS_BY_NAME.ONLY_OBVIOUS_SINGLES_SOLUTION;
+const NO_DIRECT_CONFLICT_CASES: Array<{
+  label: string;
+  wrongValue: ValueCellWithLocation;
+}> = [
+  {
+    label: "documented 4 at row 2, column 2",
+    wrongValue: { r: 1, c: 1, type: "value", value: 4 },
+  },
+  {
+    label: "6 at row 1, column 4",
+    wrongValue: { r: 0, c: 3, type: "value", value: 6 },
+  },
+  {
+    label: "7 at row 2, column 7",
+    wrongValue: { r: 1, c: 6, type: "value", value: 7 },
+  },
+  {
+    label: "2 at row 3, column 4",
+    wrongValue: { r: 2, c: 3, type: "value", value: 2 },
+  },
+];
 
 /**
  * Builds the exact staged hint expected for a direct row, column, or box conflict.
@@ -192,37 +213,38 @@ describe("getWrongValueHint", () => {
     );
   });
 
-  it("returns the documented hint when the wrong value has no direct conflict", () => {
-    const wrongValue: ValueCellWithLocation = {
-      r: 1,
-      c: 1,
-      type: "value",
-      value: 4,
-    };
-    const puzzle = withValues(valuesToPuzzle(BASE_PUZZLE), [wrongValue]);
-    const expectedHint: Hint = {
-      strategy: "WRONG_VALUE",
-      stages: [
-        {
-          highlightCells: [{ location: wrongValue, highlightType: "removal" }],
-          text: "The 4 in row 2, column 2 is the wrong value for this cell.",
-        },
-        {
-          removeValues: [wrongValue],
-          highlightCells: [{ location: wrongValue, highlightType: "focus" }],
-          text: "Remove the 4 in row 2, column 2.",
-        },
-      ],
-    };
+  it.each(NO_DIRECT_CONFLICT_CASES)(
+    "returns the generic no-direct-conflict hint for $label",
+    ({ wrongValue }) => {
+      const puzzle = withValues(valuesToPuzzle(BASE_PUZZLE), [wrongValue]);
+      const expectedHint: Hint = {
+        strategy: "WRONG_VALUE",
+        stages: [
+          {
+            highlightCells: [{ location: wrongValue, highlightType: "removal" }],
+            text: `The ${wrongValue.value} in row ${wrongValue.r + 1}, column ${
+              wrongValue.c + 1
+            } is the wrong value for this cell.`,
+          },
+          {
+            removeValues: [wrongValue],
+            highlightCells: [{ location: wrongValue, highlightType: "focus" }],
+            text: `Remove the ${wrongValue.value} in row ${wrongValue.r + 1}, column ${
+              wrongValue.c + 1
+            }.`,
+          },
+        ],
+      };
 
-    expectHintWithoutMutation(
-      getWrongValueHint,
-      puzzle,
-      SOLUTION,
-      wrongValue,
-      expectedHint
-    );
-  });
+      expectHintWithoutMutation(
+        getWrongValueHint,
+        puzzle,
+        SOLUTION,
+        wrongValue,
+        expectedHint
+      );
+    }
+  );
 
   it("returns null when the targeted cell contains notes", () => {
     const puzzle = valuesToPuzzle(BASE_PUZZLE);
