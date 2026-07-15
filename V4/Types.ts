@@ -8,6 +8,11 @@ export interface CellLocation {
   c: number; // column (0 indexed)
 }
 
+/**
+ * A row, column, or box used as a Sudoku constraint group.
+ */
+export type Unit = "row" | "column" | "box";
+
 export interface CellWithValue {
   type: Extract<CellType, "given" | "value">;
   value: SudokuValue;

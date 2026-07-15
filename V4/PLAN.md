@@ -1,4 +1,4 @@
-# Sudokuru 4.0 Rebuild Plan Revision 1.4
+# Sudokuru 4.0 Rebuild Plan Revision 1.5
 
 ## TL;DR
 
@@ -12,6 +12,8 @@ Rebuild the `Sudokuru` package (v4.0) as a **modular, functional, immutable** Su
 
 ## Changelog
 
+* 1.5
+  * Added the `Unit` term and shared type for puzzle rows, columns, and boxes
 * 1.4
   * Added more info and a new "basis" value to HighlightType
 * 1.3
@@ -65,11 +67,12 @@ A “simple” migration path from Sudokuru `3.4 → 4.0`, focused on making the
 
 ## Terminology (Consistency Rules)
 
-| Term       | Use it when…                                  | Examples                                         |
-| ---------- | --------------------------------------------- | ------------------------------------------------ |
-| **Sudoku** | high-level puzzle object and related metadata | `SudokuObjectProps`, `SudokuData`, `SudokuDrill` |
-| **Game**   | player-session state/metrics/actions          | `GameStatistics`, `GameAction(s)`                |
-| **Puzzle** | the grid itself                               | `CellProps[][]`                                  |
+| Term       | Use it when…                                       | Examples                                         |
+| ---------- | -------------------------------------------------- | ------------------------------------------------ |
+| **Sudoku** | high-level puzzle object and related metadata      | `SudokuObjectProps`, `SudokuData`, `SudokuDrill` |
+| **Game**   | player-session state/metrics/actions               | `GameStatistics`, `GameAction(s)`                |
+| **Puzzle** | the grid itself                                    | `CellProps[][]`                                  |
+| **Unit**   | a row, column, or box used as a constraint group   | `"row"`, `"column"`, `"box"`                   |
 
 ---
 
