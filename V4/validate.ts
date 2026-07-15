@@ -247,7 +247,7 @@ function parsePuzzleStringValues(puzzle: string, size: number): number[][] {
 /**
  * Converts numeric values into public puzzle cells while preserving empty cells as notes.
  */
-function valuesToPuzzle(values: number[][]): CellProps[][] {
+export function valuesToPuzzle(values: number[][]): CellProps[][] {
   return values.map((row: number[]) => row.map(valueToCell));
 }
 
@@ -448,7 +448,7 @@ function isSolved(board: number[][]): boolean {
 /**
  * Produces a deep-enough copy for solver snapshots and immutable branch updates.
  */
-function cloneBoard(board: number[][]): number[][] {
+export function cloneBoard(board: number[][]): number[][] {
   return board.map((row: number[]) => [...row]);
 }
 
