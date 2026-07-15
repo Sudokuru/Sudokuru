@@ -13,8 +13,8 @@ export function clonePuzzle(puzzle: CellProps[][]): CellProps[][] {
   return puzzle.map((row) =>
     row.map((cell): CellProps =>
       cell.type === "note"
-        ? { type: "note", notes: [...cell.notes] }
-        : { type: cell.type, value: cell.value }
+        ? { ...cell, notes: [...cell.notes] }
+        : { ...cell }
     )
   );
 }
