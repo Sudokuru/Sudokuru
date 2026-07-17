@@ -11,7 +11,6 @@ import type {
   CellProps,
   Hint,
   SudokuValue,
-  SupportedBoardSize,
   Unit,
   ValueCellWithLocation,
 } from "./Types";
