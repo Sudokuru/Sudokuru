@@ -144,7 +144,7 @@ export function getWrongValueHint(
 
   if (
     wrongValue?.type !== "value" ||
-    wrongValue.value === solution[locationToCheck.r]?.[locationToCheck.c]
+    wrongValue.value === solution[locationToCheck.r][locationToCheck.c]
   ) {
     return null;
   }
