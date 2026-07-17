@@ -54,6 +54,7 @@ function findDirectConflict(
 ): DirectConflict | null {
   for (const { unit, locations } of getUnitChecks(puzzle, wrongValue)) {
     for (const location of locations) {
+      // skip comparing the cell against itself
       if (locationsEqual(location, wrongValue)) {
         continue;
       }
