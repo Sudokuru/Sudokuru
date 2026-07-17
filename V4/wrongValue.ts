@@ -7,6 +7,7 @@ import {
   rowLocations,
 } from "./cellLocations";
 import type {
+  BoxLayout,
   CellLocation,
   CellProps,
   Hint,
@@ -32,7 +33,7 @@ function getUnitChecks(
   location: CellLocation
 ): UnitCheck[] {
   const size = puzzle.length;
-  const layout = BOX_LAYOUTS[size];
+  const layout: BoxLayout = BOX_LAYOUTS[size];
 
   return [
     { unit: "row", locations: rowLocations(location.r, size) },
