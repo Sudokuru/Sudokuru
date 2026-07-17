@@ -33,7 +33,7 @@ function getUnitChecks(
   location: CellLocation
 ): UnitCheck[] {
   const size = puzzle.length;
-  const layout = BOX_LAYOUTS[size as SupportedBoardSize];
+  const layout = BOX_LAYOUTS[size];
 
   return [
     { unit: "row", locations: rowLocations(location.r, size) },
