@@ -1,4 +1,4 @@
-# Sudokuru 4.0 Rebuild Plan Revision 1.4
+# Sudokuru 4.0 Rebuild Plan Revision 1.5
 
 ## TL;DR
 
@@ -12,6 +12,8 @@ Rebuild the `Sudokuru` package (v4.0) as a **modular, functional, immutable** Su
 
 ## Changelog
 
+* 1.5
+  * Added the `Unit` term and shared type for puzzle rows, columns, and boxes
 * 1.4
   * Added more info and a new "basis" value to HighlightType
 * 1.3
@@ -65,11 +67,12 @@ A “simple” migration path from Sudokuru `3.4 → 4.0`, focused on making the
 
 ## Terminology (Consistency Rules)
 
-| Term       | Use it when…                                  | Examples                                         |
-| ---------- | --------------------------------------------- | ------------------------------------------------ |
-| **Sudoku** | high-level puzzle object and related metadata | `SudokuObjectProps`, `SudokuData`, `SudokuDrill` |
-| **Game**   | player-session state/metrics/actions          | `GameStatistics`, `GameAction(s)`                |
-| **Puzzle** | the grid itself                               | `CellProps[][]`                                  |
+| Term       | Use it when…                                       | Examples                                         |
+| ---------- | -------------------------------------------------- | ------------------------------------------------ |
+| **Sudoku** | high-level puzzle object and related metadata      | `SudokuObjectProps`, `SudokuData`, `SudokuDrill` |
+| **Game**   | player-session state/metrics/actions               | `GameStatistics`, `GameAction(s)`                |
+| **Puzzle** | the grid itself                                    | `CellProps[][]`                                  |
+| **Unit**   | a row, column, or box used as a constraint group   | `"row"`, `"column"`, `"box"`                   |
 
 ---
 
@@ -568,8 +571,8 @@ For each strategy:
 | ☑      | Wrong value hint docs                        | Example hint stages + screenshot in Frontend                       | https://github.com/Sudokuru/Sudokuru/pull/111 |
 | ☑      | Amend notes hint docs                        | Example hint stages + screenshot in Frontend                       | https://github.com/Sudokuru/Sudokuru/pull/112 |
 | ☑      | Obvious single docs                          | Example hint stages + screenshot in Frontend                       | https://github.com/Sudokuru/Sudokuru/pull/113 |
-| ☐      | Strategy implementation PR checklist         | Strategy has sufficient docs/tests/etc link to example PRs         | —       |
-| ☐      | Implement wrong value                        | Strategy module + tests match docs                                 | —       |
+| ☑      | Strategy implementation PR checklist         | Strategy has sufficient docs/tests/etc link to example PRs         | https://github.com/Sudokuru/Sudokuru/pull/114 |
+| ☑      | Implement wrong value                        | Strategy module + tests match docs                                 | https://github.com/Sudokuru/Sudokuru/pull/114 |
 | ☐      | Implement amend notes                        | Strategy module + tests match docs                                 | —       |
 | ☐      | Implement obvious single                     | Strategy module + tests match docs                                 | —       |
 | ☐      | `getHint`                                    | Deterministic; staged hints; strategy ordering; tests              | —       |

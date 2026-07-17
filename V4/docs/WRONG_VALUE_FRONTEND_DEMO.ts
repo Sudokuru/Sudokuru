@@ -93,7 +93,7 @@ const PUZZLE_SOLUTION_NUMBERS: SudokuValue[][] = [
   [9, 4, 2, 8, 7, 1, 5, 6, 3],
 ];
 
-const directConflictWrongValue: ValueCellWithLocation = {
+export const directConflictWrongValue: ValueCellWithLocation = {
   r: 0,
   c: 3,
   type: "value",
@@ -107,7 +107,7 @@ const conflictingGiven: ValueCellWithLocation = {
   value: 8,
 };
 
-const noDirectConflictWrongValue: ValueCellWithLocation = {
+export const noDirectConflictWrongValue: ValueCellWithLocation = {
   r: 1,
   c: 1,
   type: "value",
