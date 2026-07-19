@@ -1,0 +1,4 @@
+interface:
+  display_name: "Create Sudoku Strategy Doc Tests"
+  short_description: "Turn approved strategy docs into exact tests"
+  default_prompt: "Use $create-sudoku-strategy-doc-tests to create exact tests from the approved strategy documentation."

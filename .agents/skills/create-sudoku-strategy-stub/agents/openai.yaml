@@ -1,0 +1,4 @@
+interface:
+  display_name: "Create Sudoku Strategy Stub"
+  short_description: "Scaffold a typed V4 Sudoku strategy function"
+  default_prompt: "Use $create-sudoku-strategy-stub to scaffold the next documented V4 strategy."
