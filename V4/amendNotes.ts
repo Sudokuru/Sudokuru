@@ -1,10 +1,11 @@
 import {
   getNoteCell,
-  getUnitLocations,
   getValueCell,
   locationsEqual,
 } from "./cellLocations";
+import { formatNumbers } from "./format";
 import { notesMatch } from "./notes";
+import { getUnitDescription, getUnitLocations } from "./units";
 import type {
   CellLocation,
   CellProps,
@@ -48,35 +49,6 @@ function getNewBasisCells(
 }
 
 /**
- * Formats a non-empty list of note values using the approved hint punctuation.
- */
-function formatNoteValues(values: SudokuValue[]): string {
-  if (values.length === 1) {
-    return `${values[0]}`;
-  }
-
-  if (values.length === 2) {
-    return `${values[0]} and ${values[1]}`;
-  }
-
-  return `${values.slice(0, -1).join(", ")}, and ${values.at(-1)}`;
-}
-
-/**
- * Returns the user-facing row, column, or box description for a removal stage.
- */
-function getUnitDescription(target: CellLocation, unit: Unit): string {
-  switch (unit) {
-    case "row":
-      return `row ${target.r + 1}`;
-    case "column":
-      return `column ${target.c + 1}`;
-    case "box":
-      return "the same box";
-  }
-}
-
-/**
  * Builds one exact removal stage from value-ordered basis cells.
  */
 function getRemovalStage(
@@ -99,7 +71,7 @@ function getRemovalStage(
   const conflictExplanation = isSingular
     ? "that number is"
     : "those numbers are";
-  const formattedNotes = formatNoteValues(removedNotes);
+  const formattedNotes = formatNumbers(removedNotes);
   const unitLabel = getUnitDescription(target, unit);
 
   return {
