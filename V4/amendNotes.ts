@@ -4,6 +4,7 @@ import {
   getValueCell,
   locationsEqual,
 } from "./cellLocations";
+import { notesMatch } from "./notes";
 import type {
   CellLocation,
   CellProps,
@@ -154,21 +155,6 @@ function getRemovalStages(
   }
 
   return { stages, removedValues };
-}
-
-/**
- * Returns true when two prevalidated note arrays contain the same values.
- */
-function notesMatch(
-  actualNotes: SudokuValue[],
-  expectedNotes: SudokuValue[]
-): boolean {
-  if (actualNotes.length !== expectedNotes.length) {
-    return false;
-  }
-
-  const expectedValues = new Set(expectedNotes);
-  return actualNotes.every((note) => expectedValues.has(note));
 }
 
 /**
