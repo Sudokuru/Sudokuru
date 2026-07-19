@@ -23,6 +23,7 @@ import {
   ADDITIONAL_SOLVABLE_PUZZLES,
   ADDITIONAL_SOLVABLE_SOLUTIONS,
 } from "../utils/additionalBoards";
+import { createEmptyPuzzle } from "../utils/puzzleFactories";
 
 /**
  * Explicit runtime fixture type for values that intentionally violate CellProps.
@@ -110,15 +111,6 @@ function createPatchedPuzzleFromSolvedBoard(
   }
 
   return { puzzle, solution };
-}
-
-/**
- * Creates an all-empty puzzle for shape, size, and ambiguity tests.
- */
-function createEmptyPuzzle(size: number): CellProps[][] {
-  return Array.from({ length: size }, () =>
-    Array.from({ length: size }, () => ({ type: "note", notes: [] }))
-  );
 }
 
 /**
