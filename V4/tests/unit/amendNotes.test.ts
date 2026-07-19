@@ -7,12 +7,11 @@ import type {
   Unit,
   ValueCellWithLocation,
 } from "../../Types";
-import { locationsEqual } from "../../cellLocations";
+import { getUnitLocations, locationsEqual } from "../../cellLocations";
 import { getAmendNotesHint } from "../../amendNotes";
 import { ADDITIONAL_TEST_BOARDS_BY_NAME } from "../utils/additionalBoards";
 import { expectHintWithoutMutation } from "../utils/assertions";
 import { createEmptyPuzzle } from "../utils/puzzleFactories";
-import { getUnitLocations } from "../utils/unitLocations";
 import { withNotes, withValues } from "../utils/withCells";
 
 const BOARD_SIZE = 9;

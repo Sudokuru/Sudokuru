@@ -1,6 +1,10 @@
+import { BOX_LAYOUTS } from "./Types";
 import type {
   CellLocation,
   CellProps,
+  NoteCellWithLocation,
+  SupportedBoardSize,
+  Unit,
   ValueCellWithLocation,
 } from "./Types";
 
@@ -18,6 +22,22 @@ export function getValueCell(
   }
 
   return { ...location, ...cell };
+}
+
+/**
+ * Returns a puzzle note cell with its location, or null for a placed-value cell.
+ */
+export function getNoteCell(
+  puzzle: CellProps[][],
+  location: CellLocation
+): NoteCellWithLocation | null {
+  const cell = puzzle[location.r]?.[location.c];
+
+  if (!cell || cell.type !== "note") {
+    return null;
+  }
+
+  return { ...location, ...cell, notes: [...cell.notes] };
 }
 
 /**
@@ -87,4 +107,24 @@ export function boxLocations(
       c: firstColumn + columnOffset,
     }))
   ).flat();
+}
+
+/**
+ * Returns every location in the requested row, column, or box.
+ */
+export function getUnitLocations(
+  target: CellLocation,
+  unit: Unit,
+  size: SupportedBoardSize
+): CellLocation[] {
+  switch (unit) {
+    case "row":
+      return rowLocations(target.r, size);
+    case "column":
+      return columnLocations(target.c, size);
+    case "box": {
+      const { boxHeight, boxWidth } = BOX_LAYOUTS[size];
+      return boxLocations(target, boxHeight, boxWidth);
+    }
+  }
 }
