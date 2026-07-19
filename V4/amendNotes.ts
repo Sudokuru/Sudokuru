@@ -6,6 +6,7 @@ import {
 import { formatNumbers } from "./format";
 import { notesMatch } from "./notes";
 import { getUnitDescription, getUnitLocations } from "./units";
+import { UNIT_PRECEDENCE } from "./Types";
 import type {
   CellLocation,
   CellProps,
@@ -19,7 +20,6 @@ import type {
 
 const INTRODUCTION_TEXT =
   "Amend notes makes a cell contain every note that does not conflict with its row, column, or box.";
-const UNIT_PRECEDENCE: Unit[] = ["row", "column", "box"];
 
 type RemovalStageData = {
   stages: HintStage[];
