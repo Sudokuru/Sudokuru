@@ -7,8 +7,9 @@ import type {
   Unit,
   ValueCellWithLocation,
 } from "../../Types";
-import { getUnitLocations, locationsEqual } from "../../cellLocations";
+import { locationsEqual } from "../../cellLocations";
 import { getAmendNotesHint } from "../../amendNotes";
+import { getUnitLocations } from "../../units";
 import { ADDITIONAL_TEST_BOARDS_BY_NAME } from "../utils/additionalBoards";
 import { expectHintWithoutMutation } from "../utils/assertions";
 import { createEmptyPuzzle } from "../utils/puzzleFactories";

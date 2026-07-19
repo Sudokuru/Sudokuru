@@ -1,10 +1,7 @@
-import { BOX_LAYOUTS } from "./Types";
 import type {
   CellLocation,
   CellProps,
   NoteCellWithLocation,
-  SupportedBoardSize,
-  Unit,
   ValueCellWithLocation,
 } from "./Types";
 
@@ -107,24 +104,4 @@ export function boxLocations(
       c: firstColumn + columnOffset,
     }))
   ).flat();
-}
-
-/**
- * Returns every location in the requested row, column, or box.
- */
-export function getUnitLocations(
-  target: CellLocation,
-  unit: Unit,
-  size: SupportedBoardSize
-): CellLocation[] {
-  switch (unit) {
-    case "row":
-      return rowLocations(target.r, size);
-    case "column":
-      return columnLocations(target.c, size);
-    case "box": {
-      const { boxHeight, boxWidth } = BOX_LAYOUTS[size];
-      return boxLocations(target, boxHeight, boxWidth);
-    }
-  }
 }
