@@ -1,0 +1,417 @@
+import type {
+  CellLocation,
+  Hint,
+  HintStage,
+  NoteCellWithLocation,
+  SudokuValue,
+  Unit,
+  ValueCellWithLocation,
+} from "../../Types";
+import { locationsEqual } from "../../cellLocations";
+import { getAmendNotesHint } from "../../amendNotes";
+import { ADDITIONAL_TEST_BOARDS_BY_NAME } from "../utils/additionalBoards";
+import { expectHintWithoutMutation } from "../utils/assertions";
+import { createEmptyPuzzle } from "../utils/puzzleFactories";
+import { getUnitLocations } from "../utils/unitLocations";
+import { withNotes, withValues } from "../utils/withCells";
+
+const BOARD_SIZE = 9;
+const ALL_NOTES: SudokuValue[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+const SOLUTION =
+  ADDITIONAL_TEST_BOARDS_BY_NAME.ONLY_OBVIOUS_SINGLES_SOLUTION;
+
+/** Describes one expected row, column, or box removal stage. */
+interface RemovalExpectation {
+  unit: Unit;
+  basisCells: ValueCellWithLocation[];
+}
+
+/**
+ * Formats note values as a user-facing English list.
+ */
+function formatNoteValues(values: SudokuValue[]): string {
+  if (values.length === 1) {
+    return `${values[0]}`;
+  }
+
+  if (values.length === 2) {
+    return `${values[0]} and ${values[1]}`;
+  }
+
+  return `${values.slice(0, -1).join(", ")}, and ${values.at(-1)}`;
+}
+
+/**
+ * Returns the user-facing row, column, or box description for a removal stage.
+ */
+function unitDescription(target: CellLocation, unit: Unit): string {
+  if (unit === "row") {
+    return `row ${target.r + 1}`;
+  }
+
+  if (unit === "column") {
+    return `column ${target.c + 1}`;
+  }
+
+  return "the same box";
+}
+
+/**
+ * Builds an exact removal stage with deterministic focus and basis ordering.
+ */
+function expectedRemovalStage(
+  target: NoteCellWithLocation,
+  expectation: RemovalExpectation
+): HintStage {
+  const removedNotes = expectation.basisCells.map(({ value }) => value);
+  const basisLocations = expectation.basisCells.map(({ r, c }) => ({ r, c }));
+  const focusLocations = getUnitLocations(
+    target,
+    expectation.unit,
+    BOARD_SIZE
+  ).filter(
+    (location) =>
+      !locationsEqual(location, target) &&
+      !basisLocations.some((basisLocation) =>
+        locationsEqual(location, basisLocation)
+      )
+  );
+  const isSingular = removedNotes.length === 1;
+
+  return {
+    removeNotes: [{ ...target, notes: removedNotes }],
+    highlightCells: [
+      { location: target, highlightType: "focus" },
+      ...focusLocations.map((location) => ({
+        location,
+        highlightType: "focus" as const,
+      })),
+      ...basisLocations.map((location) => ({
+        location,
+        highlightType: "basis" as const,
+      })),
+    ],
+    highlightNotes: removedNotes.map((value) => ({
+      location: target,
+      value,
+      highlightType: "removal" as const,
+    })),
+    text: `Remove ${isSingular ? "note" : "notes"} ${formatNoteValues(
+      removedNotes
+    )} because ${isSingular ? "that number is" : "those numbers are"} already in ${unitDescription(
+      target,
+      expectation.unit
+    )}.`,
+  };
+}
+
+/**
+ * Builds the complete exact hint expected for an amend-notes target.
+ */
+function expectedAmendNotesHint(
+  target: NoteCellWithLocation,
+  removalExpectations: RemovalExpectation[] = []
+): Hint {
+  const allNotesCell: NoteCellWithLocation = {
+    ...target,
+    notes: [...ALL_NOTES],
+  };
+
+  return {
+    strategy: "AMEND_NOTES",
+    stages: [
+      {
+        text:
+          "Amend notes makes a cell contain every note that does not conflict with its row, column, or box.",
+      },
+      {
+        placeNotes: [allNotesCell],
+        highlightCells: [{ location: target, highlightType: "focus" }],
+        highlightNotes: ALL_NOTES.map((value) => ({
+          location: target,
+          value,
+          highlightType: "placement" as const,
+        })),
+        text: `Add all notes not already present to the cell in row ${
+          target.r + 1
+        }, column ${target.c + 1}.`,
+      },
+      ...removalExpectations.map((expectation) =>
+        expectedRemovalStage(target, expectation)
+      ),
+    ],
+  };
+}
+
+describe("getAmendNotesHint", () => {
+  const target: NoteCellWithLocation = {
+    r: 4,
+    c: 4,
+    type: "note",
+    notes: [],
+  };
+
+  it.each<{
+    label: string;
+    unit: Unit;
+    basisCell: ValueCellWithLocation;
+  }>([
+    {
+      label: "row with a given",
+      unit: "row",
+      basisCell: { r: 4, c: 0, type: "given", value: 7 },
+    },
+    {
+      label: "column with a user-entered value",
+      unit: "column",
+      basisCell: { r: 0, c: 4, type: "value", value: 8 },
+    },
+    {
+      label: "box with a given",
+      unit: "box",
+      basisCell: { r: 5, c: 3, type: "given", value: 5 },
+    },
+  ])("returns the exact isolated $label removal stage", ({ unit, basisCell }) => {
+    const puzzle = withNotes(
+      withValues(createEmptyPuzzle(BOARD_SIZE), [basisCell]),
+      [target]
+    );
+    const expectedHint = expectedAmendNotesHint(target, [
+      { unit, basisCells: [basisCell] },
+    ]);
+
+    expectHintWithoutMutation(
+      getAmendNotesHint,
+      puzzle,
+      SOLUTION,
+      target,
+      expectedHint
+    );
+  });
+
+  it("uses row, column, then box precedence with deterministic note and location ordering", () => {
+    const targetWithExistingNote: NoteCellWithLocation = {
+      ...target,
+      notes: [3],
+    };
+    const rowBasisByValue: ValueCellWithLocation[] = [
+      { r: 4, c: 6, type: "given", value: 1 },
+      { r: 4, c: 1, type: "given", value: 6 },
+      { r: 4, c: 0, type: "given", value: 7 },
+    ];
+    const columnBasisByValue: ValueCellWithLocation[] = [
+      { r: 2, c: 4, type: "given", value: 2 },
+      { r: 7, c: 4, type: "given", value: 4 },
+      { r: 0, c: 4, type: "given", value: 8 },
+    ];
+    const boxBasisByValue: ValueCellWithLocation[] = [
+      { r: 5, c: 3, type: "given", value: 5 },
+    ];
+    const puzzle = withNotes(
+      withValues(createEmptyPuzzle(BOARD_SIZE), [
+        rowBasisByValue[2],
+        columnBasisByValue[2],
+        boxBasisByValue[0],
+        rowBasisByValue[0],
+        columnBasisByValue[0],
+        rowBasisByValue[1],
+        columnBasisByValue[1],
+      ]),
+      [targetWithExistingNote]
+    );
+    const expectedHint = expectedAmendNotesHint(targetWithExistingNote, [
+      { unit: "row", basisCells: rowBasisByValue },
+      { unit: "column", basisCells: columnBasisByValue },
+      { unit: "box", basisCells: boxBasisByValue },
+    ]);
+
+    expectHintWithoutMutation(
+      getAmendNotesHint,
+      puzzle,
+      SOLUTION,
+      targetWithExistingNote,
+      expectedHint
+    );
+  });
+
+  it("omits later unit stages when their conflicts were already removed", () => {
+    const rowBasis: ValueCellWithLocation = {
+      r: 4,
+      c: 0,
+      type: "given",
+      value: 7,
+    };
+    const duplicateColumnBasis: ValueCellWithLocation = {
+      r: 8,
+      c: 4,
+      type: "given",
+      value: 7,
+    };
+    const duplicateBoxBasis: ValueCellWithLocation = {
+      r: 3,
+      c: 3,
+      type: "given",
+      value: 7,
+    };
+    const puzzle = withNotes(
+      withValues(createEmptyPuzzle(BOARD_SIZE), [
+        duplicateBoxBasis,
+        duplicateColumnBasis,
+        rowBasis,
+      ]),
+      [target]
+    );
+    const expectedHint = expectedAmendNotesHint(target, [
+      { unit: "row", basisCells: [rowBasis] },
+    ]);
+
+    expectHintWithoutMutation(
+      getAmendNotesHint,
+      puzzle,
+      SOLUTION,
+      target,
+      expectedHint
+    );
+  });
+
+  it("returns a placement-only hint when no placed values conflict", () => {
+    const puzzle = withNotes(createEmptyPuzzle(BOARD_SIZE), [target]);
+
+    expectHintWithoutMutation(
+      getAmendNotesHint,
+      puzzle,
+      SOLUTION,
+      target,
+      expectedAmendNotesHint(target)
+    );
+  });
+
+  it("ignores notes in neighboring cells when finding basis values", () => {
+    const neighboringNoteCell: NoteCellWithLocation = {
+      r: 4,
+      c: 0,
+      type: "note",
+      notes: [7],
+    };
+    const puzzle = withNotes(createEmptyPuzzle(BOARD_SIZE), [
+      target,
+      neighboringNoteCell,
+    ]);
+
+    expectHintWithoutMutation(
+      getAmendNotesHint,
+      puzzle,
+      SOLUTION,
+      target,
+      expectedAmendNotesHint(target)
+    );
+  });
+
+  it("still emits the all-notes stage when every note is already present but conflicts remain", () => {
+    const targetWithAllNotes: NoteCellWithLocation = {
+      ...target,
+      notes: [...ALL_NOTES],
+    };
+    const basisCell: ValueCellWithLocation = {
+      r: 4,
+      c: 0,
+      type: "given",
+      value: 7,
+    };
+    const puzzle = withNotes(
+      withValues(createEmptyPuzzle(BOARD_SIZE), [basisCell]),
+      [targetWithAllNotes]
+    );
+    const expectedHint = expectedAmendNotesHint(targetWithAllNotes, [
+      { unit: "row", basisCells: [basisCell] },
+    ]);
+
+    expectHintWithoutMutation(
+      getAmendNotesHint,
+      puzzle,
+      SOLUTION,
+      targetWithAllNotes,
+      expectedHint
+    );
+  });
+
+  it.each([
+    { label: "given", type: "given" as const },
+    { label: "user-entered value", type: "value" as const },
+  ])("returns null when the targeted cell is a $label", ({ type }) => {
+    const valueCell: ValueCellWithLocation = {
+      r: target.r,
+      c: target.c,
+      type,
+      value: 3,
+    };
+    const puzzle = withValues(createEmptyPuzzle(BOARD_SIZE), [valueCell]);
+
+    expectHintWithoutMutation(
+      getAmendNotesHint,
+      puzzle,
+      SOLUTION,
+      valueCell,
+      null
+    );
+  });
+
+  it.each([
+    { label: "ascending order", notes: [3, 9] },
+    { label: "different order", notes: [9, 3] },
+  ])(
+    "returns null when the target already has the complete candidate set in $label",
+    ({ notes }) => {
+      const correctTarget: NoteCellWithLocation = {
+        ...target,
+        notes,
+      };
+      const basisCells: ValueCellWithLocation[] = [
+        { r: 4, c: 6, type: "given", value: 1 },
+        { r: 2, c: 4, type: "given", value: 2 },
+        { r: 7, c: 4, type: "given", value: 4 },
+        { r: 5, c: 3, type: "given", value: 5 },
+        { r: 4, c: 1, type: "given", value: 6 },
+        { r: 4, c: 0, type: "given", value: 7 },
+        { r: 0, c: 4, type: "given", value: 8 },
+      ];
+      const puzzle = withNotes(
+        withValues(createEmptyPuzzle(BOARD_SIZE), basisCells),
+        [correctTarget]
+      );
+
+      expectHintWithoutMutation(
+        getAmendNotesHint,
+        puzzle,
+        SOLUTION,
+        correctTarget,
+        null
+      );
+    }
+  );
+
+  it("checks only the targeted note cell when other note cells need amendment", () => {
+    const correctTarget: NoteCellWithLocation = {
+      ...target,
+      notes: [...ALL_NOTES],
+    };
+    const otherIncompleteCell: NoteCellWithLocation = {
+      r: 0,
+      c: 0,
+      type: "note",
+      notes: [],
+    };
+    const puzzle = withNotes(createEmptyPuzzle(BOARD_SIZE), [
+      correctTarget,
+      otherIncompleteCell,
+    ]);
+
+    expectHintWithoutMutation(
+      getAmendNotesHint,
+      puzzle,
+      SOLUTION,
+      correctTarget,
+      null
+    );
+  });
+});
