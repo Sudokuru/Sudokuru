@@ -17,17 +17,31 @@ import { withNotes, withValues } from "../utils/withCells";
 
 const BOARD_SIZE = 9;
 const ALL_NOTES: SudokuValue[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+/**
+ * Every placed value in the synthetic fixtures matches this solved board, so
+ * the tests vary only the note state and amend-notes context.
+ */
 const SOLUTION =
   ADDITIONAL_TEST_BOARDS_BY_NAME.ONLY_OBVIOUS_SINGLES_SOLUTION;
 
-/** Describes one expected row, column, or box removal stage. */
+/**
+ * Describes one expected removal stage. Stage order comes from the containing
+ * array, while basis-cell order defines both removed-note and basis-highlight order.
+ */
 interface RemovalExpectation {
+  /** The constraint unit responsible for this stage's removals. */
   unit: Unit;
+
+  /**
+   * Cells responsible for notes newly removed in this stage, ordered by value.
+   * Values already removed by an earlier unit must not appear again.
+   */
   basisCells: ValueCellWithLocation[];
 }
 
 /**
- * Formats note values as a user-facing English list.
+ * Formats a non-empty list of note values using the documentation's punctuation.
  */
 function formatNoteValues(values: SudokuValue[]): string {
   if (values.length === 1) {
@@ -45,19 +59,18 @@ function formatNoteValues(values: SudokuValue[]): string {
  * Returns the user-facing row, column, or box description for a removal stage.
  */
 function unitDescription(target: CellLocation, unit: Unit): string {
-  if (unit === "row") {
-    return `row ${target.r + 1}`;
+  switch (unit) {
+    case "row":
+      return `row ${target.r + 1}`;
+    case "column":
+      return `column ${target.c + 1}`;
+    case "box":
+      return "the same box";
   }
-
-  if (unit === "column") {
-    return `column ${target.c + 1}`;
-  }
-
-  return "the same box";
 }
 
 /**
- * Builds an exact removal stage with deterministic focus and basis ordering.
+ * Builds one exact removal stage from its explicitly ordered basis cells.
  */
 function expectedRemovalStage(
   target: NoteCellWithLocation,
@@ -108,7 +121,7 @@ function expectedRemovalStage(
 }
 
 /**
- * Builds the complete exact hint expected for an amend-notes target.
+ * Builds a complete exact hint while preserving the supplied removal-stage order.
  */
 function expectedAmendNotesHint(
   target: NoteCellWithLocation,
@@ -118,6 +131,16 @@ function expectedAmendNotesHint(
     ...target,
     notes: [...ALL_NOTES],
   };
+  const placementHighlights = ALL_NOTES.map((value) => ({
+    location: target,
+    value,
+    highlightType: "placement" as const,
+  }));
+  const removalStages = removalExpectations.map((expectation) =>
+    expectedRemovalStage(target, expectation)
+  );
+  const row = target.r + 1;
+  const column = target.c + 1;
 
   return {
     strategy: "AMEND_NOTES",
@@ -129,23 +152,16 @@ function expectedAmendNotesHint(
       {
         placeNotes: [allNotesCell],
         highlightCells: [{ location: target, highlightType: "focus" }],
-        highlightNotes: ALL_NOTES.map((value) => ({
-          location: target,
-          value,
-          highlightType: "placement" as const,
-        })),
-        text: `Add all notes not already present to the cell in row ${
-          target.r + 1
-        }, column ${target.c + 1}.`,
+        highlightNotes: placementHighlights,
+        text: `Add all notes not already present to the cell in row ${row}, column ${column}.`,
       },
-      ...removalExpectations.map((expectation) =>
-        expectedRemovalStage(target, expectation)
-      ),
+      ...removalStages,
     ],
   };
 }
 
 describe("getAmendNotesHint", () => {
+  // A center cell makes each row, column, and box fixture straightforward to audit.
   const target: NoteCellWithLocation = {
     r: 4,
     c: 4,
@@ -174,6 +190,7 @@ describe("getAmendNotesHint", () => {
       basisCell: { r: 5, c: 3, type: "given", value: 5 },
     },
   ])("returns the exact isolated $label removal stage", ({ unit, basisCell }) => {
+    // Each case has exactly one placed value, isolating the requested unit stage.
     const puzzle = withNotes(
       withValues(createEmptyPuzzle(BOARD_SIZE), [basisCell]),
       [target]
@@ -196,6 +213,9 @@ describe("getAmendNotesHint", () => {
       ...target,
       notes: [3],
     };
+
+    // Basis arrays are ordered by value because the hint must remove and
+    // highlight notes in ascending order, independent of cell traversal order.
     const rowBasisByValue: ValueCellWithLocation[] = [
       { r: 4, c: 6, type: "given", value: 1 },
       { r: 4, c: 1, type: "given", value: 6 },
@@ -211,13 +231,9 @@ describe("getAmendNotesHint", () => {
     ];
     const puzzle = withNotes(
       withValues(createEmptyPuzzle(BOARD_SIZE), [
-        rowBasisByValue[2],
-        columnBasisByValue[2],
-        boxBasisByValue[0],
-        rowBasisByValue[0],
-        columnBasisByValue[0],
-        rowBasisByValue[1],
-        columnBasisByValue[1],
+        ...rowBasisByValue,
+        ...columnBasisByValue,
+        ...boxBasisByValue,
       ]),
       [targetWithExistingNote]
     );
@@ -255,6 +271,9 @@ describe("getAmendNotesHint", () => {
       type: "given",
       value: 7,
     };
+
+    // These three 7s occupy different rows, columns, and boxes and all match
+    // the solution. Row precedence removes 7 once, leaving no later work.
     const puzzle = withNotes(
       withValues(createEmptyPuzzle(BOARD_SIZE), [
         duplicateBoxBasis,
@@ -377,6 +396,9 @@ describe("getAmendNotesHint", () => {
         { r: 4, c: 0, type: "given", value: 7 },
         { r: 0, c: 4, type: "given", value: 8 },
       ];
+
+      // The placed values exclude exactly 3 and 9, making those the complete
+      // candidate set regardless of their order in the target notes array.
       const puzzle = withNotes(
         withValues(createEmptyPuzzle(BOARD_SIZE), basisCells),
         [correctTarget]
@@ -403,6 +425,9 @@ describe("getAmendNotesHint", () => {
       type: "note",
       notes: [],
     };
+
+    // On an otherwise empty puzzle, every other cell also needs all notes.
+    // A null result therefore proves the strategy evaluates only the target.
     const puzzle = withNotes(createEmptyPuzzle(BOARD_SIZE), [
       correctTarget,
       otherIncompleteCell,
