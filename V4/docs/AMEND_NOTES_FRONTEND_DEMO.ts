@@ -80,7 +80,7 @@ const BASE_PUZZLE_NUMBERS: SudokuValue[][] = [
   [0, 0, 0, 0, 0, 1, 5, 0, 0],
 ];
 
-const basicTargetCell: NoteCellWithLocation = {
+export const basicTargetCell: NoteCellWithLocation = {
   r: 1,
   c: 2,
   type: "note",
@@ -121,7 +121,7 @@ const basicColumnBasisCells: CellLocation[] = [
   { r: 5, c: 2 },
 ];
 
-const correctiveTargetCell: NoteCellWithLocation = {
+export const correctiveTargetCell: NoteCellWithLocation = {
   r: 1,
   c: 6,
   type: "note",
