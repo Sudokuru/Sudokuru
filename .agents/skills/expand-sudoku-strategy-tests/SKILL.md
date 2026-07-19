@@ -13,7 +13,7 @@ Define the complete behavioral contract around the docs examples while leaving p
 2. Inspect `V4/tests/unit/wrongValue.test.ts` as the baseline pattern, then prefer a newer relevant strategy test when available.
 3. Before writing a helper, search `V4/tests/utils/`, V4 production modules, and existing tests for the same or similar behavior. Prefer a production helper, then an exported test utility. If a generic helper is still local to another test, move it into `V4/tests/utils/` and update both callers.
 4. Identify materially different matches, non-matches, ambiguity, precedence, and traversal cases for this strategy.
-5. Add `V4/tests/unit/<lowerCamelStrategy>.test.ts`, using exact `Hint` equality.
+5. Add `V4/tests/unit/<lowerCamelStrategy>.test.ts`, using exact `Hint` equality against literal expected hints.
 6. Reuse helpers such as `valuesToPuzzle`, `createEmptyPuzzle`, `withNotes`/`withValues`, `expectHintWithoutMutation`, and production location helpers when applicable.
 
 ## Coverage Model
@@ -32,6 +32,8 @@ Adapt these categories to the strategy rather than adding meaningless cases:
 - Do not modify or implement production strategy code.
 - Do not test malformed boards when the strategy contract says inputs are prevalidated.
 - Do not duplicate approved docs fixtures; leave exact docs coverage in the docs test.
+- Keep helpers on the input and assertion sides of a test. Express expected hints as literal contract data; reuse named literal hints or stages only when their output is exactly identical.
+- Do not calculate expected stages with production helpers or local expectation builders. In particular, do not reimplement unit traversal, match selection, precedence, ordering, text or pluralization, highlights, actions, or stage assembly; mirrored logic can preserve the same bug in both production and tests.
 - Avoid thin wrapper helpers that only rename or compose one or two existing helpers. Call the existing helpers directly, using an intermediate variable or brief comment when setup needs clarification. For example, prefer `withNotes(withValues(createEmptyPuzzle(9), basisCells), [target])` over a `puzzleWithBasisCells` wrapper.
 - Add a helper only when it captures meaningful repeated logic or a substantive test-domain abstraction.
 - Keep helpers local until reused. Put test-only reusable helpers in `V4/tests/utils/` with JSDoc and an eventual-graduation header.
