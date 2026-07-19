@@ -1,7 +1,6 @@
 import { BOX_LAYOUTS } from "./Types";
 import type {
   CellLocation,
-  SupportedBoardSize,
   Unit,
 } from "./Types";
 import {
@@ -16,7 +15,7 @@ import {
 export function getUnitLocations(
   target: CellLocation,
   unit: Unit,
-  size: SupportedBoardSize
+  size: number
 ): CellLocation[] {
   switch (unit) {
     case "row":

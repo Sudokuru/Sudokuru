@@ -13,7 +13,6 @@ import type {
   HintStage,
   NoteCellWithLocation,
   SudokuValue,
-  SupportedBoardSize,
   Unit,
   ValueCellWithLocation,
 } from "./Types";
@@ -102,7 +101,7 @@ function getRemovalStage(
 function getRemovalStages(
   puzzle: CellProps[][],
   target: NoteCellWithLocation,
-  size: SupportedBoardSize
+  size: number
 ): RemovalStageData {
   const stages: HintStage[] = [];
   const removedValues = new Set<SudokuValue>();
@@ -143,7 +142,7 @@ export function getAmendNotesHint(
     return null;
   }
 
-  const size = puzzle.length as SupportedBoardSize;
+  const size = puzzle.length;
   const allNotes = Array.from({ length: size }, (_, index) => index + 1);
   const { stages: removalStages, removedValues } = getRemovalStages(
     puzzle,

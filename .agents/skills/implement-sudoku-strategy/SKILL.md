@@ -21,6 +21,7 @@ Treat the existing tests as the approved contract and implement the smallest mai
 
 - Do not change tests merely to fit the implementation. Change a test only for a demonstrated fixture or contract error, and explain it.
 - Do not add validation fallbacks for impossible states when strategies receive prevalidated puzzles.
+- Do not use type assertions to narrow data already validated at the API boundary. Give downstream helpers the natural runtime types they consume; keep supported-size validation and narrowing inside `V4/validate.ts`.
 - Do not reveal solution values when the approved hint is corrective rather than solving.
 - Preserve exact stage order, location order, highlights, actions, and text from docs-contract tests.
 - Use shared types from `V4/Types.ts`; promote genuinely shared concepts there and update `V4/PLAN.md` terminology/changelog when necessary.
