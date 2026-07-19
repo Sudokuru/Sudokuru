@@ -12,7 +12,7 @@ import {
   columnLocations,
   rowLocations,
 } from "../../cellLocations";
-import { withValues } from "../utils/withValues";
+import { withValues } from "../utils/withCells";
 
 const BASE_PUZZLE = ADDITIONAL_TEST_BOARDS_BY_NAME.ONLY_OBVIOUS_SINGLES;
 const SOLUTION = ADDITIONAL_TEST_BOARDS_BY_NAME.ONLY_OBVIOUS_SINGLES_SOLUTION;
