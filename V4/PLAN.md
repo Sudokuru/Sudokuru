@@ -575,7 +575,7 @@ For each strategy:
 | ☑      | Obvious single docs                          | Example hint stages + screenshot in Frontend                       | https://github.com/Sudokuru/Sudokuru/pull/113 |
 | ☑      | Strategy implementation PR checklist         | Strategy has sufficient docs/tests/etc link to example PRs         | https://github.com/Sudokuru/Sudokuru/pull/114 |
 | ☑      | Implement wrong value                        | Strategy module + tests match docs                                 | https://github.com/Sudokuru/Sudokuru/pull/114 |
-| ☐      | Implement amend notes                        | Strategy module + tests match docs                                 | —       |
+| ☑      | Implement amend notes                        | Strategy module + tests match docs                                 | https://github.com/Sudokuru/Sudokuru/pull/115 |
 | ☐      | Implement obvious single                     | Strategy module + tests match docs                                 | —       |
 | ☐      | `getHint`                                    | Deterministic; staged hints; strategy ordering; tests              | —       |
 | ☐      | `getAllHints`                                | Deterministic; uses strategy set; tests                            | —       |
