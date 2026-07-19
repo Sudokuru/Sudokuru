@@ -13,7 +13,7 @@ Define the complete behavioral contract around the docs examples while leaving p
 2. Inspect `V4/tests/unit/wrongValue.test.ts` as the baseline pattern, then prefer a newer relevant strategy test when available.
 3. Identify materially different matches, non-matches, ambiguity, precedence, and traversal cases for this strategy.
 4. Add `V4/tests/unit/<lowerCamelStrategy>.test.ts`, using exact `Hint` equality.
-5. Reuse `valuesToPuzzle`, `withValues`, `expectHintWithoutMutation`, and production location helpers when applicable.
+5. Reuse `valuesToPuzzle`, `withNotes`/`withValues` from `V4/tests/utils/withCells.ts`, `expectHintWithoutMutation`, and production location helpers when applicable.
 
 ## Coverage Model
 
@@ -31,6 +31,8 @@ Adapt these categories to the strategy rather than adding meaningless cases:
 - Do not modify or implement production strategy code.
 - Do not test malformed boards when the strategy contract says inputs are prevalidated.
 - Do not duplicate approved docs fixtures; leave exact docs coverage in the docs test.
+- Avoid thin wrapper helpers that only rename or compose one or two existing helpers. Call the existing helpers directly, using an intermediate variable or brief comment when setup needs clarification. For example, prefer `withNotes(withValues(emptyPuzzle(), basisCells), [target])` over a `puzzleWithBasisCells` wrapper.
+- Add a helper only when it captures meaningful repeated logic or a substantive test-domain abstraction.
 - Keep helpers local until reused. Put test-only reusable helpers in `V4/tests/utils/` with JSDoc and an eventual-graduation header.
 - Promote a test helper into V4 production only later, when production code actually needs it.
 - If docs do not settle a user-visible behavior, state the assumption before locking it into exact tests.
