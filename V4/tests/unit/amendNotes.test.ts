@@ -9,6 +9,7 @@ import type {
 } from "../../Types";
 import { locationsEqual } from "../../cellLocations";
 import { getAmendNotesHint } from "../../amendNotes";
+import { formatNumbers } from "../../format";
 import { getUnitLocations } from "../../units";
 import { ADDITIONAL_TEST_BOARDS_BY_NAME } from "../utils/additionalBoards";
 import { expectHintWithoutMutation } from "../utils/assertions";
@@ -38,21 +39,6 @@ interface RemovalExpectation {
    * Values already removed by an earlier unit must not appear again.
    */
   basisCells: ValueCellWithLocation[];
-}
-
-/**
- * Formats a non-empty list of note values using the documentation's punctuation.
- */
-function formatNoteValues(values: SudokuValue[]): string {
-  if (values.length === 1) {
-    return `${values[0]}`;
-  }
-
-  if (values.length === 2) {
-    return `${values[0]} and ${values[1]}`;
-  }
-
-  return `${values.slice(0, -1).join(", ")}, and ${values.at(-1)}`;
 }
 
 /**
@@ -91,7 +77,7 @@ function expectedRemovalStage(
   const conflictExplanation = isSingular
     ? "that number is"
     : "those numbers are";
-  const formattedNotes = formatNoteValues(removedNotes);
+  const formattedNotes = formatNumbers(removedNotes);
   const unitLabel = unitDescription(target, unit);
   const focusHighlights = focusLocations.map((location) => ({
     location,
