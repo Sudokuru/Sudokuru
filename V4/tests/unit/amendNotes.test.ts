@@ -63,45 +63,47 @@ function expectedRemovalStage(
   target: NoteCellWithLocation,
   expectation: RemovalExpectation
 ): HintStage {
-  const removedNotes = expectation.basisCells.map(({ value }) => value);
-  const basisLocations = expectation.basisCells.map(({ r, c }) => ({ r, c }));
-  const focusLocations = getUnitLocations(
-    target,
-    expectation.unit,
-    BOARD_SIZE
-  ).filter(
+  const { basisCells, unit } = expectation;
+  const removedNotes = basisCells.map(({ value }) => value);
+  const basisLocations = basisCells.map(({ r, c }) => ({ r, c }));
+  const excludedFocusLocations = [target, ...basisLocations];
+  const focusLocations = getUnitLocations(target, unit, BOARD_SIZE).filter(
     (location) =>
-      !locationsEqual(location, target) &&
-      !basisLocations.some((basisLocation) =>
-        locationsEqual(location, basisLocation)
+      !excludedFocusLocations.some((excludedLocation) =>
+        locationsEqual(location, excludedLocation)
       )
   );
   const isSingular = removedNotes.length === 1;
+  const noteLabel = isSingular ? "note" : "notes";
+  const conflictExplanation = isSingular
+    ? "that number is"
+    : "those numbers are";
+  const formattedNotes = formatNoteValues(removedNotes);
+  const unitLabel = unitDescription(target, unit);
+  const focusHighlights = focusLocations.map((location) => ({
+    location,
+    highlightType: "focus" as const,
+  }));
+  const basisHighlights = basisLocations.map((location) => ({
+    location,
+    highlightType: "basis" as const,
+  }));
+  const removalHighlights = removedNotes.map((value) => ({
+    location: target,
+    value,
+    highlightType: "removal" as const,
+  }));
+  const text = `Remove ${noteLabel} ${formattedNotes} because ${conflictExplanation} already in ${unitLabel}.`;
 
   return {
     removeNotes: [{ ...target, notes: removedNotes }],
     highlightCells: [
       { location: target, highlightType: "focus" },
-      ...focusLocations.map((location) => ({
-        location,
-        highlightType: "focus" as const,
-      })),
-      ...basisLocations.map((location) => ({
-        location,
-        highlightType: "basis" as const,
-      })),
+      ...focusHighlights,
+      ...basisHighlights,
     ],
-    highlightNotes: removedNotes.map((value) => ({
-      location: target,
-      value,
-      highlightType: "removal" as const,
-    })),
-    text: `Remove ${isSingular ? "note" : "notes"} ${formatNoteValues(
-      removedNotes
-    )} because ${isSingular ? "that number is" : "those numbers are"} already in ${unitDescription(
-      target,
-      expectation.unit
-    )}.`,
+    highlightNotes: removalHighlights,
+    text,
   };
 }
 
