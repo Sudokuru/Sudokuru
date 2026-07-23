@@ -16,7 +16,11 @@ export type Unit = "row" | "column" | "box";
 /**
  * The deterministic order in which strategies inspect Sudoku constraint groups.
  */
-export const UNIT_PRECEDENCE: Unit[] = ["row", "column", "box"];
+export const UNIT_PRECEDENCE: readonly Unit[] = Object.freeze([
+  "row",
+  "column",
+  "box",
+]);
 
 export interface CellWithValue {
   type: Extract<CellType, "given" | "value">;
