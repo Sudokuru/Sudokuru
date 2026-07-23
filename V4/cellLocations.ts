@@ -30,7 +30,7 @@ export function getNoteCell(
 ): NoteCellWithLocation | null {
   const cell = puzzle[location.r]?.[location.c];
 
-  if (!cell || cell.type !== "note") {
+  if (cell?.type !== "note") {
     return null;
   }
 
