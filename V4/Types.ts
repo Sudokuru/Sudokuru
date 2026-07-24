@@ -1,4 +1,7 @@
-export type SudokuValue = number;
+/**
+ * A number used as a placed cell value or as a note candidate within a cell.
+ */
+export type SudokuNumber = number;
 
 export const SUDOKU_CELL_TYPES = ["note", "value", "given"] as const;
 export type CellType = (typeof SUDOKU_CELL_TYPES)[number];
@@ -24,12 +27,12 @@ export const UNIT_PRECEDENCE: readonly Unit[] = Object.freeze([
 
 export interface CellWithValue {
   type: Extract<CellType, "given" | "value">;
-  value: SudokuValue;
+  value: SudokuNumber;
 }
 
 export interface CellWithNotes {
   type: Extract<CellType, "note">;
-  notes: SudokuValue[];
+  notes: SudokuNumber[];
 }
 
 export type CellProps = CellWithValue | CellWithNotes;
@@ -128,7 +131,7 @@ export interface HighlightedValue {
 
 export interface HighlightedNote {
   location: CellLocation;
-  value: SudokuValue;
+  value: SudokuNumber;
   highlightType: HighlightType;
 }
 
@@ -168,7 +171,7 @@ export interface SudokuObjectProps {
   selectedCells: CellLocation[];
   statistics: GameStatistics;
   puzzle: CellProps[][];
-  puzzleSolution: SudokuValue[][];
+  puzzleSolution: SudokuNumber[][];
   actionHistory: CellWithLocation[][];
   inNoteMode: boolean;
 }
@@ -189,7 +192,7 @@ export interface SudokuObjectProps {
  */
 export type SudokuData = {
   puzzle: CellProps[][];
-  solution: SudokuValue[][];
+  solution: SudokuNumber[][];
   givensCount: number;
   rawDifficulty: number;
   difficulty: GameDifficulty;

@@ -2,7 +2,7 @@ import {
   BOX_LAYOUTS,
   BoxLayout,
   CellProps,
-  SudokuValue,
+  SudokuNumber,
   SUPPORTED_BOARD_SIZES,
   SupportedBoardSize,
 } from "./Types";
@@ -48,7 +48,7 @@ export class PuzzleValidationError extends Error {
  * and every placed value is written as its digit.
  */
 export function getPuzzleString(
-  puzzle: readonly (readonly SudokuValue[])[]
+  puzzle: readonly (readonly SudokuNumber[])[]
 ): string {
   const size: number = getPuzzleSize(puzzle);
   const layout: BoxLayout = getSupportedBoxLayout(size);
@@ -124,7 +124,7 @@ export function getPuzzleSolution(
  * Validates that the input is a non-empty square matrix and returns its size.
  */
 function getPuzzleSize(
-  puzzle: readonly (readonly (CellProps | SudokuValue)[])[]
+  puzzle: readonly (readonly (CellProps | SudokuNumber)[])[]
 ): number {
   if (!Array.isArray(puzzle) || puzzle.length === 0) {
     throw new PuzzleValidationError(
@@ -136,7 +136,7 @@ function getPuzzleSize(
   const size: number = puzzle.length;
 
   for (let rowIndex: number = 0; rowIndex < size; rowIndex += 1) {
-    const row: readonly (CellProps | SudokuValue)[] = puzzle[rowIndex];
+    const row: readonly (CellProps | SudokuNumber)[] = puzzle[rowIndex];
 
     if (!Array.isArray(row)) {
       throw new PuzzleValidationError(
@@ -218,11 +218,11 @@ function getBoxLayout(size: SupportedBoardSize): BoxLayout {
  * Converts numeric puzzle values into a compact string with one character per cell.
  */
 function stringifyPuzzleValues(
-  puzzle: readonly (readonly SudokuValue[])[],
+  puzzle: readonly (readonly SudokuNumber[])[],
   size: number
 ): string {
   return puzzle
-    .map((row: readonly SudokuValue[], _rowIndex: number) =>
+    .map((row: readonly SudokuNumber[], _rowIndex: number) =>
       Array.from({ length: size }, (_: undefined, columnIndex: number) =>
         String(row[columnIndex])
       ).join("")

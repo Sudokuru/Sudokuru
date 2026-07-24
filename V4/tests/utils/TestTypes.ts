@@ -1,18 +1,18 @@
-import type { SudokuValue } from "../../Types";
+import type { SudokuNumber } from "../../Types";
 
 export type BoardWithDependencyScore = {
-  board: SudokuValue[][];
+  board: SudokuNumber[][];
   dependencyScore: number;
 };
 
 export type BoardWithRefutationScore = {
-  board: SudokuValue[][];
-  solution: SudokuValue[][];
+  board: SudokuNumber[][];
+  solution: SudokuNumber[][];
   refutationScore: number;
 };
 
 export type BoardWithDifficulty = {
-  board: SudokuValue[][];
+  board: SudokuNumber[][];
   difficulty: number;
 };
 

@@ -11,7 +11,7 @@ import type {
   CellLocation,
   CellProps,
   Hint,
-  SudokuValue,
+  SudokuNumber,
   Unit,
   ValueCellWithLocation,
 } from "./Types";
@@ -139,7 +139,7 @@ function getNoDirectConflictHint(wrongValue: ValueCellWithLocation): Hint {
  */
 export function getWrongValueHint(
   puzzle: readonly (readonly CellProps[])[],
-  solution: readonly (readonly SudokuValue[])[],
+  solution: readonly (readonly SudokuNumber[])[],
   locationToCheck: CellLocation
 ): Hint | null {
   const wrongValue = getValueCell(puzzle, locationToCheck);

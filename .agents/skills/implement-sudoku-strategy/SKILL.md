@@ -24,6 +24,7 @@ Treat the existing tests as the approved contract and implement the smallest mai
 - Do not use type assertions to narrow data already validated at the API boundary. Give downstream helpers the natural runtime types they consume; keep supported-size validation and narrowing inside `V4/validate.ts`.
 - Do not reveal solution values when the approved hint is corrective rather than solving.
 - Preserve exact stage order, location order, highlights, actions, and text from docs-contract tests.
+- Use `SudokuNumber` for numbers representing placed cell values, notes, candidates, or solution entries. Use plain `number` for coordinates, sizes, indices, and counts.
 - Use shared types from `V4/Types.ts`; promote genuinely shared concepts there and update `V4/PLAN.md` terminology/changelog when necessary.
 - Keep strategy-specific hint construction in the strategy module; move only genuinely reusable board/cell/location operations into shared modules.
 

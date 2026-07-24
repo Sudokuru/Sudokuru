@@ -13,7 +13,7 @@ import type {
   Hint,
   HintStage,
   NoteCellWithLocation,
-  SudokuValue,
+  SudokuNumber,
   Unit,
   ValueCellWithLocation,
 } from "./Types";
@@ -23,7 +23,7 @@ const INTRODUCTION_TEXT =
 
 type RemovalStageData = {
   stages: HintStage[];
-  removedValues: Set<SudokuValue>;
+  removedValues: Set<SudokuNumber>;
 };
 
 /**
@@ -32,7 +32,7 @@ type RemovalStageData = {
 function getNewBasisCells(
   puzzle: readonly (readonly CellProps[])[],
   unitLocations: readonly CellLocation[],
-  removedValues: ReadonlySet<SudokuValue>
+  removedValues: ReadonlySet<SudokuNumber>
 ): ValueCellWithLocation[] {
   const basisCells: ValueCellWithLocation[] = [];
 
@@ -104,7 +104,7 @@ function getRemovalStages(
   size: number
 ): RemovalStageData {
   const stages: HintStage[] = [];
-  const removedValues = new Set<SudokuValue>();
+  const removedValues = new Set<SudokuNumber>();
 
   for (const unit of UNIT_PRECEDENCE) {
     const unitLocations = getUnitLocations(target, unit, size);
@@ -133,7 +133,7 @@ function getRemovalStages(
  */
 export function getAmendNotesHint(
   puzzle: readonly (readonly CellProps[])[],
-  solution: readonly (readonly SudokuValue[])[],
+  solution: readonly (readonly SudokuNumber[])[],
   locationToCheck: CellLocation
 ): Hint | null {
   const target = getNoteCell(puzzle, locationToCheck);

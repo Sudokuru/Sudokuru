@@ -1,11 +1,11 @@
-import { SudokuValue } from "../../Types";
+import { SudokuNumber } from "../../Types";
 import type { BoardWithDependencyScore, BoardWithDifficulty, BoardWithRefutationScore } from "./TestTypes";
 
 /**
  * 9x9 additional test boards copied from historical test resources and
  * converted to 2D numeric grids for V4 unit tests.
  */
-export const ADDITIONAL_TEST_BOARDS_BY_NAME: Record<string, SudokuValue[][]> = {
+export const ADDITIONAL_TEST_BOARDS_BY_NAME: Record<string, SudokuNumber[][]> = {
   SINGLE_OBVIOUS_SINGLE:   [
     [4, 3, 9, 2, 7, 5, 6, 1, 8],
     [0, 5, 1, 8, 9, 6, 4, 3, 7],
@@ -273,7 +273,7 @@ export const ADDITIONAL_TEST_BOARDS_BY_NAME: Record<string, SudokuValue[][]> = {
 };
 
 /** All additional boards in original enum order. */
-export const ALL_ADDITIONAL_BOARDS: SudokuValue[][][] = [
+export const ALL_ADDITIONAL_BOARDS: SudokuNumber[][][] = [
   ADDITIONAL_TEST_BOARDS_BY_NAME.SINGLE_OBVIOUS_SINGLE,
   ADDITIONAL_TEST_BOARDS_BY_NAME.SINGLE_OBVIOUS_SINGLE_SOLUTION,
   ADDITIONAL_TEST_BOARDS_BY_NAME.ONLY_OBVIOUS_SINGLES,
@@ -367,7 +367,7 @@ export const ALL_ADDITIONAL_BOARDS_WITH_DIFFICULTIES: BoardWithDifficulty[] = [
  *
  * Note: `ROW_OBVIOUS_SOLUTION` in additional tests is actually a puzzle board, not a solved board.
  */
-export const ALL_ADDITIONAL_SOLUTIONS: SudokuValue[][][] = [
+export const ALL_ADDITIONAL_SOLUTIONS: SudokuNumber[][][] = [
   ADDITIONAL_TEST_BOARDS_BY_NAME.SINGLE_OBVIOUS_SINGLE_SOLUTION,
   ADDITIONAL_TEST_BOARDS_BY_NAME.ONLY_OBVIOUS_SINGLES_SOLUTION,
   ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_HIDDEN_SINGLES_SOLUTION,
@@ -380,7 +380,7 @@ export const ALL_ADDITIONAL_SOLUTIONS: SudokuValue[][][] = [
 ];
 
 /** Additional puzzle boards that are expected to have a unique solution. */
-export const ADDITIONAL_SOLVABLE_PUZZLES: SudokuValue[][][] = [
+export const ADDITIONAL_SOLVABLE_PUZZLES: SudokuNumber[][][] = [
   ADDITIONAL_TEST_BOARDS_BY_NAME.SINGLE_OBVIOUS_SINGLE,
   ADDITIONAL_TEST_BOARDS_BY_NAME.ONLY_OBVIOUS_SINGLES,
   ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_HIDDEN_SINGLES,
@@ -393,7 +393,7 @@ export const ADDITIONAL_SOLVABLE_PUZZLES: SudokuValue[][][] = [
 ];
 
 /** Expected solutions for ADDITIONAL_SOLVABLE_PUZZLES, by matching index. */
-export const ADDITIONAL_SOLVABLE_SOLUTIONS: SudokuValue[][][] = [
+export const ADDITIONAL_SOLVABLE_SOLUTIONS: SudokuNumber[][][] = [
   ADDITIONAL_TEST_BOARDS_BY_NAME.SINGLE_OBVIOUS_SINGLE_SOLUTION,
   ADDITIONAL_TEST_BOARDS_BY_NAME.ONLY_OBVIOUS_SINGLES_SOLUTION,
   ADDITIONAL_TEST_BOARDS_BY_NAME.ROW_HIDDEN_SINGLES_SOLUTION,

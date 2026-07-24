@@ -2,7 +2,7 @@ import type {
   Hint,
   HintStage,
   NoteCellWithLocation,
-  SudokuValue,
+  SudokuNumber,
   ValueCellWithLocation,
 } from "../../Types";
 import { getAmendNotesHint } from "../../amendNotes";
@@ -12,7 +12,7 @@ import { createEmptyPuzzle } from "../utils/puzzleFactories";
 import { withNotes, withValues } from "../utils/withCells";
 
 const BOARD_SIZE = 9;
-const ALL_NOTES: SudokuValue[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+const ALL_NOTES: SudokuNumber[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 /**
  * Every placed value in the synthetic fixtures matches this solved board, so

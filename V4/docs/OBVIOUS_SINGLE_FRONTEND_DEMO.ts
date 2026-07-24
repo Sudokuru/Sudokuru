@@ -5,7 +5,7 @@
  * stub getHint() to return the exported hint, and load the puzzle state below.
  */
 
-type SudokuValue = number;
+type SudokuNumber = number;
 
 type CellLocation = {
   r: number;
@@ -14,12 +14,12 @@ type CellLocation = {
 
 type CellWithValue = {
   type: "given" | "value";
-  value: SudokuValue;
+  value: SudokuNumber;
 };
 
 type CellWithNotes = {
   type: "note";
-  notes: SudokuValue[];
+  notes: SudokuNumber[];
 };
 
 type CellProps = CellWithValue | CellWithNotes;
@@ -40,7 +40,7 @@ type HighlightedValue = {
 
 type HighlightedNote = {
   location: CellLocation;
-  value: SudokuValue;
+  value: SudokuNumber;
   highlightType: HighlightType;
 };
 
@@ -69,7 +69,7 @@ type ObviousSingleDemoCase = {
   hint: ObviousSingleHint;
 };
 
-const PLACEMENT_ONLY_SOURCE_PUZZLE_NUMBERS: SudokuValue[][] = [
+const PLACEMENT_ONLY_SOURCE_PUZZLE_NUMBERS: SudokuNumber[][] = [
   [4, 3, 9, 2, 7, 5, 6, 1, 8],
   [0, 5, 1, 8, 9, 6, 4, 3, 7],
   [8, 7, 6, 1, 4, 3, 5, 9, 2],
@@ -81,7 +81,7 @@ const PLACEMENT_ONLY_SOURCE_PUZZLE_NUMBERS: SudokuValue[][] = [
   [7, 1, 4, 5, 6, 8, 3, 2, 9],
 ];
 
-const SIMPLIFYING_SOURCE_PUZZLE_NUMBERS: SudokuValue[][] = [
+const SIMPLIFYING_SOURCE_PUZZLE_NUMBERS: SudokuNumber[][] = [
   [3, 1, 0, 0, 8, 4, 0, 0, 2],
   [2, 0, 0, 1, 5, 0, 0, 0, 6],
   [5, 7, 0, 0, 0, 3, 0, 1, 0],
@@ -178,11 +178,11 @@ function getObviousSingleGroupHighlights(
 }
 
 function getCandidateNotes(
-  numbers: SudokuValue[][],
+  numbers: SudokuNumber[][],
   targetRow: number,
   targetColumn: number
-): SudokuValue[] {
-  const usedValues = new Set<SudokuValue>();
+): SudokuNumber[] {
+  const usedValues = new Set<SudokuNumber>();
 
   numbers[targetRow].forEach((value) => usedValues.add(value));
   numbers.forEach((row) => usedValues.add(row[targetColumn]));
@@ -202,7 +202,7 @@ function getCandidateNotes(
 }
 
 function numbersToPuzzleWithCandidateNotes(
-  numbers: SudokuValue[][]
+  numbers: SudokuNumber[][]
 ): CellProps[][] {
   return numbers.map((row, r) =>
     row.map((value, c): CellProps => {

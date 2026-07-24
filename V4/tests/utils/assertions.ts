@@ -2,13 +2,13 @@
  * Shared assertion helpers for V4 tests.
  */
 
-import type { CellLocation, CellProps, Hint, SudokuValue } from "../../Types";
+import type { CellLocation, CellProps, Hint, SudokuNumber } from "../../Types";
 import { cloneBoard } from "../../validate";
 import { clonePuzzle } from "./clonePuzzle";
 
 type HintFunction = (
   puzzle: readonly (readonly CellProps[])[],
-  solution: readonly (readonly SudokuValue[])[],
+  solution: readonly (readonly SudokuNumber[])[],
   locationToCheck: CellLocation
 ) => Hint | null;
 
@@ -18,7 +18,7 @@ type HintFunction = (
 export function expectHintWithoutMutation(
   hintFunction: HintFunction,
   puzzle: readonly (readonly CellProps[])[],
-  solution: readonly (readonly SudokuValue[])[],
+  solution: readonly (readonly SudokuNumber[])[],
   locationToCheck: CellLocation,
   expectedHint: Hint | null
 ): void {
