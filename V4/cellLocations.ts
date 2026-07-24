@@ -28,7 +28,7 @@ export function getNoteCell(
   puzzle: CellProps[][],
   location: CellLocation
 ): NoteCellWithLocation | null {
-  const cell = puzzle[location.r]?.[location.c];
+  const cell = puzzle[location.r][location.c];
 
   if (cell?.type !== "note") {
     return null;
