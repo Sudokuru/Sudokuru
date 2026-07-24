@@ -20,7 +20,7 @@ Treat the existing tests as the approved contract and implement the smallest mai
 ## Guardrails
 
 - Do not change tests merely to fit the implementation. Change a test only for a demonstrated fixture or contract error, and explain it.
-- Do not add validation fallbacks for impossible states when strategies receive prevalidated puzzles.
+- Do not add validation fallbacks for impossible states when strategies receive prevalidated puzzles. Access validated puzzle and solution arrays directly instead of optional-chaining array indices so contract violations fail fast.
 - Do not use type assertions to narrow data already validated at the API boundary. Give downstream helpers the natural runtime types they consume; keep supported-size validation and narrowing inside `V4/validate.ts`.
 - Do not reveal solution values when the approved hint is corrective rather than solving.
 - Preserve exact stage order, location order, highlights, actions, and text from docs-contract tests.

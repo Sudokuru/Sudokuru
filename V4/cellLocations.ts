@@ -12,7 +12,7 @@ export function getValueCell(
   puzzle: readonly (readonly CellProps[])[],
   location: CellLocation
 ): ValueCellWithLocation | null {
-  const cell = puzzle[location.r]?.[location.c];
+  const cell = puzzle[location.r][location.c];
 
   if (!cell || cell.type === "note") {
     return null;
