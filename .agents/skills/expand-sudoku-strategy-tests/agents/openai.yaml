@@ -1,0 +1,4 @@
+interface:
+  display_name: "Expand Sudoku Strategy Tests"
+  short_description: "Add broad behavioral tests for a V4 strategy"
+  default_prompt: "Use $expand-sudoku-strategy-tests to add broader behavioral and edge-case coverage for a V4 strategy."

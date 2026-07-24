@@ -1,0 +1,4 @@
+interface:
+  display_name: "Implement Sudoku Strategy"
+  short_description: "Implement a V4 strategy and verify its tests"
+  default_prompt: "Use $implement-sudoku-strategy to implement a tested V4 strategy and verify it passes."

@@ -6,7 +6,7 @@
  * puzzle state below.
  */
 
-type SudokuValue = number;
+type SudokuNumber = number;
 
 type CellLocation = {
   r: number;
@@ -15,12 +15,12 @@ type CellLocation = {
 
 type CellWithValue = {
   type: "given" | "value";
-  value: SudokuValue;
+  value: SudokuNumber;
 };
 
 type CellWithNotes = {
   type: "note";
-  notes: SudokuValue[];
+  notes: SudokuNumber[];
 };
 
 type CellProps = CellWithValue | CellWithNotes;
@@ -41,7 +41,7 @@ type HighlightedValue = {
 
 type HighlightedNote = {
   location: CellLocation;
-  value: SudokuValue;
+  value: SudokuNumber;
   highlightType: HighlightType;
 };
 
@@ -68,7 +68,7 @@ type AmendNotesDemoCase = {
   hint: AmendNotesHint;
 };
 
-const BASE_PUZZLE_NUMBERS: SudokuValue[][] = [
+const BASE_PUZZLE_NUMBERS: SudokuNumber[][] = [
   [3, 1, 0, 0, 8, 4, 0, 0, 2],
   [2, 0, 0, 1, 5, 0, 0, 0, 6],
   [5, 7, 0, 0, 0, 3, 0, 1, 0],
@@ -80,7 +80,7 @@ const BASE_PUZZLE_NUMBERS: SudokuValue[][] = [
   [0, 0, 0, 0, 0, 1, 5, 0, 0],
 ];
 
-const basicTargetCell: NoteCellWithLocation = {
+export const basicTargetCell: NoteCellWithLocation = {
   r: 1,
   c: 2,
   type: "note",
@@ -121,7 +121,7 @@ const basicColumnBasisCells: CellLocation[] = [
   { r: 5, c: 2 },
 ];
 
-const correctiveTargetCell: NoteCellWithLocation = {
+export const correctiveTargetCell: NoteCellWithLocation = {
   r: 1,
   c: 6,
   type: "note",
@@ -210,7 +210,7 @@ function getAmendNotesGroupFocusCells(
     }));
 }
 
-function numbersToPuzzle(numbers: SudokuValue[][]): CellProps[][] {
+function numbersToPuzzle(numbers: SudokuNumber[][]): CellProps[][] {
   return numbers.map((row) =>
     row.map((value): CellProps => {
       if (value === 0) {
@@ -223,7 +223,7 @@ function numbersToPuzzle(numbers: SudokuValue[][]): CellProps[][] {
 }
 
 function withNoteCell(
-  numbers: SudokuValue[][],
+  numbers: SudokuNumber[][],
   noteCell: NoteCellWithLocation
 ): CellProps[][] {
   return numbers.map((row, r) =>

@@ -1,11 +1,11 @@
-import { CellProps, SudokuValue, SupportedBoardSize } from "../../Types";
+import { CellProps, SudokuNumber, SupportedBoardSize } from "../../Types";
 
 /**
  * Canonical solved boards used by V4 unit tests.
  *
  * Keeping these explicit removes puzzle-generation logic from tests so intent stays clear.
  */
-export const SOLVED_TEST_BOARDS: Record<SupportedBoardSize, SudokuValue[][]> = {
+export const SOLVED_TEST_BOARDS: Record<SupportedBoardSize, SudokuNumber[][]> = {
   1: [[1]],
   2: [
     [1, 2],

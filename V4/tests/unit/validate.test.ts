@@ -1,6 +1,6 @@
 import {
   CellProps,
-  SudokuValue,
+  SudokuNumber,
   SupportedBoardSize,
   SUPPORTED_BOARD_SIZES,
 } from "../../Types";
@@ -23,6 +23,7 @@ import {
   ADDITIONAL_SOLVABLE_PUZZLES,
   ADDITIONAL_SOLVABLE_SOLUTIONS,
 } from "../utils/additionalBoards";
+import { createEmptyPuzzle } from "../utils/puzzleFactories";
 
 /**
  * Explicit runtime fixture type for values that intentionally violate CellProps.
@@ -67,16 +68,18 @@ type RuntimePuzzleStringFixture =
  * Runtime numeric puzzle fixtures include deliberate non-API inputs for stringifier tests.
  */
 type RuntimeNumericPuzzleFixture =
-  | SudokuValue[][]
+  | SudokuNumber[][]
   | RuntimeTestObject
-  | Array<SudokuValue[] | string>;
+  | Array<SudokuNumber[] | string>;
 
 /**
  * Converts a numeric board into the expected public puzzle shape.
  */
-function createExpectedPuzzleFromNumbers(grid: SudokuValue[][]): CellProps[][] {
-  return grid.map((row: SudokuValue[]) =>
-    row.map((value: SudokuValue) => {
+function createExpectedPuzzleFromNumbers(
+  grid: readonly (readonly SudokuNumber[])[]
+): CellProps[][] {
+  return grid.map((row: readonly SudokuNumber[]) =>
+    row.map((value: SudokuNumber) => {
       if (value === 0) {
         return { type: "note", notes: [] };
       }
@@ -89,8 +92,10 @@ function createExpectedPuzzleFromNumbers(grid: SudokuValue[][]): CellProps[][] {
 /**
  * Converts public puzzle cells back into the numeric fixture shape.
  */
-function createNumbersFromPuzzle(puzzle: CellProps[][]): SudokuValue[][] {
-  return puzzle.map((row: CellProps[]) =>
+function createNumbersFromPuzzle(
+  puzzle: readonly (readonly CellProps[])[]
+): SudokuNumber[][] {
+  return puzzle.map((row: readonly CellProps[]) =>
     row.map((cell: CellProps) => (cell.type === "note" ? 0 : cell.value))
   );
 }
@@ -100,7 +105,7 @@ function createNumbersFromPuzzle(puzzle: CellProps[][]): SudokuValue[][] {
  */
 function createPatchedPuzzleFromSolvedBoard(
   size: SupportedBoardSize,
-  patches: TestBoardCellPatch[]
+  patches: readonly TestBoardCellPatch[]
 ): { puzzle: CellProps[][]; solution: number[][] } {
   const solution = SOLVED_TEST_BOARDS[size];
   const puzzle = getPuzzle(getPuzzleString(solution));
@@ -110,15 +115,6 @@ function createPatchedPuzzleFromSolvedBoard(
   }
 
   return { puzzle, solution };
-}
-
-/**
- * Creates an all-empty puzzle for shape, size, and ambiguity tests.
- */
-function createEmptyPuzzle(size: number): CellProps[][] {
-  return Array.from({ length: size }, () =>
-    Array.from({ length: size }, () => ({ type: "note", notes: [] }))
-  );
 }
 
 /**
@@ -141,7 +137,7 @@ function expectValidationError(
   call: () => void,
   functionName: string,
   code: PuzzleValidationErrorCode,
-  messageParts: string[]
+  messageParts: readonly string[]
 ): void {
   const error: Error = getThrownError(call, functionName);
 
@@ -159,7 +155,7 @@ function expectValidationError(
 function expectPuzzleError(
   puzzle: RuntimePuzzleFixture,
   code: PuzzleValidationErrorCode,
-  messageParts: string[]
+  messageParts: readonly string[]
 ): void {
   expectValidationError(
     () => getPuzzleSolution(puzzle as CellProps[][]),
@@ -175,7 +171,7 @@ function expectPuzzleError(
 function expectGetPuzzleError(
   puzzle: RuntimePuzzleStringFixture,
   code: PuzzleValidationErrorCode,
-  messageParts: string[]
+  messageParts: readonly string[]
 ): void {
   expectValidationError(() => getPuzzle(puzzle as string), "getPuzzle", code, messageParts);
 }
@@ -186,10 +182,10 @@ function expectGetPuzzleError(
 function expectGetPuzzleStringError(
   puzzle: RuntimeNumericPuzzleFixture,
   code: PuzzleValidationErrorCode,
-  messageParts: string[]
+  messageParts: readonly string[]
 ): void {
   expectValidationError(
-    () => getPuzzleString(puzzle as SudokuValue[][]),
+    () => getPuzzleString(puzzle as SudokuNumber[][]),
     "getPuzzleString",
     code,
     messageParts
@@ -200,7 +196,7 @@ describe("getPuzzleString", () => {
   it.each(SUPPORTED_BOARD_SIZES.map((size: SupportedBoardSize) => [size, size] as const))(
     "stringifies a %ix%i solved test board",
     (size: SupportedBoardSize) => {
-      const puzzle: SudokuValue[][] = SOLVED_TEST_BOARDS[size];
+      const puzzle: SudokuNumber[][] = SOLVED_TEST_BOARDS[size];
 
       expect(getPuzzleString(puzzle)).toBe(puzzle.flat().join(""));
     }
@@ -227,7 +223,7 @@ describe("getPuzzleString", () => {
   });
 
   it("throws INVALID_PUZZLE_SHAPE when a row is not an array", () => {
-    const puzzle: Array<SudokuValue[] | string> = [
+    const puzzle: Array<SudokuNumber[] | string> = [
       [0, 0],
       "not a row",
     ];
@@ -288,7 +284,7 @@ describe("getPuzzleString", () => {
   });
 
   it("throws INVALID_CELL_VALUE for sparse row holes", () => {
-    const puzzle: SudokuValue[][] = [
+    const puzzle: SudokuNumber[][] = [
       [0, 0, 0, 0],
       [0, 0, 0, 0],
       [0, 0, 0, 0],
@@ -347,7 +343,7 @@ describe("getPuzzle", () => {
   it.each(SUPPORTED_BOARD_SIZES.map((size: SupportedBoardSize) => [size, size] as const))(
     "parses a %ix%i solved test board",
     (size: SupportedBoardSize) => {
-      const board: SudokuValue[][] = SOLVED_TEST_BOARDS[size];
+      const board: SudokuNumber[][] = SOLVED_TEST_BOARDS[size];
 
       expect(getPuzzle(getPuzzleString(board))).toEqual(
         createExpectedPuzzleFromNumbers(board)
@@ -373,7 +369,7 @@ describe("getPuzzle", () => {
   });
 
   it("round-trips every board fixture without mutating inputs", () => {
-    const boards: SudokuValue[][][] = [
+    const boards: SudokuNumber[][][] = [
       ...Object.values(SOLVED_TEST_BOARDS),
       ...ALL_ADDITIONAL_BOARDS,
       ...ALL_ADDITIONAL_SOLUTIONS,

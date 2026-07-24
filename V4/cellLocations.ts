@@ -1,6 +1,7 @@
 import type {
   CellLocation,
   CellProps,
+  NoteCellWithLocation,
   ValueCellWithLocation,
 } from "./Types";
 
@@ -8,16 +9,32 @@ import type {
  * Returns a placed puzzle cell with its location, or null for a note cell.
  */
 export function getValueCell(
-  puzzle: CellProps[][],
+  puzzle: readonly (readonly CellProps[])[],
   location: CellLocation
 ): ValueCellWithLocation | null {
-  const cell = puzzle[location.r]?.[location.c];
+  const cell = puzzle[location.r][location.c];
 
   if (!cell || cell.type === "note") {
     return null;
   }
 
   return { ...location, ...cell };
+}
+
+/**
+ * Returns a puzzle note cell with its location, or null for a placed-value cell.
+ */
+export function getNoteCell(
+  puzzle: readonly (readonly CellProps[])[],
+  location: CellLocation
+): NoteCellWithLocation | null {
+  const cell = puzzle[location.r][location.c];
+
+  if (cell?.type !== "note") {
+    return null;
+  }
+
+  return { ...location, ...cell, notes: [...cell.notes] };
 }
 
 /**

@@ -1,15 +1,15 @@
 import { Board } from "../../Board";
 import { resetSeed } from "../../Random";
-import type { SudokuValue } from "../../../V4/Types";
+import type { SudokuNumber } from "../../../V4/Types";
 import { ALL_ADDITIONAL_BOARDS_WITH_DIFFICULTIES } from "../../../V4/tests/utils/additionalBoards";
 import { DIFFICULTY_TEST_BOARDS_WITH_DIFFICULTIES } from "../../../V4/tests/utils/difficultyBoards";
 
-function createBoardString(board: SudokuValue[][] | string): string {
+function createBoardString(board: SudokuNumber[][] | string): string {
     if (typeof board === "string") {
         return board;
     }
 
-    return board.map((row: SudokuValue[]) => row.join("")).join("");
+    return board.map((row: SudokuNumber[]) => row.join("")).join("");
 }
 
 describe("calculate board difficulty", () => {

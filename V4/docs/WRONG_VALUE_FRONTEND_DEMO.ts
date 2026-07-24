@@ -6,7 +6,7 @@
  * puzzle state below.
  */
 
-type SudokuValue = number;
+type SudokuNumber = number;
 
 type CellLocation = {
   r: number;
@@ -15,12 +15,12 @@ type CellLocation = {
 
 type CellWithValue = {
   type: "given" | "value";
-  value: SudokuValue;
+  value: SudokuNumber;
 };
 
 type CellWithNotes = {
   type: "note";
-  notes: SudokuValue[];
+  notes: SudokuNumber[];
 };
 
 type CellProps = CellWithValue | CellWithNotes;
@@ -41,7 +41,7 @@ type HighlightedValue = {
 
 type HighlightedNote = {
   location: CellLocation;
-  value: SudokuValue;
+  value: SudokuNumber;
   highlightType: HighlightType;
 };
 
@@ -65,11 +65,11 @@ type WrongValueDemoCase = {
   id: "direct-row-conflict" | "no-direct-conflict";
   label: string;
   puzzle: CellProps[][];
-  solution: SudokuValue[][];
+  solution: SudokuNumber[][];
   hint: WrongValueHint;
 };
 
-const BASE_PUZZLE_NUMBERS: SudokuValue[][] = [
+const BASE_PUZZLE_NUMBERS: SudokuNumber[][] = [
   [3, 1, 0, 0, 8, 4, 0, 0, 2],
   [2, 0, 0, 1, 5, 0, 0, 0, 6],
   [5, 7, 0, 0, 0, 3, 0, 1, 0],
@@ -81,7 +81,7 @@ const BASE_PUZZLE_NUMBERS: SudokuValue[][] = [
   [0, 0, 0, 0, 0, 1, 5, 0, 0],
 ];
 
-const PUZZLE_SOLUTION_NUMBERS: SudokuValue[][] = [
+const PUZZLE_SOLUTION_NUMBERS: SudokuNumber[][] = [
   [3, 1, 6, 9, 8, 4, 7, 5, 2],
   [2, 9, 8, 1, 5, 7, 3, 4, 6],
   [5, 7, 4, 6, 2, 3, 8, 1, 9],
@@ -136,7 +136,7 @@ const directConflictFullRowFocusCells: CellLocation[] = [
   { r: 0, c: 8 },
 ];
 
-function numbersToPuzzle(numbers: SudokuValue[][]): CellProps[][] {
+function numbersToPuzzle(numbers: SudokuNumber[][]): CellProps[][] {
   return numbers.map((row) =>
     row.map((value): CellProps => {
       if (value === 0) {
@@ -149,7 +149,7 @@ function numbersToPuzzle(numbers: SudokuValue[][]): CellProps[][] {
 }
 
 function withWrongValue(
-  numbers: SudokuValue[][],
+  numbers: SudokuNumber[][],
   wrongValue: ValueCellWithLocation
 ): CellProps[][] {
   return numbers.map((row, r) =>
@@ -173,7 +173,7 @@ function withWrongValue(
 export const wrongValueBasePuzzle: CellProps[][] =
   numbersToPuzzle(BASE_PUZZLE_NUMBERS);
 
-export const wrongValuePuzzleSolution: SudokuValue[][] =
+export const wrongValuePuzzleSolution: SudokuNumber[][] =
   PUZZLE_SOLUTION_NUMBERS;
 
 export const directConflictWrongValuePuzzle: CellProps[][] = withWrongValue(

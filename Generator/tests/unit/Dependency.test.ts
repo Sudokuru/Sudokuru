@@ -2,12 +2,12 @@ import { Cell } from "../../Cell";
 import { Dependency } from "../../Dependency";
 import { resetSeed } from "../../Random";
 import { getCellBoard, simplifyNotes } from "../../Sudoku";
-import { SudokuValue } from "../../../V4/Types";
+import { SudokuNumber } from "../../../V4/Types";
 import { ALL_ADDITIONAL_BOARDS_WITH_DEPENDENCY_SCORES } from "../../../V4/tests/utils/additionalBoards";
 
-function createDependencyBoard(grid: SudokuValue[][]): Cell[][] {
+function createDependencyBoard(grid: SudokuNumber[][]): Cell[][] {
     const board: Cell[][] = getCellBoard(
-        grid.map((row: SudokuValue[]) => row.map((value: SudokuValue) => value.toString()))
+        grid.map((row: SudokuNumber[]) => row.map((value: SudokuNumber) => value.toString()))
     );
 
     for (let row: number = 0; row < 9; row++) {

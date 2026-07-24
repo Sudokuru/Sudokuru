@@ -1,4 +1,4 @@
-# Sudokuru 4.0 Rebuild Plan Revision 1.5
+# Sudokuru 4.0 Rebuild Plan Revision 1.6
 
 ## TL;DR
 
@@ -12,6 +12,8 @@ Rebuild the `Sudokuru` package (v4.0) as a **modular, functional, immutable** Su
 
 ## Changelog
 
+* 1.6
+  * Added the shared `UNIT_PRECEDENCE` constant for deterministic row, column, then box strategy traversal
 * 1.5
   * Added the `Unit` term and shared type for puzzle rows, columns, and boxes
 * 1.4
@@ -72,7 +74,7 @@ A “simple” migration path from Sudokuru `3.4 → 4.0`, focused on making the
 | **Sudoku** | high-level puzzle object and related metadata      | `SudokuObjectProps`, `SudokuData`, `SudokuDrill` |
 | **Game**   | player-session state/metrics/actions               | `GameStatistics`, `GameAction(s)`                |
 | **Puzzle** | the grid itself                                    | `CellProps[][]`                                  |
-| **Unit**   | a row, column, or box used as a constraint group   | `"row"`, `"column"`, `"box"`                   |
+| **Unit**   | a row, column, or box used as a constraint group   | `"row"`, `"column"`, `"box"`, `UNIT_PRECEDENCE` |
 
 ---
 
@@ -573,7 +575,7 @@ For each strategy:
 | ☑      | Obvious single docs                          | Example hint stages + screenshot in Frontend                       | https://github.com/Sudokuru/Sudokuru/pull/113 |
 | ☑      | Strategy implementation PR checklist         | Strategy has sufficient docs/tests/etc link to example PRs         | https://github.com/Sudokuru/Sudokuru/pull/114 |
 | ☑      | Implement wrong value                        | Strategy module + tests match docs                                 | https://github.com/Sudokuru/Sudokuru/pull/114 |
-| ☐      | Implement amend notes                        | Strategy module + tests match docs                                 | —       |
+| ☑      | Implement amend notes                        | Strategy module + tests match docs                                 | https://github.com/Sudokuru/Sudokuru/pull/115 |
 | ☐      | Implement obvious single                     | Strategy module + tests match docs                                 | —       |
 | ☐      | `getHint`                                    | Deterministic; staged hints; strategy ordering; tests              | —       |
 | ☐      | `getAllHints`                                | Deterministic; uses strategy set; tests                            | —       |

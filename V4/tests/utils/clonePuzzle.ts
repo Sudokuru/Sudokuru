@@ -9,7 +9,9 @@ import type { CellProps } from "../../Types";
 /**
  * Creates a deep-enough puzzle copy for detecting cell and note mutations.
  */
-export function clonePuzzle(puzzle: CellProps[][]): CellProps[][] {
+export function clonePuzzle(
+  puzzle: readonly (readonly CellProps[])[]
+): CellProps[][] {
   return puzzle.map((row) =>
     row.map((cell): CellProps =>
       cell.type === "note"
