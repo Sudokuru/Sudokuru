@@ -3,7 +3,7 @@ import {
   getValueCell,
   locationsEqual,
 } from "./cellLocations";
-import { formatNumbers } from "./format";
+import { formatNumberAsList } from "./format";
 import { notesMatch } from "./notes";
 import { getUnitDescription, getUnitLocations } from "./units";
 import { UNIT_PRECEDENCE } from "./Types";
@@ -70,7 +70,7 @@ function getRemovalStage(
   const conflictExplanation = isSingular
     ? "that number is"
     : "those numbers are";
-  const formattedNotes = formatNumbers(removedNotes);
+  const formattedNotes = formatNumberAsList(removedNotes);
   const unitLabel = getUnitDescription(target, unit);
 
   return {
