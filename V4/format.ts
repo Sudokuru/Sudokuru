@@ -1,7 +1,7 @@
 /**
  * Formats a non-empty array of numbers as a user-facing English list.
  */
-export function formatNumberAsList(numbers: number[]): string {
+export function formatNumberAsList(numbers: readonly number[]): string {
   if (numbers.length === 1) {
     return `${numbers[0]}`;
   }

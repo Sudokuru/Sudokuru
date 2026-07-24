@@ -30,9 +30,9 @@ type RemovalStageData = {
  * Returns placed cells whose values have not already been removed by an earlier unit.
  */
 function getNewBasisCells(
-  puzzle: CellProps[][],
-  unitLocations: CellLocation[],
-  removedValues: Set<SudokuValue>
+  puzzle: readonly (readonly CellProps[])[],
+  unitLocations: readonly CellLocation[],
+  removedValues: ReadonlySet<SudokuValue>
 ): ValueCellWithLocation[] {
   const basisCells: ValueCellWithLocation[] = [];
 
@@ -53,8 +53,8 @@ function getNewBasisCells(
 function getRemovalStage(
   target: NoteCellWithLocation,
   unit: Unit,
-  unitLocations: CellLocation[],
-  basisCells: ValueCellWithLocation[]
+  unitLocations: readonly CellLocation[],
+  basisCells: readonly ValueCellWithLocation[]
 ): HintStage {
   const removedNotes = basisCells.map(({ value }) => value);
   const basisLocations = basisCells.map(({ r, c }) => ({ r, c }));
@@ -99,7 +99,7 @@ function getRemovalStage(
  * Builds row, column, and box removal stages while tracking prior removals.
  */
 function getRemovalStages(
-  puzzle: CellProps[][],
+  puzzle: readonly (readonly CellProps[])[],
   target: NoteCellWithLocation,
   size: number
 ): RemovalStageData {
@@ -132,8 +132,8 @@ function getRemovalStages(
  * Returns a staged hint that fills the targeted note cell with every allowed candidate.
  */
 export function getAmendNotesHint(
-  puzzle: CellProps[][],
-  solution: SudokuValue[][],
+  puzzle: readonly (readonly CellProps[])[],
+  solution: readonly (readonly SudokuValue[])[],
   locationToCheck: CellLocation
 ): Hint | null {
   const target = getNoteCell(puzzle, locationToCheck);

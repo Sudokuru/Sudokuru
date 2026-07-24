@@ -5,8 +5,8 @@ import type { SudokuValue } from "./Types";
  * regardless of order.
  */
 export function notesMatch(
-  actualNotes: SudokuValue[],
-  expectedNotes: SudokuValue[]
+  actualNotes: readonly SudokuValue[],
+  expectedNotes: readonly SudokuValue[]
 ): boolean {
   if (actualNotes.length !== expectedNotes.length) {
     return false;

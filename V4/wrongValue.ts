@@ -18,7 +18,7 @@ import type {
 
 type UnitCheck = {
   unit: Unit;
-  locations: CellLocation[];
+  locations: readonly CellLocation[];
 };
 
 type DirectConflict = UnitCheck & {
@@ -29,7 +29,7 @@ type DirectConflict = UnitCheck & {
  * Returns row, column, and box checks in deterministic strategy precedence order.
  */
 function getUnitChecks(
-  puzzle: CellProps[][],
+  puzzle: readonly (readonly CellProps[])[],
   location: CellLocation
 ): UnitCheck[] {
   const size = puzzle.length;
@@ -49,7 +49,7 @@ function getUnitChecks(
  * Finds the first direct conflict using row, column, then box precedence.
  */
 function findDirectConflict(
-  puzzle: CellProps[][],
+  puzzle: readonly (readonly CellProps[])[],
   wrongValue: ValueCellWithLocation
 ): DirectConflict | null {
   for (const { unit, locations } of getUnitChecks(puzzle, wrongValue)) {
@@ -138,8 +138,8 @@ function getNoDirectConflictHint(wrongValue: ValueCellWithLocation): Hint {
  * Returns a staged removal hint when the targeted user value differs from the solution.
  */
 export function getWrongValueHint(
-  puzzle: CellProps[][],
-  solution: SudokuValue[][],
+  puzzle: readonly (readonly CellProps[])[],
+  solution: readonly (readonly SudokuValue[])[],
   locationToCheck: CellLocation
 ): Hint | null {
   const wrongValue = getValueCell(puzzle, locationToCheck);

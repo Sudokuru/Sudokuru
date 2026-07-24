@@ -45,7 +45,7 @@ function expectedDirectConflictHint(
   wrongValue: ValueCellWithLocation,
   conflictingCell: ValueCellWithLocation,
   unit: "row" | "column" | "box",
-  unitLocations: CellLocation[]
+  unitLocations: readonly CellLocation[]
 ): Hint {
   const otherLocations = unitLocations.filter(
     ({ r, c }) =>

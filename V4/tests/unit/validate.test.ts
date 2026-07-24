@@ -75,8 +75,10 @@ type RuntimeNumericPuzzleFixture =
 /**
  * Converts a numeric board into the expected public puzzle shape.
  */
-function createExpectedPuzzleFromNumbers(grid: SudokuValue[][]): CellProps[][] {
-  return grid.map((row: SudokuValue[]) =>
+function createExpectedPuzzleFromNumbers(
+  grid: readonly (readonly SudokuValue[])[]
+): CellProps[][] {
+  return grid.map((row: readonly SudokuValue[]) =>
     row.map((value: SudokuValue) => {
       if (value === 0) {
         return { type: "note", notes: [] };
@@ -90,8 +92,10 @@ function createExpectedPuzzleFromNumbers(grid: SudokuValue[][]): CellProps[][] {
 /**
  * Converts public puzzle cells back into the numeric fixture shape.
  */
-function createNumbersFromPuzzle(puzzle: CellProps[][]): SudokuValue[][] {
-  return puzzle.map((row: CellProps[]) =>
+function createNumbersFromPuzzle(
+  puzzle: readonly (readonly CellProps[])[]
+): SudokuValue[][] {
+  return puzzle.map((row: readonly CellProps[]) =>
     row.map((cell: CellProps) => (cell.type === "note" ? 0 : cell.value))
   );
 }
@@ -101,7 +105,7 @@ function createNumbersFromPuzzle(puzzle: CellProps[][]): SudokuValue[][] {
  */
 function createPatchedPuzzleFromSolvedBoard(
   size: SupportedBoardSize,
-  patches: TestBoardCellPatch[]
+  patches: readonly TestBoardCellPatch[]
 ): { puzzle: CellProps[][]; solution: number[][] } {
   const solution = SOLVED_TEST_BOARDS[size];
   const puzzle = getPuzzle(getPuzzleString(solution));
@@ -133,7 +137,7 @@ function expectValidationError(
   call: () => void,
   functionName: string,
   code: PuzzleValidationErrorCode,
-  messageParts: string[]
+  messageParts: readonly string[]
 ): void {
   const error: Error = getThrownError(call, functionName);
 
@@ -151,7 +155,7 @@ function expectValidationError(
 function expectPuzzleError(
   puzzle: RuntimePuzzleFixture,
   code: PuzzleValidationErrorCode,
-  messageParts: string[]
+  messageParts: readonly string[]
 ): void {
   expectValidationError(
     () => getPuzzleSolution(puzzle as CellProps[][]),
@@ -167,7 +171,7 @@ function expectPuzzleError(
 function expectGetPuzzleError(
   puzzle: RuntimePuzzleStringFixture,
   code: PuzzleValidationErrorCode,
-  messageParts: string[]
+  messageParts: readonly string[]
 ): void {
   expectValidationError(() => getPuzzle(puzzle as string), "getPuzzle", code, messageParts);
 }
@@ -178,7 +182,7 @@ function expectGetPuzzleError(
 function expectGetPuzzleStringError(
   puzzle: RuntimeNumericPuzzleFixture,
   code: PuzzleValidationErrorCode,
-  messageParts: string[]
+  messageParts: readonly string[]
 ): void {
   expectValidationError(
     () => getPuzzleString(puzzle as SudokuValue[][]),

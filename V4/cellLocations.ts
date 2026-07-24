@@ -9,7 +9,7 @@ import type {
  * Returns a placed puzzle cell with its location, or null for a note cell.
  */
 export function getValueCell(
-  puzzle: CellProps[][],
+  puzzle: readonly (readonly CellProps[])[],
   location: CellLocation
 ): ValueCellWithLocation | null {
   const cell = puzzle[location.r]?.[location.c];
@@ -25,7 +25,7 @@ export function getValueCell(
  * Returns a puzzle note cell with its location, or null for a placed-value cell.
  */
 export function getNoteCell(
-  puzzle: CellProps[][],
+  puzzle: readonly (readonly CellProps[])[],
   location: CellLocation
 ): NoteCellWithLocation | null {
   const cell = puzzle[location.r][location.c];

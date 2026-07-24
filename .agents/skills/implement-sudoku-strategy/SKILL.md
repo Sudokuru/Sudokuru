@@ -11,10 +11,10 @@ Treat the existing tests as the approved contract and implement the smallest mai
 
 1. Read `V4/PLAN.md`, `.github/PULL_REQUEST_TEMPLATE.md`, `V4/Types.ts`, all strategy docs/demo files, the stub, and every strategy test.
 2. Inspect `V4/wrongValue.ts`, `V4/cellLocations.ts`, and newer implemented strategies for current patterns.
-3. Replace the declaration with a real function while preserving its public signature.
+3. Replace the declaration with a real function while preserving its public function shape and strengthening non-mutating collection parameters with the readonly contracts in step 6.
 4. Return `null` for non-applicable targeted states and exact staged hints for matches.
 5. Encode precedence and traversal order explicitly. Prefer readable early-return loops over dense array chains when selecting the first match.
-6. Keep inputs immutable and outputs freshly constructed. Functional code means no observable mutation; it does not require avoiding clear local loops.
+6. Keep inputs immutable and outputs freshly constructed. Mark every collection input readonly when the function does not mutate it: use `readonly T[]`, readonly nested board rows, and `ReadonlySet`/`ReadonlyMap` for read-only collections in both public strategies and private helpers. Functional code means no observable mutation; it does not require avoiding clear local loops.
 7. Reuse shared V4 types, layouts, and helpers. When production now needs a generic test helper, promote it to a sensibly named V4 module, retain JSDoc, and update the smallest possible test import surface.
 
 ## Guardrails

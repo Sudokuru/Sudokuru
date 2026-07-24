@@ -47,7 +47,9 @@ export class PuzzleValidationError extends Error {
  * The board must be a supported square matrix. A `0` is written as an empty cell,
  * and every placed value is written as its digit.
  */
-export function getPuzzleString(puzzle: SudokuValue[][]): string {
+export function getPuzzleString(
+  puzzle: readonly (readonly SudokuValue[])[]
+): string {
   const size: number = getPuzzleSize(puzzle);
   const layout: BoxLayout = getSupportedBoxLayout(size);
   const puzzleString: string = stringifyPuzzleValues(puzzle, size);
@@ -80,7 +82,9 @@ export function getPuzzle(puzzle: string): CellProps[][] {
  * Notes are validated as user state but are not used as solver constraints.
  * The returned board is always a fresh `number[][]` instance.
  */
-export function getPuzzleSolution(puzzle: CellProps[][]): number[][] {
+export function getPuzzleSolution(
+  puzzle: readonly (readonly CellProps[])[]
+): number[][] {
   const size: number = getPuzzleSize(puzzle);
   const layout: BoxLayout = getSupportedBoxLayout(size);
   const normalizedPuzzle: number[][] = normalizePuzzle(puzzle, size);
@@ -119,7 +123,9 @@ export function getPuzzleSolution(puzzle: CellProps[][]): number[][] {
 /**
  * Validates that the input is a non-empty square matrix and returns its size.
  */
-function getPuzzleSize(puzzle: (CellProps | SudokuValue)[][]): number {
+function getPuzzleSize(
+  puzzle: readonly (readonly (CellProps | SudokuValue)[])[]
+): number {
   if (!Array.isArray(puzzle) || puzzle.length === 0) {
     throw new PuzzleValidationError(
       PuzzleValidationErrorCode.INVALID_PUZZLE_SHAPE,
@@ -130,7 +136,7 @@ function getPuzzleSize(puzzle: (CellProps | SudokuValue)[][]): number {
   const size: number = puzzle.length;
 
   for (let rowIndex: number = 0; rowIndex < size; rowIndex += 1) {
-    const row: (CellProps | SudokuValue)[] = puzzle[rowIndex];
+    const row: readonly (CellProps | SudokuValue)[] = puzzle[rowIndex];
 
     if (!Array.isArray(row)) {
       throw new PuzzleValidationError(
@@ -211,9 +217,12 @@ function getBoxLayout(size: SupportedBoardSize): BoxLayout {
 /**
  * Converts numeric puzzle values into a compact string with one character per cell.
  */
-function stringifyPuzzleValues(puzzle: SudokuValue[][], size: number): string {
+function stringifyPuzzleValues(
+  puzzle: readonly (readonly SudokuValue[])[],
+  size: number
+): string {
   return puzzle
-    .map((row: SudokuValue[], _rowIndex: number) =>
+    .map((row: readonly SudokuValue[], _rowIndex: number) =>
       Array.from({ length: size }, (_: undefined, columnIndex: number) =>
         String(row[columnIndex])
       ).join("")
@@ -247,8 +256,10 @@ function parsePuzzleStringValues(puzzle: string, size: number): number[][] {
 /**
  * Converts numeric values into public puzzle cells while preserving empty cells as notes.
  */
-export function valuesToPuzzle(values: number[][]): CellProps[][] {
-  return values.map((row: number[]) => row.map(valueToCell));
+export function valuesToPuzzle(
+  values: readonly (readonly number[])[]
+): CellProps[][] {
+  return values.map((row: readonly number[]) => row.map(valueToCell));
 }
 
 /**
@@ -265,8 +276,11 @@ function valueToCell(value: number): CellProps {
 /**
  * Converts `CellProps[][]` into a numeric board where note cells become `0`.
  */
-function normalizePuzzle(puzzle: CellProps[][], size: number): number[][] {
-  return puzzle.map((row: CellProps[], rowIndex: number) =>
+function normalizePuzzle(
+  puzzle: readonly (readonly CellProps[])[],
+  size: number
+): number[][] {
+  return puzzle.map((row: readonly CellProps[], rowIndex: number) =>
     Array.from({ length: size }, (_: undefined, columnIndex: number) =>
       // Iterate by index so sparse array holes are validated as invalid cells.
       normalizeCell(row[columnIndex], size, rowIndex, columnIndex)
@@ -308,7 +322,7 @@ function normalizeCell(
   }
 
   if (cell.type === "note") {
-    const notes: number[] = cell.notes;
+    const notes: readonly number[] = cell.notes;
 
     if (!Array.isArray(notes) || !areValidNotes(notes, size)) {
       throw new PuzzleValidationError(
@@ -340,7 +354,7 @@ function isIntegerInRange(value: number, min: number, max: number): boolean {
 /**
  * Validates that every note is unique and within the board's candidate range.
  */
-function areValidNotes(notes: number[], size: number): boolean {
+function areValidNotes(notes: readonly number[], size: number): boolean {
   const uniqueNotes: Set<number> = new Set<number>();
 
   for (const note of notes) {
@@ -358,7 +372,11 @@ function areValidNotes(notes: number[], size: number): boolean {
  * Rejects duplicate placed values while preserving the legacy error precedence:
  * rows first, then columns, then boxes.
  */
-function assertNoDuplicateValues(board: number[][], size: number, layout: BoxLayout): void {
+function assertNoDuplicateValues(
+  board: readonly (readonly number[])[],
+  size: number,
+  layout: BoxLayout
+): void {
   for (let rowIndex: number = 0; rowIndex < size; rowIndex += 1) {
     const seen: Set<number> = new Set<number>();
 
@@ -441,15 +459,19 @@ function assertNoDuplicateValues(board: number[][], size: number, layout: BoxLay
 /**
  * Returns true when the normalized board contains no empty cells.
  */
-function isSolved(board: number[][]): boolean {
-  return board.every((row: number[]) => row.every((value: number) => value !== 0));
+function isSolved(board: readonly (readonly number[])[]): boolean {
+  return board.every((row: readonly number[]) =>
+    row.every((value: number) => value !== 0)
+  );
 }
 
 /**
  * Produces a deep-enough copy for solver snapshots and immutable branch updates.
  */
-export function cloneBoard(board: number[][]): number[][] {
-  return board.map((row: number[]) => [...row]);
+export function cloneBoard(
+  board: readonly (readonly number[])[]
+): number[][] {
+  return board.map((row: readonly number[]) => [...row]);
 }
 
 /**
@@ -466,21 +488,26 @@ type SolveState = {
  * This keeps backtracking purely functional and avoids mutating parent recursion frames.
  */
 function withPlacedValue(
-  board: number[][],
+  board: readonly (readonly number[])[],
   rowIndex: number,
   columnIndex: number,
   value: number
-): number[][] {
+): readonly (readonly number[])[] {
   const nextRow: number[] = [...board[rowIndex]];
   nextRow[columnIndex] = value;
 
-  return board.map((row: number[], index: number) => (index === rowIndex ? nextRow : row));
+  return board.map((row: readonly number[], index: number) =>
+    index === rowIndex ? nextRow : row
+  );
 }
 
 /**
  * Creates the next immutable solve state when a full solution board is found.
  */
-function recordSolution(board: number[][], solveState: SolveState): SolveState {
+function recordSolution(
+  board: readonly (readonly number[])[],
+  solveState: SolveState
+): SolveState {
   const nextSolutionCount: number = solveState.solutionCount + 1;
 
   if (solveState.solution !== null) {
@@ -503,7 +530,7 @@ function recordSolution(board: number[][], solveState: SolveState): SolveState {
  * without exploring the entire search tree.
  */
 function searchForSolutions(
-  board: number[][],
+  board: readonly (readonly number[])[],
   size: number,
   layout: BoxLayout,
   index: number,
@@ -530,7 +557,7 @@ function searchForSolutions(
       continue;
     }
 
-    const boardWithCandidate: number[][] = withPlacedValue(
+    const boardWithCandidate: readonly (readonly number[])[] = withPlacedValue(
       board,
       rowIndex,
       columnIndex,
@@ -556,7 +583,7 @@ function searchForSolutions(
  * Checks whether a candidate can be placed in a cell under row, column, and box rules.
  */
 function isCandidate(
-  board: number[][],
+  board: readonly (readonly number[])[],
   size: number,
   layout: BoxLayout,
   rowIndex: number,
@@ -598,6 +625,8 @@ function isCandidate(
 /**
  * Formats runtime values so error messages stay readable.
  */
-function formatValue(value: CellProps | string | number | number[]): string {
+function formatValue(
+  value: CellProps | string | number | readonly number[]
+): string {
   return String(JSON.stringify(value));
 }
