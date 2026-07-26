@@ -16,6 +16,7 @@ type SudokuVisionState = {
   strategyPriority: readonly SudokuStrategy[];
   currentStrategyIndex: number;
   wrongValueQueue: Queue<CellLocation> | null;
+  amendNotesQueue: Queue<CellLocation> | null;
 };
 
 export interface SudokuVision {
@@ -45,21 +46,60 @@ function createWrongValueQueue(
 }
 
 /**
+ * Builds the row-major queue of note cells missing their solution value.
+ */
+function createAmendNotesQueue(
+  puzzle: readonly (readonly CellProps[])[],
+  solution: readonly (readonly SudokuNumber[])[]
+): Queue<CellLocation> {
+  const queue = new Queue<CellLocation>();
+
+  for (let r = 0; r < puzzle.length; r += 1) {
+    for (let c = 0; c < puzzle[r].length; c += 1) {
+      const cell = puzzle[r][c];
+
+      if (
+        cell.type === "note" &&
+        !cell.notes.includes(solution[r][c])
+      ) {
+        queue.push({ r, c });
+      }
+    }
+  }
+
+  return queue;
+}
+
+/**
+ * Removes and identifies the next location from a strategy queue.
+ */
+function popQueue(
+  strategy: SudokuStrategy,
+  queue: Queue<CellLocation> | null
+): SudokuVisionQueueItem | null {
+  const locationToCheck = queue?.shift();
+
+  return locationToCheck
+    ? [strategy, locationToCheck]
+    : null;
+}
+
+/**
  * Removes the next check from the queue for the current strategy.
  */
 function popState(state: SudokuVisionState): SudokuVisionQueueItem | null {
   const currentStrategy =
     state.strategyPriority[state.currentStrategyIndex] ?? null;
 
-  if (currentStrategy !== "WRONG_VALUE") {
-    return null;
+  if (currentStrategy === "WRONG_VALUE") {
+    return popQueue("WRONG_VALUE", state.wrongValueQueue);
   }
 
-  const locationToCheck = state.wrongValueQueue?.shift();
+  if (currentStrategy === "AMEND_NOTES") {
+    return popQueue("AMEND_NOTES", state.amendNotesQueue);
+  }
 
-  return locationToCheck
-    ? ["WRONG_VALUE", locationToCheck]
-    : null;
+  return null;
 }
 
 /**
@@ -76,6 +116,9 @@ export function createSudokuVision(
     currentStrategyIndex: 0,
     wrongValueQueue: strategyPriority.includes("WRONG_VALUE")
       ? createWrongValueQueue(puzzle, solution)
+      : null,
+    amendNotesQueue: strategyPriority.includes("AMEND_NOTES")
+      ? createAmendNotesQueue(puzzle, solution)
       : null,
   };
 
