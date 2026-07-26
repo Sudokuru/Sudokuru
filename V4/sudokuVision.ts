@@ -91,6 +91,22 @@ function popState(state: SudokuVisionState): SudokuVisionQueueItem | null {
   const currentStrategy =
     state.strategyPriority[state.currentStrategyIndex] ?? null;
 
+  if (
+    currentStrategy === "WRONG_VALUE" &&
+    (state.wrongValueQueue === null || state.wrongValueQueue.isEmpty())
+  ) {
+    state.currentStrategyIndex += 1;
+    return popState(state);
+  }
+
+  if (
+    currentStrategy === "AMEND_NOTES" &&
+    (state.amendNotesQueue === null || state.amendNotesQueue.isEmpty())
+  ) {
+    state.currentStrategyIndex += 1;
+    return popState(state);
+  }
+
   if (currentStrategy === "WRONG_VALUE") {
     return popQueue("WRONG_VALUE", state.wrongValueQueue);
   }

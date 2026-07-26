@@ -77,6 +77,25 @@ describe("createSudokuVision", () => {
     ]);
 
     expect(vision.pop()).toEqual(["AMEND_NOTES", { r: 0, c: 0 }]);
+    expect(vision.pop()).toEqual(["WRONG_VALUE", { r: 0, c: 3 }]);
+  });
+
+  it("advances from an initially empty wrong-value queue to amend notes", () => {
+    const vision = createSudokuVision(createAmendNotesPuzzle(), SOLUTION, [
+      "WRONG_VALUE",
+      "AMEND_NOTES",
+    ]);
+
+    expect(vision.pop()).toEqual(["AMEND_NOTES", { r: 0, c: 3 }]);
+  });
+
+  it("advances from an initially empty amend-notes queue to wrong values", () => {
+    const vision = createSudokuVision(createWrongValuePuzzle(), SOLUTION, [
+      "AMEND_NOTES",
+      "WRONG_VALUE",
+    ]);
+
+    expect(vision.pop()).toEqual(["WRONG_VALUE", { r: 0, c: 3 }]);
   });
 
   it("pops cells missing the correct note from top to bottom and left to right", () => {
