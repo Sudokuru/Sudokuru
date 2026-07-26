@@ -146,6 +146,10 @@ function popState(state: SudokuVisionState): SudokuVisionQueueItem | null {
   const currentStrategy =
     state.strategyPriority[state.currentStrategyIndex] ?? null;
 
+  if (currentStrategy === null) {
+    return null;
+  }
+
   if (currentStrategy === "WRONG_VALUE") {
     if (state.wrongValueQueue === null) {
       state.wrongValueQueue = createWrongValueQueue(
@@ -194,7 +198,8 @@ function popState(state: SudokuVisionState): SudokuVisionQueueItem | null {
     return popQueue("OBVIOUS_SINGLE", state.obviousSingleQueue);
   }
 
-  return null;
+  state.currentStrategyIndex += 1;
+  return popState(state);
 }
 
 /**

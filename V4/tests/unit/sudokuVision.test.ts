@@ -67,9 +67,22 @@ function createObviousSinglePuzzle(): CellProps[][] {
   return puzzle;
 }
 
+function createDefaultPriorityObviousSinglePuzzle(): CellProps[][] {
+  const puzzle = createObviousSinglePuzzle();
+
+  puzzle[0][0] = { type: "note", notes: [1, 2] };
+  puzzle[1][1] = { type: "note", notes: [4, 1] };
+
+  return puzzle;
+}
+
 describe("createSudokuVision", () => {
   it("pops wrong user values from top to bottom and left to right", () => {
-    const vision = createSudokuVision(createWrongValuePuzzle(), SOLUTION);
+    const vision = createSudokuVision(
+      createWrongValuePuzzle(),
+      SOLUTION,
+      ["WRONG_VALUE"]
+    );
 
     expect(vision.pop()).toEqual(["WRONG_VALUE", { r: 0, c: 3 }]);
     expect(vision.pop()).toEqual(["WRONG_VALUE", { r: 2, c: 0 }]);
@@ -144,6 +157,15 @@ describe("createSudokuVision", () => {
       createObviousSinglePuzzle(),
       SOLUTION,
       ["WRONG_VALUE", "OBVIOUS_SINGLE"]
+    );
+
+    expect(vision.pop()).toEqual(["OBVIOUS_SINGLE", { r: 0, c: 2 }]);
+  });
+
+  it("skips unimplemented strategies in the default priority list", () => {
+    const vision = createSudokuVision(
+      createDefaultPriorityObviousSinglePuzzle(),
+      SOLUTION
     );
 
     expect(vision.pop()).toEqual(["OBVIOUS_SINGLE", { r: 0, c: 2 }]);
