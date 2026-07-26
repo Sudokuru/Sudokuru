@@ -215,11 +215,7 @@ export function createSudokuVision(
     solution,
     strategyPriority,
     currentStrategyIndex: 0,
-    strategyQueues: {
-      WRONG_VALUE: null,
-      AMEND_NOTES: null,
-      OBVIOUS_SINGLE: null,
-    },
+    strategyQueues: {},
     noteCellsByNoteCount: createNoteCellsByNoteCount(puzzle),
   };
 
