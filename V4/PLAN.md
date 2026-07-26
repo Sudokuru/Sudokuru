@@ -564,6 +564,7 @@ For each strategy:
    * explanation strings
 4. Implement the strategy module
 5. Add unit tests using the documented fixtures
+6. Add the strategy to `SudokuVision` with deterministic scan ordering, lazy queue initialization, and queue integration tests
 
 ---
 
