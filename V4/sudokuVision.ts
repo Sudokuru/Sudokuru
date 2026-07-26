@@ -20,6 +20,7 @@ type SudokuVisionState = {
   currentStrategyIndex: number;
   wrongValueQueue: Queue<CellLocation> | null;
   amendNotesQueue: Queue<CellLocation> | null;
+  obviousSingleQueue: Queue<CellLocation> | null;
   noteCellsByNoteCount: readonly NoteCellWithLocation[];
 };
 
@@ -107,6 +108,28 @@ function createNoteCellsByNoteCount(
 }
 
 /**
+ * Builds a queue of valid one-note cells from the shared note-count scan order.
+ */
+function createObviousSingleQueue(
+  noteCellsByNoteCount: readonly NoteCellWithLocation[],
+  solution: readonly (readonly SudokuNumber[])[]
+): Queue<CellLocation> {
+  const queue = new Queue<CellLocation>();
+
+  for (const { r, c, notes } of noteCellsByNoteCount) {
+    if (notes.length > 1) {
+      break;
+    }
+
+    if (notes.length === 1 && notes[0] === solution[r][c]) {
+      queue.push({ r, c });
+    }
+  }
+
+  return queue;
+}
+
+/**
  * Removes and identifies the next location from a strategy queue.
  */
 function popQueue(
@@ -155,6 +178,22 @@ function popState(state: SudokuVisionState): SudokuVisionQueueItem | null {
     return popQueue("AMEND_NOTES", state.amendNotesQueue);
   }
 
+  if (currentStrategy === "OBVIOUS_SINGLE") {
+    if (state.obviousSingleQueue === null) {
+      state.obviousSingleQueue = createObviousSingleQueue(
+        state.noteCellsByNoteCount,
+        state.solution
+      );
+    }
+
+    if (state.obviousSingleQueue.isEmpty()) {
+      state.currentStrategyIndex += 1;
+      return popState(state);
+    }
+
+    return popQueue("OBVIOUS_SINGLE", state.obviousSingleQueue);
+  }
+
   return null;
 }
 
@@ -174,6 +213,7 @@ export function createSudokuVision(
     currentStrategyIndex: 0,
     wrongValueQueue: null,
     amendNotesQueue: null,
+    obviousSingleQueue: null,
     noteCellsByNoteCount: createNoteCellsByNoteCount(puzzle),
   };
 

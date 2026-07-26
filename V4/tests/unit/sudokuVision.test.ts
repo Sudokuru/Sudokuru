@@ -50,6 +50,23 @@ function createAmendNotesPuzzle(): CellProps[][] {
   return puzzle;
 }
 
+function createObviousSinglePuzzle(): CellProps[][] {
+  const puzzle: CellProps[][] = SOLUTION.map((row) =>
+    row.map((value) => ({
+      type: "note",
+      notes: [value, value === 4 ? 1 : value + 1],
+    }))
+  );
+
+  puzzle[0][0] = { type: "note", notes: [] };
+  puzzle[0][2] = { type: "note", notes: [3] };
+  puzzle[1][1] = { type: "note", notes: [2] };
+  puzzle[2][0] = { type: "note", notes: [4] };
+  puzzle[3][3] = { type: "note", notes: [1] };
+
+  return puzzle;
+}
+
 describe("createSudokuVision", () => {
   it("pops wrong user values from top to bottom and left to right", () => {
     const vision = createSudokuVision(createWrongValuePuzzle(), SOLUTION);
@@ -107,6 +124,29 @@ describe("createSudokuVision", () => {
     expect(vision.pop()).toEqual(["AMEND_NOTES", { r: 2, c: 0 }]);
     expect(vision.pop()).toEqual(["AMEND_NOTES", { r: 3, c: 3 }]);
     expect(vision.pop()).toBeNull();
+  });
+
+  it("pops valid obvious singles from the shared note-count scan order", () => {
+    const vision = createSudokuVision(
+      createObviousSinglePuzzle(),
+      SOLUTION,
+      ["OBVIOUS_SINGLE"]
+    );
+
+    expect(vision.pop()).toEqual(["OBVIOUS_SINGLE", { r: 0, c: 2 }]);
+    expect(vision.pop()).toEqual(["OBVIOUS_SINGLE", { r: 2, c: 0 }]);
+    expect(vision.pop()).toEqual(["OBVIOUS_SINGLE", { r: 3, c: 3 }]);
+    expect(vision.pop()).toBeNull();
+  });
+
+  it("advances from an empty earlier queue to obvious singles", () => {
+    const vision = createSudokuVision(
+      createObviousSinglePuzzle(),
+      SOLUTION,
+      ["WRONG_VALUE", "OBVIOUS_SINGLE"]
+    );
+
+    expect(vision.pop()).toEqual(["OBVIOUS_SINGLE", { r: 0, c: 2 }]);
   });
 
   it("does not mutate the puzzle or solution while building or consuming the queue", () => {
