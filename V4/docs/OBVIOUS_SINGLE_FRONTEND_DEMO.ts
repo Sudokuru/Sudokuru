@@ -93,7 +93,7 @@ const SIMPLIFYING_SOURCE_PUZZLE_NUMBERS: SudokuNumber[][] = [
   [0, 0, 0, 0, 0, 1, 5, 0, 0],
 ];
 
-const obviousSingleNoteCell: NoteCellWithLocation = {
+export const obviousSingleNoteCell: NoteCellWithLocation = {
   r: 1,
   c: 0,
   type: "note",
@@ -107,7 +107,7 @@ const obviousSingleValueCell: ValueCellWithLocation = {
   value: 2,
 };
 
-const simplifyingObviousSingleNoteCell: NoteCellWithLocation = {
+export const simplifyingObviousSingleNoteCell: NoteCellWithLocation = {
   r: 5,
   c: 1,
   type: "note",
