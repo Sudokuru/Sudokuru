@@ -1,4 +1,4 @@
-# Sudokuru 4.0 Rebuild Plan Revision 1.6
+# Sudokuru 4.0 Rebuild Plan Revision 1.7
 
 ## TL;DR
 
@@ -12,6 +12,8 @@ Rebuild the `Sudokuru` package (v4.0) as a **modular, functional, immutable** Su
 
 ## Changelog
 
+* 1.7
+  * Made changes to SudokuVision concept section
 * 1.6
   * Added the shared `UNIT_PRECEDENCE` constant for deterministic row, column, then box strategy traversal
 * 1.5
@@ -392,13 +394,15 @@ A replaceable internal component that guides which cells/regions to check next.
 **Concept**
 
 * Maintain a queue of cell coords to prioritize after each move/hint.
-* If queue is empty, fall back to deterministic iteration (top-left → bottom-right cycling).
-* May require “peek” behavior to try simpler strategies first without consuming queue entries prematurely.
+* Lazily determine the next item in the queue by calculating ahead just for the current strategy when pop occurs
+* Maintain a purposely simplified representation of the board containing just which cells are givens or correct placed values, which cells have incorrect placed values, which cells have notes but removed the correct note, and how many notes are in each of the remaining cells
+* Basic algorithm is just figuring out based on simple heuristics using its simplified knowledge of the board what the most likely cell is for the next occurrence of strategy A is until all locations A could be in are exhausted then repeat for strategy B and so on
+* Internal state just consists of simplified board representation, strategy that is currently being evaluated, and queue of `(strategy, locationToCheck)` items for current strategy
 
 **Interface**
 
-* `setLastMove(puzzle, hint)` → update internal vision state
-* `nextMove()` → returns `(strategy, locationToCheck)` and updates internal pointer state
+* Create SudokuVision object using puzzle, solution, and optionally strategy priority list (otherwise uses same default list as getHint)
+* `pop()` → removes and returns `(strategy, locationToCheck)` from the top of the queue
 
 ---
 
