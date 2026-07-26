@@ -13,14 +13,18 @@ type SudokuVisionQueueItem = readonly [
   locationToCheck: CellLocation
 ];
 
+type StrategyQueueFactory = (
+  state: SudokuVisionState
+) => Queue<CellLocation>;
+
 type SudokuVisionState = {
   puzzle: readonly (readonly CellProps[])[];
   solution: readonly (readonly SudokuNumber[])[];
   strategyPriority: readonly SudokuStrategy[];
   currentStrategyIndex: number;
-  wrongValueQueue: Queue<CellLocation> | null;
-  amendNotesQueue: Queue<CellLocation> | null;
-  obviousSingleQueue: Queue<CellLocation> | null;
+  strategyQueues: Partial<
+    Record<SudokuStrategy, Queue<CellLocation> | null>
+  >;
   noteCellsByNoteCount: readonly NoteCellWithLocation[];
 };
 
@@ -129,6 +133,20 @@ function createObviousSingleQueue(
   return queue;
 }
 
+const STRATEGY_QUEUE_FACTORIES: Partial<
+  Record<SudokuStrategy, StrategyQueueFactory>
+> = {
+  WRONG_VALUE: (state) =>
+    createWrongValueQueue(state.puzzle, state.solution),
+  AMEND_NOTES: (state) =>
+    createAmendNotesQueue(state.puzzle, state.solution),
+  OBVIOUS_SINGLE: (state) =>
+    createObviousSingleQueue(
+      state.noteCellsByNoteCount,
+      state.solution
+    ),
+};
+
 /**
  * Removes and identifies the next location from a strategy queue.
  */
@@ -137,6 +155,29 @@ function popQueue(
   queue: Queue<CellLocation>
 ): SudokuVisionQueueItem {
   return [strategy, queue.shift()!];
+}
+
+/**
+ * Lazily creates, advances, or pops one strategy's queue.
+ */
+function popStrategyQueue(
+  state: SudokuVisionState,
+  strategy: SudokuStrategy,
+  createQueue: StrategyQueueFactory
+): SudokuVisionQueueItem | null {
+  let queue = state.strategyQueues[strategy];
+
+  if (queue === null || queue === undefined) {
+    queue = createQueue(state);
+    state.strategyQueues[strategy] = queue;
+  }
+
+  if (queue.isEmpty()) {
+    state.currentStrategyIndex += 1;
+    return popState(state);
+  }
+
+  return popQueue(strategy, queue);
 }
 
 /**
@@ -150,52 +191,10 @@ function popState(state: SudokuVisionState): SudokuVisionQueueItem | null {
     return null;
   }
 
-  if (currentStrategy === "WRONG_VALUE") {
-    if (state.wrongValueQueue === null) {
-      state.wrongValueQueue = createWrongValueQueue(
-        state.puzzle,
-        state.solution
-      );
-    }
+  const createQueue = STRATEGY_QUEUE_FACTORIES[currentStrategy];
 
-    if (state.wrongValueQueue.isEmpty()) {
-      state.currentStrategyIndex += 1;
-      return popState(state);
-    }
-
-    return popQueue("WRONG_VALUE", state.wrongValueQueue);
-  }
-
-  if (currentStrategy === "AMEND_NOTES") {
-    if (state.amendNotesQueue === null) {
-      state.amendNotesQueue = createAmendNotesQueue(
-        state.puzzle,
-        state.solution
-      );
-    }
-
-    if (state.amendNotesQueue.isEmpty()) {
-      state.currentStrategyIndex += 1;
-      return popState(state);
-    }
-
-    return popQueue("AMEND_NOTES", state.amendNotesQueue);
-  }
-
-  if (currentStrategy === "OBVIOUS_SINGLE") {
-    if (state.obviousSingleQueue === null) {
-      state.obviousSingleQueue = createObviousSingleQueue(
-        state.noteCellsByNoteCount,
-        state.solution
-      );
-    }
-
-    if (state.obviousSingleQueue.isEmpty()) {
-      state.currentStrategyIndex += 1;
-      return popState(state);
-    }
-
-    return popQueue("OBVIOUS_SINGLE", state.obviousSingleQueue);
+  if (createQueue) {
+    return popStrategyQueue(state, currentStrategy, createQueue);
   }
 
   state.currentStrategyIndex += 1;
@@ -216,9 +215,11 @@ export function createSudokuVision(
     solution,
     strategyPriority,
     currentStrategyIndex: 0,
-    wrongValueQueue: null,
-    amendNotesQueue: null,
-    obviousSingleQueue: null,
+    strategyQueues: {
+      WRONG_VALUE: null,
+      AMEND_NOTES: null,
+      OBVIOUS_SINGLE: null,
+    },
     noteCellsByNoteCount: createNoteCellsByNoteCount(puzzle),
   };
 
