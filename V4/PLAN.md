@@ -393,11 +393,13 @@ A replaceable internal component that guides which cells/regions to check next.
 
 **Concept**
 
-* Maintain a queue of cell coords to prioritize after each move/hint.
-* Lazily determine the next item in the queue by calculating ahead just for the current strategy when pop occurs
-* Maintain a purposely simplified representation of the board containing just which cells are givens or correct placed values, which cells have incorrect placed values, which cells have notes but removed the correct note, and how many notes are in each of the remaining cells
-* Basic algorithm is just figuring out based on simple heuristics using its simplified knowledge of the board what the most likely cell is for the next occurrence of strategy A is until all locations A could be in are exhausted then repeat for strategy B and so on
-* Internal state just consists of simplified board representation, strategy that is currently being evaluated, and queue of `(strategy, locationToCheck)` items for current strategy
+* Basic algorithm is just figuring out based on per strategy heuristics what the most likely cell is for the next occurrence of strategy A is until all locations A could be in are exhausted then repeat for strategy B and so on.
+* Store the immutable puzzle and solution inputs, strategy priority list, current strategy index, and reusable scan structures in internal state.
+* Keep each strategy-specific location queue `null` until that strategy first becomes current during `pop()`.
+* Lazily build only the current strategy's queue. A `null` queue means the strategy has not been scanned; an initialized empty queue means that strategy is exhausted.
+* When the current queue is exhausted, advance the strategy index and continue popping from the next strategy instead of returning early.
+* Keep a reusable, non-destructive list of note cells sorted from fewest to most notes, with row-major tie-breaking, for strategies that benefit from that scan order.
+* `pop()` removes from strategy-specific queues, but shared scan structures are retained for reuse by multiple strategies.
 
 **Interface**
 

@@ -14,6 +14,8 @@ type SudokuVisionQueueItem = readonly [
 ];
 
 type SudokuVisionState = {
+  puzzle: readonly (readonly CellProps[])[];
+  solution: readonly (readonly SudokuNumber[])[];
   strategyPriority: readonly SudokuStrategy[];
   currentStrategyIndex: number;
   wrongValueQueue: Queue<CellLocation> | null;
@@ -109,13 +111,9 @@ function createNoteCellsByNoteCount(
  */
 function popQueue(
   strategy: SudokuStrategy,
-  queue: Queue<CellLocation> | null
-): SudokuVisionQueueItem | null {
-  const locationToCheck = queue?.shift();
-
-  return locationToCheck
-    ? [strategy, locationToCheck]
-    : null;
+  queue: Queue<CellLocation>
+): SudokuVisionQueueItem {
+  return [strategy, queue.shift()!];
 }
 
 /**
@@ -125,27 +123,35 @@ function popState(state: SudokuVisionState): SudokuVisionQueueItem | null {
   const currentStrategy =
     state.strategyPriority[state.currentStrategyIndex] ?? null;
 
-  if (
-    currentStrategy === "WRONG_VALUE" &&
-    (state.wrongValueQueue === null || state.wrongValueQueue.isEmpty())
-  ) {
-    state.currentStrategyIndex += 1;
-    return popState(state);
-  }
-
-  if (
-    currentStrategy === "AMEND_NOTES" &&
-    (state.amendNotesQueue === null || state.amendNotesQueue.isEmpty())
-  ) {
-    state.currentStrategyIndex += 1;
-    return popState(state);
-  }
-
   if (currentStrategy === "WRONG_VALUE") {
+    if (state.wrongValueQueue === null) {
+      state.wrongValueQueue = createWrongValueQueue(
+        state.puzzle,
+        state.solution
+      );
+    }
+
+    if (state.wrongValueQueue.isEmpty()) {
+      state.currentStrategyIndex += 1;
+      return popState(state);
+    }
+
     return popQueue("WRONG_VALUE", state.wrongValueQueue);
   }
 
   if (currentStrategy === "AMEND_NOTES") {
+    if (state.amendNotesQueue === null) {
+      state.amendNotesQueue = createAmendNotesQueue(
+        state.puzzle,
+        state.solution
+      );
+    }
+
+    if (state.amendNotesQueue.isEmpty()) {
+      state.currentStrategyIndex += 1;
+      return popState(state);
+    }
+
     return popQueue("AMEND_NOTES", state.amendNotesQueue);
   }
 
@@ -162,14 +168,12 @@ export function createSudokuVision(
 ): SudokuVision {
   const strategyPriority = strategies ?? SUDOKU_STRATEGY_ARRAY;
   const state: SudokuVisionState = {
+    puzzle,
+    solution,
     strategyPriority,
     currentStrategyIndex: 0,
-    wrongValueQueue: strategyPriority.includes("WRONG_VALUE")
-      ? createWrongValueQueue(puzzle, solution)
-      : null,
-    amendNotesQueue: strategyPriority.includes("AMEND_NOTES")
-      ? createAmendNotesQueue(puzzle, solution)
-      : null,
+    wrongValueQueue: null,
+    amendNotesQueue: null,
     noteCellsByNoteCount: createNoteCellsByNoteCount(puzzle),
   };
 
