@@ -3,6 +3,7 @@ import { SUDOKU_STRATEGY_ARRAY } from "./Types";
 import type {
   CellLocation,
   CellProps,
+  NoteCellWithLocation,
   SudokuNumber,
   SudokuStrategy,
 } from "./Types";
@@ -17,6 +18,7 @@ type SudokuVisionState = {
   currentStrategyIndex: number;
   wrongValueQueue: Queue<CellLocation> | null;
   amendNotesQueue: Queue<CellLocation> | null;
+  noteCellsByNoteCount: readonly NoteCellWithLocation[];
 };
 
 export interface SudokuVision {
@@ -68,6 +70,38 @@ function createAmendNotesQueue(
   }
 
   return queue;
+}
+
+/**
+ * Builds a reusable scan order of all note cells from fewest to most notes.
+ * Ties retain deterministic row-major order.
+ */
+function createNoteCellsByNoteCount(
+  puzzle: readonly (readonly CellProps[])[]
+): readonly NoteCellWithLocation[] {
+  const noteCells: NoteCellWithLocation[] = [];
+
+  for (let r = 0; r < puzzle.length; r += 1) {
+    for (let c = 0; c < puzzle[r].length; c += 1) {
+      const cell = puzzle[r][c];
+
+      if (cell.type === "note") {
+        noteCells.push({
+          ...cell,
+          notes: [...cell.notes],
+          r,
+          c,
+        });
+      }
+    }
+  }
+
+  return noteCells.sort(
+    (first, second) =>
+      first.notes.length - second.notes.length ||
+      first.r - second.r ||
+      first.c - second.c
+  );
 }
 
 /**
@@ -136,6 +170,7 @@ export function createSudokuVision(
     amendNotesQueue: strategyPriority.includes("AMEND_NOTES")
       ? createAmendNotesQueue(puzzle, solution)
       : null,
+    noteCellsByNoteCount: createNoteCellsByNoteCount(puzzle),
   };
 
   return {
