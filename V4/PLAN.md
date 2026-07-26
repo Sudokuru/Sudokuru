@@ -583,8 +583,8 @@ For each strategy:
 | ☑      | Implement wrong value                        | Strategy module + tests match docs                                 | https://github.com/Sudokuru/Sudokuru/pull/114 |
 | ☑      | Implement amend notes                        | Strategy module + tests match docs                                 | https://github.com/Sudokuru/Sudokuru/pull/115 |
 | ☑      | Implement obvious single                     | Strategy module + tests match docs                                 | https://github.com/Sudokuru/Sudokuru/pull/116 |
-| ☐      | `SudokuVision` interface                     | Documented and implemented                                         | —       |
-| ☐      | Queue-based SudokuVision impl                | Deterministic fallback scan; tests                                 | —       |
+| ☑      | `SudokuVision` interface                     | Documented and implemented                                         | https://github.com/Sudokuru/Sudokuru/pull/117 |
+| ☑      | Queue-based SudokuVision impl                | Deterministic fallback scan; tests                                 | https://github.com/Sudokuru/Sudokuru/pull/117 |
 | ☐      | `getHint`                                    | Deterministic; staged hints; strategy ordering; tests              | —       |
 | ☐      | `getAllHints`                                | Deterministic; uses strategy set; tests                            | —       |
 | ☐      | `applyHint`                                  | Pure; correct diffs; tests                                         | —       |
