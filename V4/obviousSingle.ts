@@ -128,7 +128,7 @@ function getRemovalStages(
 }
 
 /**
- * Returns a staged hint when the targeted note cell has exactly one candidate remaining.
+ * Returns a staged hint when the targeted note cell's sole candidate matches the solution.
  */
 export function getObviousSingleHint(
   puzzle: readonly (readonly CellProps[])[],
@@ -142,6 +142,11 @@ export function getObviousSingleHint(
   }
 
   const value = target.notes[0];
+
+  if (value !== solution[target.r][target.c]) {
+    return null;
+  }
+
   const targetValue: ValueCellWithLocation = {
     r: target.r,
     c: target.c,

@@ -263,6 +263,26 @@ describe("getObviousSingleHint", () => {
     );
   });
 
+  it("returns null when the sole candidate does not match the solution", () => {
+    const incorrectTarget: NoteCellWithLocation = {
+      r: TARGET.r,
+      c: TARGET.c,
+      type: "note",
+      notes: [4],
+    };
+    const puzzle = withNotes(createEmptyPuzzle(BOARD_SIZE), [
+      incorrectTarget,
+    ]);
+
+    expectHintWithoutMutation(
+      getObviousSingleHint,
+      puzzle,
+      SOLUTION,
+      incorrectTarget,
+      null
+    );
+  });
+
   it.each<{
     label: string;
     target: CellWithLocation;
