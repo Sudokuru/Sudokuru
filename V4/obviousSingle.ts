@@ -40,7 +40,7 @@ function getNewNoteRemovals(
 
     const noteCell = getNoteCell(puzzle, location);
 
-    if (!noteCell || !noteCell.notes.includes(value)) {
+    if (!noteCell?.notes.includes(value)) {
       continue;
     }
 
@@ -137,7 +137,7 @@ export function getObviousSingleHint(
 ): Hint | null {
   const target = getNoteCell(puzzle, locationToCheck);
 
-  if (!target || target.notes.length !== 1) {
+  if (target?.notes.length !== 1) {
     return null;
   }
 
