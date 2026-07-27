@@ -47,6 +47,9 @@ function createWrongValueQueue(
 
       if (cell.type === "value" && cell.value !== solution[r][c]) {
         queue.push({ r, c });
+	// TODO: for performance make this queue creation (and the others) more
+	// lazy by only adding one item to queue at a time (have to store where it
+	// was looking last to make this happen)
       }
     }
   }
