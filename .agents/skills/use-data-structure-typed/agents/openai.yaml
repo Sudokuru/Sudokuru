@@ -1,0 +1,4 @@
+interface:
+  display_name: "Use Data Structure Typed"
+  short_description: "Reuse library data structures before building custom ones"
+  default_prompt: "Use $use-data-structure-typed to choose an appropriate data-structure-typed collection for this implementation."

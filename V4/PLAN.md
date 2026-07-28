@@ -1,4 +1,4 @@
-# Sudokuru 4.0 Rebuild Plan Revision 1.6
+# Sudokuru 4.0 Rebuild Plan Revision 1.7
 
 ## TL;DR
 
@@ -12,6 +12,8 @@ Rebuild the `Sudokuru` package (v4.0) as a **modular, functional, immutable** Su
 
 ## Changelog
 
+* 1.7
+  * Made changes to SudokuVision concept section
 * 1.6
   * Added the shared `UNIT_PRECEDENCE` constant for deterministic row, column, then box strategy traversal
 * 1.5
@@ -391,14 +393,18 @@ A replaceable internal component that guides which cells/regions to check next.
 
 **Concept**
 
-* Maintain a queue of cell coords to prioritize after each move/hint.
-* If queue is empty, fall back to deterministic iteration (top-left → bottom-right cycling).
-* May require “peek” behavior to try simpler strategies first without consuming queue entries prematurely.
+* Basic algorithm is just figuring out based on per strategy heuristics what the most likely cell is for the next occurrence of strategy A is until all locations A could be in are exhausted then repeat for strategy B and so on.
+* Store the immutable puzzle and solution inputs, strategy priority list, current strategy index, and reusable scan structures in internal state.
+* Keep each strategy-specific location queue `null` until that strategy first becomes current during `pop()`.
+* Lazily build only the current strategy's queue. A `null` queue means the strategy has not been scanned; an initialized empty queue means that strategy is exhausted.
+* When the current queue is exhausted, advance the strategy index and continue popping from the next strategy instead of returning early.
+* Keep a reusable, non-destructive list of note cells sorted from fewest to most notes, with row-major tie-breaking, for strategies that benefit from that scan order.
+* `pop()` removes from strategy-specific queues, but shared scan structures are retained for reuse by multiple strategies.
 
 **Interface**
 
-* `setLastMove(puzzle, hint)` → update internal vision state
-* `nextMove()` → returns `(strategy, locationToCheck)` and updates internal pointer state
+* Create SudokuVision object using puzzle, solution, and optionally strategy priority list (otherwise uses same default list as getHint)
+* `pop()` → removes and returns `(strategy, locationToCheck)` from the top of the queue
 
 ---
 
@@ -558,6 +564,7 @@ For each strategy:
    * explanation strings
 4. Implement the strategy module
 5. Add unit tests using the documented fixtures
+6. Add the strategy to `SudokuVision` with deterministic scan ordering, lazy queue initialization, and queue integration tests
 
 ---
 
@@ -577,8 +584,8 @@ For each strategy:
 | ☑      | Implement wrong value                        | Strategy module + tests match docs                                 | https://github.com/Sudokuru/Sudokuru/pull/114 |
 | ☑      | Implement amend notes                        | Strategy module + tests match docs                                 | https://github.com/Sudokuru/Sudokuru/pull/115 |
 | ☑      | Implement obvious single                     | Strategy module + tests match docs                                 | https://github.com/Sudokuru/Sudokuru/pull/116 |
-| ☐      | `SudokuVision` interface                     | Documented and implemented                                         | —       |
-| ☐      | Queue-based SudokuVision impl                | Deterministic fallback scan; tests                                 | —       |
+| ☑      | `SudokuVision` interface                     | Documented and implemented                                         | https://github.com/Sudokuru/Sudokuru/pull/117 |
+| ☑      | Queue-based SudokuVision impl                | Deterministic fallback scan; tests                                 | https://github.com/Sudokuru/Sudokuru/pull/117 |
 | ☐      | `getHint`                                    | Deterministic; staged hints; strategy ordering; tests              | —       |
 | ☐      | `getAllHints`                                | Deterministic; uses strategy set; tests                            | —       |
 | ☐      | `applyHint`                                  | Pure; correct diffs; tests                                         | —       |
