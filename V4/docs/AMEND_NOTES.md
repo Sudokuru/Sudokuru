@@ -4,6 +4,9 @@ This is the docs-first fixture for the V4 amend notes strategy. The strategy
 adds all notes to the target cell, then removes the notes that conflict with
 placed values in the same row, column, or box.
 
+If the target already contains its solution note, the strategy returns `null`
+and leaves the cell unchanged.
+
 ## Source Fixture
 
 The examples use a standard 9x9 board from V4 test data:

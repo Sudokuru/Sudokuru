@@ -129,7 +129,7 @@ function getRemovalStages(
 }
 
 /**
- * Returns a staged hint that fills the targeted note cell with every allowed candidate.
+ * Returns a staged hint that fills the target cell with every allowed note when the targeted note cell is missing its solution note.
  */
 export function getAmendNotesHint(
   puzzle: readonly (readonly CellProps[])[],
@@ -139,6 +139,10 @@ export function getAmendNotesHint(
   const target = getNoteCell(puzzle, locationToCheck);
 
   if (!target) {
+    return null;
+  }
+
+  if (target.notes.includes(solution[target.r][target.c])) {
     return null;
   }
 
