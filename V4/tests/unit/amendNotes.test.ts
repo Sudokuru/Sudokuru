@@ -33,14 +33,14 @@ const TARGET_WITH_EXISTING_NOTE: NoteCellWithLocation = {
   r: 4,
   c: 4,
   type: "note",
-  notes: [3],
+  notes: [9],
 };
 
-const TARGET_WITH_ALL_NOTES: NoteCellWithLocation = {
+const TARGET_MISSING_ONLY_SOLUTION_NOTE: NoteCellWithLocation = {
   r: 4,
   c: 4,
   type: "note",
-  notes: ALL_NOTES,
+  notes: [1, 2, 4, 5, 6, 7, 8, 9],
 };
 
 const INTRODUCTION_STAGE: HintStage = {
@@ -228,32 +228,74 @@ const PRECEDENCE_HINT: Hint = {
   ],
 };
 
-const ALL_NOTES_ROW_REMOVAL_HINT: Hint = {
+const MISSING_ONLY_SOLUTION_NOTE_ROW_REMOVAL_HINT: Hint = {
   strategy: "AMEND_NOTES",
   stages: [
     INTRODUCTION_STAGE,
     {
       placeNotes: [{ r: 4, c: 4, type: "note", notes: ALL_NOTES }],
       highlightCells: [
-        { location: TARGET_WITH_ALL_NOTES, highlightType: "focus" },
+        {
+          location: TARGET_MISSING_ONLY_SOLUTION_NOTE,
+          highlightType: "focus",
+        },
       ],
       highlightNotes: [
-        { location: TARGET_WITH_ALL_NOTES, value: 1, highlightType: "placement" },
-        { location: TARGET_WITH_ALL_NOTES, value: 2, highlightType: "placement" },
-        { location: TARGET_WITH_ALL_NOTES, value: 3, highlightType: "placement" },
-        { location: TARGET_WITH_ALL_NOTES, value: 4, highlightType: "placement" },
-        { location: TARGET_WITH_ALL_NOTES, value: 5, highlightType: "placement" },
-        { location: TARGET_WITH_ALL_NOTES, value: 6, highlightType: "placement" },
-        { location: TARGET_WITH_ALL_NOTES, value: 7, highlightType: "placement" },
-        { location: TARGET_WITH_ALL_NOTES, value: 8, highlightType: "placement" },
-        { location: TARGET_WITH_ALL_NOTES, value: 9, highlightType: "placement" },
+        {
+          location: TARGET_MISSING_ONLY_SOLUTION_NOTE,
+          value: 1,
+          highlightType: "placement",
+        },
+        {
+          location: TARGET_MISSING_ONLY_SOLUTION_NOTE,
+          value: 2,
+          highlightType: "placement",
+        },
+        {
+          location: TARGET_MISSING_ONLY_SOLUTION_NOTE,
+          value: 3,
+          highlightType: "placement",
+        },
+        {
+          location: TARGET_MISSING_ONLY_SOLUTION_NOTE,
+          value: 4,
+          highlightType: "placement",
+        },
+        {
+          location: TARGET_MISSING_ONLY_SOLUTION_NOTE,
+          value: 5,
+          highlightType: "placement",
+        },
+        {
+          location: TARGET_MISSING_ONLY_SOLUTION_NOTE,
+          value: 6,
+          highlightType: "placement",
+        },
+        {
+          location: TARGET_MISSING_ONLY_SOLUTION_NOTE,
+          value: 7,
+          highlightType: "placement",
+        },
+        {
+          location: TARGET_MISSING_ONLY_SOLUTION_NOTE,
+          value: 8,
+          highlightType: "placement",
+        },
+        {
+          location: TARGET_MISSING_ONLY_SOLUTION_NOTE,
+          value: 9,
+          highlightType: "placement",
+        },
       ],
       text: "Add all notes not already present to the cell in row 5, column 5.",
     },
     {
       removeNotes: [{ r: 4, c: 4, type: "note", notes: [7] }],
       highlightCells: [
-        { location: TARGET_WITH_ALL_NOTES, highlightType: "focus" },
+        {
+          location: TARGET_MISSING_ONLY_SOLUTION_NOTE,
+          highlightType: "focus",
+        },
         { location: { r: 4, c: 1 }, highlightType: "focus" },
         { location: { r: 4, c: 2 }, highlightType: "focus" },
         { location: { r: 4, c: 3 }, highlightType: "focus" },
@@ -264,7 +306,11 @@ const ALL_NOTES_ROW_REMOVAL_HINT: Hint = {
         { location: { r: 4, c: 0 }, highlightType: "basis" },
       ],
       highlightNotes: [
-        { location: TARGET_WITH_ALL_NOTES, value: 7, highlightType: "removal" },
+        {
+          location: TARGET_MISSING_ONLY_SOLUTION_NOTE,
+          value: 7,
+          highlightType: "removal",
+        },
       ],
       text: "Remove note 7 because that number is already in row 5.",
     },
@@ -408,7 +454,7 @@ describe("getAmendNotesHint", () => {
     );
   });
 
-  it("still emits the all-notes stage when every note is already present but conflicts remain", () => {
+  it("emits the all-notes stage when only the solution note is missing and conflicts remain", () => {
     const basisCell: ValueCellWithLocation = {
       r: 4,
       c: 0,
@@ -417,15 +463,15 @@ describe("getAmendNotesHint", () => {
     };
     const puzzle = withNotes(
       withValues(createEmptyPuzzle(BOARD_SIZE), [basisCell]),
-      [TARGET_WITH_ALL_NOTES]
+      [TARGET_MISSING_ONLY_SOLUTION_NOTE]
     );
 
     expectHintWithoutMutation(
       getAmendNotesHint,
       puzzle,
       SOLUTION,
-      TARGET_WITH_ALL_NOTES,
-      ALL_NOTES_ROW_REMOVAL_HINT
+      TARGET_MISSING_ONLY_SOLUTION_NOTE,
+      MISSING_ONLY_SOLUTION_NOTE_ROW_REMOVAL_HINT
     );
   });
 
@@ -446,6 +492,24 @@ describe("getAmendNotesHint", () => {
       puzzle,
       SOLUTION,
       valueCell,
+      null
+    );
+  });
+
+  it("returns null when the target already contains its solution note", () => {
+    const targetWithSolutionNote: NoteCellWithLocation = {
+      ...TARGET,
+      notes: [SOLUTION[TARGET.r][TARGET.c]],
+    };
+    const puzzle = withNotes(createEmptyPuzzle(BOARD_SIZE), [
+      targetWithSolutionNote,
+    ]);
+
+    expectHintWithoutMutation(
+      getAmendNotesHint,
+      puzzle,
+      SOLUTION,
+      targetWithSolutionNote,
       null
     );
   });
