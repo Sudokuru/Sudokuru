@@ -35,7 +35,7 @@ function* generateHints(
   puzzle: readonly (readonly CellProps[])[],
   solution: readonly (readonly SudokuNumber[])[],
   strategies?: readonly SudokuStrategy[]
-): Generator<Hint> {
+): Generator<Hint, void> {
   const vision = createSudokuVision(puzzle, solution, strategies);
 
   for (
@@ -64,11 +64,9 @@ export function getHint(
   solution: readonly (readonly SudokuNumber[])[],
   strategies?: readonly SudokuStrategy[]
 ): Hint | null {
-  for (const hint of generateHints(puzzle, solution, strategies)) {
-    return hint;
-  }
+  const nextHint = generateHints(puzzle, solution, strategies).next();
 
-  return null;
+  return nextHint.done === true ? null : nextHint.value;
 }
 
 /**
