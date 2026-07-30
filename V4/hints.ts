@@ -55,3 +55,12 @@ export function getHint(
 
   return null;
 }
+
+/**
+ * Returns every frontend-renderable staged hint for one strategy for the given puzzle state.
+ */
+export declare function getAllHints(
+  puzzle: readonly (readonly CellProps[])[],
+  solution: readonly (readonly SudokuNumber[])[],
+  strategy: SudokuStrategy
+): Hint[];
