@@ -50,6 +50,7 @@ function createWrongValueQueue(
 	// TODO: for performance make this queue creation (and the others) more
 	// lazy by only adding one item to queue at a time (have to store where it
 	// was looking last to make this happen)
+	// might be able to do this via generator pattern like with generate hint in hints.ts
       }
     }
   }
