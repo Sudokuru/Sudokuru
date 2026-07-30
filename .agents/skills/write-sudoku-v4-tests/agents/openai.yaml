@@ -1,0 +1,4 @@
+interface:
+  display_name: "Write Sudoku V4 Tests"
+  short_description: "Apply shared testing practices for Sudokuru V4"
+  default_prompt: "Use $write-sudoku-v4-tests to add focused, maintainable tests for this Sudokuru V4 behavior."
