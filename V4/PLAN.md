@@ -579,23 +579,23 @@ For each strategy:
 
 | Status | Item                                         | Acceptance Criteria                                                | PR Link |
 | ------ | -------------------------------------------- | ------------------------------------------------------------------ | ------- |
-| ☑      | Principles & Plan doc                        | This document merged; diagrams render; terminology section agreed  | https://github.com/Sudokuru/Sudokuru/pull/103 |
-| ☑      | `Types.ts`                                   | Exports stable public types; Frontend can import without internals | https://github.com/Sudokuru/Sudokuru/pull/105 |
-| ☑      | Validation/Solving module                    | Supports multiple grid sizes; descriptive errors; tests            | https://github.com/Sudokuru/Sudokuru/pull/106 |
-| ☑      | `getPuzzleSolution`                          | Solves validated puzzle; returns `number[][]`; tests               | https://github.com/Sudokuru/Sudokuru/pull/106 |
-| ☑      | `getPuzzle`                                  | Parses puzzle string; returns `CellProps[][]`; tests               | https://github.com/Sudokuru/Sudokuru/pull/107 |
-| ☑      | Wrong value hint docs                        | Example hint stages + screenshot in Frontend                       | https://github.com/Sudokuru/Sudokuru/pull/111 |
-| ☑      | Amend notes hint docs                        | Example hint stages + screenshot in Frontend                       | https://github.com/Sudokuru/Sudokuru/pull/112 |
-| ☑      | Obvious single docs                          | Example hint stages + screenshot in Frontend                       | https://github.com/Sudokuru/Sudokuru/pull/113 |
-| ☑      | Strategy implementation PR checklist         | Strategy has sufficient docs/tests/etc link to example PRs         | https://github.com/Sudokuru/Sudokuru/pull/114 |
-| ☑      | Implement wrong value                        | Strategy module + tests match docs                                 | https://github.com/Sudokuru/Sudokuru/pull/114 |
-| ☑      | Implement amend notes                        | Strategy module + tests match docs                                 | https://github.com/Sudokuru/Sudokuru/pull/115 |
-| ☑      | Implement obvious single                     | Strategy module + tests match docs                                 | https://github.com/Sudokuru/Sudokuru/pull/116 |
-| ☑      | `SudokuVision` interface                     | Documented and implemented                                         | https://github.com/Sudokuru/Sudokuru/pull/117 |
-| ☑      | Queue-based SudokuVision impl                | Deterministic fallback scan; tests                                 | https://github.com/Sudokuru/Sudokuru/pull/117 |
-| ☑      | `getHint`                                    | Deterministic; staged hints; strategy ordering; tests              | https://github.com/Sudokuru/Sudokuru/pull/118 |
-| ☑      | `getAllHints`                                | Deterministic; uses one required strategy; tests                   | https://github.com/Sudokuru/Sudokuru/pull/118 |
-| ☑      | `applyHint`                                  | Pure; correct diffs; tests                                         | https://github.com/Sudokuru/Sudokuru/pull/118 |
+| ☑      | Principles & Plan doc                        | This document merged; diagrams render; terminology section agreed  | <https://github.com/Sudokuru/Sudokuru/pull/103> |
+| ☑      | `Types.ts`                                   | Exports stable public types; Frontend can import without internals | <https://github.com/Sudokuru/Sudokuru/pull/105> |
+| ☑      | Validation/Solving module                    | Supports multiple grid sizes; descriptive errors; tests            | <https://github.com/Sudokuru/Sudokuru/pull/106> |
+| ☑      | `getPuzzleSolution`                          | Solves validated puzzle; returns `number[][]`; tests               | <https://github.com/Sudokuru/Sudokuru/pull/106> |
+| ☑      | `getPuzzle`                                  | Parses puzzle string; returns `CellProps[][]`; tests               | <https://github.com/Sudokuru/Sudokuru/pull/107> |
+| ☑      | Wrong value hint docs                        | Example hint stages + screenshot in Frontend                       | <https://github.com/Sudokuru/Sudokuru/pull/111> |
+| ☑      | Amend notes hint docs                        | Example hint stages + screenshot in Frontend                       | <https://github.com/Sudokuru/Sudokuru/pull/112> |
+| ☑      | Obvious single docs                          | Example hint stages + screenshot in Frontend                       | <https://github.com/Sudokuru/Sudokuru/pull/113> |
+| ☑      | Strategy implementation PR checklist         | Strategy has sufficient docs/tests/etc link to example PRs         | <https://github.com/Sudokuru/Sudokuru/pull/114> |
+| ☑      | Implement wrong value                        | Strategy module + tests match docs                                 | <https://github.com/Sudokuru/Sudokuru/pull/114> |
+| ☑      | Implement amend notes                        | Strategy module + tests match docs                                 | <https://github.com/Sudokuru/Sudokuru/pull/115> |
+| ☑      | Implement obvious single                     | Strategy module + tests match docs                                 | <https://github.com/Sudokuru/Sudokuru/pull/116> |
+| ☑      | `SudokuVision` interface                     | Documented and implemented                                         | <https://github.com/Sudokuru/Sudokuru/pull/117> |
+| ☑      | Queue-based SudokuVision impl                | Deterministic fallback scan; tests                                 | <https://github.com/Sudokuru/Sudokuru/pull/117> |
+| ☑      | `getHint`                                    | Deterministic; staged hints; strategy ordering; tests              | <https://github.com/Sudokuru/Sudokuru/pull/118> |
+| ☑      | `getAllHints`                                | Deterministic; uses one required strategy; tests                   | <https://github.com/Sudokuru/Sudokuru/pull/118> |
+| ☑      | `applyHint`                                  | Pure; correct diffs; tests                                         | <https://github.com/Sudokuru/Sudokuru/pull/118> |
 | ☐      | Difficulty module                            | `getRawDifficulty` returns stable number; tests                    | —       |
 | ☐      | `getGameDifficulty` (placeholder ok)         | Returns `GameDifficulty`; boundaries documented                    | —       |
 | ☐      | `getGivensCount`                             | Correct count; tests                                               | —       |
