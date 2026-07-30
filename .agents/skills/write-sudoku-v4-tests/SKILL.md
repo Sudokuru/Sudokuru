@@ -35,21 +35,22 @@ Apply these shared rules to every V4 test task. More specialized testing skills 
 
 ## V4-Only Verification
 
-- Run only tests whose path is under `V4/`. Never run legacy `Generator/tests`, `npm test`, or an unscoped `npx jest`.
+- Run only tests whose path is under `V4/`. Never run legacy `Generator/tests`, `npm test`, or an unscoped Jest command.
+- Use `npx --no-install` for lockfile-managed tools. If a local executable is missing, stop and report it instead of downloading code during verification.
 - Use a focused command such as:
 
 ```text
-npx jest V4/tests/unit/<name>.test.ts --runInBand --coverage=false --watchman=false
+npx --no-install jest V4/tests/unit/<name>.test.ts --runInBand --coverage=false --watchman=false
 ```
 
 - Use this command for the complete V4 unit suite:
 
 ```text
-npx jest V4/tests/unit --runInBand --coverage=false --watchman=false
+npx --no-install jest V4/tests/unit --runInBand --coverage=false --watchman=false
 ```
 
 - For an intentional TDD red suite, confirm its failures come from the missing implementation and that every other V4 suite remains green. Report red tests as expected, not as task failure.
-- Run `git diff --check`. Use `npx tsc --noEmit` when changed production TypeScript or declarations need compilation verification; do not treat it as test execution.
+- Run `git diff --check`. Use `npx --no-install tsc --noEmit` when changed production TypeScript or declarations need compilation verification; do not treat it as test execution.
 
 ## Boundaries
 
