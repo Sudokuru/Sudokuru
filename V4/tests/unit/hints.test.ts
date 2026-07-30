@@ -10,58 +10,16 @@ import type {
 } from "../../Types";
 import * as wrongValueModule from "../../wrongValue";
 import { getWrongValueHint } from "../../wrongValue";
+import { expectStrategyHint } from "../utils/assertions";
 import { clonePuzzle } from "../utils/clonePuzzle";
-
-const SOLUTION: readonly (readonly SudokuNumber[])[] = [
-  [1, 2, 3, 4],
-  [3, 4, 1, 2],
-  [4, 1, 2, 3],
-  [2, 3, 4, 1],
-];
-
-function createSolvedPuzzle(): CellProps[][] {
-  return SOLUTION.map((row) =>
-    row.map((value) => ({ type: "given", value }))
-  );
-}
-
-function createWrongValuePuzzle(): CellProps[][] {
-  const puzzle = createSolvedPuzzle();
-  puzzle[0][0] = { type: "value", value: 2 };
-  puzzle[2][0] = { type: "value", value: 1 };
-  return puzzle;
-}
-
-function createAmendNotesPuzzle(): CellProps[][] {
-  const puzzle = createSolvedPuzzle();
-  puzzle[0][3] = { type: "note", notes: [1, 2] };
-  puzzle[2][0] = { type: "note", notes: [1] };
-  return puzzle;
-}
-
-function createObviousSinglePuzzle(): CellProps[][] {
-  const puzzle = createSolvedPuzzle();
-  puzzle[0][2] = { type: "note", notes: [3] };
-  puzzle[2][0] = { type: "note", notes: [4] };
-  return puzzle;
-}
-
-function createMixedStrategyPuzzle(): CellProps[][] {
-  const puzzle = createSolvedPuzzle();
-  puzzle[0][2] = { type: "note", notes: [3] };
-  puzzle[1][1] = { type: "note", notes: [1] };
-  puzzle[3][3] = { type: "value", value: 2 };
-  return puzzle;
-}
-
-function expectStrategyHint(
-  hint: Hint | null,
-  strategy: SudokuStrategy
-): Hint {
-  expect(hint).not.toBeNull();
-  expect(hint?.strategy).toBe(strategy);
-  return hint!;
-}
+import {
+  createAmendNotesPuzzle,
+  createMixedStrategyPuzzle,
+  createObviousSinglePuzzle,
+  createSolvedPuzzle,
+  createWrongValuePuzzle,
+  HINT_TEST_SOLUTION as SOLUTION,
+} from "../utils/hintPuzzleFactories";
 
 describe("getHint", () => {
   afterEach(() => {
