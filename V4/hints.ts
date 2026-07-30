@@ -29,13 +29,13 @@ const STRATEGY_HINT_FUNCTIONS: Record<
 };
 
 /**
- * Returns the next frontend-renderable staged hint for a puzzle.
+ * Yields each successful strategy attempt in SudokuVision order.
  */
-export function getHint(
+function* generateHints(
   puzzle: readonly (readonly CellProps[])[],
   solution: readonly (readonly SudokuNumber[])[],
   strategies?: readonly SudokuStrategy[]
-): Hint | null {
+): Generator<Hint> {
   const vision = createSudokuVision(puzzle, solution, strategies);
 
   for (
@@ -44,13 +44,28 @@ export function getHint(
     nextCheck = vision.pop()
   ) {
     const [strategy, locationToCheck] = nextCheck;
-    const getStrategyHint = STRATEGY_HINT_FUNCTIONS[strategy];
-
-    const hint = getStrategyHint(puzzle, solution, locationToCheck);
+    const hint = STRATEGY_HINT_FUNCTIONS[strategy](
+      puzzle,
+      solution,
+      locationToCheck
+    );
 
     if (hint !== null) {
-      return hint;
+      yield hint;
     }
+  }
+}
+
+/**
+ * Returns the next frontend-renderable staged hint for a puzzle.
+ */
+export function getHint(
+  puzzle: readonly (readonly CellProps[])[],
+  solution: readonly (readonly SudokuNumber[])[],
+  strategies?: readonly SudokuStrategy[]
+): Hint | null {
+  for (const hint of generateHints(puzzle, solution, strategies)) {
+    return hint;
   }
 
   return null;
@@ -59,8 +74,10 @@ export function getHint(
 /**
  * Returns every frontend-renderable staged hint for one strategy for the given puzzle state.
  */
-export declare function getAllHints(
+export function getAllHints(
   puzzle: readonly (readonly CellProps[])[],
   solution: readonly (readonly SudokuNumber[])[],
   strategy: SudokuStrategy
-): Hint[];
+): Hint[] {
+  return [...generateHints(puzzle, solution, [strategy])];
+}
