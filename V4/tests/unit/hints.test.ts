@@ -8,6 +8,7 @@ import type {
   SudokuNumber,
   SudokuStrategy,
 } from "../../Types";
+import * as wrongValueModule from "../../wrongValue";
 import { getWrongValueHint } from "../../wrongValue";
 import { clonePuzzle } from "../utils/clonePuzzle";
 
@@ -63,6 +64,10 @@ function expectStrategyHint(
 }
 
 describe("getHint", () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   describe("default strategy priority", () => {
     it("returns a wrong-value hint before lower-priority available hints", () => {
       const puzzle = createMixedStrategyPuzzle();
@@ -179,6 +184,33 @@ describe("getHint", () => {
       const second = getHint(puzzle, SOLUTION, strategies);
 
       expect(second).toEqual(first);
+    });
+
+    it("continues to the next vision candidate when a strategy attempt returns null", () => {
+      const puzzle = createWrongValuePuzzle();
+      const expected = expectStrategyHint(
+        getWrongValueHint(puzzle, SOLUTION, { r: 2, c: 0 }),
+        "WRONG_VALUE"
+      );
+      const getWrongValueHintSpy = jest.spyOn(
+        wrongValueModule,
+        "getWrongValueHint"
+      );
+      getWrongValueHintSpy.mockReturnValueOnce(null);
+
+      expect(getHint(puzzle, SOLUTION, ["WRONG_VALUE"])).toEqual(expected);
+      expect(getWrongValueHintSpy).toHaveBeenNthCalledWith(
+        1,
+        puzzle,
+        SOLUTION,
+        { r: 0, c: 0 }
+      );
+      expect(getWrongValueHintSpy).toHaveBeenNthCalledWith(
+        2,
+        puzzle,
+        SOLUTION,
+        { r: 2, c: 0 }
+      );
     });
   });
 
