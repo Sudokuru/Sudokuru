@@ -1,6 +1,6 @@
 import { createSudokuVision } from "../../sudokuVision";
 import type { CellProps, SudokuNumber } from "../../Types";
-import { clonePuzzle } from "../utils/clonePuzzle";
+import { clonePuzzle } from "../../puzzles";
 
 const SOLUTION: readonly (readonly SudokuNumber[])[] = [
   [1, 2, 3, 4],

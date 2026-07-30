@@ -11,8 +11,8 @@ import type {
 } from "../../Types";
 import * as wrongValueModule from "../../wrongValue";
 import { getWrongValueHint } from "../../wrongValue";
+import { clonePuzzle } from "../../puzzles";
 import { expectStrategyHint } from "../utils/assertions";
-import { clonePuzzle } from "../utils/clonePuzzle";
 import {
   createAmendNotesPuzzle,
   createMixedStrategyPuzzle,

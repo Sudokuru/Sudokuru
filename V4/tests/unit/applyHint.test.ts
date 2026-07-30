@@ -1,6 +1,6 @@
 import { applyHint } from "../../applyHint";
+import { clonePuzzle } from "../../puzzles";
 import type { CellProps, Hint } from "../../Types";
-import { clonePuzzle } from "../utils/clonePuzzle";
 
 const BASE_PUZZLE: CellProps[][] = [
   [

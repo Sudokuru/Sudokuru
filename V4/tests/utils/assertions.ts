@@ -9,8 +9,8 @@ import type {
   SudokuNumber,
   SudokuStrategy,
 } from "../../Types";
+import { clonePuzzle } from "../../puzzles";
 import { cloneBoard } from "../../validate";
-import { clonePuzzle } from "./clonePuzzle";
 
 type HintFunction = (
   puzzle: readonly (readonly CellProps[])[],
