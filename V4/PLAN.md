@@ -593,9 +593,9 @@ For each strategy:
 | ☑      | Implement obvious single                     | Strategy module + tests match docs                                 | <https://github.com/Sudokuru/Sudokuru/pull/116> |
 | ☑      | `SudokuVision` interface                     | Documented and implemented                                         | <https://github.com/Sudokuru/Sudokuru/pull/117> |
 | ☑      | Queue-based SudokuVision impl                | Deterministic fallback scan; tests                                 | <https://github.com/Sudokuru/Sudokuru/pull/117> |
-| ☑      | `getHint`                                    | Deterministic; staged hints; strategy ordering; tests              | <https://github.com/Sudokuru/Sudokuru/pull/118> |
-| ☑      | `getAllHints`                                | Deterministic; uses one required strategy; tests                   | <https://github.com/Sudokuru/Sudokuru/pull/118> |
-| ☑      | `applyHint`                                  | Pure; correct diffs; tests                                         | <https://github.com/Sudokuru/Sudokuru/pull/118> |
+| ☑      | `getHint`                                    | Deterministic; staged hints; strategy ordering; tests              | <https://github.com/Sudokuru/Sudokuru/pull/119> |
+| ☑      | `getAllHints`                                | Deterministic; uses one required strategy; tests                   | <https://github.com/Sudokuru/Sudokuru/pull/119> |
+| ☑      | `applyHint`                                  | Pure; correct diffs; tests                                         | <https://github.com/Sudokuru/Sudokuru/pull/119> |
 | ☐      | Difficulty module                            | `getRawDifficulty` returns stable number; tests                    | —       |
 | ☐      | `getGameDifficulty` (placeholder ok)         | Returns `GameDifficulty`; boundaries documented                    | —       |
 | ☐      | `getGivensCount`                             | Correct count; tests                                               | —       |
