@@ -600,17 +600,17 @@ For each strategy:
 | ☐      | `getGameDifficulty` (placeholder ok)         | Returns `GameDifficulty`; boundaries documented                    | —       |
 | ☐      | `getGivensCount`                             | Correct count; tests                                               | —       |
 | ☐      | `getSudokuData`                              | Produces SudokuData; drill loop stable; tests                      | —       |
-| ☐      | Simplify notes doc                           | Example + approval                                                 | —       |
-| ☐      | Obvious pair/triplet/quad docs               | Example + approval                                                 | —       |
-| ☐      | Hidden single/pair/triplet/quad docs         | Example + approval                                                 | —       |
-| ☐      | Pointing pair/triplet docs                   | Example + approval                                                 | —       |
+| ☐      | [Simplify notes doc](docs/SIMPLIFY_NOTES.md) | Example + approval                                                 | —       |
+| ☐      | Obvious [pair](docs/OBVIOUS_PAIR.md)/[triplet](docs/OBVIOUS_TRIPLET.md)/[quad](docs/OBVIOUS_QUADRUPLET.md) docs | Example + approval | — |
+| ☐      | Hidden [single](docs/HIDDEN_SINGLE.md)/[pair](docs/HIDDEN_PAIR.md)/[triplet](docs/HIDDEN_TRIPLET.md)/[quad](docs/HIDDEN_QUADRUPLET.md) docs | Example + approval | — |
+| ☐      | Pointing [pair](docs/POINTING_PAIR.md)/[triplet](docs/POINTING_TRIPLET.md) docs | Example + approval | — |
 | ☐      | Implement simplify notes                     | Tests match docs                                                   | —       |
 | ☐      | Implement Obvious set (pair/trip/quad)       | Tests match docs                                                   | —       |
 | ☐      | Implement Hidden set (single/pair/trip/quad) | Tests match docs                                                   | —       |
 | ☐      | Implement Pointing pair/triplet              | Tests match docs                                                   | —       |
-| ☐      | Box-line reduction docs                      | Example + approval                                                 | —       |
-| ☐      | X-Wing docs                                  | Example + approval                                                 | —       |
-| ☐      | Swordfish docs                               | Example + approval                                                 | —       |
+| ☐      | [Box-line reduction docs](docs/BOX_LINE_REDUCTION.md) | Example + approval                                           | —       |
+| ☐      | [X-Wing docs](docs/X_WING.md)                | Example + approval                                                 | —       |
+| ☐      | [Swordfish docs](docs/SWORDFISH.md)          | Example + approval                                                 | —       |
 | ☐      | Implement Box-line reduction                 | Tests match docs                                                   | —       |
 | ☐      | Implement X-Wing                             | Tests match docs                                                   | —       |
 | ☐      | Implement Swordfish                          | Tests match docs                                                   | —       |
