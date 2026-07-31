@@ -1,87 +1,300 @@
-import { BOX_LAYOUTS } from "./Types";
 import { createSeededRandom } from "./random";
-import type {
-  BoxLayout,
-  CellLocation,
-  CellProps,
-  SudokuNumber,
-} from "./Types";
+import { BOX_LAYOUTS } from "./Types";
+import type { BoxLayout, CellProps, SudokuNumber } from "./Types";
 
 const REFUTATION_RUN_COUNT = 30;
+const MAX_CACHED_REFUTATION_SCORES = 32;
+const refutationScoreCache = new Map<string, number>();
 
-type RefutationCell = {
-  value: SudokuNumber;
-  candidates: boolean[];
+type BoardGeometry = {
+  size: number;
+  cellCount: number;
+  layout: BoxLayout;
+  rowByCell: Uint8Array;
+  columnByCell: Uint8Array;
+  boxByCell: Uint8Array;
+  rowPeers: Uint8Array[];
+  columnPeers: Uint8Array[];
+  boxPeers: Uint8Array[];
+  allPeers: Uint8Array[];
 };
 
-type RefutationBoard = RefutationCell[][];
+type RefutationBoard = {
+  geometry: BoardGeometry;
+  state: Uint16Array;
+  values: Uint16Array;
+  candidates: Uint16Array;
+  rowValues: Uint16Array;
+  columnValues: Uint16Array;
+  boxValues: Uint16Array;
+  hasDuplicates: boolean;
+  remainingCellCount: number;
+};
+
+type SolverScratch = {
+  orderedLocations: Uint8Array;
+  shuffledLocations: Uint8Array;
+};
 
 /**
- * Removes a placed value from the candidates of its row, column, and box peers.
+ * Builds a compact key from the state that affects refutation scoring.
+ *
+ * Note contents and the distinction between given and user-entered values are
+ * intentionally omitted because the scoring algorithm treats them identically.
  */
-function simplifyCandidates(
-  board: RefutationBoard,
-  row: number,
-  column: number
-): void {
-  const size = board.length;
-  const candidateIndex = board[row][column].value - 1;
-  const layout: BoxLayout = BOX_LAYOUTS[size];
+function getRefutationScoreCacheKey(
+  puzzle: readonly (readonly CellProps[])[],
+  solution: readonly (readonly SudokuNumber[])[],
+  boost: number
+): string {
+  let key = `${puzzle.length}:${boost}:`;
 
-  for (let peerColumn = 0; peerColumn < size; peerColumn += 1) {
-    if (peerColumn !== column) {
-      board[row][peerColumn].candidates[candidateIndex] = false;
+  for (const row of puzzle) {
+    for (const cell of row) {
+      key += cell.type === "note" ? "0" : String(cell.value);
     }
   }
 
-  for (let peerRow = 0; peerRow < size; peerRow += 1) {
-    if (peerRow !== row) {
-      board[peerRow][column].candidates[candidateIndex] = false;
+  key += ":";
+
+  for (const row of solution) {
+    for (const value of row) {
+      key += String(value);
     }
   }
 
-  const firstBoxRow =
-    Math.floor(row / layout.boxHeight) * layout.boxHeight;
-  const firstBoxColumn =
-    Math.floor(column / layout.boxWidth) * layout.boxWidth;
+  return key;
+}
 
-  for (
-    let peerRow = firstBoxRow;
-    peerRow < firstBoxRow + layout.boxHeight;
-    peerRow += 1
-  ) {
-    for (
-      let peerColumn = firstBoxColumn;
-      peerColumn < firstBoxColumn + layout.boxWidth;
-      peerColumn += 1
-    ) {
-      if (peerRow !== row || peerColumn !== column) {
-        board[peerRow][peerColumn].candidates[candidateIndex] = false;
+/**
+ * Retains a bounded least-recently-used set of completed pure calculations.
+ */
+function cacheRefutationScore(key: string, score: number): void {
+  if (refutationScoreCache.size >= MAX_CACHED_REFUTATION_SCORES) {
+    const oldestKey = refutationScoreCache.keys().next().value;
+
+    if (oldestKey !== undefined) {
+      refutationScoreCache.delete(oldestKey);
+    }
+  }
+
+  refutationScoreCache.set(key, score);
+}
+
+/**
+ * Creates one contiguous mutable state buffer and typed views into each region.
+ *
+ * Keeping branch state contiguous lets the refutation hot path clone it with
+ * one native typed-array copy instead of five separate copies.
+ */
+function createBoardState(geometry: BoardGeometry): Omit<
+  RefutationBoard,
+  "geometry" | "hasDuplicates" | "remainingCellCount"
+> {
+  const { cellCount, size } = geometry;
+  const candidatesOffset = cellCount;
+  const rowValuesOffset = candidatesOffset + cellCount;
+  const columnValuesOffset = rowValuesOffset + size;
+  const boxValuesOffset = columnValuesOffset + size;
+  const state = new Uint16Array(boxValuesOffset + size);
+
+  return {
+    state,
+    values: state.subarray(0, candidatesOffset),
+    candidates: state.subarray(candidatesOffset, rowValuesOffset),
+    rowValues: state.subarray(rowValuesOffset, columnValuesOffset),
+    columnValues: state.subarray(columnValuesOffset, boxValuesOffset),
+    boxValues: state.subarray(boxValuesOffset),
+  };
+}
+
+/**
+ * Precomputes every unit relationship used by the refutation hot path.
+ */
+function createBoardGeometry(size: number, layout: BoxLayout): BoardGeometry {
+  const cellCount = size * size;
+  const rowByCell = new Uint8Array(cellCount);
+  const columnByCell = new Uint8Array(cellCount);
+  const boxByCell = new Uint8Array(cellCount);
+  const rowPeers: Uint8Array[] = [];
+  const columnPeers: Uint8Array[] = [];
+  const boxPeers: Uint8Array[] = [];
+  const allPeers: Uint8Array[] = [];
+  const boxColumnCount = size / layout.boxWidth;
+
+  for (let cellIndex = 0; cellIndex < cellCount; cellIndex += 1) {
+    const row = Math.floor(cellIndex / size);
+    const column = cellIndex % size;
+    const box =
+      Math.floor(row / layout.boxHeight) * boxColumnCount +
+      Math.floor(column / layout.boxWidth);
+    const firstBoxRow =
+      Math.floor(row / layout.boxHeight) * layout.boxHeight;
+    const firstBoxColumn =
+      Math.floor(column / layout.boxWidth) * layout.boxWidth;
+    const cellRowPeers: number[] = [];
+    const cellColumnPeers: number[] = [];
+    const cellBoxPeers: number[] = [];
+    const cellAllPeers: number[] = [];
+
+    rowByCell[cellIndex] = row;
+    columnByCell[cellIndex] = column;
+    boxByCell[cellIndex] = box;
+
+    for (let peerColumn = 0; peerColumn < size; peerColumn += 1) {
+      if (peerColumn !== column) {
+        const peerIndex = row * size + peerColumn;
+        cellRowPeers.push(peerIndex);
+        cellAllPeers.push(peerIndex);
       }
     }
+
+    for (let peerRow = 0; peerRow < size; peerRow += 1) {
+      if (peerRow !== row) {
+        const peerIndex = peerRow * size + column;
+        cellColumnPeers.push(peerIndex);
+        cellAllPeers.push(peerIndex);
+      }
+    }
+
+    for (
+      let peerRow = firstBoxRow;
+      peerRow < firstBoxRow + layout.boxHeight;
+      peerRow += 1
+    ) {
+      for (
+        let peerColumn = firstBoxColumn;
+        peerColumn < firstBoxColumn + layout.boxWidth;
+        peerColumn += 1
+      ) {
+        if (peerRow === row && peerColumn === column) {
+          continue;
+        }
+
+        const peerIndex = peerRow * size + peerColumn;
+        cellBoxPeers.push(peerIndex);
+
+        if (peerRow !== row && peerColumn !== column) {
+          cellAllPeers.push(peerIndex);
+        }
+      }
+    }
+
+    rowPeers.push(Uint8Array.from(cellRowPeers));
+    columnPeers.push(Uint8Array.from(cellColumnPeers));
+    boxPeers.push(Uint8Array.from(cellBoxPeers));
+    allPeers.push(Uint8Array.from(cellAllPeers));
+  }
+
+  return {
+    size,
+    cellCount,
+    layout,
+    rowByCell,
+    columnByCell,
+    boxByCell,
+    rowPeers,
+    columnPeers,
+    boxPeers,
+    allPeers,
+  };
+}
+
+const BOARD_GEOMETRIES: Record<number, BoardGeometry> = Object.fromEntries(
+  Object.entries(BOX_LAYOUTS).map(([size, layout]) => [
+    Number(size),
+    createBoardGeometry(Number(size), layout),
+  ])
+);
+
+/**
+ * Removes a placed value from the candidate masks of its row, column, and box peers.
+ */
+function simplifyCandidates(board: RefutationBoard, cellIndex: number): void {
+  const candidateBit = 1 << (board.values[cellIndex] - 1);
+  const retainedCandidates = ~candidateBit;
+  const peers = board.geometry.allPeers[cellIndex];
+
+  for (let peerIndex = 0; peerIndex < peers.length; peerIndex += 1) {
+    board.candidates[peers[peerIndex]] &= retainedCandidates;
   }
 }
 
 /**
- * Creates fresh refutation state and derives candidates from placed values.
+ * Places a value and updates duplicate tracking, optionally simplifying peers.
+ */
+function placeValue(
+  board: RefutationBoard,
+  cellIndex: number,
+  value: SudokuNumber,
+  shouldSimplifyCandidates: boolean
+): void {
+  const { geometry } = board;
+  const row = geometry.rowByCell[cellIndex];
+  const column = geometry.columnByCell[cellIndex];
+  const box = geometry.boxByCell[cellIndex];
+  const valueBit = 1 << (value - 1);
+
+  if (
+    (board.rowValues[row] & valueBit) !== 0 ||
+    (board.columnValues[column] & valueBit) !== 0 ||
+    (board.boxValues[box] & valueBit) !== 0
+  ) {
+    board.hasDuplicates = true;
+  }
+
+  board.values[cellIndex] = value;
+  board.remainingCellCount -= 1;
+  board.rowValues[row] |= valueBit;
+  board.columnValues[column] |= valueBit;
+  board.boxValues[box] |= valueBit;
+
+  if (shouldSimplifyCandidates) {
+    simplifyCandidates(board, cellIndex);
+  }
+}
+
+/**
+ * Creates compact refutation state and derives candidates from placed values.
  */
 function createRefutationBoard(
   puzzle: readonly (readonly CellProps[])[]
 ): RefutationBoard {
   const size = puzzle.length;
-  const board: RefutationBoard = puzzle.map((row) =>
-    row.map((cell) =>
-      cell.type === "note"
-        ? { value: 0, candidates: new Array(size).fill(true) }
-        : { value: cell.value, candidates: new Array(size).fill(false) }
-    )
-  );
+  const geometry = BOARD_GEOMETRIES[size];
+  const state = createBoardState(geometry);
+  const { values, candidates } = state;
+  const allCandidates = (1 << size) - 1;
 
   for (let row = 0; row < size; row += 1) {
     for (let column = 0; column < size; column += 1) {
-      if (board[row][column].value !== 0) {
-        simplifyCandidates(board, row, column);
+      const cellIndex = row * size + column;
+      const cell = puzzle[row][column];
+
+      if (cell.type === "note") {
+        candidates[cellIndex] = allCandidates;
+      } else {
+        values[cellIndex] = cell.value;
       }
+    }
+  }
+
+  const board: RefutationBoard = {
+    geometry,
+    ...state,
+    hasDuplicates: false,
+    remainingCellCount: geometry.cellCount,
+  };
+
+  for (
+    let cellIndex = 0;
+    cellIndex < geometry.cellCount;
+    cellIndex += 1
+  ) {
+    if (values[cellIndex] !== 0) {
+      const value = values[cellIndex];
+      values[cellIndex] = 0;
+      placeValue(board, cellIndex, value, true);
     }
   }
 
@@ -89,58 +302,43 @@ function createRefutationBoard(
 }
 
 /**
- * Copies values and candidate arrays for an independent solving branch.
+ * Creates empty reusable storage with the same geometry as a source board.
  */
-function cloneRefutationBoard(board: RefutationBoard): RefutationBoard {
-  return board.map((row) =>
-    row.map((cell) => ({
-      value: cell.value,
-      candidates: [...cell.candidates],
-    }))
-  );
+function createBoardStorage(source: RefutationBoard): RefutationBoard {
+  const state = createBoardState(source.geometry);
+
+  return {
+    geometry: source.geometry,
+    ...state,
+    hasDuplicates: false,
+    remainingCellCount: source.geometry.cellCount,
+  };
 }
 
 /**
- * Returns the sole candidate index, or -1 when there is not exactly one.
+ * Copies values and candidates into an existing independent solving branch.
  */
-function getOnlyCandidate(candidates: readonly boolean[]): number {
-  let onlyCandidate = -1;
-
-  for (
-    let candidateIndex = 0;
-    candidateIndex < candidates.length;
-    candidateIndex += 1
-  ) {
-    if (!candidates[candidateIndex]) {
-      continue;
-    }
-
-    if (onlyCandidate !== -1) {
-      return -1;
-    }
-
-    onlyCandidate = candidateIndex;
-  }
-
-  return onlyCandidate;
-}
-
-/**
- * Removes all candidates present in a peer from a candidate snapshot.
- */
-function removePeerCandidates(
-  candidates: boolean[],
-  peerCandidates: readonly boolean[]
+function copyRefutationBoard(
+  source: RefutationBoard,
+  target: RefutationBoard
 ): void {
-  for (
-    let candidateIndex = 0;
-    candidateIndex < candidates.length;
-    candidateIndex += 1
+  target.state.set(source.state);
+  target.hasDuplicates = source.hasDuplicates;
+  target.remainingCellCount = source.remainingCellCount;
+}
+
+/**
+ * Returns the sole candidate index in a mask, or -1 when there is not exactly one.
+ */
+function getOnlyCandidate(candidateMask: number): number {
+  if (
+    candidateMask === 0 ||
+    (candidateMask & (candidateMask - 1)) !== 0
   ) {
-    if (peerCandidates[candidateIndex]) {
-      candidates[candidateIndex] = false;
-    }
+    return -1;
   }
+
+  return 31 - Math.clz32(candidateMask);
 }
 
 /**
@@ -148,26 +346,21 @@ function removePeerCandidates(
  */
 function getSingleCandidate(
   board: RefutationBoard,
-  row: number,
-  column: number
+  cellIndex: number
 ): number {
-  const size = board.length;
-  const cellCandidates = board[row][column].candidates;
+  const { candidates, geometry } = board;
+  const cellCandidates = candidates[cellIndex];
   const obviousSingle = getOnlyCandidate(cellCandidates);
 
   if (obviousSingle !== -1) {
     return obviousSingle;
   }
 
-  let hiddenCandidates = [...cellCandidates];
+  const rowPeers = geometry.rowPeers[cellIndex];
+  let hiddenCandidates = cellCandidates;
 
-  for (let peerColumn = 0; peerColumn < size; peerColumn += 1) {
-    if (peerColumn !== column) {
-      removePeerCandidates(
-        hiddenCandidates,
-        board[row][peerColumn].candidates
-      );
-    }
+  for (let peerIndex = 0; peerIndex < rowPeers.length; peerIndex += 1) {
+    hiddenCandidates &= ~candidates[rowPeers[peerIndex]];
   }
 
   const rowHiddenSingle = getOnlyCandidate(hiddenCandidates);
@@ -176,12 +369,15 @@ function getSingleCandidate(
     return rowHiddenSingle;
   }
 
-  hiddenCandidates = [...cellCandidates];
+  hiddenCandidates = cellCandidates;
+  const columnPeers = geometry.columnPeers[cellIndex];
 
-  for (let peerRow = 0; peerRow < size; peerRow += 1) {
-    if (peerRow !== row) {
-      removePeerCandidates(hiddenCandidates, board[peerRow][column].candidates);
-    }
+  for (
+    let peerIndex = 0;
+    peerIndex < columnPeers.length;
+    peerIndex += 1
+  ) {
+    hiddenCandidates &= ~candidates[columnPeers[peerIndex]];
   }
 
   const columnHiddenSingle = getOnlyCandidate(hiddenCandidates);
@@ -190,34 +386,30 @@ function getSingleCandidate(
     return columnHiddenSingle;
   }
 
-  hiddenCandidates = [...cellCandidates];
+  hiddenCandidates = cellCandidates;
+  const boxPeers = geometry.boxPeers[cellIndex];
 
-  const layout: BoxLayout = BOX_LAYOUTS[size];
-  const firstBoxRow =
-    Math.floor(row / layout.boxHeight) * layout.boxHeight;
-  const firstBoxColumn =
-    Math.floor(column / layout.boxWidth) * layout.boxWidth;
-
-  for (
-    let peerRow = firstBoxRow;
-    peerRow < firstBoxRow + layout.boxHeight;
-    peerRow += 1
-  ) {
-    for (
-      let peerColumn = firstBoxColumn;
-      peerColumn < firstBoxColumn + layout.boxWidth;
-      peerColumn += 1
-    ) {
-      if (peerRow !== row || peerColumn !== column) {
-        removePeerCandidates(
-          hiddenCandidates,
-          board[peerRow][peerColumn].candidates
-        );
-      }
-    }
+  for (let peerIndex = 0; peerIndex < boxPeers.length; peerIndex += 1) {
+    hiddenCandidates &= ~candidates[boxPeers[peerIndex]];
   }
 
   return getOnlyCandidate(hiddenCandidates);
+}
+
+/**
+ * Creates reusable row-major and shuffled location buffers.
+ */
+function createSolverScratch(cellCount: number): SolverScratch {
+  const orderedLocations = new Uint8Array(cellCount);
+
+  for (let cellIndex = 0; cellIndex < cellCount; cellIndex += 1) {
+    orderedLocations[cellIndex] = cellIndex;
+  }
+
+  return {
+    orderedLocations,
+    shuffledLocations: new Uint8Array(cellCount),
+  };
 }
 
 /**
@@ -225,37 +417,38 @@ function getSingleCandidate(
  */
 function solveSingleStep(
   board: RefutationBoard,
-  nextRandom: () => number
+  nextRandom: () => number,
+  scratch: SolverScratch
 ): boolean {
-  const size = board.length;
-  const locations: CellLocation[] = [];
+  const { shuffledLocations, orderedLocations } = scratch;
+  shuffledLocations.set(orderedLocations);
+  const cellCount = board.geometry.cellCount;
 
-  for (let row = 0; row < size; row += 1) {
-    for (let column = 0; column < size; column += 1) {
-      locations.push({ r: row, c: column });
-    }
-  }
-
-  for (let index = locations.length - 1; index > 0; index -= 1) {
+  for (let index = cellCount - 1; index > 0; index -= 1) {
     const swapIndex = Math.floor(nextRandom() * (index + 1));
-    const location = locations[index];
-    locations[index] = locations[swapIndex];
-    locations[swapIndex] = location;
+    const cellIndex = shuffledLocations[index];
+    shuffledLocations[index] = shuffledLocations[swapIndex];
+    shuffledLocations[swapIndex] = cellIndex;
   }
 
-  for (const { r: row, c: column } of locations) {
-    if (board[row][column].value !== 0) {
+  for (
+    let locationIndex = 0;
+    locationIndex < cellCount;
+    locationIndex += 1
+  ) {
+    const cellIndex = shuffledLocations[locationIndex];
+
+    if (board.values[cellIndex] !== 0) {
       continue;
     }
 
-    const candidateIndex = getSingleCandidate(board, row, column);
+    const candidateIndex = getSingleCandidate(board, cellIndex);
 
     if (candidateIndex === -1) {
       continue;
     }
 
-    board[row][column].value = candidateIndex + 1;
-    simplifyCandidates(board, row, column);
+    placeValue(board, cellIndex, candidateIndex + 1, true);
     return true;
   }
 
@@ -266,86 +459,32 @@ function solveSingleStep(
  * Returns true when a row, column, or box contains a duplicate placed value.
  */
 function hasDuplicateValues(board: RefutationBoard): boolean {
-  const size = board.length;
-
-  for (let row = 0; row < size; row += 1) {
-    const values = new Set<SudokuNumber>();
-
-    for (let column = 0; column < size; column += 1) {
-      const value = board[row][column].value;
-
-      if (value !== 0 && values.has(value)) {
-        return true;
-      }
-
-      if (value !== 0) {
-        values.add(value);
-      }
-    }
-  }
-
-  for (let column = 0; column < size; column += 1) {
-    const values = new Set<SudokuNumber>();
-
-    for (let row = 0; row < size; row += 1) {
-      const value = board[row][column].value;
-
-      if (value !== 0 && values.has(value)) {
-        return true;
-      }
-
-      if (value !== 0) {
-        values.add(value);
-      }
-    }
-  }
-
-  const layout: BoxLayout = BOX_LAYOUTS[size];
-
-  for (
-    let firstBoxRow = 0;
-    firstBoxRow < size;
-    firstBoxRow += layout.boxHeight
-  ) {
-    for (
-      let firstBoxColumn = 0;
-      firstBoxColumn < size;
-      firstBoxColumn += layout.boxWidth
-    ) {
-      const values = new Set<SudokuNumber>();
-
-      for (
-        let row = firstBoxRow;
-        row < firstBoxRow + layout.boxHeight;
-        row += 1
-      ) {
-        for (
-          let column = firstBoxColumn;
-          column < firstBoxColumn + layout.boxWidth;
-          column += 1
-        ) {
-          const value = board[row][column].value;
-
-          if (value !== 0 && values.has(value)) {
-            return true;
-          }
-
-          if (value !== 0) {
-            values.add(value);
-          }
-        }
-      }
-    }
-  }
-
-  return false;
+  return board.hasDuplicates;
 }
 
 /**
  * Returns true when every cell contains a placed value.
  */
 function isSolved(board: RefutationBoard): boolean {
-  return board.every((row) => row.every((cell) => cell.value !== 0));
+  return board.remainingCellCount === 0;
+}
+
+/**
+ * Flattens the immutable solution for hot-path indexed access.
+ */
+function getSolutionValues(
+  solution: readonly (readonly SudokuNumber[])[],
+  size: number
+): Uint8Array {
+  const solutionValues = new Uint8Array(size * size);
+
+  for (let row = 0; row < size; row += 1) {
+    for (let column = 0; column < size; column += 1) {
+      solutionValues[row * size + column] = solution[row][column];
+    }
+  }
+
+  return solutionValues;
 }
 
 /**
@@ -359,83 +498,102 @@ export function getRefutationScore(
   solution: readonly (readonly SudokuNumber[])[],
   boost: number
 ): number {
+  const cacheKey = getRefutationScoreCacheKey(puzzle, solution, boost);
+  const cachedScore = refutationScoreCache.get(cacheKey);
+
+  if (cachedScore !== undefined) {
+    refutationScoreCache.delete(cacheKey);
+    refutationScoreCache.set(cacheKey, cachedScore);
+    return cachedScore;
+  }
+
   const initialBoard = createRefutationBoard(puzzle);
+  const board = createBoardStorage(initialBoard);
+  const branchBoard = createBoardStorage(initialBoard);
+  const { size, cellCount } = initialBoard.geometry;
+  const solutionValues = getSolutionValues(solution, size);
+  const solverScratch = createSolverScratch(cellCount);
   const nextRandom = createSeededRandom();
   let totalRefutationScore = 0;
 
   for (let run = 0; run < REFUTATION_RUN_COUNT; run += 1) {
-    const board = cloneRefutationBoard(initialBoard);
+    copyRefutationBoard(initialBoard, board);
 
     while (!isSolved(board)) {
-      while (solveSingleStep(board, nextRandom)) {
+      while (solveSingleStep(board, nextRandom, solverScratch)) {
         // Continue until obvious and hidden singles are exhausted.
       }
 
       let lowestRefutationScore = Number.POSITIVE_INFINITY;
-      let lowestScoreRow = -1;
-      let lowestScoreColumn = -1;
+      let lowestScoreIndex = -1;
 
-      for (let row = 0; row < board.length; row += 1) {
-        for (let column = 0; column < board.length; column += 1) {
-          const cell = board[row][column];
+      for (
+        let cellIndex = 0;
+        cellIndex < cellCount;
+        cellIndex += 1
+      ) {
+        if (board.values[cellIndex] !== 0) {
+          continue;
+        }
 
-          if (cell.value !== 0) {
-            continue;
-          }
+        if (lowestScoreIndex !== -1 && nextRandom() < boost) {
+          continue;
+        }
 
-          if (lowestScoreRow !== -1 && nextRandom() < boost) {
-            continue;
-          }
+        const cellCandidates = board.candidates[cellIndex];
 
-          for (
-            let candidateIndex = 0;
-            candidateIndex < board.length;
-            candidateIndex += 1
+        for (
+          let candidateIndex = 0;
+          candidateIndex < size;
+          candidateIndex += 1
+        ) {
+          const candidate = candidateIndex + 1;
+
+          if (
+            candidate === solutionValues[cellIndex] ||
+            (cellCandidates & (1 << candidateIndex)) === 0
           ) {
-            const candidate = candidateIndex + 1;
+            continue;
+          }
+
+          copyRefutationBoard(board, branchBoard);
+          placeValue(branchBoard, cellIndex, candidate, true);
+
+          let candidateRefutationScore = 0;
+
+          while (true) {
+            candidateRefutationScore += 1;
 
             if (
-              candidate === solution[row][column] ||
-              !cell.candidates[candidateIndex]
+              hasDuplicateValues(branchBoard) ||
+              !solveSingleStep(branchBoard, nextRandom, solverScratch)
             ) {
-              continue;
+              break;
             }
+          }
 
-            const refutationBoard = cloneRefutationBoard(board);
-            refutationBoard[row][column].value = candidate;
-            simplifyCandidates(refutationBoard, row, column);
-
-            let candidateRefutationScore = 0;
-
-            while (true) {
-              candidateRefutationScore += 1;
-
-              if (
-                hasDuplicateValues(refutationBoard) ||
-                !solveSingleStep(refutationBoard, nextRandom)
-              ) {
-                break;
-              }
-            }
-
-            if (candidateRefutationScore < lowestRefutationScore) {
-              lowestRefutationScore = candidateRefutationScore;
-              lowestScoreRow = row;
-              lowestScoreColumn = column;
-            }
+          if (candidateRefutationScore < lowestRefutationScore) {
+            lowestRefutationScore = candidateRefutationScore;
+            lowestScoreIndex = cellIndex;
           }
         }
       }
 
-      if (lowestScoreRow === -1) {
+      if (lowestScoreIndex === -1) {
         break;
       }
 
       totalRefutationScore += lowestRefutationScore;
-      board[lowestScoreRow][lowestScoreColumn].value =
-        solution[lowestScoreRow][lowestScoreColumn];
+      placeValue(
+        board,
+        lowestScoreIndex,
+        solutionValues[lowestScoreIndex],
+        false
+      );
     }
   }
 
-  return Math.floor(totalRefutationScore / REFUTATION_RUN_COUNT);
+  const score = Math.floor(totalRefutationScore / REFUTATION_RUN_COUNT);
+  cacheRefutationScore(cacheKey, score);
+  return score;
 }
