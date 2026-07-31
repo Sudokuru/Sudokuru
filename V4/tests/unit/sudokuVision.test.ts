@@ -77,28 +77,37 @@ function createDefaultPriorityObviousSinglePuzzle(): CellProps[][] {
 }
 
 describe("createSudokuVision", () => {
-  it("pops wrong user values from top to bottom and left to right", () => {
+  it("yields wrong user values from top to bottom and left to right", () => {
     const vision = createSudokuVision(
       createWrongValuePuzzle(),
       SOLUTION,
       ["WRONG_VALUE"]
     );
 
-    expect(vision.pop()).toEqual(["WRONG_VALUE", { r: 0, c: 3 }]);
-    expect(vision.pop()).toEqual(["WRONG_VALUE", { r: 2, c: 0 }]);
-    expect(vision.pop()).toEqual(["WRONG_VALUE", { r: 3, c: 3 }]);
-    expect(vision.pop()).toBeNull();
+    expect(vision.next()).toEqual({
+      value: ["WRONG_VALUE", { r: 0, c: 3 }],
+      done: false,
+    });
+    expect(vision.next()).toEqual({
+      value: ["WRONG_VALUE", { r: 2, c: 0 }],
+      done: false,
+    });
+    expect(vision.next()).toEqual({
+      value: ["WRONG_VALUE", { r: 3, c: 3 }],
+      done: false,
+    });
+    expect(vision.next()).toEqual({ value: undefined, done: true });
   });
 
-  it("does not queue wrong values when the strategy is excluded", () => {
+  it("does not yield wrong values when the strategy is excluded", () => {
     const vision = createSudokuVision(createWrongValuePuzzle(), SOLUTION, [
       "AMEND_NOTES",
     ]);
 
-    expect(vision.pop()).toBeNull();
+    expect(vision.next()).toEqual({ value: undefined, done: true });
   });
 
-  it("pops higher-priority amend notes before wrong values", () => {
+  it("yields higher-priority amend notes before wrong values", () => {
     const puzzle = createWrongValuePuzzle();
     puzzle[0][0] = { type: "note", notes: [] };
     const vision = createSudokuVision(puzzle, SOLUTION, [
@@ -106,60 +115,93 @@ describe("createSudokuVision", () => {
       "WRONG_VALUE",
     ]);
 
-    expect(vision.pop()).toEqual(["AMEND_NOTES", { r: 0, c: 0 }]);
-    expect(vision.pop()).toEqual(["WRONG_VALUE", { r: 0, c: 3 }]);
+    expect(vision.next()).toEqual({
+      value: ["AMEND_NOTES", { r: 0, c: 0 }],
+      done: false,
+    });
+    expect(vision.next()).toEqual({
+      value: ["WRONG_VALUE", { r: 0, c: 3 }],
+      done: false,
+    });
   });
 
-  it("advances from an initially empty wrong-value queue to amend notes", () => {
+  it("advances from an empty wrong-value generator to amend notes", () => {
     const vision = createSudokuVision(createAmendNotesPuzzle(), SOLUTION, [
       "WRONG_VALUE",
       "AMEND_NOTES",
     ]);
 
-    expect(vision.pop()).toEqual(["AMEND_NOTES", { r: 0, c: 3 }]);
+    expect(vision.next()).toEqual({
+      value: ["AMEND_NOTES", { r: 0, c: 3 }],
+      done: false,
+    });
   });
 
-  it("advances from an initially empty amend-notes queue to wrong values", () => {
+  it("advances from an empty amend-notes generator to wrong values", () => {
     const vision = createSudokuVision(createWrongValuePuzzle(), SOLUTION, [
       "AMEND_NOTES",
       "WRONG_VALUE",
     ]);
 
-    expect(vision.pop()).toEqual(["WRONG_VALUE", { r: 0, c: 3 }]);
+    expect(vision.next()).toEqual({
+      value: ["WRONG_VALUE", { r: 0, c: 3 }],
+      done: false,
+    });
   });
 
-  it("pops cells missing the correct note from top to bottom and left to right", () => {
+  it("yields cells missing the correct note from top to bottom and left to right", () => {
     const vision = createSudokuVision(createAmendNotesPuzzle(), SOLUTION, [
       "AMEND_NOTES",
     ]);
 
-    expect(vision.pop()).toEqual(["AMEND_NOTES", { r: 0, c: 3 }]);
-    expect(vision.pop()).toEqual(["AMEND_NOTES", { r: 2, c: 0 }]);
-    expect(vision.pop()).toEqual(["AMEND_NOTES", { r: 3, c: 3 }]);
-    expect(vision.pop()).toBeNull();
+    expect(vision.next()).toEqual({
+      value: ["AMEND_NOTES", { r: 0, c: 3 }],
+      done: false,
+    });
+    expect(vision.next()).toEqual({
+      value: ["AMEND_NOTES", { r: 2, c: 0 }],
+      done: false,
+    });
+    expect(vision.next()).toEqual({
+      value: ["AMEND_NOTES", { r: 3, c: 3 }],
+      done: false,
+    });
+    expect(vision.next()).toEqual({ value: undefined, done: true });
   });
 
-  it("pops valid obvious singles from the shared note-count scan order", () => {
+  it("yields valid obvious singles from the note-count scan order", () => {
     const vision = createSudokuVision(
       createObviousSinglePuzzle(),
       SOLUTION,
       ["OBVIOUS_SINGLE"]
     );
 
-    expect(vision.pop()).toEqual(["OBVIOUS_SINGLE", { r: 0, c: 2 }]);
-    expect(vision.pop()).toEqual(["OBVIOUS_SINGLE", { r: 2, c: 0 }]);
-    expect(vision.pop()).toEqual(["OBVIOUS_SINGLE", { r: 3, c: 3 }]);
-    expect(vision.pop()).toBeNull();
+    expect(vision.next()).toEqual({
+      value: ["OBVIOUS_SINGLE", { r: 0, c: 2 }],
+      done: false,
+    });
+    expect(vision.next()).toEqual({
+      value: ["OBVIOUS_SINGLE", { r: 2, c: 0 }],
+      done: false,
+    });
+    expect(vision.next()).toEqual({
+      value: ["OBVIOUS_SINGLE", { r: 3, c: 3 }],
+      done: false,
+    });
+    expect(vision.next()).toEqual({ value: undefined, done: true });
   });
 
-  it("advances from an empty earlier queue to obvious singles", () => {
+  it("advances from an empty earlier generator to obvious singles", () => {
     const vision = createSudokuVision(
       createObviousSinglePuzzle(),
       SOLUTION,
       ["WRONG_VALUE", "OBVIOUS_SINGLE"]
     );
 
-    expect(vision.pop()).toEqual(["OBVIOUS_SINGLE", { r: 0, c: 2 }]);
+    expect(vision.next()).toEqual({
+      value: ["OBVIOUS_SINGLE", { r: 0, c: 2 }],
+      done: false,
+    });
   });
 
   it("advances through earlier default strategies to obvious singles", () => {
@@ -168,17 +210,20 @@ describe("createSudokuVision", () => {
       SOLUTION
     );
 
-    expect(vision.pop()).toEqual(["OBVIOUS_SINGLE", { r: 0, c: 2 }]);
+    expect(vision.next()).toEqual({
+      value: ["OBVIOUS_SINGLE", { r: 0, c: 2 }],
+      done: false,
+    });
   });
 
-  it("does not mutate the puzzle or solution while building or consuming the queue", () => {
+  it("does not mutate the puzzle or solution while consuming the generator", () => {
     const puzzle = createWrongValuePuzzle();
     const puzzleBefore = clonePuzzle(puzzle);
     const solutionBefore = SOLUTION.map((row) => [...row]);
     const vision = createSudokuVision(puzzle, SOLUTION);
 
-    while (vision.pop() !== null) {
-      // Consume every queued location.
+    while (vision.next().done !== true) {
+      // Consume every generated location.
     }
 
     expect(puzzle).toEqual(puzzleBefore);

@@ -39,11 +39,11 @@ function* generateHints(
   const vision = createSudokuVision(puzzle, solution, strategies);
 
   for (
-    let nextCheck = vision.pop();
-    nextCheck !== null;
-    nextCheck = vision.pop()
+    let nextCheck = vision.next();
+    nextCheck.done !== true;
+    nextCheck = vision.next()
   ) {
-    const [strategy, locationToCheck] = nextCheck;
+    const [strategy, locationToCheck] = nextCheck.value;
     const hint = STRATEGY_HINT_FUNCTIONS[strategy](
       puzzle,
       solution,

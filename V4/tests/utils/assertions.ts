@@ -2,6 +2,7 @@
  * Shared assertion helpers for V4 tests.
  */
 
+import { expect } from "bun:test";
 import type {
   CellLocation,
   CellProps,
