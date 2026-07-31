@@ -7,10 +7,12 @@ description: Create exact Sudokuru V4 strategy contract tests from approved Mark
 
 Turn approved staged-hint examples into executable tests without duplicating their fixture data.
 
+Before starting, read and follow the shared [`write-sudoku-v4-tests`](../write-sudoku-v4-tests/SKILL.md) skill. It owns the common rules for expected values, helper reuse, TDD red states, and V4-only test execution. The rules below are specific to approved documentation examples.
+
 ## Workflow
 
 1. Read the complete `V4/docs/<STRATEGY>.md` and matching `V4/docs/<STRATEGY>_FRONTEND_DEMO.ts`.
-2. Inspect `V4/tests/unit/wrongValueDocs.test.ts` and the shared helpers under `V4/tests/utils/`.
+2. Inspect `V4/tests/unit/wrongValueDocs.test.ts`.
 3. Confirm the demo exports the prepared puzzle, solution, exact hint, and target location needed to call the strategy.
 4. If a required demo constant is private, change only `const` to `export const`. Do not otherwise refactor or alter demo behavior.
 5. Create `V4/tests/unit/<lowerCamelStrategy>Docs.test.ts` that imports those fixtures and the strategy function.
@@ -22,7 +24,6 @@ Turn approved staged-hint examples into executable tests without duplicating the
 - Import approved demo fixtures instead of recreating cells, arrays, or expected hints in the test.
 - Cover every distinct example documented in the Markdown/demo pair.
 - Keep docs-contract tests separate from broader behavioral tests.
-- Do not implement the strategy or weaken expected output to make a stub pass.
-- When the strategy is still a declaration-only stub, do not require or report passing runtime tests; red is the expected TDD state.
+- When the strategy is still a declaration-only stub, use the shared skill's intentional-red verification workflow.
 
-Use `git diff --check` and verify imports and fixture names statically. Report which documented examples are now locked by tests.
+Verify imports and fixture names statically. Report which documented examples are now locked by tests.

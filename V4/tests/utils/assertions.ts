@@ -2,15 +2,33 @@
  * Shared assertion helpers for V4 tests.
  */
 
-import type { CellLocation, CellProps, Hint, SudokuNumber } from "../../Types";
+import type {
+  CellLocation,
+  CellProps,
+  Hint,
+  SudokuNumber,
+  SudokuStrategy,
+} from "../../Types";
+import { clonePuzzle } from "../../puzzles";
 import { cloneBoard } from "../../validate";
-import { clonePuzzle } from "./clonePuzzle";
 
 type HintFunction = (
   puzzle: readonly (readonly CellProps[])[],
   solution: readonly (readonly SudokuNumber[])[],
   locationToCheck: CellLocation
 ) => Hint | null;
+
+/**
+ * Asserts that a strategy produced a hint of the expected type.
+ */
+export function expectStrategyHint(
+  hint: Hint | null,
+  strategy: SudokuStrategy
+): Hint {
+  expect(hint).not.toBeNull();
+  expect(hint?.strategy).toBe(strategy);
+  return hint!;
+}
 
 /**
  * Calls a hint function, asserts its result, and verifies that its inputs stay unchanged.

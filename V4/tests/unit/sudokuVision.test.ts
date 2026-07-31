@@ -1,6 +1,6 @@
 import { createSudokuVision } from "../../sudokuVision";
 import type { CellProps, SudokuNumber } from "../../Types";
-import { clonePuzzle } from "../utils/clonePuzzle";
+import { clonePuzzle } from "../../puzzles";
 
 const SOLUTION: readonly (readonly SudokuNumber[])[] = [
   [1, 2, 3, 4],
@@ -162,7 +162,7 @@ describe("createSudokuVision", () => {
     expect(vision.pop()).toEqual(["OBVIOUS_SINGLE", { r: 0, c: 2 }]);
   });
 
-  it("skips unimplemented strategies in the default priority list", () => {
+  it("advances through earlier default strategies to obvious singles", () => {
     const vision = createSudokuVision(
       createDefaultPriorityObviousSinglePuzzle(),
       SOLUTION
