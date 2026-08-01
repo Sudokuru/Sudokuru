@@ -15,7 +15,7 @@ type SudokuVisionItem = readonly [
 type StrategyLocationGeneratorFactory = (
   puzzle: readonly (readonly CellProps[])[],
   solution: readonly (readonly SudokuNumber[])[]
-) => Generator<CellLocation, void>;
+) => Generator<CellLocation, void, void>;
 
 export interface SudokuVision
   extends Generator<SudokuVisionItem, void, void> {}
