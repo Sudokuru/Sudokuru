@@ -1,4 +1,4 @@
-# Sudokuru 4.0 Rebuild Plan Revision 1.8
+# Sudokuru 4.0 Rebuild Plan Revision 1.9
 
 ## TL;DR
 
@@ -7,11 +7,14 @@ Rebuild the `Sudokuru` package (v4.0) as a **modular, functional, immutable** Su
 * A clearer, typed API for the Frontend (shared types via `Types.ts`)
 * A **hint schema** that Frontend can render as **stages**
 * Separation of **hint generation** vs **hint application**
-* A simpler, replaceable “vision/queue” mechanism for strategy scanning
+* A simpler, replaceable vision generator for strategy scanning
 * A roadmap that delivers value incrementally (docs-first + TDD strategy examples)
 
 ## Changelog
 
+* 1.9
+  * Replaced SudokuVision strategy queues with lazy location generators
+  * Changed the SudokuVision interface from `pop()` to generator-style `next()`
 * 1.8
   * Changed `getAllHints` to require one strategy per call with no default
   * Clarified that one strategy can produce multiple distinct hints targeting the same cell
@@ -394,24 +397,21 @@ Return an array of hints representing every possible application of the requeste
 * output: new board
 * tests should verify diff correctness (“exactly these notes removed”, etc.)
 
-### SudokuVision (Queue / Scan Strategy)
+### SudokuVision (Generator / Scan Strategy)
 
 A replaceable internal component that guides which cells/regions to check next.
 
 **Concept**
 
 * Basic algorithm is just figuring out based on per strategy heuristics what the most likely cell is for the next occurrence of strategy A is until all locations A could be in are exhausted then repeat for strategy B and so on.
-* Store the immutable puzzle and solution inputs, strategy priority list, current strategy index, and reusable scan structures in internal state.
-* Keep each strategy-specific location queue `null` until that strategy first becomes current during `pop()`.
-* Lazily build only the current strategy's queue. A `null` queue means the strategy has not been scanned; an initialized empty queue means that strategy is exhausted.
-* When the current queue is exhausted, advance the strategy index and continue popping from the next strategy instead of returning early.
-* Keep a reusable, non-destructive list of note cells sorted from fewest to most notes, with row-major tie-breaking, for strategies that benefit from that scan order.
-* `pop()` removes from strategy-specific queues, but shared scan structures are retained for reuse by multiple strategies.
+* Create and consume each strategy-specific location generator only when that strategy becomes current during `next()`.
+* Yield one matching location at a time.
+* When the current strategy generator is exhausted, advance to the next strategy.
 
 **Interface**
 
 * Create SudokuVision object using puzzle, solution, and optionally strategy priority list (otherwise uses same default list as getHint)
-* `pop()` → removes and returns `(strategy, locationToCheck)` from the top of the queue
+* `next()` → returns `{ value: (strategy, locationToCheck), done: false }` for the next check, or `{ value: undefined, done: true }` when exhausted
 
 ---
 
@@ -571,7 +571,7 @@ For each strategy:
    * explanation strings
 4. Implement the strategy module
 5. Add unit tests using the documented fixtures
-6. Add the strategy to `SudokuVision` with deterministic scan ordering, lazy queue initialization, and queue integration tests
+6. Add the strategy to `SudokuVision` with deterministic scan ordering, lazy generator traversal, and generator integration tests
 
 ---
 
@@ -592,7 +592,7 @@ For each strategy:
 | ☑      | Implement amend notes                        | Strategy module + tests match docs                                 | <https://github.com/Sudokuru/Sudokuru/pull/115> |
 | ☑      | Implement obvious single                     | Strategy module + tests match docs                                 | <https://github.com/Sudokuru/Sudokuru/pull/116> |
 | ☑      | `SudokuVision` interface                     | Documented and implemented                                         | <https://github.com/Sudokuru/Sudokuru/pull/117> |
-| ☑      | Queue-based SudokuVision impl                | Deterministic fallback scan; tests                                 | <https://github.com/Sudokuru/Sudokuru/pull/117> |
+| ☑      | Generator-based SudokuVision impl            | Deterministic lazy fallback scan; tests                            | <https://github.com/Sudokuru/Sudokuru/pull/117> |
 | ☑      | `getHint`                                    | Deterministic; staged hints; strategy ordering; tests              | <https://github.com/Sudokuru/Sudokuru/pull/119> |
 | ☑      | `getAllHints`                                | Deterministic; uses one required strategy; tests                   | <https://github.com/Sudokuru/Sudokuru/pull/119> |
 | ☑      | `applyHint`                                  | Pure; correct diffs; tests                                         | <https://github.com/Sudokuru/Sudokuru/pull/119> |
