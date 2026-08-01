@@ -2,6 +2,11 @@
  * Shared assertion helpers for V4 tests.
  */
 
+import {
+  deepStrictEqual,
+  notStrictEqual,
+  strictEqual,
+} from "node:assert/strict";
 import type {
   CellLocation,
   CellProps,
@@ -25,8 +30,8 @@ export function expectStrategyHint(
   hint: Hint | null,
   strategy: SudokuStrategy
 ): Hint {
-  expect(hint).not.toBeNull();
-  expect(hint?.strategy).toBe(strategy);
+  notStrictEqual(hint, null);
+  strictEqual(hint?.strategy, strategy);
   return hint!;
 }
 
@@ -43,7 +48,10 @@ export function expectHintWithoutMutation(
   const puzzleBefore = clonePuzzle(puzzle);
   const solutionBefore = cloneBoard(solution);
 
-  expect(hintFunction(puzzle, solution, locationToCheck)).toEqual(expectedHint);
-  expect(puzzle).toEqual(puzzleBefore);
-  expect(solution).toEqual(solutionBefore);
+  deepStrictEqual(
+    hintFunction(puzzle, solution, locationToCheck),
+    expectedHint
+  );
+  deepStrictEqual(puzzle, puzzleBefore);
+  deepStrictEqual(solution, solutionBefore);
 }
