@@ -26,7 +26,7 @@ export interface SudokuVision
 function* generateWrongValueLocations(
   puzzle: readonly (readonly CellProps[])[],
   solution: readonly (readonly SudokuNumber[])[]
-): Generator<CellLocation, void> {
+): Generator<CellLocation, void, void> {
   for (let r = 0; r < puzzle.length; r += 1) {
     for (let c = 0; c < puzzle[r].length; c += 1) {
       const cell = puzzle[r][c];
@@ -44,7 +44,7 @@ function* generateWrongValueLocations(
 function* generateAmendNotesLocations(
   puzzle: readonly (readonly CellProps[])[],
   solution: readonly (readonly SudokuNumber[])[]
-): Generator<CellLocation, void> {
+): Generator<CellLocation, void, void> {
   for (let r = 0; r < puzzle.length; r += 1) {
     for (let c = 0; c < puzzle[r].length; c += 1) {
       const cell = puzzle[r][c];
@@ -97,7 +97,7 @@ function createNoteCellsByNoteCount(
 function* generateObviousSingleLocations(
   puzzle: readonly (readonly CellProps[])[],
   solution: readonly (readonly SudokuNumber[])[]
-): Generator<CellLocation, void> {
+): Generator<CellLocation, void, void> {
   for (const { r, c, notes } of createNoteCellsByNoteCount(puzzle)) {
     if (notes.length > 1) {
       break;
