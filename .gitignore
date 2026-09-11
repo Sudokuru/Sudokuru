@@ -2,6 +2,9 @@ node_modules/
 docs/
 !V4/docs/
 !V4/docs/**
+# Reproducible difficulty research details; keep only the readable report in Git.
+V4/docs/difficulty/results/*.json
+V4/docs/difficulty/results/*.csv
 .idea/
 dist/
 jest-coverage/
