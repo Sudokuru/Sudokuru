@@ -10,15 +10,29 @@ export interface Observation {
 }
 
 /** An unfitted recipe: which heuristics to use and which kind of model to train. */
-export interface ModelSpec {
+interface BaseSpec {
   readonly id: string;
-  readonly kind: "constant" | "linear" | "tree";
   readonly features: readonly string[];
-  /** Tree only: maximum number of decisions on a path to a prediction. */
-  readonly depth?: number;
-  /** Tree only: minimum number of training puzzles allowed in each leaf. */
-  readonly minLeaf?: number;
 }
+
+export interface ConstantSpec extends BaseSpec {
+  readonly kind: "constant";
+  readonly features: readonly [];
+}
+
+export interface LinearSpec extends BaseSpec {
+  readonly kind: "linear";
+}
+
+export interface TreeSpec extends BaseSpec {
+  readonly kind: "tree";
+  /** Maximum number of decisions on a path to a prediction. */
+  readonly depth: number;
+  /** Minimum number of training puzzles allowed in each leaf. */
+  readonly minLeaf: number;
+}
+
+export type ModelSpec = ConstantSpec | LinearSpec | TreeSpec;
 
 // These are domain split records, not an ordered collection. BinaryTree/BST
 // provide key lookup/insertion, not regression split training or prediction.
@@ -33,15 +47,32 @@ export type Split = { readonly value: number } | {
  * Coefficients apply to standardized features, not their original units.
  * Constants use only the intercept; trees use only the split records for prediction.
  */
-export type FittedModel = {
-  readonly spec: ModelSpec;
+interface FittedBase {
   readonly target: "logSeconds";
+}
+
+export interface ConstantModel extends FittedBase {
+  readonly kind: "constant";
+  readonly spec: ConstantSpec;
+  readonly intercept: number;
+}
+
+export interface LinearModel extends FittedBase {
+  readonly kind: "linear";
+  readonly spec: LinearSpec;
   readonly intercept: number;
   readonly coefficients: readonly number[];
   readonly means: readonly number[];
   readonly scales: readonly number[];
-  readonly tree?: Split;
-};
+}
+
+export interface TreeModel extends FittedBase {
+  readonly kind: "tree";
+  readonly spec: TreeSpec;
+  readonly tree: Split;
+}
+
+export type FittedModel = ConstantModel | LinearModel | TreeModel;
 
 /** A recipe scored on predictions for puzzles excluded from each fitting step. */
 export interface CandidateResult {
