@@ -34,6 +34,9 @@ export interface TreeSpec extends BaseSpec {
 
 export type ModelSpec = ConstantSpec | LinearSpec | TreeSpec;
 
+/** Reporting groups for baselines, formula sizes, and decision trees. */
+export type ModelFamily = "constant" | "single" | "pair" | "multivariate" | "tree";
+
 // These are domain split records, not an ordered collection. BinaryTree/BST
 // provide key lookup/insertion, not regression split training or prediction.
 /** A leaf predicts log-seconds; a branch sends values <= its threshold left. */
