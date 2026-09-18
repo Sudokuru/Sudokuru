@@ -1,3 +1,5 @@
+import { BOOTSTRAP_REPEATS, BOOTSTRAP_SEED } from "./settings";
+
 // The installed CommonJS package does not provide TypeScript declarations.
 const calculateCorrelation: (
   a: readonly number[],
@@ -138,7 +140,7 @@ export function quantile(sorted: readonly number[], probability: number): number
  */
 export function bootstrapRankDifference(
   seconds: readonly number[], predicted: readonly number[], legacy: readonly number[],
-  repeats = 2000, seed = 711
+  repeats: number = BOOTSTRAP_REPEATS, seed: number = BOOTSTRAP_SEED
 ) {
   if (seconds.length !== predicted.length || seconds.length !== legacy.length) {
     throw new Error("Bootstrap arrays must align.");

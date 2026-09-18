@@ -3,10 +3,11 @@ import type { Features } from "./features";
 import type { Observation, ModelSpec, FittedModel } from "./modelTypes";
 import { fitDecisionTree, predictDecisionTree } from "./decisionTree";
 import { mean } from "./statistics";
+import { TREE_DEPTHS, TREE_MIN_LEAVES } from "./settings";
 
 /**
  * Enumerate a fixed search space: a constant baseline, each single heuristic,
- * each distinct pair, and six shallow-tree settings. Nothing is fitted here;
+ * each distinct pair, and the configured shallow-tree settings. Nothing is fitted here;
  * cross-validation chooses among these recipes using training puzzles only.
  */
 export function candidateSpecs(features: readonly string[]): ModelSpec[] {
@@ -17,8 +18,8 @@ export function candidateSpecs(features: readonly string[]): ModelSpec[] {
       specs.push({ id: `linear:${features[i]}+${features[j]}`, kind: "linear", features: [features[i], features[j]] });
     }
   }
-  for (const depth of [1, 2, 3]) {
-    for (const minLeaf of [3, 5]) {
+  for (const depth of TREE_DEPTHS) {
+    for (const minLeaf of TREE_MIN_LEAVES) {
       specs.push({ id: `tree:${depth}:${minLeaf}`, kind: "tree", features, depth, minLeaf });
     }
   }
