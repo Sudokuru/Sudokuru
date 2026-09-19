@@ -22,3 +22,11 @@ The initial design therefore has four goals:
 2. Build on V4's existing strategy and hint-generation modules wherever practical.
 3. Reduce calculation time enough to support real-time puzzle generation.
 4. Achieve a correlation with human solving times similar to the legacy metric.
+
+## Initial Heuristic Research
+
+The offline [difficulty research harness](RESEARCH.md) consolidates the historical
+puzzles and compares initial-board features, obvious-single traces, and small
+models against recorded human times and legacy scores. See the generated
+[results report](results/REPORT.md) for held-out evaluation and runtime measurements.
+These experiments do not yet define production V4 ratings or difficulty thresholds.
