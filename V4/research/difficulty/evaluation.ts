@@ -1,5 +1,5 @@
 import type { Observation, ModelSpec, ModelFamily, CandidateResult } from "./modelTypes";
-import type { Features } from "./features";
+import type { ModelInputs } from "./featureTypes";
 import { fitModel, predict } from "./models";
 import { metrics } from "./statistics";
 
@@ -72,7 +72,7 @@ export function selectModel(rows: readonly Observation[], specs: readonly ModelS
  */
 function predictFamilies(
   training: readonly Observation[],
-  features: Features,
+  features: ModelInputs,
   candidates: readonly CandidateResult[],
   families: readonly ModelFamily[],
 ) {

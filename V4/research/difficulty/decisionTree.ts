@@ -1,5 +1,5 @@
 import type { Observation, TreeSpec, Split } from "./modelTypes";
-import type { Features } from "./features";
+import type { ModelInputs } from "./featureTypes";
 import { mean } from "./statistics";
 
 /** Greedily split training puzzles to reduce squared error in log-seconds. */
@@ -41,7 +41,7 @@ export function fitDecisionTree(rows: readonly Observation[], spec: TreeSpec, de
 }
 
 /** Follow the threshold decisions until a leaf supplies its predicted log-time. */
-export function predictDecisionTree(tree: Split, features: Features): number {
+export function predictDecisionTree(tree: Split, features: ModelInputs): number {
   let node = tree;
   while (!("value" in node)) {
     node = features[node.feature] <= node.threshold ? node.left : node.right;

@@ -1,6 +1,6 @@
 import { getPuzzle, getPuzzleSolution, getPuzzleString } from "../../validate";
 import type { ResearchPuzzle } from "./data";
-import type { Features } from "./features";
+import type { HistoricalScores } from "./featureTypes";
 
 export interface PreparedPuzzle {
   readonly record: ResearchPuzzle;
@@ -8,7 +8,7 @@ export interface PreparedPuzzle {
   readonly solutionString: string;
   readonly empty: number;
   readonly givens: number;
-  readonly legacyFeatures: Features;
+  readonly historicalScores: HistoricalScores;
   readonly secondsPerEmpty: number | null;
 }
 
@@ -33,26 +33,25 @@ function validateTiming(record: ResearchPuzzle): void {
   }
 }
 
-function getLegacyFeatures(record: ResearchPuzzle): Features {
+function getHistoricalScores(record: ResearchPuzzle): HistoricalScores {
   if (!Number.isFinite(record.legacyScore)) {
     throw new Error(`Missing legacy score: ${record.id}`);
   }
 
-  const features: Record<string, number> = {
-    "legacy.combined": record.legacyScore,
-  };
+  const combined = { "legacy.combined": record.legacyScore };
   if (record.refutationScore === undefined || record.dependencyScore === undefined) {
-    return features;
+    return combined;
   }
   if (record.adjustedDependencyScore === undefined) {
     throw new Error(`Missing adjusted dependency score: ${record.id}`);
   }
-
-  features["legacy.refutation"] = record.refutationScore;
-  features["legacy.dependency"] = record.dependencyScore;
-  features["legacy.adjustedDependency"] = record.adjustedDependencyScore;
-  features["legacy.basicRD"] = record.refutationScore + record.dependencyScore;
-  return features;
+  return {
+    ...combined,
+    "legacy.refutation": record.refutationScore,
+    "legacy.dependency": record.dependencyScore,
+    "legacy.adjustedDependency": record.adjustedDependencyScore,
+    "legacy.basicRD": record.refutationScore + record.dependencyScore,
+  };
 }
 
 /** Validate the corpus once, outside feature and inference benchmarks. */
@@ -74,7 +73,7 @@ export function prepareDataset(records: readonly ResearchPuzzle[]): PreparedPuzz
       solutionString,
       empty,
       givens: 81 - empty,
-      legacyFeatures: getLegacyFeatures(record),
+      historicalScores: getHistoricalScores(record),
       secondsPerEmpty: record.seconds === undefined ? null : record.seconds / empty,
     };
   });

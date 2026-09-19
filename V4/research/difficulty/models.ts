@@ -1,5 +1,5 @@
 import { Matrix, SingularValueDecomposition } from "ml-matrix";
-import type { Features } from "./features";
+import type { ModelInputs } from "./featureTypes";
 import type { Observation, ModelSpec, FittedModel } from "./modelTypes";
 import { fitDecisionTree, predictDecisionTree } from "./decisionTree";
 import { mean } from "./statistics";
@@ -67,7 +67,7 @@ export function fitModel(rows: readonly Observation[], spec: ModelSpec): FittedM
  * Uses already-extracted features and saved training state, with no fitting.
  * Feature extraction is timed separately in the research benchmarks.
  */
-export function predict(model: FittedModel, features: Features): number {
+export function predict(model: FittedModel, features: ModelInputs): number {
   if (model.kind === "tree") return predictDecisionTree(model.tree, features);
   if (model.kind === "constant") return model.intercept;
   // Reuse the means/scales learned from training, not from the prediction input.

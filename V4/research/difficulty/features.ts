@@ -4,10 +4,10 @@ import { getAmendNotesHint } from "../../amendNotes";
 import { applyHint } from "../../applyHint";
 import { safeRatio } from "./statistics";
 
-export type Features = Readonly<Record<string, number>>;
+import type { InitialFeatures } from "./featureTypes";
 
 /** Initial 9x9 features use the same note amendment behavior as V4 hints. */
-export function initialFeatures(puzzle: string): { board: CellProps[][]; features: Features } {
+export function initialFeatures(puzzle: string): { board: CellProps[][]; features: InitialFeatures } {
   if (puzzle.length !== 81) throw new Error("Difficulty research supports 9x9 puzzles only.");
   let board = getPuzzle(puzzle);
   // Amend-notes uses the solution only to avoid suggesting a cell whose
@@ -48,4 +48,4 @@ export const INITIAL_MODEL_FEATURES = [
   "empty", "notes", "meanNotes", "singles", "singleFraction", "singlesPerCandidate",
   "pairs", "pairFraction", "triples", "tripleFraction", "many", "manyFraction",
   "candidateVariance", "emptyPerSingle", "notesPerSingle",
-] as const;
+] as const satisfies readonly (keyof InitialFeatures)[];

@@ -3,7 +3,7 @@ import { applyHint } from "../../applyHint";
 import { getObviousSingleHint } from "../../obviousSingle";
 import { clonePuzzle } from "../../puzzles";
 import { safeRatio } from "./statistics";
-import type { Features } from "./features";
+import type { Features, TraceFeatures } from "./featureTypes";
 import { INITIAL_MODEL_FEATURES } from "./features";
 
 /** Model inputs for experiments combining initial-board features with this trace. */
@@ -11,11 +11,11 @@ export const TRACE_MODEL_FEATURES = [
   ...INITIAL_MODEL_FEATURES, "tracePlacements", "traceFilledFraction", "traceRemaining", "traceSolved",
   "availabilityCount10", "availabilityMean10", "availabilityMin10",
   "availabilityCount25", "availabilityMean25", "availabilityMin25",
-] as const;
+] as const satisfies readonly (keyof Features)[];
 
 export interface SingleTrace {
   /** Numeric trace summaries; callers merge these with initial-board features. */
-  readonly features: Features;
+  readonly features: TraceFeatures;
   /** Stalled means empty cells remain but no obvious single can advance the board. */
   readonly status: "solved" | "stalled";
   /** Values actually placed, in order, with zero-based row and column coordinates. */
@@ -69,22 +69,30 @@ export function singleTrace(
   // Summarize progress relative to the starting puzzle. The solved flag is
   // numeric for model fitting; safeRatio returns zero for an already-full board.
   const remaining = originalEmpty - placements.length;
-  const features: Record<string, number> = {
+  // Compare early portions of the solve path: mean counts typical choices,
+  // minimum captures the bottleneck. Short traces use observed moves only;
+  // empty traces have zero summaries, distinguished by their zero count.
+  const summarize = (window: number) => {
+    const sample = availability.slice(0, window);
+    return {
+      count: sample.length,
+      mean: safeRatio(sample.reduce((sum, n) => sum + n, 0), sample.length),
+      min: sample.length ? Math.min(...sample) : 0,
+    };
+  };
+  const first10 = summarize(10);
+  const first25 = summarize(25);
+  const features: TraceFeatures = {
     tracePlacements: placements.length,
     traceFilledFraction: safeRatio(placements.length, originalEmpty),
     traceRemaining: remaining,
     traceSolved: remaining === 0 ? 1 : 0,
+    availabilityCount10: first10.count,
+    availabilityMean10: first10.mean,
+    availabilityMin10: first10.min,
+    availabilityCount25: first25.count,
+    availabilityMean25: first25.mean,
+    availabilityMin25: first25.min,
   };
-  // Compare early portions of the solve path. Mean measures typical choice
-  // count; minimum captures its narrowest bottleneck. For example, [3, 1, 2]
-  // has count 3, mean 2, and minimum 1 for either window below.
-  // Short traces use only observed moves (no zero padding). Empty traces have
-  // zero summaries; the count distinguishes them from windows with observations.
-  for (const window of [10, 25]) {
-    const sample = availability.slice(0, window);
-    features[`availabilityCount${window}`] = sample.length;
-    features[`availabilityMean${window}`] = safeRatio(sample.reduce((sum, n) => sum + n, 0), sample.length);
-    features[`availabilityMin${window}`] = sample.length ? Math.min(...sample) : 0;
-  }
   return { features, status: remaining === 0 ? "solved" : "stalled", placements, availability };
 }

@@ -1,4 +1,4 @@
-import type { Features } from "./features";
+import type { ModelInputs } from "./featureTypes";
 import type { metrics } from "./statistics";
 
 /** One timed puzzle. Batch identifies its source for reporting, not prediction. */
@@ -6,7 +6,7 @@ export interface Observation {
   readonly id: string;
   readonly batch: string;
   readonly seconds: number;
-  readonly features: Features;
+  readonly features: ModelInputs;
 }
 
 /** An unfitted recipe: which heuristics to use and which kind of model to train. */
