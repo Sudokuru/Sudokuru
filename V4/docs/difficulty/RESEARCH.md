@@ -6,7 +6,7 @@ From the repository root, run:
 bun V4/research/difficulty/run.ts
 ```
 
-This regenerates the report and detailed artifacts in `V4/docs/difficulty/results/`. Only `REPORT.md` is intended for version control; the larger JSON/CSV outputs are ignored and generated locally on demand. With repository dependencies installed, the command uses Bun, existing V4 code, `calculate-correlation`, `ml-matrix`, and Node built-ins without additional downloads. Training is offline research. Nothing is exported from the package entry point, and no production difficulty thresholds change.
+This regenerates the report and detailed artifacts in `V4/docs/difficulty/results/`. The entire results directory, including `REPORT.md` and JSON/CSV outputs, is ignored and generated locally on demand. With repository dependencies installed, the command uses Bun, existing V4 code, `calculate-correlation`, `ml-matrix`, and Node built-ins without additional downloads. Training is offline research. Nothing is exported from the package entry point, and no production difficulty thresholds change.
 
 Use `--out /tmp/your-research-directory` for a separate output directory. `--skip-benchmarks` omits machine-dependent timing work and writes `{ "skipped": true }` to `benchmarks.json`, replacing any earlier timings. A run overwrites its named artifacts in the selected directory; use a fresh directory for an independent comparison. Unknown options and a missing `--out` directory argument are rejected.
 
