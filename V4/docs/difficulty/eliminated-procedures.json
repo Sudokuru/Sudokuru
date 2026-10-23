@@ -618,6 +618,212 @@
         "corpusSize": 44,
         "checksum": 60421951.68896044
       }
+    },
+    {
+      "procedure": "initial/ridge",
+      "reason": "Eliminated by user decision; discontinue ridge evaluation and benchmarking.",
+      "recordedAt": "2026-10-23T02:02:53.974Z",
+      "score": 0.9302030481208116,
+      "scoreDefinition": "(2 + Spearman + Pearson) / 4; clamped to [0, 1]",
+      "scoringP95Ms": 0.9918294999996302,
+      "statistics": {
+        "n": 22,
+        "spearman": 0.892090537854801,
+        "pearson": 0.828721654628445,
+        "logRmse": 0.25716701113250934,
+        "secondsMae": 43.25549161216039
+      },
+      "evaluated": 22,
+      "total": 22,
+      "modelId": "ridge:1",
+      "runContext": {
+        "codeRevision": "5985d5701279252f0ce663b203cf54add54a8eb7",
+        "workingTreeDirty": true,
+        "corpusId": "sha256:9cad68c41de157b7783418a61b4718a0c811daaed0a76f83148fa0797a5d6dd8",
+        "sourceCommit": "d770c39eeda6fba8ef08c33d302b49cc4c41fe3d",
+        "personalBatches": [
+          {
+            "name": "csv-personal",
+            "puzzles": 14
+          },
+          {
+            "name": "Sudokuru 1",
+            "puzzles": 4
+          },
+          {
+            "name": "Sudokuru 2",
+            "puzzles": 4
+          }
+        ],
+        "independentValidationPuzzles": 0,
+        "legacyRuntimeMeasured": false,
+        "criteria": {
+          "maxRankingLoss": null,
+          "scoringP95BudgetMs": null
+        },
+        "settings": {
+          "target": "logSeconds",
+          "selection": "Spearman, log RMSE, complexity, stable ID",
+          "outer": "leave one personal puzzle out",
+          "inner": "leave one training puzzle out",
+          "ridgePenalties": [
+            0.01,
+            0.1,
+            1,
+            10,
+            100
+          ],
+          "ridgeObjective": "mean squared log error + penalty * squared standardized weights; unpenalized intercept",
+          "quadraticBasis": "x, x^2; training-only centering and scaling of each term",
+          "bootstrap": "paired puzzle resampling of fixed predictions; 2000 samples, seed 711; descriptive, not post-selection inference",
+          "benchmarks": "Enabled",
+          "warmupPasses": 5,
+          "measuredPasses": 20,
+          "predictionBatch": 1000,
+          "eliminationRegistryId": "sha256:dded81026f7da9ce5fb118c546b9bfbba5bcaecd267d6cd2d300810caa55907f",
+          "eliminatedProcedures": "initial/tree, initial+trace/tree, initial/selected, initial/pair, initial+trace/single, initial+trace/pair"
+        }
+      },
+      "benchmarkContext": {
+        "runtime": {
+          "node": "22.6.0",
+          "bun": "1.2.2",
+          "boringssl": "29a2cd359458c9384694b75456026e4b57e3e567",
+          "openssl": "1.1.0",
+          "libarchive": "898dc8319355b7e985f68a9819f182aaed61b53a",
+          "mimalloc": "4c283af60cdae205df5a872530c77e2a6a307d43",
+          "picohttpparser": "066d2b1e9ab820703db0837a7255d92d30f0c9f5",
+          "uwebsockets": "c1708ea6ab529a4c747a8282a24d125dc20b0a63",
+          "webkit": "e32c6356625cfacebff0c61d182f759abf6f508a",
+          "zig": "0.13.0",
+          "zlib": "886098f3f339617b4243b286f5ed364b9989e245",
+          "tinycc": "ab631362d839333660a265d3084d8ff060b96753",
+          "lolhtml": "8d4c273ded322193d017042d1f48df2766b0f88b",
+          "ares": "d1722e6e8acaf10eb73fa995798a9cd421d9f85e",
+          "libdeflate": "dc76454a39e7e83b68c3704b6e3784654f8d5ac5",
+          "usockets": "c1708ea6ab529a4c747a8282a24d125dc20b0a63",
+          "lshpack": "3d0f1fc1d6e66a642e7a98c55deb38aa986eb4b0",
+          "zstd": "794ea1b0afca0f020f4e57b6732332231fb23c70",
+          "v8": "12.4.254.14-node.12",
+          "uv": "1.48.0",
+          "napi": "9",
+          "icu": "75.1",
+          "unicode": "15.1",
+          "modules": "127"
+        },
+        "platform": "linux",
+        "arch": "x64",
+        "cpu": "AMD Ryzen 5 5600X 6-Core Processor",
+        "preparationMs": 688.232635,
+        "warmupPasses": 5,
+        "measuredPasses": 20,
+        "predictionBatch": 1000,
+        "corpusSize": 44,
+        "checksum": 39952167.77388667
+      }
+    },
+    {
+      "procedure": "initial+trace/ridge",
+      "reason": "Eliminated by user decision; discontinue ridge evaluation and benchmarking.",
+      "recordedAt": "2026-10-23T02:02:54.070Z",
+      "score": 0.9578320980083028,
+      "scoreDefinition": "(2 + Spearman + Pearson) / 4; clamped to [0, 1]",
+      "scoringP95Ms": 1.1829249499987782,
+      "statistics": {
+        "n": 22,
+        "spearman": 0.883050988389521,
+        "pearson": 0.94827740364369,
+        "logRmse": 0.20608253585528616,
+        "secondsMae": 35.64640769475272
+      },
+      "evaluated": 22,
+      "total": 22,
+      "modelId": "ridge:1",
+      "runContext": {
+        "codeRevision": "5985d5701279252f0ce663b203cf54add54a8eb7",
+        "workingTreeDirty": true,
+        "corpusId": "sha256:9cad68c41de157b7783418a61b4718a0c811daaed0a76f83148fa0797a5d6dd8",
+        "sourceCommit": "d770c39eeda6fba8ef08c33d302b49cc4c41fe3d",
+        "personalBatches": [
+          {
+            "name": "csv-personal",
+            "puzzles": 14
+          },
+          {
+            "name": "Sudokuru 1",
+            "puzzles": 4
+          },
+          {
+            "name": "Sudokuru 2",
+            "puzzles": 4
+          }
+        ],
+        "independentValidationPuzzles": 0,
+        "legacyRuntimeMeasured": false,
+        "criteria": {
+          "maxRankingLoss": null,
+          "scoringP95BudgetMs": null
+        },
+        "settings": {
+          "target": "logSeconds",
+          "selection": "Spearman, log RMSE, complexity, stable ID",
+          "outer": "leave one personal puzzle out",
+          "inner": "leave one training puzzle out",
+          "ridgePenalties": [
+            0.01,
+            0.1,
+            1,
+            10,
+            100
+          ],
+          "ridgeObjective": "mean squared log error + penalty * squared standardized weights; unpenalized intercept",
+          "quadraticBasis": "x, x^2; training-only centering and scaling of each term",
+          "bootstrap": "paired puzzle resampling of fixed predictions; 2000 samples, seed 711; descriptive, not post-selection inference",
+          "benchmarks": "Enabled",
+          "warmupPasses": 5,
+          "measuredPasses": 20,
+          "predictionBatch": 1000,
+          "eliminationRegistryId": "sha256:dded81026f7da9ce5fb118c546b9bfbba5bcaecd267d6cd2d300810caa55907f",
+          "eliminatedProcedures": "initial/tree, initial+trace/tree, initial/selected, initial/pair, initial+trace/single, initial+trace/pair"
+        }
+      },
+      "benchmarkContext": {
+        "runtime": {
+          "node": "22.6.0",
+          "bun": "1.2.2",
+          "boringssl": "29a2cd359458c9384694b75456026e4b57e3e567",
+          "openssl": "1.1.0",
+          "libarchive": "898dc8319355b7e985f68a9819f182aaed61b53a",
+          "mimalloc": "4c283af60cdae205df5a872530c77e2a6a307d43",
+          "picohttpparser": "066d2b1e9ab820703db0837a7255d92d30f0c9f5",
+          "uwebsockets": "c1708ea6ab529a4c747a8282a24d125dc20b0a63",
+          "webkit": "e32c6356625cfacebff0c61d182f759abf6f508a",
+          "zig": "0.13.0",
+          "zlib": "886098f3f339617b4243b286f5ed364b9989e245",
+          "tinycc": "ab631362d839333660a265d3084d8ff060b96753",
+          "lolhtml": "8d4c273ded322193d017042d1f48df2766b0f88b",
+          "ares": "d1722e6e8acaf10eb73fa995798a9cd421d9f85e",
+          "libdeflate": "dc76454a39e7e83b68c3704b6e3784654f8d5ac5",
+          "usockets": "c1708ea6ab529a4c747a8282a24d125dc20b0a63",
+          "lshpack": "3d0f1fc1d6e66a642e7a98c55deb38aa986eb4b0",
+          "zstd": "794ea1b0afca0f020f4e57b6732332231fb23c70",
+          "v8": "12.4.254.14-node.12",
+          "uv": "1.48.0",
+          "napi": "9",
+          "icu": "75.1",
+          "unicode": "15.1",
+          "modules": "127"
+        },
+        "platform": "linux",
+        "arch": "x64",
+        "cpu": "AMD Ryzen 5 5600X 6-Core Processor",
+        "preparationMs": 688.232635,
+        "warmupPasses": 5,
+        "measuredPasses": 20,
+        "predictionBatch": 1000,
+        "corpusSize": 44,
+        "checksum": 39952167.77388667
+      }
     }
   ]
 }
