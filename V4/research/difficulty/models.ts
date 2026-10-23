@@ -6,11 +6,13 @@ import { RIDGE_PENALTIES } from "./settings";
 
 /** Raw formula terms; quadratic coefficients multiply x and x², respectively. */
 export function modelTerms(spec: ModelSpec): readonly string[] {
+  if (spec.kind === "power") return [`log1p(${spec.features[0]})`];
   return spec.kind === "quadratic" ? [spec.features[0], `${spec.features[0]}^2`] : spec.features;
 }
 
 function featureValues(spec: ModelSpec, features: ModelInputs): number[] {
   const values = spec.features.map(feature => features[feature]);
+  if (spec.kind === "power") return [values[0] < 0 ? NaN : Math.log1p(values[0])];
   return spec.kind === "quadratic" ? [values[0], values[0] ** 2] : values;
 }
 
@@ -41,8 +43,8 @@ export function candidateSpecs(features: readonly string[]): ModelSpec[] {
 
 /**
  * Fit exclusively from the supplied training rows, including feature scaling.
- * All models predict natural-log solve time, so errors reflect relative changes
- * in time. Invalid inputs throw; an unsolvable linear fit returns null.
+ * Direct models fit seconds; other models fit log-seconds. predict() always
+ * returns log-seconds for shared evaluation. Unsolvable fits return null.
  */
 export function fitModel(rows: readonly Observation[], spec: ModelSpec): FittedModel | null {
   if (!rows.length) throw new Error("Model training requires observations.");
@@ -50,7 +52,10 @@ export function fitModel(rows: readonly Observation[], spec: ModelSpec): FittedM
     spec.features.some(feature => !Number.isFinite(row.features[feature])))) {
     throw new Error("Training values must be finite and times positive.");
   }
-  const target = rows.map(row => Math.log(row.seconds));
+  if (spec.kind === "direct" && (!Number.isFinite(spec.minimumSeconds) || spec.minimumSeconds <= 0)) {
+    throw new Error("Direct-time models require a positive finite minimumSeconds.");
+  }
+  const target = rows.map(row => spec.kind === "direct" ? row.seconds : Math.log(row.seconds));
   const intercept = mean(target);
   if (spec.kind === "constant") return { kind: "constant", spec, target: "logSeconds", intercept };
   if (spec.kind === "ridge" && (!Number.isFinite(spec.penalty) || spec.penalty <= 0 || !spec.features.length)) {
@@ -86,6 +91,8 @@ export function fitModel(rows: readonly Observation[], spec: ModelSpec): FittedM
   const coefficients = fit.solve(Matrix.columnVector(centeredTarget)).to1DArray();
   if (!coefficients.every(Number.isFinite)) return null;
   const parameters = { target: "logSeconds" as const, intercept, coefficients, means, scales };
+  if (spec.kind === "direct") return { kind: "direct", spec, ...parameters, target: "seconds" };
+  if (spec.kind === "power") return { kind: "power", spec, ...parameters };
   if (spec.kind === "quadratic") return { kind: "quadratic", spec, ...parameters };
   if (spec.kind === "ridge") return { kind: "ridge", spec, ...parameters };
   return { kind: "linear", spec, ...parameters };
@@ -100,6 +107,7 @@ export function predict(model: FittedModel, features: ModelInputs): number {
   if (model.kind === "constant") return model.intercept;
   const values = featureValues(model.spec, features);
   // Reuse the means/scales learned from training, not from the prediction input.
-  return model.intercept + model.coefficients.reduce((sum, coefficient, i) =>
+  const prediction = model.intercept + model.coefficients.reduce((sum, coefficient, i) =>
     sum + coefficient * (values[i] - model.means[i]) / model.scales[i], 0);
+  return model.kind === "direct" ? Math.log(Math.max(model.spec.minimumSeconds, prediction)) : prediction;
 }

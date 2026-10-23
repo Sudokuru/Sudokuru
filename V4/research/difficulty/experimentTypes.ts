@@ -23,6 +23,8 @@ export interface ExperimentSpec {
   readonly name: string;
   readonly features: readonly string[];
   readonly includeTrace: boolean;
+  /** Fixed recipes added only to this experiment, without another feature search. */
+  readonly additionalModels?: readonly ModelSpec[];
   /** Eliminated families are removed from every fitting/selection fold. */
   readonly excludedFamilies?: readonly ModelFamily[];
   /** Family evaluation may continue after retiring the aggregate selected row. */
@@ -82,7 +84,7 @@ export interface HistoricalComparison {
 export interface CoefficientRow {
   readonly experiment: string;
   readonly model: string;
-  readonly target: "logSeconds";
+  readonly target: FittedModel["target"];
   readonly intercept: number;
   readonly innerCvSpearman: number | null;
   readonly innerCvLogRmse: number;

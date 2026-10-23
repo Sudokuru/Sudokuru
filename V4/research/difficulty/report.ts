@@ -106,7 +106,9 @@ export function renderReport(
     "## Does allowing more complex models help?",
     "Each family selects features or hyperparameters inside its training folds. Family comparisons are exploratory. Choosing a family after inspecting these results requires fresh validation.",
     "Quadratic procedures fit x and x² for one feature. Ridge procedures combine all allowed features with a coefficient penalty selected inside training folds. Both reuse the same feature extraction as the existing formulas.",
-    table(deltaHeadings, experiments.flatMap(experiment => (["pair", "quadratic", "ridge"] as const).filter(family =>
+    "The fixed initial/direct procedure fits seconds = a + b × notes, with a one-second prediction floor. The fixed initial/power procedure fits logSeconds = a + b × log(1 + notes). Each fits two parameters using only training puzzles, with no feature or hyperparameter search and no trace extraction.",
+    table(deltaHeadings, experiments.flatMap(experiment => (["pair", "quadratic", "ridge", "direct", "power"] as const).filter(family =>
+      (family !== "direct" && family !== "power" || summary(experiment, family)) &&
       !eliminated.some(record => record.procedure === `${experiment.name}/${family}` || record.procedure === `${experiment.name}/single`)).map(family =>
       comparisonRows(experiment, experiment, family, "single")))),
     "## How sensitive are results to the training data?",
@@ -155,7 +157,7 @@ export function renderReport(
     "These recipes are selected and fitted using all personal observations. Their training scores do not validate these particular formulas on new puzzles. Held-out scores above evaluate the selection procedures, which may choose a different recipe in each fold.",
     table(["Features", "Family", "Final fitted recipe", "Training Spearman"], experiments.flatMap(experiment => experiment.summaries.map(row =>
       [experiment.name, row.family, row.finalModel?.spec.id ?? "unavailable", fmt(row.training?.spearman)]))),
-    "[coefficients.csv](coefficients.csv) contains raw-feature weights for every eligible formula and inner-CV selection scores. [models.json](models.json) contains final standardized parameters. Linear formulas predict log-seconds; exponentiate for seconds, without retransformation bias correction.",
+    "[coefficients.csv](coefficients.csv) contains formula-term weights and inner-CV selection scores. Its target column is seconds for direct-time models and logSeconds otherwise. Direct-time predictions are floored at the saved minimumSeconds before taking logs for evaluation; other formulas are exponentiated for seconds without retransformation bias correction. [models.json](models.json) contains final parameters, targets, transformations, and any prediction floor.",
     ...experiments.map(experiment => {
       const model = summary(experiment, "single")?.finalModel;
       if (!model || model.kind !== "linear") return `${experiment.name}: single-feature fit unavailable.`;

@@ -35,10 +35,22 @@ export interface RidgeSpec extends BaseSpec {
   readonly penalty: number;
 }
 
-export type ModelSpec = ConstantSpec | LinearSpec | QuadraticSpec | RidgeSpec;
+export interface DirectSpec extends BaseSpec {
+  readonly kind: "direct";
+  readonly features: readonly [string];
+  /** Fixed positive floor for extrapolated seconds; never fitted to held-out data. */
+  readonly minimumSeconds: number;
+}
+
+export interface PowerSpec extends BaseSpec {
+  readonly kind: "power";
+  readonly features: readonly [string];
+}
+
+export type ModelSpec = ConstantSpec | LinearSpec | QuadraticSpec | RidgeSpec | DirectSpec | PowerSpec;
 
 /** Reporting groups for baselines and formula sizes. */
-export type ModelFamily = "constant" | "single" | "pair" | "multivariate" | "quadratic" | "ridge";
+export type ModelFamily = "constant" | "single" | "pair" | "multivariate" | "quadratic" | "ridge" | "direct" | "power";
 
 /**
  * Trained state. Formula coefficients, means, and scales follow modelTerms(spec)
@@ -78,7 +90,18 @@ export interface RidgeModel extends FormulaParameters {
   readonly spec: RidgeSpec;
 }
 
-export type FittedModel = ConstantModel | LinearModel | QuadraticModel | RidgeModel;
+export interface DirectModel extends Omit<FormulaParameters, "target"> {
+  readonly target: "seconds";
+  readonly kind: "direct";
+  readonly spec: DirectSpec;
+}
+
+export interface PowerModel extends FormulaParameters {
+  readonly kind: "power";
+  readonly spec: PowerSpec;
+}
+
+export type FittedModel = ConstantModel | LinearModel | QuadraticModel | RidgeModel | DirectModel | PowerModel;
 
 /** A recipe scored on predictions for puzzles excluded from each fitting step. */
 export interface CandidateResult {

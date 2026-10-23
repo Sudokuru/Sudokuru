@@ -64,7 +64,8 @@ export function correlations(cohorts: readonly Cohort[]): CorrelationRow[] {
  * Undo input standardization so the reported formula uses original feature units.
  * For example, 10 + 4*(x-1)/2 becomes 8 + 2*x. Each weight is divided by its
  * training scale, and the centering adjustment is absorbed into the intercept.
- * Weights stay in modelTerms(spec) order; the output still predicts LOG-seconds.
+ * Weights stay in modelTerms(spec) order and retain the model's saved target
+ * units (seconds for direct-time, log-seconds otherwise).
  * Constant models have no weights. This conversion does not refit anything.
  */
 export function rawCoefficients(model: FittedModel): { intercept: number; coefficients: number[] } {
@@ -176,7 +177,10 @@ export function runExperiment(
     console.warn(`${experiment.name}: Too little data for nested cross-validation: need at least three personal puzzles.`);
     return null;
   }
-  const specs = candidateSpecs(experiment.features).filter(spec =>
+  if (experiment.additionalModels?.some(spec => spec.features.some(feature => !experiment.features.includes(feature)))) {
+    throw new Error("Additional model inputs must belong to the experiment feature set.");
+  }
+  const specs = [...candidateSpecs(experiment.features), ...(experiment.additionalModels ?? [])].filter(spec =>
     !experiment.excludedFamilies?.includes(modelFamily(spec)));
   const heldout = nestedCrossValidation(personal, specs);
   const finalSelection = selectModel(personal, specs);
