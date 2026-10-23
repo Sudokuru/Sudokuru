@@ -1,10 +1,11 @@
 import type { ExperimentSpec } from "./experimentTypes";
 import { INITIAL_MODEL_FEATURES } from "./features";
 import { TRACE_MODEL_FEATURES } from "./singleTrace";
-import { candidateSpecs } from "./models";
+import { experimentCandidates } from "./models";
 import { modelFamily } from "./evaluation";
+import { EARLY_TRACE_LIMIT } from "./settings";
 
-export const PROCEDURE_FAMILIES = ["selected", "single", "pair", "quadratic", "ridge", "direct", "power"] as const;
+export const PROCEDURE_FAMILIES = ["selected", "single", "pair", "quadratic", "ridge", "direct", "power", "reduction", "bottleneck"] as const;
 
 export const EXPERIMENTS: readonly ExperimentSpec[] = [
   { name: "initial", features: INITIAL_MODEL_FEATURES, includeTrace: false, additionalModels: [
@@ -12,6 +13,13 @@ export const EXPERIMENTS: readonly ExperimentSpec[] = [
     { id: "power:notes", kind: "power", features: ["notes"] },
   ] },
   { name: "initial+trace", features: TRACE_MODEL_FEATURES, includeTrace: true },
+  { name: "early-singles", features: ["notes", "earlyCandidateReduction10", "earlyBottleneck10"],
+    includeTrace: true, traceLimit: EARLY_TRACE_LIMIT, fixedModelsOnly: true, includeSelected: false,
+    additionalModels: [
+      { id: "reduction:notes+earlyCandidateReduction10", kind: "reduction", features: ["notes", "earlyCandidateReduction10"] },
+      { id: "bottleneck:notes+earlyBottleneck10", kind: "bottleneck", features: ["notes", "earlyBottleneck10"] },
+    ],
+  },
 ];
 
 /** Apply manual retirement decisions before generating or fitting candidates. */
@@ -21,8 +29,8 @@ export function activeExperiment(
 ): ExperimentSpec | null {
   const excluded = PROCEDURE_FAMILIES.filter(family =>
     eliminated.some(record => record.procedure === `${experiment.name}/${family}`));
-  const offered = [...candidateSpecs(experiment.features), ...(experiment.additionalModels ?? [])].map(modelFamily);
-  const available = PROCEDURE_FAMILIES.filter(family => family === "selected" || offered.includes(family));
+  const offered = experimentCandidates(experiment).map(modelFamily);
+  const available = PROCEDURE_FAMILIES.filter(family => family === "selected" ? experiment.includeSelected !== false : offered.includes(family));
   if (available.every(family => excluded.includes(family))) return null;
   return {
     ...experiment,

@@ -9,7 +9,7 @@ import { prepareDataset } from "./prepare";
 import { prepareResearch, correlations, runExperiment } from "./experiments";
 import { runBenchmarks } from "./benchmarks";
 import { renderReport } from "./report";
-import { BOOTSTRAP_REPEATS, BOOTSTRAP_SEED, ACCEPTANCE_CRITERIA, BENCHMARK_SETTINGS, RIDGE_PENALTIES } from "./settings";
+import { BOOTSTRAP_REPEATS, BOOTSTRAP_SEED, ACCEPTANCE_CRITERIA, BENCHMARK_SETTINGS, RIDGE_PENALTIES, EARLY_TRACE_LIMIT } from "./settings";
 import type { ReportContext } from "./reportTypes";
 import { activeExperiment, EXPERIMENTS } from "./procedures";
 import { ELIMINATION_REGISTRY_PATH, readEliminationRegistry } from "./eliminations";
@@ -101,6 +101,9 @@ const reportContext: ReportContext = {
     ridgeObjective: "mean squared log error + penalty * squared standardized weights; unpenalized intercept",
     quadraticBasis: "x, x^2; training-only centering and scaling of each term",
     additionalModels: JSON.stringify(EXPERIMENTS.map(experiment => ({ name: experiment.name, models: experiment.additionalModels ?? [] }))),
+    earlyTraceLimit: EARLY_TRACE_LIMIT,
+    featurePipelines: JSON.stringify(EXPERIMENTS.map(experiment => ({ name: experiment.name, includeTrace: experiment.includeTrace,
+      traceLimit: experiment.traceLimit ?? null, fixedModelsOnly: experiment.fixedModelsOnly ?? false }))),
     bootstrap: `paired puzzle resampling of fixed predictions; ${BOOTSTRAP_REPEATS} samples, seed ${BOOTSTRAP_SEED}; descriptive, not post-selection inference`,
     benchmarks: skipBenchmarks ? "Skipped" : "Enabled",
     warmupPasses: BENCHMARK_SETTINGS.warmupPasses,
@@ -121,7 +124,7 @@ writeJson("results.json", {
   experiments,
   eliminatedProcedures: registry.procedures,
 });
-writeJson("models.json", experiments.map(experiment => ({ name: experiment.name,
+writeJson("models.json", experiments.map(experiment => ({ name: experiment.name, traceLimit: experiment.traceLimit,
   models: experiment.summaries.map(summary => ({ family: summary.family, model: summary.finalModel })) })));
 writeCsv("coefficients.csv", experiments.flatMap(experiment => experiment.coefficients));
 writeJson("dataset-audit.json", featureRows.map(row => ({ id: row.record.id, puzzle: row.record.puzzle,

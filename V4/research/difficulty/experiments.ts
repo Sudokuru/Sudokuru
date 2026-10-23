@@ -2,7 +2,7 @@ import { TIMING_BATCHES } from "./data";
 import type { PreparedPuzzle } from "./prepare";
 import { initialFeatures } from "./features";
 import { singleTrace } from "./singleTrace";
-import { candidateSpecs, fitModel, modelTerms, predict } from "./models";
+import { experimentCandidates, fitModel, modelTerms, predict } from "./models";
 import { modelFamily, nestedCrossValidation, selectModel } from "./evaluation";
 import { bootstrapRankDifference, metrics, pearson, spearman } from "./statistics";
 import type { FittedModel, ModelSpec, ModelFamily } from "./modelTypes";
@@ -177,10 +177,7 @@ export function runExperiment(
     console.warn(`${experiment.name}: Too little data for nested cross-validation: need at least three personal puzzles.`);
     return null;
   }
-  if (experiment.additionalModels?.some(spec => spec.features.some(feature => !experiment.features.includes(feature)))) {
-    throw new Error("Additional model inputs must belong to the experiment feature set.");
-  }
-  const specs = [...candidateSpecs(experiment.features), ...(experiment.additionalModels ?? [])].filter(spec =>
+  const specs = experimentCandidates(experiment).filter(spec =>
     !experiment.excludedFamilies?.includes(modelFamily(spec)));
   const heldout = nestedCrossValidation(personal, specs);
   const finalSelection = selectModel(personal, specs);
@@ -248,7 +245,7 @@ export function runExperiment(
     const rows = heldout.filter(row => row.batch === batch);
     return { batch, scores: metrics(rows.map(row => row.seconds), rows.map(row => row.logPrediction)) };
   });
-  return { name: experiment.name, includeTrace: experiment.includeTrace, candidateCount: specs.length, heldout, summaries, batchSensitivity,
+  return { name: experiment.name, includeTrace: experiment.includeTrace, traceLimit: experiment.traceLimit, candidateCount: specs.length, heldout, summaries, batchSensitivity,
     finalSelection, fitted, comparisons, coefficients,
     sitePredictions: site.map(row => ({ id: row.id, batch: row.batch, seconds: row.seconds, logPrediction: predict(fitted, row.features) })),
     perPersonalBatch,

@@ -71,6 +71,8 @@ export function renderReport(
   };
   const deltaHeadings = ["Comparison (first minus second)", "Coverage", "Change in human-correlation score ↑", "Change in scoring p95 ms ↓"];
   const initial = selectedExperiments.find(experiment => !experiment.includeTrace);
+  const powerBaseline = experiments.find(experiment => experiment.name === "initial" && summary(experiment, "power"));
+  const earlySingles = experiments.find(experiment => experiment.name === "early-singles");
   const batchCount = (name: string) => context?.personalBatches.find(batch => batch.name === name)?.puzzles;
   const notesCorrelation = correlationRows.find(row => row.cohort === "personal" && row.target === "seconds" && row.feature === "notes");
   const mainRows: { procedure: string; score: number | null; scoringP95Ms: number | null }[] = [
@@ -100,14 +102,19 @@ export function renderReport(
       [`${record.procedure} (eliminated)`, fmt(record.score), fmt(record.scoringP95Ms)])) : "No procedures have been eliminated.",
     "Eliminated rows use frozen measurements from [eliminated-procedures.json](../eliminated-procedures.json). They are historical results, potentially from different corpora, code, or machines; see the decision records below. They are not recalculated by this run.",
     "## Does adding trace information help?",
-    "Changes are first minus second, not uncertainty estimates. Only matching puzzle identities are compared. Trace procedures add obvious-single traces to initial-board features; they do not evaluate richer strategy traces.",
-    table(deltaHeadings, initial ? selectedExperiments.filter(experiment => experiment.includeTrace).map(experiment =>
-      comparisonRows(experiment, initial, "selected", "selected")) : []),
+    "Changes are first minus second, not uncertainty estimates. Only matching puzzle identities are compared. Trace procedures use obvious singles; they do not evaluate richer strategies.",
+    "The fixed early-singles procedures add one feature to log(1 + notes), using at most ten row-major placements and stopping on a solve or stall. Reduction counts candidates removed from peer cells, excluding each placed single's own note. Bottleneck sums 1 / availableSingles before observed placements; forced moves contribute one. Short traces use observed moves only, with no invented terminal-stall sample. Both fit three parameters and have no feature/window search. Their combined timings include the bounded trace and assume a prepared solution.",
+    table(deltaHeadings, [
+      ...(initial ? selectedExperiments.filter(experiment => experiment.includeTrace).map(experiment =>
+        comparisonRows(experiment, initial, "selected", "selected")) : []),
+      ...(powerBaseline && earlySingles ? (["reduction", "bottleneck"] as const).filter(family => summary(earlySingles, family)).map(family =>
+        comparisonRows(earlySingles, powerBaseline, family, "power")) : []),
+    ]),
     "## Does allowing more complex models help?",
     "Each family selects features or hyperparameters inside its training folds. Family comparisons are exploratory. Choosing a family after inspecting these results requires fresh validation.",
     "Quadratic procedures fit x and x² for one feature. Ridge procedures combine all allowed features with a coefficient penalty selected inside training folds. Both reuse the same feature extraction as the existing formulas.",
     "The fixed initial/direct procedure fits seconds = a + b × notes, with a one-second prediction floor. The fixed initial/power procedure fits logSeconds = a + b × log(1 + notes). Each fits two parameters using only training puzzles, with no feature or hyperparameter search and no trace extraction.",
-    table(deltaHeadings, experiments.flatMap(experiment => (["pair", "quadratic", "ridge", "direct", "power"] as const).filter(family =>
+    table(deltaHeadings, experiments.filter(experiment => summary(experiment, "single")).flatMap(experiment => (["pair", "quadratic", "ridge", "direct", "power"] as const).filter(family =>
       (family !== "direct" && family !== "power" || summary(experiment, family)) &&
       !eliminated.some(record => record.procedure === `${experiment.name}/${family}` || record.procedure === `${experiment.name}/single`)).map(family =>
       comparisonRows(experiment, experiment, family, "single")))),

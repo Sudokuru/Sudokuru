@@ -29,6 +29,10 @@ export type TraceFeatures = {
   readonly availabilityCount25: number;
   readonly availabilityMean25: number;
   readonly availabilityMin25: number;
+  /** Peer candidate removals in the first ten placements, excluding placed notes. */
+  readonly earlyCandidateReduction10: number;
+  /** Sum of inverse available-single counts before the first ten placements. */
+  readonly earlyBottleneck10: number;
 };
 
 /** Complete set of V4 research heuristics, excluding historical scores. */

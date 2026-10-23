@@ -3,15 +3,18 @@ import type { ModelInputs } from "./featureTypes";
 import type { Observation, ModelSpec, FittedModel } from "./modelTypes";
 import { mean } from "./statistics";
 import { RIDGE_PENALTIES } from "./settings";
+import type { ExperimentSpec } from "./experimentTypes";
 
 /** Raw formula terms; quadratic coefficients multiply x and x², respectively. */
 export function modelTerms(spec: ModelSpec): readonly string[] {
+  if (spec.kind === "reduction" || spec.kind === "bottleneck") return [`log1p(${spec.features[0]})`, spec.features[1]];
   if (spec.kind === "power") return [`log1p(${spec.features[0]})`];
   return spec.kind === "quadratic" ? [spec.features[0], `${spec.features[0]}^2`] : spec.features;
 }
 
 function featureValues(spec: ModelSpec, features: ModelInputs): number[] {
   const values = spec.features.map(feature => features[feature]);
+  if (spec.kind === "reduction" || spec.kind === "bottleneck") return [values[0] < 0 ? NaN : Math.log1p(values[0]), values[1]];
   if (spec.kind === "power") return [values[0] < 0 ? NaN : Math.log1p(values[0])];
   return spec.kind === "quadratic" ? [values[0], values[0] ** 2] : values;
 }
@@ -39,6 +42,15 @@ export function candidateSpecs(features: readonly string[]): ModelSpec[] {
     }
   }
   return specs;
+}
+
+/** Fixed experiments add only declared recipes and a constant baseline. */
+export function experimentCandidates(experiment: ExperimentSpec): ModelSpec[] {
+  if (experiment.additionalModels?.some(spec => spec.features.some(feature => !experiment.features.includes(feature)))) {
+    throw new Error("Additional model inputs must belong to the experiment feature set.");
+  }
+  const generic = candidateSpecs(experiment.fixedModelsOnly ? [] : experiment.features);
+  return [...generic, ...(experiment.additionalModels ?? [])];
 }
 
 /**
@@ -93,6 +105,7 @@ export function fitModel(rows: readonly Observation[], spec: ModelSpec): FittedM
   const parameters = { target: "logSeconds" as const, intercept, coefficients, means, scales };
   if (spec.kind === "direct") return { kind: "direct", spec, ...parameters, target: "seconds" };
   if (spec.kind === "power") return { kind: "power", spec, ...parameters };
+  if (spec.kind === "reduction" || spec.kind === "bottleneck") return { kind: spec.kind, spec, ...parameters };
   if (spec.kind === "quadratic") return { kind: "quadratic", spec, ...parameters };
   if (spec.kind === "ridge") return { kind: "ridge", spec, ...parameters };
   return { kind: "linear", spec, ...parameters };

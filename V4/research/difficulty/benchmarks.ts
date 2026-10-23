@@ -70,7 +70,7 @@ export function runBenchmarks(
       benchmarks.push(benchmark(`${experiment.name} extraction + ${summary.family} prediction`, i => {
         const initial = initialFeatures(featureRows[i].record.puzzle);
         const features = !experiment.includeTrace ? initial.features :
-          { ...initial.features, ...singleTrace(initial.board, featureRows[i].solution).features };
+          { ...initial.features, ...singleTrace(initial.board, featureRows[i].solution, experiment.traceLimit).features };
         return predict(model, features);
       }));
     }

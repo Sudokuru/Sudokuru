@@ -3,7 +3,7 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { captureElimination, parseEliminationRegistry, readEliminationRegistry, recordElimination } from "../eliminations";
-import { activeExperiment, PROCEDURE_FAMILIES } from "../procedures";
+import { activeExperiment, EXPERIMENTS, PROCEDURE_FAMILIES } from "../procedures";
 import { runExperiment } from "../experiments";
 import { renderReport } from "../report";
 import type { TimedObservation } from "../experimentTypes";
@@ -135,8 +135,8 @@ describe("manual difficulty procedure eliminations", () => {
     const directory = mkdtempSync(join(tmpdir(), "difficulty-retired-run-"));
     try {
       const registry = join(directory, "registry.json");
-      const procedures = ["initial", "initial+trace"].flatMap(name => PROCEDURE_FAMILIES.map(family => ({
-        ...snapshot(), procedure: `${name}/${family}`,
+      const procedures = EXPERIMENTS.flatMap(experiment => PROCEDURE_FAMILIES.map(family => ({
+        ...snapshot(), procedure: `${experiment.name}/${family}`,
       })));
       const saved = JSON.stringify({ version: 1, procedures }, null, 2) + "\n";
       writeFileSync(registry, saved);

@@ -21,7 +21,8 @@ describe("difficulty features and deterministic singles", () => {
     expect(trace.availability).toEqual([2, 1]);
     expect(trace.features).toEqual({ tracePlacements: 2, traceFilledFraction: 1, traceRemaining: 0, traceSolved: 1,
       availabilityCount10: 2, availabilityMean10: 1.5, availabilityMin10: 1,
-      availabilityCount25: 2, availabilityMean25: 1.5, availabilityMin25: 1 });
+      availabilityCount25: 2, availabilityMean25: 1.5, availabilityMin25: 1,
+      earlyCandidateReduction10: 0, earlyBottleneck10: 1.5 });
     expect(trace.status).toBe("solved");
     expect(singleTrace(result.board, solution)).toEqual(trace);
     expect(JSON.stringify(result.board)).toBe(before);

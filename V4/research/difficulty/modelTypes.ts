@@ -47,10 +47,19 @@ export interface PowerSpec extends BaseSpec {
   readonly features: readonly [string];
 }
 
-export type ModelSpec = ConstantSpec | LinearSpec | QuadraticSpec | RidgeSpec | DirectSpec | PowerSpec;
+/** Fixed power-baseline term plus one observed strategy measurement. */
+interface StrategyInputs extends BaseSpec {
+  readonly features: readonly [string, string];
+}
+
+export interface ReductionSpec extends StrategyInputs { readonly kind: "reduction"; }
+export interface BottleneckSpec extends StrategyInputs { readonly kind: "bottleneck"; }
+export type StrategySpec = ReductionSpec | BottleneckSpec;
+
+export type ModelSpec = ConstantSpec | LinearSpec | QuadraticSpec | RidgeSpec | DirectSpec | PowerSpec | StrategySpec;
 
 /** Reporting groups for baselines and formula sizes. */
-export type ModelFamily = "constant" | "single" | "pair" | "multivariate" | "quadratic" | "ridge" | "direct" | "power";
+export type ModelFamily = "constant" | "single" | "pair" | "multivariate" | "quadratic" | "ridge" | "direct" | "power" | "reduction" | "bottleneck";
 
 /**
  * Trained state. Formula coefficients, means, and scales follow modelTerms(spec)
@@ -101,7 +110,12 @@ export interface PowerModel extends FormulaParameters {
   readonly spec: PowerSpec;
 }
 
-export type FittedModel = ConstantModel | LinearModel | QuadraticModel | RidgeModel | DirectModel | PowerModel;
+export interface StrategyModel extends FormulaParameters {
+  readonly kind: "reduction" | "bottleneck";
+  readonly spec: StrategySpec;
+}
+
+export type FittedModel = ConstantModel | LinearModel | QuadraticModel | RidgeModel | DirectModel | PowerModel | StrategyModel;
 
 /** A recipe scored on predictions for puzzles excluded from each fitting step. */
 export interface CandidateResult {

@@ -1,4 +1,5 @@
 /** Shared execution settings, also written into research artifacts. */
+export const EARLY_TRACE_LIMIT = 10;
 export const RIDGE_PENALTIES = [0.01, 0.1, 1, 10, 100] as const;
 export const BOOTSTRAP_REPEATS = 2000;
 export const BOOTSTRAP_SEED = 711;

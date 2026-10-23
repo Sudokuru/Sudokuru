@@ -3,6 +3,7 @@ import type { Observation, FittedModel, CandidateResult, ModelSpec, ModelFamily 
 import type { PreparedPuzzle } from "./prepare";
 import type { SingleTrace } from "./singleTrace";
 import type { metrics, bootstrapRankDifference } from "./statistics";
+import type { EARLY_TRACE_LIMIT } from "./settings";
 
 export interface FeatureRow extends PreparedPuzzle {
   readonly features: Features;
@@ -23,6 +24,10 @@ export interface ExperimentSpec {
   readonly name: string;
   readonly features: readonly string[];
   readonly includeTrace: boolean;
+  /** The fixed early-strategy experiment uses the first ten placements only. */
+  readonly traceLimit?: typeof EARLY_TRACE_LIMIT;
+  /** Suppress generic feature searches for a preregistered fixed experiment. */
+  readonly fixedModelsOnly?: boolean;
   /** Fixed recipes added only to this experiment, without another feature search. */
   readonly additionalModels?: readonly ModelSpec[];
   /** Eliminated families are removed from every fitting/selection fold. */
@@ -95,6 +100,7 @@ export interface CoefficientRow {
 export interface ExperimentResult {
   readonly name: string;
   readonly includeTrace: boolean;
+  readonly traceLimit?: typeof EARLY_TRACE_LIMIT;
   readonly candidateCount: number;
   readonly heldout: readonly HeldoutPrediction[];
   readonly summaries: readonly FamilySummary[];
