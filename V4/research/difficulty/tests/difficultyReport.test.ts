@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { renderReport } from "../report";
 import { runExperiment } from "../experiments";
+import { captureElimination } from "../eliminations";
 import type { ExperimentResult, TimedObservation } from "../experimentTypes";
 import type { ReportContext } from "../reportTypes";
 import type { BenchmarkResults } from "../benchmarkTypes";
@@ -40,6 +41,38 @@ function report(experiments: readonly ExperimentResult[] = [initial], metadata: 
 }
 
 describe("difficulty executive report", () => {
+  test("sorts active rows by unrounded score, resolves ties by name, and puts unavailable scores last", () => {
+    const correlations = { selected: 0.6, single: 0.6004, quadratic: 0.8, ridge: 0.8, pair: null };
+    const experiment: ExperimentResult = { ...initial, comparisons: [],
+      summaries: (["selected", "single", "quadratic", "ridge", "pair"] as const).map(family => ({
+        ...initial.summaries[0], family,
+        heldout: { ...initial.heldoutScores, spearman: correlations[family], pearson: correlations[family] },
+      })),
+    };
+    const before = JSON.stringify(experiment);
+    const rendered = report([experiment]);
+    const names = rendered.split("### Eliminated procedures")[0].split("\n")
+      .filter(line => line.startsWith("initial/")).map(line => line.split(" | ")[0]);
+    expect(names).toEqual(["initial/quadratic", "initial/ridge", "initial/single", "initial/selected", "initial/pair"]);
+    expect(JSON.stringify(experiment)).toBe(before);
+    expect(report([experiment])).toBe(rendered);
+  });
+
+  test("places frozen eliminated rows in a separate table below active results", () => {
+    const record = captureElimination({ experiments: [initial], corpus,
+      reportContext: { ...context, settings: { benchmarks: "Skipped" } },
+    }, { skipped: true }, "initial/single", "Retired for this test", "2026-10-22T00:00:00.000Z");
+    const rendered = unpad(renderReport([initial], [], corpus, benchmarks, context, [record]));
+    const [active, rest] = rendered.split("### Eliminated procedures");
+    const archived = rest.split("## Does adding trace information help?")[0];
+    expect(active).toContain("initial/selected | 1.000 | 0.500");
+    expect(active).not.toContain("initial/single |");
+    expect(active).not.toContain("(eliminated)");
+    expect(archived).toContain("Procedure | Human-correlation score ↑ | Scoring p95 ms ↓");
+    expect(archived).toContain("initial/single (eliminated) | 1.000 | n/a");
+    expect(archived).not.toContain("initial/selected |");
+  });
+
   test("summarizes procedures using exactly two metrics with no coverage column", () => {
     const executive = report().split("## Does adding trace information help?")[0];
     expect(executive).toContain("Procedure | Human-correlation score ↑ | Scoring p95 ms ↓");

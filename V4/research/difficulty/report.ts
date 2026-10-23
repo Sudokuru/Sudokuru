@@ -73,21 +73,31 @@ export function renderReport(
   const initial = selectedExperiments.find(experiment => !experiment.includeTrace);
   const batchCount = (name: string) => context?.personalBatches.find(batch => batch.name === name)?.puzzles;
   const notesCorrelation = correlationRows.find(row => row.cohort === "personal" && row.target === "seconds" && row.feature === "notes");
+  const mainRows: { procedure: string; score: number | null; scoringP95Ms: number | null }[] = [
+    ...experiments.slice(0, 1).flatMap(experiment => {
+      const comparison = experiment.comparisons.find(row => row.cohort === "personal");
+      return comparison?.legacy.n === corpus.personal ? [{
+        procedure: "legacy (historical)", score: humanCorrelationScore(comparison.legacy), scoringP95Ms: null,
+      }] : [];
+    }),
+    ...experiments.flatMap(experiment => experiment.summaries.filter(row => row.family !== "constant" && row.evaluated === corpus.personal && row.total === corpus.personal).map(row => ({
+      procedure: `${experiment.name}/${row.family}`, score: humanCorrelationScore(row.heldout),
+      scoringP95Ms: scoring(experiment, row.family)?.p95Ms ?? null,
+    }))),
+  ];
+  mainRows.sort((a, b) => (b.score ?? -1) - (a.score ?? -1) || a.procedure.localeCompare(b.procedure));
+  const scoreHeadings = ["Procedure", "Human-correlation score ↑", "Scoring p95 ms ↓"];
   return [
     "# V4 difficulty research results",
     "Two metrics summarize each procedure: human-correlation score (higher is better) and scoring p95 in milliseconds (lower is better). The score is (2 + Spearman + Pearson) / 4, equally weighting ordering and linear agreement with human solve times: 0 means perfectly reversed, 0.5 means zero average correlation, and 1 means perfect agreement. It is not a probability. Missing correlations produce n/a. Raw statistics are retained in the appendices; model selection is unchanged.",
     "## How do approaches compare with legacy?",
     ...(experiments.length === 0 ? ["No experiments ran; model evaluation and fitted-model results are unavailable."] : []),
     "Personal predictions hold each puzzle out of both model selection and fitting. Scoring p95 includes extraction plus prediction for the final fitted model, excluding training and solution preparation. The summary shows only procedures evaluated on all personal puzzles; partial coverage and unavailable results remain in the appendices. Legacy is a historical reference, not a newly validated procedure.",
-    table(["Procedure", "Human-correlation score ↑", "Scoring p95 ms ↓"], [
-      ...experiments.slice(0, 1).flatMap(experiment => {
-        const comparison = experiment.comparisons.find(row => row.cohort === "personal");
-        return comparison?.legacy.n === corpus.personal ? [["legacy (historical)", fmt(humanCorrelationScore(comparison.legacy)), "n/a"]] : [];
-      }),
-      ...experiments.flatMap(experiment => experiment.summaries.filter(row => row.family !== "constant" && row.evaluated === corpus.personal && row.total === corpus.personal).map(row =>
-        [`${experiment.name}/${row.family}`, fmt(humanCorrelationScore(row.heldout)), fmt(scoring(experiment, row.family)?.p95Ms)])),
-      ...eliminated.map(record => [`${record.procedure} (eliminated)`, fmt(record.score), fmt(record.scoringP95Ms)]),
-    ]),
+    "Active results are sorted by human-correlation score, highest first. Equal scores sort by procedure name; unavailable scores appear last.",
+    table(scoreHeadings, mainRows.map(row => [row.procedure, fmt(row.score), fmt(row.scoringP95Ms)])),
+    "### Eliminated procedures",
+    eliminated.length ? table(scoreHeadings, eliminated.map(record =>
+      [`${record.procedure} (eliminated)`, fmt(record.score), fmt(record.scoringP95Ms)])) : "No procedures have been eliminated.",
     "Eliminated rows use frozen measurements from [eliminated-procedures.json](../eliminated-procedures.json). They are historical results, potentially from different corpora, code, or machines; see the decision records below. They are not recalculated by this run.",
     "## Does adding trace information help?",
     "Changes are first minus second, not uncertainty estimates. Only matching puzzle identities are compared. Trace procedures add obvious-single traces to initial-board features; they do not evaluate richer strategy traces.",
