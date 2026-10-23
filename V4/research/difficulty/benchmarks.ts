@@ -67,13 +67,13 @@ export function runBenchmarks(
       const model = summary.finalModel;
       if (!model) continue;
       benchmarks.push(benchmark(`${experiment.name}/${summary.family} prediction`, i => predict(model, featureRows[i].features), BENCHMARK_SETTINGS.predictionBatch));
+      benchmarks.push(benchmark(`${experiment.name} extraction + ${summary.family} prediction`, i => {
+        const initial = initialFeatures(featureRows[i].record.puzzle);
+        const features = !experiment.includeTrace ? initial.features :
+          { ...initial.features, ...singleTrace(initial.board, featureRows[i].solution).features };
+        return predict(model, features);
+      }));
     }
-    benchmarks.push(benchmark(`${experiment.name} extraction + selected prediction`, i => {
-      const initial = initialFeatures(featureRows[i].record.puzzle);
-      const features = !experiment.includeTrace ? initial.features :
-        { ...initial.features, ...singleTrace(initial.board, featureRows[i].solution).features };
-      return predict(experiment.fitted, features);
-    }));
   }
   return { runtime: process.versions, platform: platform(), arch: arch(), cpu: cpus()[0]?.model,
     preparationMs, ...BENCHMARK_SETTINGS, corpusSize: featureRows.length, checksum, benchmarks };

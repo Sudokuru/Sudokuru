@@ -8,3 +8,12 @@ export const BENCHMARK_SETTINGS = {
   measuredPasses: 20,
   predictionBatch: 1000,
 } as const;
+
+/** Research acceptance criteria are unset until explicitly chosen. */
+export const ACCEPTANCE_CRITERIA: {
+  readonly maxRankingLoss: number | null;
+  readonly scoringP95BudgetMs: number | null;
+} = {
+  maxRankingLoss: null,
+  scoringP95BudgetMs: null,
+};

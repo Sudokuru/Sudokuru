@@ -8,6 +8,20 @@ bun V4/research/difficulty/run.ts
 
 This regenerates the report and detailed artifacts in `V4/docs/difficulty/results/`. The entire results directory, including `REPORT.md` and JSON/CSV outputs, is ignored and generated locally on demand. With repository dependencies installed, the command uses Bun, existing V4 code, `calculate-correlation`, `ml-matrix`, and Node built-ins without additional downloads. Training is offline research. Nothing is exported from the package entry point, and no production difficulty thresholds change.
 
+## Reading the generated report
+
+The report starts with fixed questions and computed tables, without generating an adoption recommendation:
+
+- Personal held-out selection-procedure and nonconstant family results versus legacy, including paired descriptive intervals. Each row uses only its eligible held-out puzzles with historical scores; the coverage column counts those puzzles. Labels state only whether the interval is above zero, below zero, includes zero, or is unavailable.
+- Initial-plus-trace versus initial-only differences, and two-feature/tree versus one-feature family differences. Changes are first minus second. Differences require matching evaluated puzzle identities, including partial family coverage; otherwise the report displays `Different puzzle coverage` and omits the differences. These differences have no uncertainty estimates.
+- Outer-fold selection frequencies (including all tied most-frequent recipes), trace-feature use, and batch-exclusion sensitivity with sample counts. These have no automatic stability classification.
+- Combined feature-extraction-plus-prediction costs for the final fitted models. Each family benchmark uses its experiment's feature pipeline, even if the fitted formula does not use every extracted feature. Solution preparation is excluded and prepared solutions are assumed available.
+- An evidence inventory, including timing-batch sizes, independent validation count, and availability of legacy runtime measurements. The current runner has no independent validation corpus or legacy runtime measurement; site-average proxies do not count as independent validation.
+
+`ACCEPTANCE_CRITERIA` in `V4/research/difficulty/settings.ts` holds optional maximum ranking-correlation loss and scoring p95 budget in milliseconds. Both default to `null`, shown as `Not configured`. Configured values are displayed for reference, without automatic pass/fail or production-adoption decisions.
+
+Appendices contain final fitted recipes separately from selection-procedure validation, coefficients, all personal feature correlations, detailed family metrics, site/pooled diagnostics, runtime operations, and corpus corrections. Reproducibility metadata records the analysis Git revision, tracked working-tree changes, a SHA-256 identifier of the ordered corpus records (including timings and legacy scores), source commit, and execution settings. Git fields are unavailable in source archives. Metadata and criteria are also saved as `reportContext` in `results.json`; the historical `sourceCommit` remains the corpus source, not the analysis revision.
+
 Use `--out /tmp/your-research-directory` for a separate output directory. `--skip-benchmarks` omits machine-dependent timing work and writes `{ "skipped": true }` to `benchmarks.json`, replacing any earlier timings. A run overwrites its named artifacts in the selected directory; use a fresh directory for an independent comparison. Unknown options and a missing `--out` directory argument are rejected.
 
 ## Corpus and provenance
@@ -81,23 +95,23 @@ With 22 personal puzzles, a wide choice of heuristics can still produce unstable
 
 | Artifact | Contents |
 | --- | --- |
-| `REPORT.md` | Main findings, correlations, family comparisons, batch sensitivity, and runtime |
+| `REPORT.md` | Procedure comparisons, explicit differences, selection frequencies, batch sensitivity, scoring cost, and evidence inventory; technical appendices |
 | `dataset-audit.json` | Validated/derived solutions, provenance, corrected counts, and exact singles traces |
 | `features.csv` | One row per unique puzzle, including untimed runtime examples |
 | `correlations.csv` | Feature/legacy coefficients by target and cohort, with sample sizes |
 | `predictions.csv` | Outer-held-out personal predictions for each family and selected procedure; site transfer predictions |
 | `models.json` | Final fitted coefficients, scaling, and tree split records |
 | `coefficients.csv` | Full-personal-data raw-feature weights and intercepts for all eligible formula candidates; inner-CV scores are selection diagnostics |
-| `results.json` | Settings, full candidate CV tables, selected folds, comparison intervals, and sensitivity results |
+| `results.json` | Settings, report metadata/criteria, full candidate CV tables, selected folds and their feature lists, comparison intervals, and sensitivity results |
 | `benchmarks.json` | Runtime/hardware, preparation time, warmed timing samples summarized by operation |
 
-Benchmarks run five warmup passes and 20 measured passes over all 44 puzzles. Initial extraction includes parsing and candidate construction; trace extraction starts with initialized notes and a prepared solution. End-to-end feature-plus-prediction timings include required parsing, initialization, and trace work. Prediction-only measurements batch 1,000 calls to amortize clock overhead; their percentiles are batch averages rather than individual-call tail latency. An exposed checksum consumes results to discourage elimination of unused work. An empty corpus warns and skips measurements.
+Benchmarks run five warmup passes and 20 measured passes over all 44 puzzles. Initial extraction includes parsing and candidate construction; trace extraction starts with initialized notes and a prepared solution. Combined feature-plus-prediction timings are measured for every available final family model and the selected procedure, including parsing, initialization, and any experiment trace work. Prediction-only measurements batch 1,000 calls to amortize clock overhead; their percentiles are batch averages rather than individual-call tail latency. An exposed checksum consumes results to discourage elimination of unused work. An empty corpus warns and skips measurements.
 
-No latency cutoff is imposed. Compare feature extraction costs as well as tiny inference costs; prepared solutions are an explicit prerequisite for the trace experiment. Hardware-dependent timings and report timing sections will vary between runs. All other generated artifacts are deterministic for the same corpus, code, and runtime.
+No latency cutoff is imposed. Compare feature extraction costs as well as tiny inference costs; prepared solutions are an explicit prerequisite for the trace experiment. Hardware-dependent timings and report timing sections will vary between runs. Other generated results are deterministic for the same corpus, code, runtime, execution settings, and recorded Git metadata.
 
 ## Verification
 
-Research tests live in `V4/research/difficulty/tests/`, separate from core V4 unit tests. The five suites cover corpus provenance, features/single traces, statistics, models/evaluation, and experiments/reporting/benchmarks.
+Research tests live in `V4/research/difficulty/tests/`, separate from core V4 unit tests. The suites cover corpus provenance, features/single traces, statistics, models/evaluation, experiments/benchmarks, and report comparisons, interval labels, coverage guards, selection counts, and evidence metadata.
 
 ```sh
 bun test V4/research/difficulty/tests

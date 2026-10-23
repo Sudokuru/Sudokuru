@@ -135,6 +135,7 @@ export function nestedCrossValidation(rows: readonly Observation[], specs: reado
       batch: heldout.batch,
       logPrediction: winner.logPrediction,
       selected: selection.winner.id,
+      selectedFeatures: selection.winner.features,
       families: familyPredictions,
     };
   });

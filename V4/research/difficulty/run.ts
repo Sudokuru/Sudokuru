@@ -2,6 +2,8 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { performance } from "node:perf_hooks";
+import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { DIFFICULTY_RESEARCH_PUZZLES } from "./data";
 import { prepareDataset } from "./prepare";
 import { INITIAL_MODEL_FEATURES } from "./features";
@@ -9,7 +11,8 @@ import { TRACE_MODEL_FEATURES } from "./singleTrace";
 import { prepareResearch, correlations, runExperiment } from "./experiments";
 import { runBenchmarks } from "./benchmarks";
 import { renderReport } from "./report";
-import { TREE_DEPTHS, TREE_MIN_LEAVES, BOOTSTRAP_REPEATS, BOOTSTRAP_SEED } from "./settings";
+import { TREE_DEPTHS, TREE_MIN_LEAVES, BOOTSTRAP_REPEATS, BOOTSTRAP_SEED, ACCEPTANCE_CRITERIA, BENCHMARK_SETTINGS } from "./settings";
+import type { ReportContext } from "./reportTypes";
 
 const args = process.argv.slice(2);
 let outputDirectory = "V4/docs/difficulty/results";
@@ -62,15 +65,44 @@ const experiments = [
   return result ? [result] : [];
 });
 const benchmarkResults = skipBenchmarks ? null : runBenchmarks(featureRows, experiments, preparationMs);
+/** Git metadata is unavailable in source archives; do not invent a revision. */
+function gitMetadata(args: readonly string[]): string | null {
+  try {
+    return execFileSync("git", [...args], { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim();
+  } catch {
+    return null;
+  }
+}
+const trackedChanges = gitMetadata(["status", "--porcelain", "--untracked-files=no"]);
+const reportContext: ReportContext = {
+  codeRevision: gitMetadata(["rev-parse", "HEAD"]),
+  workingTreeDirty: trackedChanges === null ? null : trackedChanges.length > 0,
+  corpusId: `sha256:${createHash("sha256").update(JSON.stringify(DIFFICULTY_RESEARCH_PUZZLES)).digest("hex")}`,
+  sourceCommit: "d770c39eeda6fba8ef08c33d302b49cc4c41fe3d",
+  personalBatches: cohorts.filter(cohort => cohort.name.startsWith("batch:") && cohort.rows[0]?.kind === "personal")
+    .map(cohort => ({ name: cohort.name.slice(6), puzzles: cohort.rows.length })),
+  // This runner performs personal cross-validation and site-proxy transfer only.
+  independentValidationPuzzles: 0,
+  legacyRuntimeMeasured: false,
+  criteria: ACCEPTANCE_CRITERIA,
+  settings: {
+    target: "logSeconds", selection: "Spearman, log RMSE, complexity, stable ID",
+    outer: "leave one personal puzzle out", inner: "leave one training puzzle out",
+    treeDepths: TREE_DEPTHS, treeMinLeaves: TREE_MIN_LEAVES,
+    bootstrap: `paired puzzle resampling of fixed predictions; ${BOOTSTRAP_REPEATS} samples, seed ${BOOTSTRAP_SEED}; descriptive, not post-selection inference`,
+    benchmarks: skipBenchmarks ? "Skipped" : "Enabled",
+    warmupPasses: BENCHMARK_SETTINGS.warmupPasses,
+    measuredPasses: BENCHMARK_SETTINGS.measuredPasses,
+    predictionBatch: BENCHMARK_SETTINGS.predictionBatch,
+  },
+};
 // Always overwrite this artifact so a skipped run cannot leave old timings behind.
 writeJson("benchmarks.json", benchmarkResults ?? { skipped: true });
 writeJson("results.json", {
   // Historical corpus source, not the revision of the code running this analysis.
-  sourceCommit: "d770c39eeda6fba8ef08c33d302b49cc4c41fe3d",
-  settings: { target: "logSeconds", selection: "Spearman, log RMSE, complexity, stable ID",
-    outer: "leave one personal puzzle out", inner: "leave one training puzzle out",
-    treeDepths: TREE_DEPTHS, treeMinLeaves: TREE_MIN_LEAVES,
-    bootstrap: `paired puzzle resampling of fixed predictions; ${BOOTSTRAP_REPEATS} samples, seed ${BOOTSTRAP_SEED}; descriptive, not post-selection inference` },
+  sourceCommit: reportContext.sourceCommit,
+  settings: reportContext.settings,
+  reportContext,
   corpus,
   experiments,
 });
@@ -99,5 +131,5 @@ const predictionRows = experiments.flatMap(experiment => {
 });
 writeCsv("predictions.csv", predictionRows);
 
-writeFileSync(resolve(output, "REPORT.md"), renderReport(experiments, correlationRows, corpus, benchmarkResults));
+writeFileSync(resolve(output, "REPORT.md"), renderReport(experiments, correlationRows, corpus, benchmarkResults, reportContext));
 console.log(`Research outputs written to ${output}`);

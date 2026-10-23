@@ -59,9 +59,11 @@ describe("research experiment reporting", () => {
       { name: "initial extraction (includes parsing)", samples: 20, callsPerSample: 1 },
       { name: "trace extraction (initialized board + prepared solution)", samples: 20, callsPerSample: 1 },
       { name: "baseline/selected prediction", samples: 20, callsPerSample: 1000 },
-      { name: "baseline/constant prediction", samples: 20, callsPerSample: 1000 },
-      { name: "baseline/tree prediction", samples: 20, callsPerSample: 1000 },
       { name: "baseline extraction + selected prediction", samples: 20, callsPerSample: 1 },
+      { name: "baseline/constant prediction", samples: 20, callsPerSample: 1000 },
+      { name: "baseline extraction + constant prediction", samples: 20, callsPerSample: 1 },
+      { name: "baseline/tree prediction", samples: 20, callsPerSample: 1000 },
+      { name: "baseline extraction + tree prediction", samples: 20, callsPerSample: 1 },
     ]);
     // Timings vary by machine; only their validity and ordering are contractual.
     for (const measurement of result.benchmarks) {
@@ -141,9 +143,11 @@ describe("research experiment reporting", () => {
     if (!result) throw new Error("Expected experiment result.");
     expect(result.summaries.find(summary => summary.family === "single")).toEqual({
       family: "single", evaluated: 0, total: 6, heldout: null, training: null, finalModel: null,
+      personalComparison: null,
     });
     expect(result.summaries.find(summary => summary.family === "pair")).toEqual({
       family: "pair", evaluated: 0, total: 6, heldout: null, training: null, finalModel: null,
+      personalComparison: null,
     });
     expect(result.summaries.find(summary => summary.family === "selected")!.finalModel).toBe(result.fitted);
     const report = renderReport([result], [], { unique: 6, personal: 6, siteAverage: 0, untimed: 0 }, null);

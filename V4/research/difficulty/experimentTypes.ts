@@ -40,6 +40,7 @@ export interface HeldoutPrediction {
   readonly batch: string;
   readonly logPrediction: number;
   readonly selected: string;
+  readonly selectedFeatures: readonly string[];
   readonly families: readonly {
     family: ModelFamily;
     selected: string | null;
@@ -54,6 +55,7 @@ export interface FamilySummary {
   readonly heldout: ReturnType<typeof metrics> | null;
   readonly training: ReturnType<typeof metrics> | null;
   readonly finalModel: FittedModel | null;
+  readonly personalComparison: HistoricalComparison | null;
 }
 
 /** A skipped diagnostic carries its explanation instead of fabricated scores. */

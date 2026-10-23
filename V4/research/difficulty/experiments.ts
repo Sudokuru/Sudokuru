@@ -190,6 +190,7 @@ export function runExperiment(
   if (!fitted) throw new Error("Final winner could not be refitted.");
   const seconds = personal.map(row => row.seconds);
   const heldoutPredictions = heldout.map(row => row.logPrediction);
+  const comparisons = compareHistoricalScores(cohorts, heldout, fitted);
   const families: ("selected" | ModelFamily)[] = ["selected", ...new Set(specs.map(modelFamily))];
   const summaries = families.map(family => {
     const predictions = heldout.map(row => family === "selected" ? row.logPrediction :
@@ -198,6 +199,23 @@ export function runExperiment(
     const best = family === "selected" ? finalSelection.winner :
       finalSelection.candidates.find(candidate => modelFamily(candidate.spec) === family)?.spec;
     const model = best ? fullFit(best) : null;
+    // Compare each family with legacy on exactly its eligible held-out puzzles.
+    const eligible = personal.flatMap((row, i) => predictions[i] !== null && Number.isFinite(row.historicalScores["legacy.combined"]) ?
+      [{ row, prediction: predictions[i]! }] : []);
+    const eligibleSeconds = eligible.map(entry => entry.row.seconds);
+    const eligiblePredictions = eligible.map(entry => entry.prediction);
+    const legacy = eligible.map(entry => entry.row.historicalScores["legacy.combined"]);
+    const personalComparison: HistoricalComparison | null = family === "selected" ?
+      comparisons.find(row => row.cohort === "personal") ?? null : eligible.length === 0 ? null : eligible.length < 2 ? {
+        cohort: "personal", evaluation: "personal OOF", model: null,
+        legacy: { n: eligible.length, spearman: null, pearson: null }, pairedBootstrap: null,
+        skipped: "Too little data for historical-score analysis: need at least two eligible puzzles.",
+      } : {
+        cohort: "personal", evaluation: "personal OOF",
+        model: metrics(eligibleSeconds, eligiblePredictions),
+        legacy: { n: eligible.length, spearman: spearman(eligibleSeconds, legacy), pearson: pearson(eligibleSeconds, legacy) },
+        pairedBootstrap: bootstrapRankDifference(eligibleSeconds, eligiblePredictions, legacy),
+      };
     return {
       family,
       evaluated: coverage.evaluated,
@@ -205,6 +223,7 @@ export function runExperiment(
       heldout: coverage.scores,
       training: model ? metrics(seconds, personal.map(row => predict(model, row.features))) : null,
       finalModel: model,
+      personalComparison,
     };
   });
   const coefficients: CoefficientRow[] = finalSelection.candidates.flatMap(candidate => {
@@ -220,7 +239,6 @@ export function runExperiment(
     }];
   });
   const batchSensitivity = evaluateBatches(personal, specs);
-  const comparisons = compareHistoricalScores(cohorts, heldout, fitted);
   // Group existing outer predictions, unlike evaluateBatches which retrains models.
   const perPersonalBatch = [...new Set(personal.map(row => row.batch))].map(batch => {
     const rows = heldout.filter(row => row.batch === batch);
