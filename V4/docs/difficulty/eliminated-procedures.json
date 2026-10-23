@@ -206,6 +206,418 @@
         "corpusSize": 44,
         "checksum": 50075389.733239144
       }
+    },
+    {
+      "procedure": "initial/selected",
+      "reason": "Eliminated by user decision; discontinue evaluation and benchmarking of this procedure.",
+      "recordedAt": "2026-10-23T01:58:29.275Z",
+      "score": 0.9058677371424879,
+      "scoreDefinition": "(2 + Spearman + Pearson) / 4; clamped to [0, 1]",
+      "scoringP95Ms": 0.6370734999997694,
+      "statistics": {
+        "n": 22,
+        "spearman": 0.889265678646901,
+        "pearson": 0.734205269923051,
+        "logRmse": 0.2773347207754903,
+        "secondsMae": 54.682476452317815
+      },
+      "evaluated": 22,
+      "total": 22,
+      "modelId": "linear:notes+many",
+      "runContext": {
+        "codeRevision": "4bf7af3163eca9bebcc0634bdeb2682d6cda5528",
+        "workingTreeDirty": true,
+        "corpusId": "sha256:9cad68c41de157b7783418a61b4718a0c811daaed0a76f83148fa0797a5d6dd8",
+        "sourceCommit": "d770c39eeda6fba8ef08c33d302b49cc4c41fe3d",
+        "personalBatches": [
+          {
+            "name": "csv-personal",
+            "puzzles": 14
+          },
+          {
+            "name": "Sudokuru 1",
+            "puzzles": 4
+          },
+          {
+            "name": "Sudokuru 2",
+            "puzzles": 4
+          }
+        ],
+        "independentValidationPuzzles": 0,
+        "legacyRuntimeMeasured": false,
+        "criteria": {
+          "maxRankingLoss": null,
+          "scoringP95BudgetMs": null
+        },
+        "settings": {
+          "target": "logSeconds",
+          "selection": "Spearman, log RMSE, complexity, stable ID",
+          "outer": "leave one personal puzzle out",
+          "inner": "leave one training puzzle out",
+          "ridgePenalties": [
+            0.01,
+            0.1,
+            1,
+            10,
+            100
+          ],
+          "ridgeObjective": "mean squared log error + penalty * squared standardized weights; unpenalized intercept",
+          "quadraticBasis": "x, x^2; training-only centering and scaling of each term",
+          "bootstrap": "paired puzzle resampling of fixed predictions; 2000 samples, seed 711; descriptive, not post-selection inference",
+          "benchmarks": "Enabled",
+          "warmupPasses": 5,
+          "measuredPasses": 20,
+          "predictionBatch": 1000,
+          "eliminationRegistryId": "sha256:ebbd3fe0293d51673ebf1760072d9f08cb57ec9732fb07bc588bd81a91c3c336",
+          "eliminatedProcedures": "initial/tree, initial+trace/tree"
+        }
+      },
+      "benchmarkContext": {
+        "runtime": {
+          "node": "22.6.0",
+          "bun": "1.2.2",
+          "boringssl": "29a2cd359458c9384694b75456026e4b57e3e567",
+          "openssl": "1.1.0",
+          "libarchive": "898dc8319355b7e985f68a9819f182aaed61b53a",
+          "mimalloc": "4c283af60cdae205df5a872530c77e2a6a307d43",
+          "picohttpparser": "066d2b1e9ab820703db0837a7255d92d30f0c9f5",
+          "uwebsockets": "c1708ea6ab529a4c747a8282a24d125dc20b0a63",
+          "webkit": "e32c6356625cfacebff0c61d182f759abf6f508a",
+          "zig": "0.13.0",
+          "zlib": "886098f3f339617b4243b286f5ed364b9989e245",
+          "tinycc": "ab631362d839333660a265d3084d8ff060b96753",
+          "lolhtml": "8d4c273ded322193d017042d1f48df2766b0f88b",
+          "ares": "d1722e6e8acaf10eb73fa995798a9cd421d9f85e",
+          "libdeflate": "dc76454a39e7e83b68c3704b6e3784654f8d5ac5",
+          "usockets": "c1708ea6ab529a4c747a8282a24d125dc20b0a63",
+          "lshpack": "3d0f1fc1d6e66a642e7a98c55deb38aa986eb4b0",
+          "zstd": "794ea1b0afca0f020f4e57b6732332231fb23c70",
+          "v8": "12.4.254.14-node.12",
+          "uv": "1.48.0",
+          "napi": "9",
+          "icu": "75.1",
+          "unicode": "15.1",
+          "modules": "127"
+        },
+        "platform": "linux",
+        "arch": "x64",
+        "cpu": "AMD Ryzen 5 5600X 6-Core Processor",
+        "preparationMs": 666.680072,
+        "warmupPasses": 5,
+        "measuredPasses": 20,
+        "predictionBatch": 1000,
+        "corpusSize": 44,
+        "checksum": 60421951.68896044
+      }
+    },
+    {
+      "procedure": "initial/pair",
+      "reason": "Eliminated by user decision; discontinue evaluation and benchmarking of this procedure.",
+      "recordedAt": "2026-10-23T01:58:29.375Z",
+      "score": 0.9069659732308197,
+      "scoreDefinition": "(2 + Spearman + Pearson) / 4; clamped to [0, 1]",
+      "scoringP95Ms": 0.72587100000037,
+      "statistics": {
+        "n": 22,
+        "spearman": 0.892655509696381,
+        "pearson": 0.735208383226898,
+        "logRmse": 0.27743925039327655,
+        "secondsMae": 54.86061269822178
+      },
+      "evaluated": 22,
+      "total": 22,
+      "modelId": "linear:notes+many",
+      "runContext": {
+        "codeRevision": "4bf7af3163eca9bebcc0634bdeb2682d6cda5528",
+        "workingTreeDirty": true,
+        "corpusId": "sha256:9cad68c41de157b7783418a61b4718a0c811daaed0a76f83148fa0797a5d6dd8",
+        "sourceCommit": "d770c39eeda6fba8ef08c33d302b49cc4c41fe3d",
+        "personalBatches": [
+          {
+            "name": "csv-personal",
+            "puzzles": 14
+          },
+          {
+            "name": "Sudokuru 1",
+            "puzzles": 4
+          },
+          {
+            "name": "Sudokuru 2",
+            "puzzles": 4
+          }
+        ],
+        "independentValidationPuzzles": 0,
+        "legacyRuntimeMeasured": false,
+        "criteria": {
+          "maxRankingLoss": null,
+          "scoringP95BudgetMs": null
+        },
+        "settings": {
+          "target": "logSeconds",
+          "selection": "Spearman, log RMSE, complexity, stable ID",
+          "outer": "leave one personal puzzle out",
+          "inner": "leave one training puzzle out",
+          "ridgePenalties": [
+            0.01,
+            0.1,
+            1,
+            10,
+            100
+          ],
+          "ridgeObjective": "mean squared log error + penalty * squared standardized weights; unpenalized intercept",
+          "quadraticBasis": "x, x^2; training-only centering and scaling of each term",
+          "bootstrap": "paired puzzle resampling of fixed predictions; 2000 samples, seed 711; descriptive, not post-selection inference",
+          "benchmarks": "Enabled",
+          "warmupPasses": 5,
+          "measuredPasses": 20,
+          "predictionBatch": 1000,
+          "eliminationRegistryId": "sha256:ebbd3fe0293d51673ebf1760072d9f08cb57ec9732fb07bc588bd81a91c3c336",
+          "eliminatedProcedures": "initial/tree, initial+trace/tree"
+        }
+      },
+      "benchmarkContext": {
+        "runtime": {
+          "node": "22.6.0",
+          "bun": "1.2.2",
+          "boringssl": "29a2cd359458c9384694b75456026e4b57e3e567",
+          "openssl": "1.1.0",
+          "libarchive": "898dc8319355b7e985f68a9819f182aaed61b53a",
+          "mimalloc": "4c283af60cdae205df5a872530c77e2a6a307d43",
+          "picohttpparser": "066d2b1e9ab820703db0837a7255d92d30f0c9f5",
+          "uwebsockets": "c1708ea6ab529a4c747a8282a24d125dc20b0a63",
+          "webkit": "e32c6356625cfacebff0c61d182f759abf6f508a",
+          "zig": "0.13.0",
+          "zlib": "886098f3f339617b4243b286f5ed364b9989e245",
+          "tinycc": "ab631362d839333660a265d3084d8ff060b96753",
+          "lolhtml": "8d4c273ded322193d017042d1f48df2766b0f88b",
+          "ares": "d1722e6e8acaf10eb73fa995798a9cd421d9f85e",
+          "libdeflate": "dc76454a39e7e83b68c3704b6e3784654f8d5ac5",
+          "usockets": "c1708ea6ab529a4c747a8282a24d125dc20b0a63",
+          "lshpack": "3d0f1fc1d6e66a642e7a98c55deb38aa986eb4b0",
+          "zstd": "794ea1b0afca0f020f4e57b6732332231fb23c70",
+          "v8": "12.4.254.14-node.12",
+          "uv": "1.48.0",
+          "napi": "9",
+          "icu": "75.1",
+          "unicode": "15.1",
+          "modules": "127"
+        },
+        "platform": "linux",
+        "arch": "x64",
+        "cpu": "AMD Ryzen 5 5600X 6-Core Processor",
+        "preparationMs": 666.680072,
+        "warmupPasses": 5,
+        "measuredPasses": 20,
+        "predictionBatch": 1000,
+        "corpusSize": 44,
+        "checksum": 60421951.68896044
+      }
+    },
+    {
+      "procedure": "initial+trace/single",
+      "reason": "Eliminated by user decision; discontinue evaluation and benchmarking of this procedure.",
+      "recordedAt": "2026-10-23T01:58:29.471Z",
+      "score": 0.9615373516990595,
+      "scoreDefinition": "(2 + Spearman + Pearson) / 4; clamped to [0, 1]",
+      "scoringP95Ms": 0.9954645000004347,
+      "statistics": {
+        "n": 22,
+        "spearman": 0.91299449599326,
+        "pearson": 0.933154910802978,
+        "logRmse": 0.24079187966173687,
+        "secondsMae": 59.34915123768705
+      },
+      "evaluated": 22,
+      "total": 22,
+      "modelId": "linear:notes",
+      "runContext": {
+        "codeRevision": "4bf7af3163eca9bebcc0634bdeb2682d6cda5528",
+        "workingTreeDirty": true,
+        "corpusId": "sha256:9cad68c41de157b7783418a61b4718a0c811daaed0a76f83148fa0797a5d6dd8",
+        "sourceCommit": "d770c39eeda6fba8ef08c33d302b49cc4c41fe3d",
+        "personalBatches": [
+          {
+            "name": "csv-personal",
+            "puzzles": 14
+          },
+          {
+            "name": "Sudokuru 1",
+            "puzzles": 4
+          },
+          {
+            "name": "Sudokuru 2",
+            "puzzles": 4
+          }
+        ],
+        "independentValidationPuzzles": 0,
+        "legacyRuntimeMeasured": false,
+        "criteria": {
+          "maxRankingLoss": null,
+          "scoringP95BudgetMs": null
+        },
+        "settings": {
+          "target": "logSeconds",
+          "selection": "Spearman, log RMSE, complexity, stable ID",
+          "outer": "leave one personal puzzle out",
+          "inner": "leave one training puzzle out",
+          "ridgePenalties": [
+            0.01,
+            0.1,
+            1,
+            10,
+            100
+          ],
+          "ridgeObjective": "mean squared log error + penalty * squared standardized weights; unpenalized intercept",
+          "quadraticBasis": "x, x^2; training-only centering and scaling of each term",
+          "bootstrap": "paired puzzle resampling of fixed predictions; 2000 samples, seed 711; descriptive, not post-selection inference",
+          "benchmarks": "Enabled",
+          "warmupPasses": 5,
+          "measuredPasses": 20,
+          "predictionBatch": 1000,
+          "eliminationRegistryId": "sha256:ebbd3fe0293d51673ebf1760072d9f08cb57ec9732fb07bc588bd81a91c3c336",
+          "eliminatedProcedures": "initial/tree, initial+trace/tree"
+        }
+      },
+      "benchmarkContext": {
+        "runtime": {
+          "node": "22.6.0",
+          "bun": "1.2.2",
+          "boringssl": "29a2cd359458c9384694b75456026e4b57e3e567",
+          "openssl": "1.1.0",
+          "libarchive": "898dc8319355b7e985f68a9819f182aaed61b53a",
+          "mimalloc": "4c283af60cdae205df5a872530c77e2a6a307d43",
+          "picohttpparser": "066d2b1e9ab820703db0837a7255d92d30f0c9f5",
+          "uwebsockets": "c1708ea6ab529a4c747a8282a24d125dc20b0a63",
+          "webkit": "e32c6356625cfacebff0c61d182f759abf6f508a",
+          "zig": "0.13.0",
+          "zlib": "886098f3f339617b4243b286f5ed364b9989e245",
+          "tinycc": "ab631362d839333660a265d3084d8ff060b96753",
+          "lolhtml": "8d4c273ded322193d017042d1f48df2766b0f88b",
+          "ares": "d1722e6e8acaf10eb73fa995798a9cd421d9f85e",
+          "libdeflate": "dc76454a39e7e83b68c3704b6e3784654f8d5ac5",
+          "usockets": "c1708ea6ab529a4c747a8282a24d125dc20b0a63",
+          "lshpack": "3d0f1fc1d6e66a642e7a98c55deb38aa986eb4b0",
+          "zstd": "794ea1b0afca0f020f4e57b6732332231fb23c70",
+          "v8": "12.4.254.14-node.12",
+          "uv": "1.48.0",
+          "napi": "9",
+          "icu": "75.1",
+          "unicode": "15.1",
+          "modules": "127"
+        },
+        "platform": "linux",
+        "arch": "x64",
+        "cpu": "AMD Ryzen 5 5600X 6-Core Processor",
+        "preparationMs": 666.680072,
+        "warmupPasses": 5,
+        "measuredPasses": 20,
+        "predictionBatch": 1000,
+        "corpusSize": 44,
+        "checksum": 60421951.68896044
+      }
+    },
+    {
+      "procedure": "initial+trace/pair",
+      "reason": "Eliminated by user decision; discontinue evaluation and benchmarking of this procedure.",
+      "recordedAt": "2026-10-23T01:58:29.572Z",
+      "score": 0.9004684978234982,
+      "scoreDefinition": "(2 + Spearman + Pearson) / 4; clamped to [0, 1]",
+      "scoringP95Ms": 0.9983630499996251,
+      "statistics": {
+        "n": 22,
+        "spearman": 0.863276973934221,
+        "pearson": 0.738597017359772,
+        "logRmse": 0.2734232574978808,
+        "secondsMae": 53.63524671717282
+      },
+      "evaluated": 22,
+      "total": 22,
+      "modelId": "linear:notes+many",
+      "runContext": {
+        "codeRevision": "4bf7af3163eca9bebcc0634bdeb2682d6cda5528",
+        "workingTreeDirty": true,
+        "corpusId": "sha256:9cad68c41de157b7783418a61b4718a0c811daaed0a76f83148fa0797a5d6dd8",
+        "sourceCommit": "d770c39eeda6fba8ef08c33d302b49cc4c41fe3d",
+        "personalBatches": [
+          {
+            "name": "csv-personal",
+            "puzzles": 14
+          },
+          {
+            "name": "Sudokuru 1",
+            "puzzles": 4
+          },
+          {
+            "name": "Sudokuru 2",
+            "puzzles": 4
+          }
+        ],
+        "independentValidationPuzzles": 0,
+        "legacyRuntimeMeasured": false,
+        "criteria": {
+          "maxRankingLoss": null,
+          "scoringP95BudgetMs": null
+        },
+        "settings": {
+          "target": "logSeconds",
+          "selection": "Spearman, log RMSE, complexity, stable ID",
+          "outer": "leave one personal puzzle out",
+          "inner": "leave one training puzzle out",
+          "ridgePenalties": [
+            0.01,
+            0.1,
+            1,
+            10,
+            100
+          ],
+          "ridgeObjective": "mean squared log error + penalty * squared standardized weights; unpenalized intercept",
+          "quadraticBasis": "x, x^2; training-only centering and scaling of each term",
+          "bootstrap": "paired puzzle resampling of fixed predictions; 2000 samples, seed 711; descriptive, not post-selection inference",
+          "benchmarks": "Enabled",
+          "warmupPasses": 5,
+          "measuredPasses": 20,
+          "predictionBatch": 1000,
+          "eliminationRegistryId": "sha256:ebbd3fe0293d51673ebf1760072d9f08cb57ec9732fb07bc588bd81a91c3c336",
+          "eliminatedProcedures": "initial/tree, initial+trace/tree"
+        }
+      },
+      "benchmarkContext": {
+        "runtime": {
+          "node": "22.6.0",
+          "bun": "1.2.2",
+          "boringssl": "29a2cd359458c9384694b75456026e4b57e3e567",
+          "openssl": "1.1.0",
+          "libarchive": "898dc8319355b7e985f68a9819f182aaed61b53a",
+          "mimalloc": "4c283af60cdae205df5a872530c77e2a6a307d43",
+          "picohttpparser": "066d2b1e9ab820703db0837a7255d92d30f0c9f5",
+          "uwebsockets": "c1708ea6ab529a4c747a8282a24d125dc20b0a63",
+          "webkit": "e32c6356625cfacebff0c61d182f759abf6f508a",
+          "zig": "0.13.0",
+          "zlib": "886098f3f339617b4243b286f5ed364b9989e245",
+          "tinycc": "ab631362d839333660a265d3084d8ff060b96753",
+          "lolhtml": "8d4c273ded322193d017042d1f48df2766b0f88b",
+          "ares": "d1722e6e8acaf10eb73fa995798a9cd421d9f85e",
+          "libdeflate": "dc76454a39e7e83b68c3704b6e3784654f8d5ac5",
+          "usockets": "c1708ea6ab529a4c747a8282a24d125dc20b0a63",
+          "lshpack": "3d0f1fc1d6e66a642e7a98c55deb38aa986eb4b0",
+          "zstd": "794ea1b0afca0f020f4e57b6732332231fb23c70",
+          "v8": "12.4.254.14-node.12",
+          "uv": "1.48.0",
+          "napi": "9",
+          "icu": "75.1",
+          "unicode": "15.1",
+          "modules": "127"
+        },
+        "platform": "linux",
+        "arch": "x64",
+        "cpu": "AMD Ryzen 5 5600X 6-Core Processor",
+        "preparationMs": 666.680072,
+        "warmupPasses": 5,
+        "measuredPasses": 20,
+        "predictionBatch": 1000,
+        "corpusSize": 44,
+        "checksum": 60421951.68896044
+      }
     }
   ]
 }
