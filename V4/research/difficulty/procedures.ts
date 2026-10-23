@@ -2,7 +2,7 @@ import type { ExperimentSpec } from "./experimentTypes";
 import { INITIAL_MODEL_FEATURES } from "./features";
 import { TRACE_MODEL_FEATURES } from "./singleTrace";
 
-export const PROCEDURE_FAMILIES = ["selected", "single", "pair"] as const;
+export const PROCEDURE_FAMILIES = ["selected", "single", "pair", "quadratic", "ridge"] as const;
 
 export const EXPERIMENTS: readonly ExperimentSpec[] = [
   { name: "initial", features: INITIAL_MODEL_FEATURES, includeTrace: false },
@@ -19,7 +19,7 @@ export function activeExperiment(
   if (excluded.length === PROCEDURE_FAMILIES.length) return null;
   return {
     ...experiment,
-    excludedFamilies: excluded.filter((family): family is "single" | "pair" => family !== "selected"),
+    excludedFamilies: excluded.filter((family): family is Exclude<typeof family, "selected"> => family !== "selected"),
     includeSelected: !excluded.includes("selected"),
   };
 }

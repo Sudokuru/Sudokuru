@@ -39,7 +39,7 @@ bun V4/research/difficulty/run.ts
 
 The recording command does not train models. It copies the exact human-correlation score, score definition, raw held-out statistics, p95 calculation time, final recipe ID, corpus/code/settings metadata, benchmark environment, decision reason, and recording date from the saved artifacts. Scores retain full precision. Duplicate decisions are rejected rather than overwriting historical measurements. Incomplete predictions, unavailable correlations, unknown procedure IDs, and mismatched benchmark provenance are rejected. Regenerate results created before benchmark provenance was added before recording a decision. A run with explicitly skipped benchmarks can be recorded with `null` calculation time, displayed as `n/a`.
 
-IDs are `<experiment>/<family>`, currently `initial` or `initial+trace` combined with `selected`, `single`, or `pair`. Historical `tree` IDs remain supported by the registry reader and snapshot command, but tree generation, fitting, prediction, and settings have been removed after eliminating both tree procedures. Eliminating a model family removes its candidates from every future selection/fitting fold for that experiment, including the aggregate `selected` procedure. Thus active aggregate results may change after eliminating a family. Eliminating `selected` stops its summary, benchmark, and batch-sensitivity evaluation while family evaluation continues; the shared model-selection machinery still derives an internal aggregate winner. If all three active procedures in an experiment are eliminated, the experiment is skipped entirely.
+IDs are `<experiment>/<family>`, currently `initial` or `initial+trace` combined with `selected`, `single`, `pair`, `quadratic`, or `ridge`. Historical `tree` IDs remain supported by the registry reader and snapshot command, but tree generation, fitting, prediction, and settings have been removed after eliminating both tree procedures. Eliminating a model family removes its candidates from every future selection/fitting fold for that experiment, including the aggregate `selected` procedure. Thus active aggregate results may change after eliminating a family. Eliminating `selected` stops its summary, benchmark, and batch-sensitivity evaluation while family evaluation continues; the shared model-selection machinery still derives an internal aggregate winner. If all five active procedures in an experiment are eliminated, the experiment is skipped entirely.
 
 Subsequent reports include frozen rows labeled `(eliminated)` in the main two-metric table and list reasons and provenance under **Elimination decisions**. These measurements are not recomputed, even if the corpus, machine, or scoring convention changes. They are historical comparisons, not fresh validation. A stale live row with the same ID cannot replace an archived row. `results.json` also includes the registry snapshot used by the run, and its settings identify the registry by SHA-256.
 
@@ -87,10 +87,22 @@ Two feature sets are evaluated: initial board only, and initial board plus trace
 
 - A constant mean-log-time baseline.
 - Every one-feature and two-feature linear fit over the declared feature set.
+- A quadratic formula for each single feature, using the raw terms `x` and `x^2`.
+- An all-feature ridge formula for each penalty in `RIDGE_PENALTIES`: 0.01, 0.1, 1, 10, 100.
+
+### Why these two additional approaches?
+
+The branch previously considered candidate counts and ratios, obvious-single progress and early availability, exhaustive one/two-feature log-time formulas, and small trees. The local paper summary motivates availability as a dependency measurement and more expensive refutation simulations; the V4 plan prioritizes hint reuse and fast scoring. Both tree procedures were eliminated and their measurements archived.
+
+Quadratic formulas test a different calibration curve using the existing inexpensive features. The previous one-feature model constrains log-time to a straight line; adding `x^2` permits curvature with only two coefficients. The feature is chosen inside the inner folds. This is exploratory and does not impose monotonicity, so extrapolation beyond the observed feature range may be poor.
+
+Ridge formulas test whether combining the existing correlated signals is useful when coefficients are penalized, rather than searching only feature subsets or fitting an unregularized wide model to 22 observations. All features in the experiment are included, and only the penalty is selected in inner folds. The objective is mean squared log-time error plus `penalty * sum(weights^2)` on standardized inputs; the intercept is not penalized. Positive penalties support redundant/constant inputs and more features than training observations.
+
+Both approaches reuse the existing initial/trace extraction and add no solving strategies, refutation search, or dependencies. They appear as four new report rows (`initial/quadratic`, `initial/ridge`, `initial+trace/quadratic`, `initial+trace/ridge`), each with the same human-correlation score and calculation-time metric. They can be eliminated independently using the existing command. Adding candidates changes what the aggregate `selected` procedure is allowed to choose; the `single` and `pair` procedures keep their original search spaces. No new approach is automatically promoted or eliminated based on these exploratory results.
 
 Tree procedures are historical only: their saved scores and timings are read from `eliminated-procedures.json`. No trees are generated, fitted, selected, or benchmarked, including when using an empty custom registry.
 
-All fits predict natural-log seconds. Linear inputs are centered and scaled using only their training observations. Singular value decomposition (SVD) from `ml-matrix` fits weights directly from the feature matrix, avoiding normal equations; fits without independently identifiable weights are omitted.
+All fits predict natural-log seconds. Formula terms are centered and scaled using only their training observations. For quadratics, `x` and `x^2` have separate training means and scales. Singular value decomposition (SVD) from `ml-matrix` fits weights directly from the feature matrix, avoiding normal equations; unregularized fits without independently identifiable weights are omitted. Ridge augments the standardized matrix with `sqrt(trainingCount * penalty) * I` and the centered target with zeros, leaving the intercept unpenalized. These augmented rows never contribute to evaluation metrics. Fitting and prediction use the same raw terms; a quadratic whose squared inputs overflow is omitted. The repository's data-structure check found `data-structure-typed` unavailable in this checkout; this work retains the existing `ml-matrix` matrix/SVD implementation and adds no collection implementation or dependency.
 
 For exported linear models:
 
@@ -99,11 +111,13 @@ logSeconds = intercept + Σ coefficients[i] × (feature[i] − means[i]) / scale
 predictedSeconds = exp(logSeconds)
 ```
 
+For a quadratic, the two `feature[i]` terms above are `x` and `x^2`. Raw coefficient exports name the squared term `coefficient.<feature>^2`; centering/scaling is absorbed into the exported intercept and both weights. Ridge uses the same raw-feature export as ordinary linear fits. `models.json` stores the fitted model kind, term scaling, and selected penalty for future prediction.
+
 There is no retransformation bias correction; the target is ranking, and seconds errors are secondary diagnostics. Prediction needs only the saved formula and extracted heuristics, not the training libraries.
 
 Model selection uses only the 22 personally timed puzzles. Outer leave-one-puzzle-out predictions evaluate the procedure. Each outer training set runs its own inner leave-one-puzzle-out search; preprocessing, feature selection, and hyperparameter selection never see the outer label. Candidates sort by highest Spearman, lowest log RMSE, lowest complexity (coefficient count), then stable ID. Non-finite or singular fits cannot win. Individual timing attempts are averaged into one puzzle observation and cannot cross folds.
 
-The report also provides separately selected family results, training fit, full-personal-data fitted parameters, and leave-one-personal-batch-out sensitivity checks. A final fit is selected by cross-validation on all personal observations for research export and site transfer. Its training score is not its validation score.
+The report also provides separately selected family results, training fit, full-personal-data fitted parameters, and leave-one-personal-batch-out sensitivity checks. Quadratic feature selection and ridge penalty selection participate in the same nested folds; complexity tie-breaking counts expanded coefficients (two for a quadratic). A final fit is selected by cross-validation on all personal observations for research export and site transfer. Its training score is not its validation score.
 
 With fewer than three personal puzzles, an experiment warns and returns no result. Batch sensitivity needs at least two training puzzles after excluding a batch; historical-score comparisons need at least two eligible puzzles. Unavailable diagnostics and model families are reported explicitly, with prediction coverage counts rather than invented scores. These are computational minimums, not sufficient sample sizes for reliable conclusions.
 

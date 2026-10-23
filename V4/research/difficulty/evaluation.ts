@@ -1,6 +1,6 @@
 import type { Observation, ModelSpec, ModelFamily, CandidateResult } from "./modelTypes";
 import type { ModelInputs } from "./featureTypes";
-import { fitModel, predict } from "./models";
+import { fitModel, modelTerms, predict } from "./models";
 import { metrics } from "./statistics";
 
 /** Group constants and formulas using one, two, or more heuristics. */
@@ -18,7 +18,7 @@ function compareCandidates(a: CandidateResult, b: CandidateResult): number {
   if (Math.abs(correlation) > 1e-12) return correlation;
   const error = a.scores.logRmse - b.scores.logRmse;
   if (error !== 0) return error;
-  const size = a.spec.features.length - b.spec.features.length;
+  const size = modelTerms(a.spec).length - modelTerms(b.spec).length;
   if (size !== 0) return size;
   return a.spec.id.localeCompare(b.spec.id);
 }

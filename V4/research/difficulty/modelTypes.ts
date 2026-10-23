@@ -24,13 +24,25 @@ export interface LinearSpec extends BaseSpec {
   readonly kind: "linear";
 }
 
-export type ModelSpec = ConstantSpec | LinearSpec;
+export interface QuadraticSpec extends BaseSpec {
+  readonly kind: "quadratic";
+  readonly features: readonly [string];
+}
+
+export interface RidgeSpec extends BaseSpec {
+  readonly kind: "ridge";
+  /** Mean squared log error + penalty * sum of squared standardized weights. */
+  readonly penalty: number;
+}
+
+export type ModelSpec = ConstantSpec | LinearSpec | QuadraticSpec | RidgeSpec;
 
 /** Reporting groups for baselines and formula sizes. */
-export type ModelFamily = "constant" | "single" | "pair" | "multivariate";
+export type ModelFamily = "constant" | "single" | "pair" | "multivariate" | "quadratic" | "ridge";
 
 /**
- * Trained state. Linear coefficients, means, and scales follow spec.features order.
+ * Trained state. Formula coefficients, means, and scales follow modelTerms(spec)
+ * order (raw features, or x then x² for a quadratic).
  * Coefficients apply to standardized features, not their original units.
  * Constants use only the intercept.
  */
@@ -44,16 +56,29 @@ export interface ConstantModel extends FittedBase {
   readonly intercept: number;
 }
 
-export interface LinearModel extends FittedBase {
-  readonly kind: "linear";
-  readonly spec: LinearSpec;
+interface FormulaParameters extends FittedBase {
   readonly intercept: number;
   readonly coefficients: readonly number[];
   readonly means: readonly number[];
   readonly scales: readonly number[];
 }
 
-export type FittedModel = ConstantModel | LinearModel;
+export interface LinearModel extends FormulaParameters {
+  readonly kind: "linear";
+  readonly spec: LinearSpec;
+}
+
+export interface QuadraticModel extends FormulaParameters {
+  readonly kind: "quadratic";
+  readonly spec: QuadraticSpec;
+}
+
+export interface RidgeModel extends FormulaParameters {
+  readonly kind: "ridge";
+  readonly spec: RidgeSpec;
+}
+
+export type FittedModel = ConstantModel | LinearModel | QuadraticModel | RidgeModel;
 
 /** A recipe scored on predictions for puzzles excluded from each fitting step. */
 export interface CandidateResult {

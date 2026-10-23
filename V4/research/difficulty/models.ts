@@ -2,10 +2,22 @@ import { Matrix, SingularValueDecomposition } from "ml-matrix";
 import type { ModelInputs } from "./featureTypes";
 import type { Observation, ModelSpec, FittedModel } from "./modelTypes";
 import { mean } from "./statistics";
+import { RIDGE_PENALTIES } from "./settings";
+
+/** Raw formula terms; quadratic coefficients multiply x and x², respectively. */
+export function modelTerms(spec: ModelSpec): readonly string[] {
+  return spec.kind === "quadratic" ? [spec.features[0], `${spec.features[0]}^2`] : spec.features;
+}
+
+function featureValues(spec: ModelSpec, features: ModelInputs): number[] {
+  const values = spec.features.map(feature => features[feature]);
+  return spec.kind === "quadratic" ? [values[0], values[0] ** 2] : values;
+}
 
 /**
  * Enumerate a fixed search space: a constant baseline, each single heuristic,
- * and each distinct pair. Nothing is fitted here;
+ * each distinct pair, a quadratic per feature, and regularized all-feature fits.
+ * Nothing is fitted here;
  * cross-validation chooses among these recipes using training puzzles only.
  */
 export function candidateSpecs(features: readonly string[]): ModelSpec[] {
@@ -14,6 +26,14 @@ export function candidateSpecs(features: readonly string[]): ModelSpec[] {
     specs.push({ id: `linear:${features[i]}`, kind: "linear", features: [features[i]] });
     for (let j = i + 1; j < features.length; j++) {
       specs.push({ id: `linear:${features[i]}+${features[j]}`, kind: "linear", features: [features[i], features[j]] });
+    }
+  }
+  for (const feature of features) {
+    specs.push({ id: `quadratic:${feature}`, kind: "quadratic", features: [feature] });
+  }
+  if (features.length) {
+    for (const penalty of RIDGE_PENALTIES) {
+      specs.push({ id: `ridge:${penalty}`, kind: "ridge", features, penalty });
     }
   }
   return specs;
@@ -33,23 +53,42 @@ export function fitModel(rows: readonly Observation[], spec: ModelSpec): FittedM
   const target = rows.map(row => Math.log(row.seconds));
   const intercept = mean(target);
   if (spec.kind === "constant") return { kind: "constant", spec, target: "logSeconds", intercept };
+  if (spec.kind === "ridge" && (!Number.isFinite(spec.penalty) || spec.penalty <= 0 || !spec.features.length)) {
+    throw new Error("Ridge requires a positive finite penalty and at least one feature.");
+  }
+  const values = rows.map(row => featureValues(spec, row.features));
+  if (values.some(row => row.some(value => !Number.isFinite(value)))) return null;
+  const terms = modelTerms(spec);
   // Center and scale each feature using training statistics, saved for prediction.
-  // A constant feature gets scale 1 to avoid division by zero, but still makes
-  // the linear system singular and therefore causes this candidate to be omitted.
-  const means = spec.features.map(feature => mean(rows.map(row => row.features[feature])));
-  const scales = spec.features.map((feature, i) =>
-    Math.sqrt(mean(rows.map(row => (row.features[feature] - means[i]) ** 2))) || 1);
-  const x = rows.map(row => spec.features.map((feature, i) => (row.features[feature] - means[i]) / scales[i]));
+  // A constant term gets scale 1 to avoid division by zero. It makes an
+  // unregularized fit singular; ridge's augmented penalty keeps it identifiable.
+  const means = terms.map((_, i) => mean(values.map(row => row[i])));
+  const scales = terms.map((_, i) =>
+    Math.sqrt(mean(values.map(row => (row[i] - means[i]) ** 2))) || 1);
+  const x = values.map(row => row.map((value, i) => (value - means[i]) / scales[i]));
+  const centeredTarget = target.map(value => value - intercept);
+  // Augment the feature matrix rather than forming XᵀX. The intercept is
+  // unpenalized; sqrt(n * penalty) makes the objective use mean squared error.
+  if (spec.kind === "ridge") {
+    const weight = Math.sqrt(rows.length * spec.penalty);
+    for (let i = 0; i < terms.length; i++) {
+      x.push(terms.map((_, j) => i === j ? weight : 0));
+      centeredTarget.push(0);
+    }
+  }
   // Fit weights directly from the feature rows, avoiding the numerical error
   // amplification of normal equations (XᵀX). SVD handles the numerical details.
   const fit = new SingularValueDecomposition(new Matrix(x), { autoTranspose: true });
   // Keep skipping fits without independently identifiable weights. The library
   // determines numerical rank rather than relying on our own fixed tolerance.
-  if (fit.rank < spec.features.length) return null;
+  if (fit.rank < terms.length) return null;
   // Centered features let the intercept stay at the mean training log-time.
-  const coefficients = fit.solve(Matrix.columnVector(target.map(value => value - intercept))).to1DArray();
+  const coefficients = fit.solve(Matrix.columnVector(centeredTarget)).to1DArray();
   if (!coefficients.every(Number.isFinite)) return null;
-  return { kind: "linear", spec, target: "logSeconds", intercept, coefficients, means, scales };
+  const parameters = { target: "logSeconds" as const, intercept, coefficients, means, scales };
+  if (spec.kind === "quadratic") return { kind: "quadratic", spec, ...parameters };
+  if (spec.kind === "ridge") return { kind: "ridge", spec, ...parameters };
+  return { kind: "linear", spec, ...parameters };
 }
 
 /**
@@ -59,7 +98,8 @@ export function fitModel(rows: readonly Observation[], spec: ModelSpec): FittedM
  */
 export function predict(model: FittedModel, features: ModelInputs): number {
   if (model.kind === "constant") return model.intercept;
+  const values = featureValues(model.spec, features);
   // Reuse the means/scales learned from training, not from the prediction input.
   return model.intercept + model.coefficients.reduce((sum, coefficient, i) =>
-    sum + coefficient * (features[model.spec.features[i]] - model.means[i]) / model.scales[i], 0);
+    sum + coefficient * (values[i] - model.means[i]) / model.scales[i], 0);
 }

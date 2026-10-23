@@ -2,10 +2,10 @@ import { TIMING_BATCHES } from "./data";
 import type { PreparedPuzzle } from "./prepare";
 import { initialFeatures } from "./features";
 import { singleTrace } from "./singleTrace";
-import { candidateSpecs, fitModel, predict } from "./models";
+import { candidateSpecs, fitModel, modelTerms, predict } from "./models";
 import { modelFamily, nestedCrossValidation, selectModel } from "./evaluation";
 import { bootstrapRankDifference, metrics, pearson, spearman } from "./statistics";
-import type { ConstantModel, LinearModel, FittedModel, ModelSpec, ModelFamily } from "./modelTypes";
+import type { FittedModel, ModelSpec, ModelFamily } from "./modelTypes";
 import type {
   FeatureRow, TimedObservation, Cohort, ExperimentSpec, ExperimentResult,
   CorrelationRow, HeldoutPrediction, BatchEvaluation, HistoricalComparison, CoefficientRow,
@@ -64,10 +64,10 @@ export function correlations(cohorts: readonly Cohort[]): CorrelationRow[] {
  * Undo input standardization so the reported formula uses original feature units.
  * For example, 10 + 4*(x-1)/2 becomes 8 + 2*x. Each weight is divided by its
  * training scale, and the centering adjustment is absorbed into the intercept.
- * Weights stay in spec.features order; the output still predicts LOG-seconds.
+ * Weights stay in modelTerms(spec) order; the output still predicts LOG-seconds.
  * Constant models have no weights. This conversion does not refit anything.
  */
-export function rawCoefficients(model: ConstantModel | LinearModel): { intercept: number; coefficients: number[] } {
+export function rawCoefficients(model: FittedModel): { intercept: number; coefficients: number[] } {
   if (model.kind === "constant") return { intercept: model.intercept, coefficients: [] };
   const coefficients = model.coefficients.map((value, i) => value / model.scales[i]);
   const intercept = model.intercept - coefficients.reduce((sum, value, i) => sum + value * model.means[i], 0);
@@ -235,7 +235,7 @@ export function runExperiment(
       experiment: experiment.name, model: candidate.spec.id, target: model.target,
       intercept: raw.intercept,
       innerCvSpearman: candidate.scores.spearman, innerCvLogRmse: candidate.scores.logRmse,
-      ...Object.fromEntries(model.spec.features.map((feature, i) => [`coefficient.${feature}`, raw.coefficients[i]])),
+      ...Object.fromEntries(modelTerms(model.spec).map((feature, i) => [`coefficient.${feature}`, raw.coefficients[i]])),
     }];
   });
   const batchSensitivity = experiment.includeSelected === false ? [] : evaluateBatches(personal, specs);

@@ -95,7 +95,8 @@ export function renderReport(
       comparisonRows(experiment, initial, "selected", "selected")) : []),
     "## Does allowing more complex models help?",
     "Each family selects features or hyperparameters inside its training folds. Family comparisons are exploratory. Choosing a family after inspecting these results requires fresh validation.",
-    table(deltaHeadings, experiments.flatMap(experiment => (["pair"] as const).filter(family =>
+    "Quadratic procedures fit x and x² for one feature. Ridge procedures combine all allowed features with a coefficient penalty selected inside training folds. Both reuse the same feature extraction as the existing formulas.",
+    table(deltaHeadings, experiments.flatMap(experiment => (["pair", "quadratic", "ridge"] as const).filter(family =>
       !eliminated.some(record => record.procedure === `${experiment.name}/${family}` || record.procedure === `${experiment.name}/single`)).map(family =>
       comparisonRows(experiment, experiment, family, "single")))),
     "## How sensitive are results to the training data?",

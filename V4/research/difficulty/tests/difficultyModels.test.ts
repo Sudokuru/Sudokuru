@@ -10,13 +10,18 @@ describe("small research models", () => {
   ];
   const linear: ModelSpec = { id: "linear:x", kind: "linear", features: ["x"] };
 
-  test("generates only the baseline and single/pair formulas after tree retirement", () => {
-    expect(candidateSpecs(["x", "y"])).toEqual([
+  test("generates formulas and new families without reintroducing retired trees", () => {
+    const specs = candidateSpecs(["x", "y"]);
+    expect(specs.filter(spec => spec.kind === "constant" || spec.kind === "linear")).toEqual([
       { id: "constant", kind: "constant", features: [] },
       { id: "linear:x", kind: "linear", features: ["x"] },
       { id: "linear:x+y", kind: "linear", features: ["x", "y"] },
       { id: "linear:y", kind: "linear", features: ["y"] },
     ]);
+    expect(specs.filter(spec => spec.kind === "quadratic").map(spec => spec.id)).toEqual(["quadratic:x", "quadratic:y"]);
+    expect(specs.filter(spec => spec.kind === "ridge").map(spec => spec.id)).toEqual(["ridge:0.01", "ridge:0.1", "ridge:1", "ridge:10", "ridge:100"]);
+    expect(specs.some(spec => spec.id.startsWith("tree:"))).toBe(false);
+    expect(candidateSpecs([])).toEqual([{ id: "constant", kind: "constant", features: [] }]);
   });
 
   test.each([
