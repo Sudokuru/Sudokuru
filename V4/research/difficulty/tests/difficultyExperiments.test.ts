@@ -152,7 +152,7 @@ describe("research experiment reporting", () => {
     expect(result.summaries.find(summary => summary.family === "selected")!.finalModel).toBe(result.fitted);
     const report = renderReport([result], [], { unique: 6, personal: 6, siteAverage: 0, untimed: 0 }, null);
     expect(report).toContain("6 unique puzzles: 6 personally timed, 0 labeled with site-level average times, and 0 untimed.");
-    expect(report).toContain("constant-inputs | single | 0/6 | unavailable | n/a");
+    expect(report.replace(/ +\| /g, " | ")).toContain("constant-inputs | single | 0/6 | unavailable | n/a");
     expect(report).toContain("single-feature fit unavailable.");
     expect(report).toContain("Benchmarks skipped for this run.");
   });

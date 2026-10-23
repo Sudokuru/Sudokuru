@@ -23,6 +23,10 @@ export interface ExperimentSpec {
   readonly name: string;
   readonly features: readonly string[];
   readonly includeTrace: boolean;
+  /** Eliminated families are removed from every fitting/selection fold. */
+  readonly excludedFamilies?: readonly ModelFamily[];
+  /** Family evaluation may continue after retiring the aggregate selected row. */
+  readonly includeSelected?: boolean;
 }
 
 export interface CorrelationRow {

@@ -29,11 +29,39 @@ const benchmarks: BenchmarkResults = {
   ],
 };
 
+// Ignore presentation padding in content assertions; alignment is checked separately.
+function unpad(markdown: string): string {
+  return markdown.split("\n").map(line => line.includes(" | ") ?
+    line.split("|").map(cell => cell.trim()).join(" | ") : line).join("\n");
+}
+
 function report(experiments: readonly ExperimentResult[] = [initial], metadata: ReportContext = context) {
-  return renderReport(experiments, [], corpus, benchmarks, metadata);
+  return unpad(renderReport(experiments, [], corpus, benchmarks, metadata));
 }
 
 describe("difficulty executive report", () => {
+  test("summarizes procedures using exactly two metrics with no coverage column", () => {
+    const executive = report().split("## Does adding trace information help?")[0];
+    expect(executive).toContain("Procedure | Human-correlation score ↑ | Scoring p95 ms ↓");
+    expect(executive).toContain("initial/selected | 1.000 | 0.500");
+    expect(executive).toContain("legacy (historical) | 0.993 | n/a");
+    expect(executive).not.toContain("Legacy-comparable/total");
+    expect(executive).not.toContain("Log error ↓");
+    expect(executive).not.toContain("Interval position");
+    expect(executive).not.toContain("6/6");
+  });
+
+  test("aligns every Markdown table column without trailing spaces", () => {
+    const rendered = renderReport([initial], [], corpus, benchmarks, context);
+    for (const block of rendered.split("\n\n").filter(block => block.includes(" | "))) {
+      const lines = block.split("\n");
+      const positions = (line: string) => [...line.matchAll(/\|/g)].map(match => match.index);
+      for (const line of lines) {
+        expect(positions(line)).toEqual(positions(lines[0]));
+        expect(line).toBe(line.trimEnd());
+      }
+    }
+  });
   test("puts decision comparisons before technical appendices and separates final fits", () => {
     const rendered = report();
     const questions = [
@@ -63,9 +91,9 @@ describe("difficulty executive report", () => {
     const experiment = { ...initial, comparisons: initial.comparisons.map(comparison => ({
       ...comparison, pairedBootstrap: { ...comparison.pairedBootstrap!, lower95, upper95 },
     })) };
-    const executive = report([experiment]).split("## Does adding trace information help?")[0];
-    expect(executive).toContain(label);
-    expect(executive).not.toContain("improvement");
+    const detail = report([experiment]).split("## Appendix: correlations and evaluation details")[1];
+    const selectedRow = detail.split("\n").find(line => line.startsWith("initial/selected |"));
+    expect(selectedRow).toContain(label);
   });
 
   test("calculates signed differences and total scoring cost on matching puzzles", () => {
@@ -78,10 +106,10 @@ describe("difficulty executive report", () => {
       } : summary),
     };
     expect(report([base, trace])).toContain(
-      "initial+trace/selected versus initial/selected | Matching puzzle coverage | -0.100 | 0.100 | 0.300");
-    expect(report([base, trace])).toContain("initial | 0.300 | 0.500 | 2000");
-    expect(renderReport([base, trace], [], corpus, null, context)).toContain(
-      "initial+trace/selected versus initial/selected | Matching puzzle coverage | -0.100 | 0.100 | n/a");
+      "initial+trace/selected versus initial/selected | Matching puzzle coverage | -0.025 | 0.300");
+    expect(report([base, trace])).toContain("initial | 0.500");
+    expect(unpad(renderReport([base, trace], [], corpus, null, context))).toContain(
+      "initial+trace/selected versus initial/selected | Matching puzzle coverage | -0.025 | n/a");
   });
 
   test("compares a family and legacy on identical eligible puzzles", () => {
@@ -98,7 +126,19 @@ describe("difficulty executive report", () => {
     expect(single?.personalComparison?.legacy.n).toBe(4);
     expect(single?.personalComparison?.legacy.spearman).toBe(-1);
     expect(single?.personalComparison?.pairedBootstrap?.difference).toBe(2);
-    expect(report([experiment])).toContain("partial/single | 4/6 | 1.000 | -1.000 | 2.000");
+    expect(report([experiment])).toContain("partial/single | 4 | 1.000 | -1.000 | 2.000");
+    const executive = report([experiment]).split("## Does adding trace information help?")[0];
+    expect(executive).toContain("partial/single | 1.000 | n/a");
+    expect(executive).not.toContain("legacy (historical)");
+  });
+
+  test("keeps partial prediction coverage out of the summary without a coverage column", () => {
+    const partial = { ...initial, summaries: initial.summaries.map(summary => summary.family === "single" ? {
+      ...summary, evaluated: 5, heldout: { ...summary.heldout!, n: 5 },
+    } : summary) };
+    const rendered = report([partial]);
+    expect(rendered.split("## Does adding trace information help?")[0]).not.toContain("initial/single |");
+    expect(rendered.split("## Appendix: correlations and evaluation details")[1]).toContain("initial | single | 5/6");
   });
 
   test("rejects equal-size comparisons when puzzle identities differ", () => {
@@ -106,7 +146,7 @@ describe("difficulty executive report", () => {
       heldout: initial.heldout.map((row, i) => ({ ...row, id: i === 0 ? "other-puzzle" : row.id })),
     };
     expect(report([initial, trace])).toContain(
-      "trace/selected versus initial/selected | Different puzzle coverage | n/a | n/a | n/a");
+      "trace/selected versus initial/selected | Different puzzle coverage | n/a | n/a");
   });
 
   test("compares family coverage by puzzle identities rather than prediction count", () => {
@@ -117,7 +157,7 @@ describe("difficulty executive report", () => {
       ] })),
     };
     expect(report([experiment])).toContain(
-      "initial/pair versus initial/single | Different puzzle coverage | n/a | n/a | n/a");
+      "initial/pair versus initial/single | Different puzzle coverage | n/a | n/a");
   });
 
   test("counts selected features directly and presents all tied most-frequent recipes", () => {
@@ -144,7 +184,7 @@ describe("difficulty executive report", () => {
     expect(configured).toContain("Maximum acceptable ranking-correlation loss | 0.050");
     expect(configured).toContain("Scoring p95 budget (ms) | 1.000");
     expect(configured).toContain("Independent validation puzzles | 12");
-    const missing = renderReport([], [], corpus, null);
+    const missing = unpad(renderReport([], [], corpus, null));
     expect(missing).toContain("Legacy runtime measured in this run | n/a");
     expect(missing).toContain("Analysis code revision | n/a");
     expect(missing).not.toContain("NaN");

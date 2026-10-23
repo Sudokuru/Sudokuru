@@ -176,7 +176,8 @@ export function runExperiment(
     console.warn(`${experiment.name}: Too little data for nested cross-validation: need at least three personal puzzles.`);
     return null;
   }
-  const specs = candidateSpecs(experiment.features);
+  const specs = candidateSpecs(experiment.features).filter(spec =>
+    !experiment.excludedFamilies?.includes(modelFamily(spec)));
   const heldout = nestedCrossValidation(personal, specs);
   const finalSelection = selectModel(personal, specs);
   // Only full-personal fits are cached; cross-validation fits must remain isolated.
@@ -192,7 +193,7 @@ export function runExperiment(
   const heldoutPredictions = heldout.map(row => row.logPrediction);
   const comparisons = compareHistoricalScores(cohorts, heldout, fitted);
   const families: ("selected" | ModelFamily)[] = ["selected", ...new Set(specs.map(modelFamily))];
-  const summaries = families.map(family => {
+  const summaries = families.filter(family => family !== "selected" || experiment.includeSelected !== false).map(family => {
     const predictions = heldout.map(row => family === "selected" ? row.logPrediction :
       row.families.find(entry => entry.family === family)?.logPrediction ?? null);
     const coverage = predictionSummary(seconds, predictions);
@@ -238,7 +239,7 @@ export function runExperiment(
       ...Object.fromEntries(model.spec.features.map((feature, i) => [`coefficient.${feature}`, raw.coefficients[i]])),
     }];
   });
-  const batchSensitivity = evaluateBatches(personal, specs);
+  const batchSensitivity = experiment.includeSelected === false ? [] : evaluateBatches(personal, specs);
   // Group existing outer predictions, unlike evaluateBatches which retrains models.
   const perPersonalBatch = [...new Set(personal.map(row => row.batch))].map(batch => {
     const rows = heldout.filter(row => row.batch === batch);

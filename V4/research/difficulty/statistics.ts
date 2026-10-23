@@ -107,6 +107,21 @@ export function metrics(seconds: readonly number[], logPredictions: readonly num
 }
 
 /**
+ * Equal-weight rank agreement (Spearman) and linear agreement (Pearson) with
+ * human solve times, rescaled from [-1, 1] to [0, 1]. Larger is better:
+ * 0 = both perfectly reversed, 0.5 = zero average correlation, 1 = both perfect.
+ * This is a reporting convention, not a probability or a change to model selection.
+ * Both correlations must be available and finite; missing evidence stays null.
+ */
+export function humanCorrelationScore(
+  stats: { readonly spearman: number | null; readonly pearson: number | null } | null | undefined,
+): number | null {
+  if (stats?.spearman == null || stats.pearson == null ||
+    !Number.isFinite(stats.spearman) || !Number.isFinite(stats.pearson)) return null;
+  return Math.max(0, Math.min(1, (2 + stats.spearman + stats.pearson) / 4));
+}
+
+/**
  * Returns a percentile using linear interpolation between adjacent sorted values.
  * Callers must provide finite numbers in ascending order and a probability in
  * [0, 1]; these preconditions are not checked here. Zero selects the minimum,

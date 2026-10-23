@@ -12,17 +12,38 @@ This regenerates the report and detailed artifacts in `V4/docs/difficulty/result
 
 The report starts with fixed questions and computed tables, without generating an adoption recommendation:
 
-- Personal held-out selection-procedure and nonconstant family results versus legacy, including paired descriptive intervals. Each row uses only its eligible held-out puzzles with historical scores; the coverage column counts those puzzles. Labels state only whether the interval is above zero, below zero, includes zero, or is unavailable.
-- Initial-plus-trace versus initial-only differences, and two-feature/tree versus one-feature family differences. Changes are first minus second. Differences require matching evaluated puzzle identities, including partial family coverage; otherwise the report displays `Different puzzle coverage` and omits the differences. These differences have no uncertainty estimates.
+- A compact procedure table with only two metrics: human-correlation score (higher is better) and extraction-plus-prediction p95 in milliseconds (lower is better). The summary includes procedures evaluated on all personal puzzles and a legacy reference when its coverage matches. Partial coverage remains in the appendices rather than appearing beside complete results without a coverage column.
+- `humanCorrelationScore` in `statistics.ts` computes `(2 + Spearman + Pearson) / 4`, clamped to [0, 1]. This equally weights rank and linear agreement with human solve times: 0 means both perfectly reversed, 0.5 means zero average correlation, and 1 means both perfect. Both correlations must be finite and available; otherwise the score is unavailable. This is a reporting convention, not a probability, and does not change model selection.
+- Initial-plus-trace versus initial-only differences, and two-feature/tree versus one-feature family differences, using the same score and runtime metrics. Changes are first minus second. Differences require matching evaluated puzzle identities, including partial family coverage; otherwise the report displays `Different puzzle coverage` and omits the differences. These differences have no uncertainty estimates.
 - Outer-fold selection frequencies (including all tied most-frequent recipes), trace-feature use, and batch-exclusion sensitivity with sample counts. These have no automatic stability classification.
 - Combined feature-extraction-plus-prediction costs for the final fitted models. Each family benchmark uses its experiment's feature pipeline, even if the fitted formula does not use every extracted feature. Solution preparation is excluded and prepared solutions are assumed available.
 - An evidence inventory, including timing-batch sizes, independent validation count, and availability of legacy runtime measurements. The current runner has no independent validation corpus or legacy runtime measurement; site-average proxies do not count as independent validation.
 
 `ACCEPTANCE_CRITERIA` in `V4/research/difficulty/settings.ts` holds optional maximum ranking-correlation loss and scoring p95 budget in milliseconds. Both default to `null`, shown as `Not configured`. Configured values are displayed for reference, without automatic pass/fail or production-adoption decisions.
 
-Appendices contain final fitted recipes separately from selection-procedure validation, coefficients, all personal feature correlations, detailed family metrics, site/pooled diagnostics, runtime operations, and corpus corrections. Reproducibility metadata records the analysis Git revision, tracked working-tree changes, a SHA-256 identifier of the ordered corpus records (including timings and legacy scores), source commit, and execution settings. Git fields are unavailable in source archives. Metadata and criteria are also saved as `reportContext` in `results.json`; the historical `sourceCommit` remains the corpus source, not the analysis revision.
+Appendices contain final fitted recipes separately from selection-procedure validation, coefficients, all personal feature correlations, detailed family and batch metrics, legacy comparison intervals, site/pooled diagnostics, runtime operations, and corpus corrections. Legacy intervals describe differences in Spearman, not the combined score. All Markdown tables are padded with spaces to align columns in plain text. Reproducibility metadata records the analysis Git revision, tracked working-tree changes, a SHA-256 identifier of the ordered corpus records (including timings and legacy scores), source commit, and execution settings. Git fields are unavailable in source archives. Metadata and criteria are also saved as `reportContext` in `results.json`; the historical `sourceCommit` remains the corpus source, not the analysis revision.
 
 Use `--out /tmp/your-research-directory` for a separate output directory. `--skip-benchmarks` omits machine-dependent timing work and writes `{ "skipped": true }` to `benchmarks.json`, replacing any earlier timings. A run overwrites its named artifacts in the selected directory; use a fresh directory for an independent comparison. Unknown options and a missing `--out` directory argument are rejected.
+
+## Recording eliminated procedures
+
+Manual elimination decisions live in the checked-in [eliminated-procedures.json](eliminated-procedures.json), outside the ignored results directory. It starts empty; the runner never eliminates anything automatically.
+
+First generate a complete run, then record a decision using the procedure ID from the report. For example:
+
+```sh
+bun V4/research/difficulty/run.ts
+bun V4/research/difficulty/eliminate.ts initial/tree --reason "Reason for eliminating this approach"
+bun V4/research/difficulty/run.ts
+```
+
+The recording command does not train models. It copies the exact human-correlation score, score definition, raw held-out statistics, p95 calculation time, final recipe ID, corpus/code/settings metadata, benchmark environment, decision reason, and recording date from the saved artifacts. Scores retain full precision. Duplicate decisions are rejected rather than overwriting historical measurements. Incomplete predictions, unavailable correlations, unknown procedure IDs, and mismatched benchmark provenance are rejected. Regenerate results created before benchmark provenance was added before recording a decision. A run with explicitly skipped benchmarks can be recorded with `null` calculation time, displayed as `n/a`.
+
+IDs are `<experiment>/<family>`, currently `initial` or `initial+trace` combined with `selected`, `single`, `pair`, or `tree`. Eliminating a model family removes its candidates from every future selection/fitting fold for that experiment, including the aggregate `selected` procedure. Thus active aggregate results may change after eliminating a family. Eliminating `selected` stops its summary, benchmark, and batch-sensitivity evaluation while family evaluation continues; the shared model-selection machinery still derives an internal aggregate winner. If all four procedures in an experiment are eliminated, the experiment is skipped entirely.
+
+Subsequent reports include frozen rows labeled `(eliminated)` in the main two-metric table and list reasons and provenance under **Elimination decisions**. These measurements are not recomputed, even if the corpus, machine, or scoring convention changes. They are historical comparisons, not fresh validation. A stale live row with the same ID cannot replace an archived row. `results.json` also includes the registry snapshot used by the run, and its settings identify the registry by SHA-256.
+
+Use `eliminate.ts ... --results /path/to/results` to capture another output directory. Both commands accept `--registry /path/to/registry.json` for an isolated version-1 registry. To resume an eliminated procedure, remove its entry from the checked-in JSON and regenerate; Git retains the prior decision. Commit registry changes alongside the research work so decisions and scores survive deleting generated results.
 
 ## Corpus and provenance
 
@@ -105,13 +126,15 @@ With 22 personal puzzles, a wide choice of heuristics can still produce unstable
 | `results.json` | Settings, report metadata/criteria, full candidate CV tables, selected folds and their feature lists, comparison intervals, and sensitivity results |
 | `benchmarks.json` | Runtime/hardware, preparation time, warmed timing samples summarized by operation |
 
+`benchmarks.json` also carries the same `reportContext` as `results.json` for measured runs, allowing elimination snapshots to reject timings from a different run configuration. Skipped runs retain the `{ "skipped": true }` format.
+
 Benchmarks run five warmup passes and 20 measured passes over all 44 puzzles. Initial extraction includes parsing and candidate construction; trace extraction starts with initialized notes and a prepared solution. Combined feature-plus-prediction timings are measured for every available final family model and the selected procedure, including parsing, initialization, and any experiment trace work. Prediction-only measurements batch 1,000 calls to amortize clock overhead; their percentiles are batch averages rather than individual-call tail latency. An exposed checksum consumes results to discourage elimination of unused work. An empty corpus warns and skips measurements.
 
 No latency cutoff is imposed. Compare feature extraction costs as well as tiny inference costs; prepared solutions are an explicit prerequisite for the trace experiment. Hardware-dependent timings and report timing sections will vary between runs. Other generated results are deterministic for the same corpus, code, runtime, execution settings, and recorded Git metadata.
 
 ## Verification
 
-Research tests live in `V4/research/difficulty/tests/`, separate from core V4 unit tests. The suites cover corpus provenance, features/single traces, statistics, models/evaluation, experiments/benchmarks, and report comparisons, interval labels, coverage guards, selection counts, and evidence metadata.
+Research tests live in `V4/research/difficulty/tests/`, separate from core V4 unit tests. The suites cover corpus provenance, features/single traces, statistics, models/evaluation, experiments/benchmarks, report comparisons and evidence, and elimination snapshots, validation, candidate exclusion, frozen report rows, and the recording CLI.
 
 ```sh
 bun test V4/research/difficulty/tests

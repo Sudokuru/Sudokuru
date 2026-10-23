@@ -1,6 +1,28 @@
-import { bootstrapRankDifference, metrics, pearson, ranks, spearman } from "../statistics";
+import { bootstrapRankDifference, humanCorrelationScore, metrics, pearson, ranks, spearman } from "../statistics";
 
 describe("research statistics", () => {
+  test("combines human rank and linear correlation on a bounded scale", () => {
+    expect(humanCorrelationScore({ spearman: 1, pearson: 1 })).toBe(1);
+    expect(humanCorrelationScore({ spearman: 0, pearson: 0 })).toBe(0.5);
+    expect(humanCorrelationScore({ spearman: -1, pearson: -1 })).toBe(0);
+    expect(humanCorrelationScore({ spearman: 0.8, pearson: 0.4 })).toBeCloseTo(0.8);
+    expect(humanCorrelationScore({ spearman: 0.4, pearson: 0.8 })).toBeCloseTo(0.8);
+    expect(humanCorrelationScore({ spearman: 0.9, pearson: 0.4 })).toBeGreaterThan(
+      humanCorrelationScore({ spearman: 0.8, pearson: 0.4 })!);
+    expect(humanCorrelationScore({ spearman: 0.8, pearson: 0.5 })).toBeGreaterThan(
+      humanCorrelationScore({ spearman: 0.8, pearson: 0.4 })!);
+    expect(humanCorrelationScore({ spearman: 1.0000000001, pearson: 1 })).toBe(1);
+    expect(humanCorrelationScore({ spearman: -1.0000000001, pearson: -1 })).toBe(0);
+  });
+
+  test("does not fabricate a human-correlation score when either correlation is unavailable", () => {
+    expect(humanCorrelationScore(null)).toBeNull();
+    expect(humanCorrelationScore(undefined)).toBeNull();
+    expect(humanCorrelationScore({ spearman: null, pearson: 0.9 })).toBeNull();
+    expect(humanCorrelationScore({ spearman: 0.9, pearson: null })).toBeNull();
+    expect(humanCorrelationScore({ spearman: NaN, pearson: 0.9 })).toBeNull();
+    expect(humanCorrelationScore({ spearman: 0.9, pearson: Infinity })).toBeNull();
+  });
   test("preserves non-perfect Pearson correlations and readonly inputs", () => {
     const x = Object.freeze([1, 2, 3]);
     const y = Object.freeze([1, 2, 4]);

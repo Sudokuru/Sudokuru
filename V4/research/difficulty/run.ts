@@ -6,17 +6,18 @@ import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { DIFFICULTY_RESEARCH_PUZZLES } from "./data";
 import { prepareDataset } from "./prepare";
-import { INITIAL_MODEL_FEATURES } from "./features";
-import { TRACE_MODEL_FEATURES } from "./singleTrace";
 import { prepareResearch, correlations, runExperiment } from "./experiments";
 import { runBenchmarks } from "./benchmarks";
 import { renderReport } from "./report";
 import { TREE_DEPTHS, TREE_MIN_LEAVES, BOOTSTRAP_REPEATS, BOOTSTRAP_SEED, ACCEPTANCE_CRITERIA, BENCHMARK_SETTINGS } from "./settings";
 import type { ReportContext } from "./reportTypes";
+import { activeExperiment, EXPERIMENTS } from "./procedures";
+import { ELIMINATION_REGISTRY_PATH, readEliminationRegistry } from "./eliminations";
 
 const args = process.argv.slice(2);
 let outputDirectory = "V4/docs/difficulty/results";
 let skipBenchmarks = false;
+let registryPath = ELIMINATION_REGISTRY_PATH;
 for (let i = 0; i < args.length; i++) {
   const argument = args[i];
   if (argument === "--skip-benchmarks") {
@@ -25,11 +26,16 @@ for (let i = 0; i < args.length; i++) {
     const directory = args[++i];
     if (!directory || directory.startsWith("--")) throw new Error("--out requires a directory.");
     outputDirectory = directory;
+  } else if (argument === "--registry") {
+    const path = args[++i];
+    if (!path || path.startsWith("--")) throw new Error("--registry requires a file.");
+    registryPath = resolve(path);
   } else {
-    throw new Error(`Unknown argument: ${argument}. Supported options: --out directory, --skip-benchmarks.`);
+    throw new Error(`Unknown argument: ${argument}. Supported options: --out directory, --skip-benchmarks, --registry file.`);
   }
 }
 const output = resolve(outputDirectory);
+const registry = readEliminationRegistry(registryPath);
 mkdirSync(output, { recursive: true });
 
 /** Write indented JSON with a trailing newline, replacing the named output artifact. */
@@ -56,10 +62,12 @@ const { featureRows, timed, personal, site, cohorts } = prepareResearch(prepared
 const corpus = { unique: prepared.length, personal: personal.length, siteAverage: site.length, untimed: prepared.length - timed.length };
 const correlationRows = correlations(cohorts);
 console.log(`Validated ${corpus.unique} puzzles; evaluating ${corpus.personal} personal observations.`);
-const experiments = [
-  { name: "initial", features: INITIAL_MODEL_FEATURES, includeTrace: false },
-  { name: "initial+trace", features: TRACE_MODEL_FEATURES, includeTrace: true },
-].flatMap(experiment => {
+const experiments = EXPERIMENTS.flatMap(spec => {
+  const experiment = activeExperiment(spec, registry.procedures);
+  if (!experiment) {
+    console.log(`Skipping eliminated experiment: ${spec.name}`);
+    return [];
+  }
   console.log(`Nested cross-validation: ${experiment.name}`);
   const result = runExperiment(experiment, personal, site, cohorts);
   return result ? [result] : [];
@@ -94,10 +102,12 @@ const reportContext: ReportContext = {
     warmupPasses: BENCHMARK_SETTINGS.warmupPasses,
     measuredPasses: BENCHMARK_SETTINGS.measuredPasses,
     predictionBatch: BENCHMARK_SETTINGS.predictionBatch,
+    eliminationRegistryId: `sha256:${createHash("sha256").update(JSON.stringify(registry)).digest("hex")}`,
+    eliminatedProcedures: registry.procedures.map(record => record.procedure).join(", ") || "None",
   },
 };
 // Always overwrite this artifact so a skipped run cannot leave old timings behind.
-writeJson("benchmarks.json", benchmarkResults ?? { skipped: true });
+writeJson("benchmarks.json", benchmarkResults ? { ...benchmarkResults, reportContext } : { skipped: true });
 writeJson("results.json", {
   // Historical corpus source, not the revision of the code running this analysis.
   sourceCommit: reportContext.sourceCommit,
@@ -105,6 +115,7 @@ writeJson("results.json", {
   reportContext,
   corpus,
   experiments,
+  eliminatedProcedures: registry.procedures,
 });
 writeJson("models.json", experiments.map(experiment => ({ name: experiment.name,
   models: experiment.summaries.map(summary => ({ family: summary.family, model: summary.finalModel })) })));
@@ -117,19 +128,20 @@ writeCsv("features.csv", featureRows.map(row => ({ id: row.record.id, puzzle: ro
 writeCsv("correlations.csv", correlationRows);
 // Keep held-out personal predictions distinct from site-average transfer checks.
 const predictionRows = experiments.flatMap(experiment => {
+  const hasSelected = experiment.summaries.some(summary => summary.family === "selected");
   const personalPredictions = experiment.heldout.flatMap(row => [
-    { experiment: experiment.name, evaluation: "personal-outer-holdout", family: "selected", id: row.id,
-      batch: row.batch, seconds: row.seconds, predictedSeconds: Math.exp(row.logPrediction), selected: row.selected },
+    ...(hasSelected ? [{ experiment: experiment.name, evaluation: "personal-outer-holdout", family: "selected", id: row.id,
+      batch: row.batch, seconds: row.seconds, predictedSeconds: Math.exp(row.logPrediction), selected: row.selected }] : []),
     ...row.families.map(family => ({ experiment: experiment.name, evaluation: "personal-outer-holdout",
       family: family.family, id: row.id, batch: row.batch, seconds: row.seconds,
       predictedSeconds: family.logPrediction === null ? null : Math.exp(family.logPrediction), selected: family.selected })),
   ]);
-  const sitePredictions = experiment.sitePredictions.map(row => ({ experiment: experiment.name, evaluation: "site-transfer", family: "selected",
+  const sitePredictions = (hasSelected ? experiment.sitePredictions : []).map(row => ({ experiment: experiment.name, evaluation: "site-transfer", family: "selected",
     id: row.id, batch: row.batch, seconds: row.seconds,
     predictedSeconds: Math.exp(row.logPrediction), selected: experiment.fitted.spec.id }));
   return [...personalPredictions, ...sitePredictions];
 });
 writeCsv("predictions.csv", predictionRows);
 
-writeFileSync(resolve(output, "REPORT.md"), renderReport(experiments, correlationRows, corpus, benchmarkResults, reportContext));
+writeFileSync(resolve(output, "REPORT.md"), renderReport(experiments, correlationRows, corpus, benchmarkResults, reportContext, registry.procedures));
 console.log(`Research outputs written to ${output}`);
