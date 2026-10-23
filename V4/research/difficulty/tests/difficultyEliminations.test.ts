@@ -91,17 +91,17 @@ describe("manual difficulty procedure eliminations", () => {
 
   test("removes eliminated families from every selection fold and the live summary", () => {
     const base = { name: "initial", features: ["notes", "many"], includeTrace: false };
-    const active = activeExperiment(base, [snapshot()]);
-    expect(active?.excludedFamilies).toEqual(["tree"]);
+    const active = activeExperiment(base, [{ ...snapshot(), procedure: "initial/single" }]);
+    expect(active?.excludedFamilies).toEqual(["single"]);
     const rows: TimedObservation[] = [1, 2, 3, 4, 5, 6].map(x => ({
       id: String(x), batch: "one", kind: "personal", seconds: Math.exp(x / 4),
       features: { notes: x, many: x * x }, historicalScores: { "legacy.combined": x },
     }));
     const result = runExperiment(active!, rows, [], [{ name: "personal", rows }]);
     if (!result) throw new Error("Expected experiment.");
-    expect(result.summaries.some(row => row.family === "tree")).toBe(false);
-    expect(result.finalSelection.candidates.some(row => row.spec.kind === "tree")).toBe(false);
-    expect(result.heldout.every(row => !row.selected.startsWith("tree:") && !row.families.some(family => family.family === "tree"))).toBe(true);
+    expect(result.summaries.some(row => row.family === "single")).toBe(false);
+    expect(result.finalSelection.candidates.some(row => row.spec.kind === "linear" && row.spec.features.length === 1)).toBe(false);
+    expect(result.heldout.every(row => !row.families.some(family => family.family === "single"))).toBe(true);
     const rendered = renderReport([result], [], { unique: 6, personal: 6, siteAverage: 0, untimed: 0 }, null, undefined, [snapshot()]);
     expect(rendered).toContain("initial/tree (eliminated)");
     expect(rendered).not.toContain("initial/tree versus");

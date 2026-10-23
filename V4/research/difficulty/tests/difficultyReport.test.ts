@@ -18,7 +18,7 @@ const context: ReportContext = {
   personalBatches: [{ name: "first", puzzles: 3 }, { name: "second", puzzles: 3 }],
   independentValidationPuzzles: 0, legacyRuntimeMeasured: false,
   criteria: { maxRankingLoss: null, scoringP95BudgetMs: null },
-  settings: { target: "logSeconds", treeDepths: [1, 2, 3] },
+  settings: { target: "logSeconds" },
 };
 const benchmarks: BenchmarkResults = {
   runtime: { node: "test" }, platform: "test", arch: "test", preparationMs: 1,

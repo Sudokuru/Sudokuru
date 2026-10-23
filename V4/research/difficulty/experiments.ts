@@ -228,9 +228,8 @@ export function runExperiment(
     };
   });
   const coefficients: CoefficientRow[] = finalSelection.candidates.flatMap(candidate => {
-    if (candidate.spec.kind === "tree") return [];
     const model = fullFit(candidate.spec);
-    if (!model || model.kind === "tree") return [];
+    if (!model) return [];
     const raw = rawCoefficients(model);
     return [{
       experiment: experiment.name, model: candidate.spec.id, target: model.target,

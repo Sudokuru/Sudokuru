@@ -4,6 +4,9 @@ import { humanCorrelationScore } from "./statistics";
 import type { metrics } from "./statistics";
 import { PROCEDURE_FAMILIES } from "./procedures";
 
+// Historical IDs remain readable after their fitting implementations are removed.
+const ARCHIVABLE_FAMILIES = [...PROCEDURE_FAMILIES, "tree"] as const;
+
 export const ELIMINATION_REGISTRY_PATH = resolve(__dirname, "../../docs/difficulty/eliminated-procedures.json");
 export const SCORE_DEFINITION = "(2 + Spearman + Pearson) / 4; clamped to [0, 1]";
 
@@ -47,7 +50,7 @@ function isStatistics(value: unknown): value is ReturnType<typeof metrics> {
 function validProcedure(value: unknown): value is string {
   if (typeof value !== "string") return false;
   const slash = value.lastIndexOf("/");
-  return slash > 0 && PROCEDURE_FAMILIES.some(family => family === value.slice(slash + 1));
+  return slash > 0 && ARCHIVABLE_FAMILIES.some(family => family === value.slice(slash + 1));
 }
 
 /** Validate checked-in data rather than silently dropping malformed or duplicate decisions. */

@@ -95,7 +95,7 @@ export function renderReport(
       comparisonRows(experiment, initial, "selected", "selected")) : []),
     "## Does allowing more complex models help?",
     "Each family selects features or hyperparameters inside its training folds. Family comparisons are exploratory. Choosing a family after inspecting these results requires fresh validation.",
-    table(deltaHeadings, experiments.flatMap(experiment => (["pair", "tree"] as const).filter(family =>
+    table(deltaHeadings, experiments.flatMap(experiment => (["pair"] as const).filter(family =>
       !eliminated.some(record => record.procedure === `${experiment.name}/${family}` || record.procedure === `${experiment.name}/single`)).map(family =>
       comparisonRows(experiment, experiment, family, "single")))),
     "## How sensitive are results to the training data?",
@@ -144,7 +144,7 @@ export function renderReport(
     "These recipes are selected and fitted using all personal observations. Their training scores do not validate these particular formulas on new puzzles. Held-out scores above evaluate the selection procedures, which may choose a different recipe in each fold.",
     table(["Features", "Family", "Final fitted recipe", "Training Spearman"], experiments.flatMap(experiment => experiment.summaries.map(row =>
       [experiment.name, row.family, row.finalModel?.spec.id ?? "unavailable", fmt(row.training?.spearman)]))),
-    "[coefficients.csv](coefficients.csv) contains raw-feature weights for every eligible formula and inner-CV selection scores. [models.json](models.json) contains final standardized parameters and tree splits. Linear formulas predict log-seconds; exponentiate for seconds, without retransformation bias correction.",
+    "[coefficients.csv](coefficients.csv) contains raw-feature weights for every eligible formula and inner-CV selection scores. [models.json](models.json) contains final standardized parameters. Linear formulas predict log-seconds; exponentiate for seconds, without retransformation bias correction.",
     ...experiments.map(experiment => {
       const model = summary(experiment, "single")?.finalModel;
       if (!model || model.kind !== "linear") return `${experiment.name}: single-feature fit unavailable.`;

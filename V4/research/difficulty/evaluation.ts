@@ -3,21 +3,12 @@ import type { ModelInputs } from "./featureTypes";
 import { fitModel, predict } from "./models";
 import { metrics } from "./statistics";
 
-/** Group constants, trees, and formulas using one, two, or more heuristics. */
+/** Group constants and formulas using one, two, or more heuristics. */
 export function modelFamily(spec: ModelSpec): ModelFamily {
   if (spec.kind !== "linear") return spec.kind;
   if (spec.features.length === 1) return "single";
   if (spec.features.length === 2) return "pair";
   return "multivariate";
-}
-
-/**
- * Lower values win ties. The arbitrary 100-point tree penalty favors our small
- * formula candidates over trees; within trees, shallower ones are preferred.
- * This encodes a selection policy, not measured runtime or model complexity.
- */
-function complexityPreference(spec: ModelSpec): number {
-  return spec.kind === "tree" ? 100 + 2 ** spec.depth : spec.features.length;
 }
 
 /** Ranking first, log error second, simpler model third, stable ID last. */
@@ -27,7 +18,7 @@ function compareCandidates(a: CandidateResult, b: CandidateResult): number {
   if (Math.abs(correlation) > 1e-12) return correlation;
   const error = a.scores.logRmse - b.scores.logRmse;
   if (error !== 0) return error;
-  const size = complexityPreference(a.spec) - complexityPreference(b.spec);
+  const size = a.spec.features.length - b.spec.features.length;
   if (size !== 0) return size;
   return a.spec.id.localeCompare(b.spec.id);
 }

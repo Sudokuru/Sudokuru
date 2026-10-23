@@ -24,31 +24,15 @@ export interface LinearSpec extends BaseSpec {
   readonly kind: "linear";
 }
 
-export interface TreeSpec extends BaseSpec {
-  readonly kind: "tree";
-  /** Maximum number of decisions on a path to a prediction. */
-  readonly depth: number;
-  /** Minimum number of training puzzles allowed in each leaf. */
-  readonly minLeaf: number;
-}
+export type ModelSpec = ConstantSpec | LinearSpec;
 
-export type ModelSpec = ConstantSpec | LinearSpec | TreeSpec;
-
-/** Reporting groups for baselines, formula sizes, and decision trees. */
-export type ModelFamily = "constant" | "single" | "pair" | "multivariate" | "tree";
-
-// These are domain split records, not an ordered collection. BinaryTree/BST
-// provide key lookup/insertion, not regression split training or prediction.
-/** A leaf predicts log-seconds; a branch sends values <= its threshold left. */
-export type Split = { readonly value: number } | {
-  readonly feature: string; readonly threshold: number;
-  readonly left: Split; readonly right: Split;
-};
+/** Reporting groups for baselines and formula sizes. */
+export type ModelFamily = "constant" | "single" | "pair" | "multivariate";
 
 /**
  * Trained state. Linear coefficients, means, and scales follow spec.features order.
  * Coefficients apply to standardized features, not their original units.
- * Constants use only the intercept; trees use only the split records for prediction.
+ * Constants use only the intercept.
  */
 interface FittedBase {
   readonly target: "logSeconds";
@@ -69,13 +53,7 @@ export interface LinearModel extends FittedBase {
   readonly scales: readonly number[];
 }
 
-export interface TreeModel extends FittedBase {
-  readonly kind: "tree";
-  readonly spec: TreeSpec;
-  readonly tree: Split;
-}
-
-export type FittedModel = ConstantModel | LinearModel | TreeModel;
+export type FittedModel = ConstantModel | LinearModel;
 
 /** A recipe scored on predictions for puzzles excluded from each fitting step. */
 export interface CandidateResult {

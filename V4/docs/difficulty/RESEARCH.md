@@ -14,7 +14,7 @@ The report starts with fixed questions and computed tables, without generating a
 
 - A compact procedure table with only two metrics: human-correlation score (higher is better) and extraction-plus-prediction p95 in milliseconds (lower is better). The summary includes procedures evaluated on all personal puzzles and a legacy reference when its coverage matches. Partial coverage remains in the appendices rather than appearing beside complete results without a coverage column.
 - `humanCorrelationScore` in `statistics.ts` computes `(2 + Spearman + Pearson) / 4`, clamped to [0, 1]. This equally weights rank and linear agreement with human solve times: 0 means both perfectly reversed, 0.5 means zero average correlation, and 1 means both perfect. Both correlations must be finite and available; otherwise the score is unavailable. This is a reporting convention, not a probability, and does not change model selection.
-- Initial-plus-trace versus initial-only differences, and two-feature/tree versus one-feature family differences, using the same score and runtime metrics. Changes are first minus second. Differences require matching evaluated puzzle identities, including partial family coverage; otherwise the report displays `Different puzzle coverage` and omits the differences. These differences have no uncertainty estimates.
+- Initial-plus-trace versus initial-only differences, and two-feature versus one-feature family differences, using the same score and runtime metrics. Changes are first minus second. Differences require matching evaluated puzzle identities, including partial family coverage; otherwise the report displays `Different puzzle coverage` and omits the differences. These differences have no uncertainty estimates.
 - Outer-fold selection frequencies (including all tied most-frequent recipes), trace-feature use, and batch-exclusion sensitivity with sample counts. These have no automatic stability classification.
 - Combined feature-extraction-plus-prediction costs for the final fitted models. Each family benchmark uses its experiment's feature pipeline, even if the fitted formula does not use every extracted feature. Solution preparation is excluded and prepared solutions are assumed available.
 - An evidence inventory, including timing-batch sizes, independent validation count, and availability of legacy runtime measurements. The current runner has no independent validation corpus or legacy runtime measurement; site-average proxies do not count as independent validation.
@@ -33,17 +33,17 @@ First generate a complete run, then record a decision using the procedure ID fro
 
 ```sh
 bun V4/research/difficulty/run.ts
-bun V4/research/difficulty/eliminate.ts initial/tree --reason "Reason for eliminating this approach"
+bun V4/research/difficulty/eliminate.ts initial/pair --reason "Reason for eliminating this approach"
 bun V4/research/difficulty/run.ts
 ```
 
 The recording command does not train models. It copies the exact human-correlation score, score definition, raw held-out statistics, p95 calculation time, final recipe ID, corpus/code/settings metadata, benchmark environment, decision reason, and recording date from the saved artifacts. Scores retain full precision. Duplicate decisions are rejected rather than overwriting historical measurements. Incomplete predictions, unavailable correlations, unknown procedure IDs, and mismatched benchmark provenance are rejected. Regenerate results created before benchmark provenance was added before recording a decision. A run with explicitly skipped benchmarks can be recorded with `null` calculation time, displayed as `n/a`.
 
-IDs are `<experiment>/<family>`, currently `initial` or `initial+trace` combined with `selected`, `single`, `pair`, or `tree`. Eliminating a model family removes its candidates from every future selection/fitting fold for that experiment, including the aggregate `selected` procedure. Thus active aggregate results may change after eliminating a family. Eliminating `selected` stops its summary, benchmark, and batch-sensitivity evaluation while family evaluation continues; the shared model-selection machinery still derives an internal aggregate winner. If all four procedures in an experiment are eliminated, the experiment is skipped entirely.
+IDs are `<experiment>/<family>`, currently `initial` or `initial+trace` combined with `selected`, `single`, or `pair`. Historical `tree` IDs remain supported by the registry reader and snapshot command, but tree generation, fitting, prediction, and settings have been removed after eliminating both tree procedures. Eliminating a model family removes its candidates from every future selection/fitting fold for that experiment, including the aggregate `selected` procedure. Thus active aggregate results may change after eliminating a family. Eliminating `selected` stops its summary, benchmark, and batch-sensitivity evaluation while family evaluation continues; the shared model-selection machinery still derives an internal aggregate winner. If all three active procedures in an experiment are eliminated, the experiment is skipped entirely.
 
 Subsequent reports include frozen rows labeled `(eliminated)` in the main two-metric table and list reasons and provenance under **Elimination decisions**. These measurements are not recomputed, even if the corpus, machine, or scoring convention changes. They are historical comparisons, not fresh validation. A stale live row with the same ID cannot replace an archived row. `results.json` also includes the registry snapshot used by the run, and its settings identify the registry by SHA-256.
 
-Use `eliminate.ts ... --results /path/to/results` to capture another output directory. Both commands accept `--registry /path/to/registry.json` for an isolated version-1 registry. To resume an eliminated procedure, remove its entry from the checked-in JSON and regenerate; Git retains the prior decision. Commit registry changes alongside the research work so decisions and scores survive deleting generated results.
+Use `eliminate.ts ... --results /path/to/results` to capture another output directory. Both commands accept `--registry /path/to/registry.json` for an isolated version-1 registry. To resume a procedure whose implementation is still available, remove its entry from the checked-in JSON and regenerate; Git retains the prior decision. Resuming trees would also require restoring their implementation from Git. Commit registry changes alongside the research work so decisions and scores survive deleting generated results.
 
 ## Corpus and provenance
 
@@ -87,9 +87,10 @@ Two feature sets are evaluated: initial board only, and initial board plus trace
 
 - A constant mean-log-time baseline.
 - Every one-feature and two-feature linear fit over the declared feature set.
-- Squared-error regression trees with maximum depth 1–3 and minimum leaf sizes 3 or 5.
 
-All fits predict natural-log seconds. Linear inputs are centered and scaled using only their training observations. Singular value decomposition (SVD) from `ml-matrix` fits weights directly from the feature matrix, avoiding normal equations; fits without independently identifiable weights are omitted. Trees evaluate midpoint thresholds between distinct observed feature values, require both child groups to meet the minimum size, and split only when squared error decreases by more than `1e-12`. Equal-quality splits retain feature/threshold iteration order. Leaves predict their mean log-time.
+Tree procedures are historical only: their saved scores and timings are read from `eliminated-procedures.json`. No trees are generated, fitted, selected, or benchmarked, including when using an empty custom registry.
+
+All fits predict natural-log seconds. Linear inputs are centered and scaled using only their training observations. Singular value decomposition (SVD) from `ml-matrix` fits weights directly from the feature matrix, avoiding normal equations; fits without independently identifiable weights are omitted.
 
 For exported linear models:
 
@@ -98,9 +99,9 @@ logSeconds = intercept + Σ coefficients[i] × (feature[i] − means[i]) / scale
 predictedSeconds = exp(logSeconds)
 ```
 
-There is no retransformation bias correction; the target is ranking, and seconds errors are secondary diagnostics. Tree training and prediction live in `decisionTree.ts`, without a tree-library dependency. Tree artifacts are plain split records, traversed with `feature <= threshold`; prediction needs only the saved model and extracted heuristics, not the training libraries.
+There is no retransformation bias correction; the target is ranking, and seconds errors are secondary diagnostics. Prediction needs only the saved formula and extracted heuristics, not the training libraries.
 
-Model selection uses only the 22 personally timed puzzles. Outer leave-one-puzzle-out predictions evaluate the procedure. Each outer training set runs its own inner leave-one-puzzle-out search; preprocessing, feature selection, and hyperparameter selection never see the outer label. Candidates sort by highest Spearman, lowest log RMSE, lowest complexity (coefficient count; trees after formulas), then stable ID. Non-finite or singular fits cannot win. Individual timing attempts are averaged into one puzzle observation and cannot cross folds.
+Model selection uses only the 22 personally timed puzzles. Outer leave-one-puzzle-out predictions evaluate the procedure. Each outer training set runs its own inner leave-one-puzzle-out search; preprocessing, feature selection, and hyperparameter selection never see the outer label. Candidates sort by highest Spearman, lowest log RMSE, lowest complexity (coefficient count), then stable ID. Non-finite or singular fits cannot win. Individual timing attempts are averaged into one puzzle observation and cannot cross folds.
 
 The report also provides separately selected family results, training fit, full-personal-data fitted parameters, and leave-one-personal-batch-out sensitivity checks. A final fit is selected by cross-validation on all personal observations for research export and site transfer. Its training score is not its validation score.
 
@@ -121,7 +122,7 @@ With 22 personal puzzles, a wide choice of heuristics can still produce unstable
 | `features.csv` | One row per unique puzzle, including untimed runtime examples |
 | `correlations.csv` | Feature/legacy coefficients by target and cohort, with sample sizes |
 | `predictions.csv` | Outer-held-out personal predictions for each family and selected procedure; site transfer predictions |
-| `models.json` | Final fitted coefficients, scaling, and tree split records |
+| `models.json` | Final fitted coefficients and scaling |
 | `coefficients.csv` | Full-personal-data raw-feature weights and intercepts for all eligible formula candidates; inner-CV scores are selection diagnostics |
 | `results.json` | Settings, report metadata/criteria, full candidate CV tables, selected folds and their feature lists, comparison intervals, and sensitivity results |
 | `benchmarks.json` | Runtime/hardware, preparation time, warmed timing samples summarized by operation |

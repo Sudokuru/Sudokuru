@@ -1,13 +1,11 @@
 import { Matrix, SingularValueDecomposition } from "ml-matrix";
 import type { ModelInputs } from "./featureTypes";
 import type { Observation, ModelSpec, FittedModel } from "./modelTypes";
-import { fitDecisionTree, predictDecisionTree } from "./decisionTree";
 import { mean } from "./statistics";
-import { TREE_DEPTHS, TREE_MIN_LEAVES } from "./settings";
 
 /**
  * Enumerate a fixed search space: a constant baseline, each single heuristic,
- * each distinct pair, and the configured shallow-tree settings. Nothing is fitted here;
+ * and each distinct pair. Nothing is fitted here;
  * cross-validation chooses among these recipes using training puzzles only.
  */
 export function candidateSpecs(features: readonly string[]): ModelSpec[] {
@@ -16,11 +14,6 @@ export function candidateSpecs(features: readonly string[]): ModelSpec[] {
     specs.push({ id: `linear:${features[i]}`, kind: "linear", features: [features[i]] });
     for (let j = i + 1; j < features.length; j++) {
       specs.push({ id: `linear:${features[i]}+${features[j]}`, kind: "linear", features: [features[i], features[j]] });
-    }
-  }
-  for (const depth of TREE_DEPTHS) {
-    for (const minLeaf of TREE_MIN_LEAVES) {
-      specs.push({ id: `tree:${depth}:${minLeaf}`, kind: "tree", features, depth, minLeaf });
     }
   }
   return specs;
@@ -40,9 +33,6 @@ export function fitModel(rows: readonly Observation[], spec: ModelSpec): FittedM
   const target = rows.map(row => Math.log(row.seconds));
   const intercept = mean(target);
   if (spec.kind === "constant") return { kind: "constant", spec, target: "logSeconds", intercept };
-  if (spec.kind === "tree") {
-    return { kind: "tree", spec, target: "logSeconds", tree: fitDecisionTree(rows, spec, spec.depth) };
-  }
   // Center and scale each feature using training statistics, saved for prediction.
   // A constant feature gets scale 1 to avoid division by zero, but still makes
   // the linear system singular and therefore causes this candidate to be omitted.
@@ -68,7 +58,6 @@ export function fitModel(rows: readonly Observation[], spec: ModelSpec): FittedM
  * Feature extraction is timed separately in the research benchmarks.
  */
 export function predict(model: FittedModel, features: ModelInputs): number {
-  if (model.kind === "tree") return predictDecisionTree(model.tree, features);
   if (model.kind === "constant") return model.intercept;
   // Reuse the means/scales learned from training, not from the prediction input.
   return model.intercept + model.coefficients.reduce((sum, coefficient, i) =>

@@ -62,8 +62,6 @@ describe("research experiment reporting", () => {
       { name: "baseline extraction + selected prediction", samples: 20, callsPerSample: 1 },
       { name: "baseline/constant prediction", samples: 20, callsPerSample: 1000 },
       { name: "baseline extraction + constant prediction", samples: 20, callsPerSample: 1 },
-      { name: "baseline/tree prediction", samples: 20, callsPerSample: 1000 },
-      { name: "baseline extraction + tree prediction", samples: 20, callsPerSample: 1 },
     ]);
     // Timings vary by machine; only their validity and ordering are contractual.
     for (const measurement of result.benchmarks) {

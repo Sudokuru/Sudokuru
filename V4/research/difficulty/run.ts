@@ -9,7 +9,7 @@ import { prepareDataset } from "./prepare";
 import { prepareResearch, correlations, runExperiment } from "./experiments";
 import { runBenchmarks } from "./benchmarks";
 import { renderReport } from "./report";
-import { TREE_DEPTHS, TREE_MIN_LEAVES, BOOTSTRAP_REPEATS, BOOTSTRAP_SEED, ACCEPTANCE_CRITERIA, BENCHMARK_SETTINGS } from "./settings";
+import { BOOTSTRAP_REPEATS, BOOTSTRAP_SEED, ACCEPTANCE_CRITERIA, BENCHMARK_SETTINGS } from "./settings";
 import type { ReportContext } from "./reportTypes";
 import { activeExperiment, EXPERIMENTS } from "./procedures";
 import { ELIMINATION_REGISTRY_PATH, readEliminationRegistry } from "./eliminations";
@@ -96,7 +96,6 @@ const reportContext: ReportContext = {
   settings: {
     target: "logSeconds", selection: "Spearman, log RMSE, complexity, stable ID",
     outer: "leave one personal puzzle out", inner: "leave one training puzzle out",
-    treeDepths: TREE_DEPTHS, treeMinLeaves: TREE_MIN_LEAVES,
     bootstrap: `paired puzzle resampling of fixed predictions; ${BOOTSTRAP_REPEATS} samples, seed ${BOOTSTRAP_SEED}; descriptive, not post-selection inference`,
     benchmarks: skipBenchmarks ? "Skipped" : "Enabled",
     warmupPasses: BENCHMARK_SETTINGS.warmupPasses,

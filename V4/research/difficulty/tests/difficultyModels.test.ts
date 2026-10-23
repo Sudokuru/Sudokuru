@@ -10,12 +10,20 @@ describe("small research models", () => {
   ];
   const linear: ModelSpec = { id: "linear:x", kind: "linear", features: ["x"] };
 
+  test("generates only the baseline and single/pair formulas after tree retirement", () => {
+    expect(candidateSpecs(["x", "y"])).toEqual([
+      { id: "constant", kind: "constant", features: [] },
+      { id: "linear:x", kind: "linear", features: ["x"] },
+      { id: "linear:x+y", kind: "linear", features: ["x", "y"] },
+      { id: "linear:y", kind: "linear", features: ["y"] },
+    ]);
+  });
+
   test.each([
     ["single", { id: "one", kind: "linear", features: ["x"] }],
     ["pair", { id: "two", kind: "linear", features: ["x", "y"] }],
     ["multivariate", { id: "three", kind: "linear", features: ["x", "y", "z"] }],
     ["constant", { id: "constant", kind: "constant", features: [] }],
-    ["tree", { id: "tree", kind: "tree", features: ["x"], depth: 1, minLeaf: 3 }],
   ] satisfies [string, ModelSpec][])("labels the %s family", (family, spec) => {
     expect(modelFamily(spec)).toBe(family);
   });
@@ -127,65 +135,6 @@ describe("small research models", () => {
     expect(fitModel(data, { id: "pair", kind: "linear", features })).toBeNull();
   });
 
-  test("a shallow tree finds a known split and respects its minimum leaf size", () => {
-    const step: Observation[] = [
-      { id: "a", batch: "one", seconds: 1, features: { x: 0 } },
-      { id: "b", batch: "one", seconds: 1, features: { x: 1 } },
-      { id: "c", batch: "one", seconds: 1, features: { x: 2 } },
-      { id: "d", batch: "two", seconds: 7.38905609893065, features: { x: 3 } },
-      { id: "e", batch: "two", seconds: 7.38905609893065, features: { x: 4 } },
-      { id: "f", batch: "two", seconds: 7.38905609893065, features: { x: 5 } },
-    ];
-    const spec: ModelSpec = { id: "tree", kind: "tree", features: ["x"], depth: 1, minLeaf: 3 };
-    const model = fitModel(step, spec)!;
-    if (model.kind !== "tree") throw new Error("Expected tree model.");
-    expect(model.tree).toEqual({ feature: "x", threshold: 2.5, left: { value: 0 }, right: { value: 2 } });
-    expect(predict(model, { x: 2.5 })).toBe(0);
-    expect(predict(model, { x: 2.6 })).toBe(2);
-    const minimumLeaf = fitModel(step, { ...spec, minLeaf: 5 })!;
-    const zeroDepth = fitModel(step, { ...spec, depth: 0 })!;
-    if (minimumLeaf.kind !== "tree" || zeroDepth.kind !== "tree") throw new Error("Expected tree models.");
-    expect(minimumLeaf.tree).toEqual({ value: 1 });
-    expect(zeroDepth.tree).toEqual({ value: 1 });
-  });
-
-  test("trees split recursively until their depth limit", () => {
-    // Log-times are 0, 0, 2, 4: the right branch needs a second split.
-    const data: Observation[] = [
-      { id: "a", batch: "one", seconds: 1, features: { x: 0 } },
-      { id: "b", batch: "one", seconds: 1, features: { x: 1 } },
-      { id: "c", batch: "one", seconds: 7.38905609893065, features: { x: 2 } },
-      { id: "d", batch: "one", seconds: 54.598150033144236, features: { x: 3 } },
-    ];
-    const spec: ModelSpec = { id: "tree", kind: "tree", features: ["x"], depth: 2, minLeaf: 1 };
-    const model = fitModel(data, spec)!;
-    const shallow = fitModel(data, { ...spec, depth: 1 })!;
-    if (model.kind !== "tree" || shallow.kind !== "tree") throw new Error("Expected tree models.");
-    expect(model.tree).toEqual({
-      feature: "x", threshold: 1.5, left: { value: 0 },
-      right: { feature: "x", threshold: 2.5, left: { value: 2 }, right: { value: 4 } },
-    });
-    expect(shallow.tree).toEqual({
-      feature: "x", threshold: 1.5, left: { value: 0 }, right: { value: 3 },
-    });
-    expect(predict(model, { x: 2.5 })).toBe(2);
-    expect(predict(model, { x: 3 })).toBe(4);
-  });
-
-  test("equal-gain tree splits prefer the first feature and lowest threshold", () => {
-    // Both columns are identical; both possible thresholds reduce error equally.
-    const data: Observation[] = [
-      { id: "a", batch: "one", seconds: 1, features: { x: 0, z: 0 } },
-      { id: "b", batch: "one", seconds: 7.38905609893065, features: { x: 1, z: 1 } },
-      { id: "c", batch: "one", seconds: 1, features: { x: 2, z: 2 } },
-    ];
-    const model = fitModel(data, { id: "tree", kind: "tree", features: ["z", "x"], depth: 1, minLeaf: 1 })!;
-    if (model.kind !== "tree") throw new Error("Expected tree model.");
-    expect(model.tree).toEqual({
-      feature: "z", threshold: 0.5, left: { value: 0 }, right: { value: 1 },
-    });
-  });
-
   test("equal scores prefer simpler models before alphabetical IDs", () => {
     const data: Observation[] = [
       { id: "a", batch: "one", seconds: 1, features: { x: 0 } },
@@ -193,11 +142,11 @@ describe("small research models", () => {
       { id: "c", batch: "one", seconds: 1, features: { x: 2 } },
     ];
     const result = selectModel(data, [
-      { id: "a-tree", kind: "tree", features: ["x"], depth: 1, minLeaf: 1 },
+      { id: "a-formula", kind: "linear", features: ["x"] },
       { id: "z-constant", kind: "constant", features: [] },
       { id: "b-constant", kind: "constant", features: [] },
     ]);
-    expect(result.candidates.map(candidate => candidate.spec.id)).toEqual(["b-constant", "z-constant", "a-tree"]);
+    expect(result.candidates.map(candidate => candidate.spec.id)).toEqual(["b-constant", "z-constant", "a-formula"]);
     expect(result.winner.id).toBe("b-constant");
   });
 
