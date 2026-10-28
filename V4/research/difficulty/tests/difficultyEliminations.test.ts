@@ -52,6 +52,22 @@ describe("manual difficulty procedure eliminations", () => {
     expect(record.runContext.evaluationCohort).toBe("cloud-sudoku");
   });
 
+  test("captures a raw V4 refutation score without inventing time errors", () => {
+    const { results, benchmarks } = artifacts();
+    const reportContext = { ...results.reportContext, independentValidationPuzzles: 4 };
+    const scores = { n: 4, spearman: 0.4, pearson: 0.2, logRmse: null, secondsMae: null };
+    const record = captureElimination({ ...results, reportContext, cloudValidation: { results: [
+      { procedure: "v4/refutation", scores },
+    ] } }, { ...benchmarks, reportContext, benchmarks: [{ name: "v4/refutation scoring", p95Ms: 2 }] },
+    "v4/refutation", "reason");
+    expect(record.score).toBeCloseTo(0.65);
+    expect(record.statistics).toEqual(scores);
+    expect(record.scoringP95Ms).toBe(2);
+    expect(record.runContext.evaluationCohort).toBe("cloud-sudoku");
+    expect(() => captureElimination({ ...results, reportContext, cloudValidation: { results: [] } },
+      { ...benchmarks, reportContext }, "v4/refutation", "reason")).toThrow("no complete Cloud");
+  });
+
   test("explicitly skipped benchmarks produce null timing, not zero or a stale measurement", () => {
     const { results } = artifacts();
     results.reportContext.settings.benchmarks = "Skipped";

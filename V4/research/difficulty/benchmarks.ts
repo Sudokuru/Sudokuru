@@ -6,6 +6,8 @@ import { singleTrace } from "./singleTrace";
 import { predict } from "./models";
 import { mean, quantile } from "./statistics";
 import { BENCHMARK_SETTINGS } from "./settings";
+import { getPuzzle } from "../../validate";
+import { getRefutationScore } from "../../refutation";
 import type { FeatureRow, ExperimentResult } from "./experimentTypes";
 import type { BenchmarkResult, BenchmarkResults } from "./benchmarkTypes";
 
@@ -27,6 +29,7 @@ export function runBenchmarks(
   featureRows: readonly FeatureRow[],
   experiments: readonly ExperimentResult[],
   preparationMs: number,
+  includeV4Refutation = false,
 ): BenchmarkResults | null {
   if (featureRows.length === 0) {
     console.warn("Too little data for benchmarks: no puzzles to measure.");
@@ -63,6 +66,8 @@ export function runBenchmarks(
   const initialized = featureRows.map(row => initialFeatures(row.record.puzzle).board);
   benchmarks.push(benchmark("initial extraction (includes parsing)", i => initialFeatures(featureRows[i].record.puzzle).features.notes));
   benchmarks.push(benchmark("trace extraction (initialized board + prepared solution)", i => singleTrace(initialized[i], featureRows[i].solution).features.tracePlacements));
+  if (includeV4Refutation) benchmarks.push(benchmark("v4/refutation scoring", i =>
+    getRefutationScore(getPuzzle(featureRows[i].record.puzzle), featureRows[i].solution, 1)));
   for (const experiment of experiments) {
     for (const summary of experiment.summaries) {
       const model = summary.finalModel;

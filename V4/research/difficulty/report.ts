@@ -47,6 +47,7 @@ export function renderReport(
   context?: ReportContext,
   eliminated: readonly EliminatedProcedure[] = [],
   validation?: readonly ValidationResult[],
+  personalRefutation?: ValidationResult,
 ): string {
   // Historical snapshots win over any stale live row supplied by a caller.
   experiments = experiments.map(experiment => ({ ...experiment,
@@ -92,7 +93,8 @@ export function renderReport(
   ];
   if (validation) {
     mainRows.splice(0, mainRows.length, ...validation.map(row => ({ procedure: row.procedure === "legacy" ? "legacy (V3)" : row.procedure,
-      score: humanCorrelationScore(row.scores), scoringP95Ms: row.procedure === "legacy" ? null : (() => {
+      score: humanCorrelationScore(row.scores), scoringP95Ms: row.procedure === "legacy" ? null : row.procedure === "v4/refutation" ?
+        benchmarkResults?.benchmarks.find(item => item.name === "v4/refutation scoring")?.p95Ms ?? null : (() => {
         const experiment = experiments.find(item => row.procedure.startsWith(`${item.name}/`));
         const family = experiment?.summaries.find(item => `${experiment.name}/${item.family}` === row.procedure)?.family;
         return experiment && family ? scoring(experiment, family)?.p95Ms ?? null : null;
@@ -107,12 +109,12 @@ export function renderReport(
     "Two metrics summarize each procedure: human-correlation score (higher is better) and scoring p95 in milliseconds (lower is better). The score is (2 + Spearman + Pearson) / 4, equally weighting ordering and linear agreement with human solve times: 0 means perfectly reversed, 0.5 means zero average correlation, and 1 means perfect agreement. It is not a probability. Missing correlations produce n/a. Raw statistics are retained in the appendices; model selection is unchanged.",
     "## How do approaches compare with legacy?",
     ...(experiments.length === 0 ? ["No experiments ran; model evaluation and fitted-model results are unavailable."] : []),
-    validation ? "Cloud Sudoku results evaluate final models fitted on all personal training puzzles against independent puzzle-level mean solve times, with each puzzle weighted equally regardless of completion count. Legacy scores are a checked-in V3 snapshot originally calculated with a reset random seed per puzzle. Scoring p95 is measured separately on the original 44-puzzle corpus; it excludes training and solution preparation. Legacy runtime was not measured." :
+    validation ? "Cloud Sudoku results evaluate personal-trained models and the unfitted V4 refutation difficulty score against puzzle-level mean solve times, with each puzzle weighted equally regardless of completion count. V4 refutation is only one component of the legacy formula and requires a prepared solution. Legacy combined scores are a checked-in V3 snapshot originally calculated with a reset random seed per puzzle. Scoring p95 is measured separately on the original 44-puzzle corpus; it excludes training and solution preparation. Legacy runtime was not measured." :
       "Personal predictions hold each puzzle out of both model selection and fitting. Scoring p95 includes extraction plus prediction for the final fitted model, excluding training and solution preparation. The summary shows only procedures evaluated on all personal puzzles; partial coverage and unavailable results remain in the appendices. Legacy is a historical reference, not a newly validated procedure.",
     "Active results are sorted by human-correlation score, highest first. Equal scores sort by procedure name; unavailable scores appear last.",
     table(scoreHeadings, mainRows.map(row => [row.procedure, fmt(row.score), fmt(row.scoringP95Ms)])),
     ...(validation ? ["## Top three strategies versus legacy on Cloud Sudoku",
-      "Ranked by the Cloud human-correlation score. Legacy produces a difficulty score rather than predicted seconds, so its time errors are unavailable; Pearson compares its raw score with seconds. Timings use the original benchmark corpus. These comparisons use the same validation puzzles; choosing winners here makes subsequent use of this set exploratory.",
+      "Ranked by the Cloud human-correlation score. Legacy and V4 refutation produce difficulty scores rather than predicted seconds, so their time errors are unavailable; Pearson compares raw scores with seconds. Timings use the original benchmark corpus. These comparisons use the same validation puzzles; choosing winners here makes subsequent use of this set exploratory.",
       ...topStrategies.flatMap(row => {
         const model = validation.find(item => item.procedure === row.procedure)!;
         const legacy = legacyValidation?.scores;
@@ -126,7 +128,10 @@ export function renderReport(
           ["Scoring p95 ms ↓", fmt(row.scoringP95Ms), "n/a"],
         ])];
       }), "## Personal training corpus results",
-      "The personal-data leave-one-puzzle-out results and historical legacy comparisons remain in the appendices below."] : []),
+      "The personal-data leave-one-puzzle-out results and historical legacy comparisons remain in the appendices below.",
+      ...(personalRefutation ? ["V4 refutation on personal puzzles is an unfitted raw-score diagnostic; it is not a held-out time prediction. Correlations are unavailable when the scores or times have no variation.",
+        table(["Procedure", "Puzzles", "Spearman", "Pearson"], [[personalRefutation.procedure, String(personalRefutation.scores.n),
+          fmt(personalRefutation.scores.spearman), fmt(personalRefutation.scores.pearson)]])] : [])] : []),
     "### Eliminated procedures",
     eliminated.length ? table(scoreHeadings, eliminated.map(record =>
       [`${record.procedure} (eliminated)`, fmt(record.score), fmt(record.scoringP95Ms)])) : "No procedures have been eliminated.",

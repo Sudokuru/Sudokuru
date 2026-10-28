@@ -93,6 +93,8 @@ The feature set omits scaled or shifted duplicates. Total notes, mean notes, and
 
 ## Models and evaluation
 
+`v4/refutation` is an unfitted raw difficulty score copied from `gttravis/V4-difficulty` at `fb0f8ef`. It is the optimized V4 refutation component, not the combined V3 formula: the source branch does not implement the dependency component. It runs 30 seeded passes with boost 1, internally uses obvious and hidden singles, and requires a prepared solution. It does not depend on V4 hidden-single hints. Its score is directly compared with solve times by Spearman and Pearson; it is not a prediction in seconds, so time errors are unavailable. All 22 personal training puzzles have raw score zero, preventing a one-feature time calibration. Cloud is exploratory validation. Its warmed scoring p95 includes parsing and scoring without a score cache, and excludes solution preparation. The source branch's bounded score cache was removed so scoring and benchmarks measure actual computation rather than prior cache hits. The optional `data-structure-typed` package was not installed, so no alternative LRU collection could be inspected; removing the memoization also avoids introducing a new collection or dependency.
+
 Two feature sets are evaluated: initial board only, and initial board plus trace. Each compares:
 
 - A constant mean-log-time baseline.

@@ -1,7 +1,7 @@
 import { readFileSync, renameSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { humanCorrelationScore } from "./statistics";
-import type { metrics } from "./statistics";
+import type { ValidationStats } from "./cloudValidation";
 import { PROCEDURE_FAMILIES } from "./procedures";
 
 // Historical IDs remain readable after their fitting implementations are removed.
@@ -18,7 +18,7 @@ export interface EliminatedProcedure {
   readonly score: number;
   readonly scoreDefinition: string;
   readonly scoringP95Ms: number | null;
-  readonly statistics: ReturnType<typeof metrics>;
+  readonly statistics: ValidationStats;
   readonly evaluated: number;
   readonly total: number;
   readonly modelId: string | null;
@@ -43,12 +43,14 @@ function count(value: unknown): value is number {
 function correlation(value: unknown): value is number | null {
   return value === null || finite(value) && value >= -1 && value <= 1;
 }
-function isStatistics(value: unknown): value is ReturnType<typeof metrics> {
+function isStatistics(value: unknown): value is ValidationStats {
   return object(value) && count(value.n) && correlation(value.spearman) && correlation(value.pearson) &&
-    finite(value.logRmse) && value.logRmse >= 0 && finite(value.secondsMae) && value.secondsMae >= 0;
+    (value.logRmse === null || finite(value.logRmse) && value.logRmse >= 0) &&
+    (value.secondsMae === null || finite(value.secondsMae) && value.secondsMae >= 0);
 }
 function validProcedure(value: unknown): value is string {
   if (typeof value !== "string") return false;
+  if (value === "v4/refutation") return true;
   const slash = value.lastIndexOf("/");
   return slash > 0 && ARCHIVABLE_FAMILIES.some(family => family === value.slice(slash + 1));
 }
@@ -65,6 +67,7 @@ export function parseEliminationRegistry(value: unknown): EliminationRegistry {
       !finite(record.score) || record.score < 0 || record.score > 1 || typeof record.scoreDefinition !== "string" || !record.scoreDefinition.trim() ||
       !(record.scoringP95Ms === null || finite(record.scoringP95Ms) && record.scoringP95Ms >= 0) ||
       !isStatistics(record.statistics) || record.statistics.spearman === null || record.statistics.pearson === null ||
+      (record.procedure !== "v4/refutation" && (record.statistics.logRmse === null || record.statistics.secondsMae === null)) ||
       !count(record.evaluated) || !count(record.total) ||
       record.evaluated < 2 || record.evaluated !== record.total || record.statistics.n !== record.evaluated ||
       !(record.modelId === null || typeof record.modelId === "string") || !object(record.runContext) ||
@@ -107,24 +110,26 @@ export function captureElimination(
   const experiment = results.experiments.find(row => object(row) && row.name === name);
   const summary = object(experiment) && Array.isArray(experiment.summaries) ?
     experiment.summaries.find(row => object(row) && row.family === family) : undefined;
-  if (!object(summary) || !isStatistics(summary.heldout) || summary.evaluated !== summary.total ||
-    summary.total !== results.corpus.personal || summary.heldout.n !== summary.evaluated) {
+  if (procedure !== "v4/refutation" && (!object(summary) || !isStatistics(summary.heldout) || summary.evaluated !== summary.total ||
+    summary.total !== results.corpus.personal || summary.heldout.n !== summary.evaluated)) {
     throw new Error(`Procedure ${procedure} has no complete held-out result in this run.`);
   }
-  let statistics = summary.heldout;
-  let evaluated = summary.evaluated as number;
-  let total = summary.total as number;
+  let statistics = object(summary) && isStatistics(summary.heldout) ? summary.heldout : null;
+  let evaluated = object(summary) ? summary.evaluated as number : 0;
+  let total = object(summary) ? summary.total as number : 0;
   let evaluationCohort = "personal-outer-holdout";
   if (object(results.cloudValidation)) {
     if (!Array.isArray(results.cloudValidation.results)) throw new Error("Invalid Cloud validation results.");
     const cloud = results.cloudValidation.results.find(row => object(row) && row.procedure === procedure);
-    if (!object(cloud) || !isStatistics(cloud.scores) || cloud.scores.n !== results.reportContext.independentValidationPuzzles) {
+    if (!object(cloud) || !isStatistics(cloud.scores) || cloud.scores.n !== results.reportContext.independentValidationPuzzles ||
+      (procedure !== "v4/refutation" && (cloud.scores.logRmse === null || cloud.scores.secondsMae === null))) {
       throw new Error(`Procedure ${procedure} has no complete Cloud validation result in this run.`);
     }
     statistics = cloud.scores;
     evaluated = total = cloud.scores.n;
     evaluationCohort = "cloud-sudoku";
   }
+  if (!statistics) throw new Error(`Procedure ${procedure} has no complete Cloud validation result in this run.`);
   const score = humanCorrelationScore(statistics);
   if (score === null) throw new Error(`Procedure ${procedure} has unavailable human correlations.`);
   let scoringP95Ms: number | null = null;
@@ -138,7 +143,8 @@ export function captureElimination(
       JSON.stringify(benchmarks.reportContext) !== JSON.stringify(results.reportContext)) {
       throw new Error("Benchmark provenance does not match results. Regenerate the run before recording an elimination.");
     }
-    const timing = benchmarks.benchmarks.find(row => object(row) && row.name === `${name} extraction + ${family} prediction`);
+    const timingName = procedure === "v4/refutation" ? "v4/refutation scoring" : `${name} extraction + ${family} prediction`;
+    const timing = benchmarks.benchmarks.find(row => object(row) && row.name === timingName);
     if (!object(timing) || !finite(timing.p95Ms) || timing.p95Ms < 0) throw new Error(`No calculation-time measurement for ${procedure}.`);
     scoringP95Ms = timing.p95Ms;
     benchmarkContext = Object.fromEntries(Object.entries(benchmarks).filter(([key]) => key !== "benchmarks" && key !== "reportContext"));
@@ -146,7 +152,7 @@ export function captureElimination(
   const record = {
     procedure, reason: reason.trim(), recordedAt, score, scoreDefinition: SCORE_DEFINITION, scoringP95Ms,
     statistics, evaluated, total,
-    modelId: object(summary.finalModel) && object(summary.finalModel.spec) ? summary.finalModel.spec.id : null,
+    modelId: object(summary) && object(summary.finalModel) && object(summary.finalModel.spec) ? summary.finalModel.spec.id : null,
     runContext: { ...results.reportContext, evaluationCohort }, benchmarkContext,
   };
   return parseEliminationRegistry({ version: 1, procedures: [record] }).procedures[0];

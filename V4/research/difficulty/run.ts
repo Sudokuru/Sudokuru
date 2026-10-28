@@ -15,6 +15,7 @@ import { activeExperiment, EXPERIMENTS } from "./procedures";
 import { ELIMINATION_REGISTRY_PATH, readEliminationRegistry } from "./eliminations";
 import { loadCloudSudoku, prepareCloudSudoku } from "./cloudSudoku";
 import { evaluateCloud, loadLegacyScores } from "./cloudValidation";
+import { scoreV4Refutation, summarizeV4Refutation } from "./v4Refutation";
 
 const args = process.argv.slice(2);
 let outputDirectory = "V4/docs/difficulty/results";
@@ -85,7 +86,14 @@ if (cloudRecords.some(row => originalPuzzles.has(row.puzzle))) throw new Error("
 if (cloudRecords.length) console.log("Loading frozen legacy scores for Cloud Sudoku.");
 const legacyScores = cloudRecords.length ? loadLegacyScores(cloudRecords) : [];
 const cloudValidation = cloudRecords.length ? evaluateCloud(cloudPrepared, experiments, legacyScores) : null;
-const benchmarkResults = skipBenchmarks ? null : runBenchmarks(featureRows, experiments, preparationMs);
+const includeV4Refutation = !registry.procedures.some(row => row.procedure === "v4/refutation");
+console.log(includeV4Refutation ? "Evaluating V4 refutation scores." : "Skipping eliminated V4 refutation procedure.");
+const personalPrepared = prepared.filter(row => row.record.batch && personal.some(item => item.id === row.record.id));
+const personalRefutationScores = includeV4Refutation ? scoreV4Refutation(personalPrepared) : [];
+const personalRefutation = personalPrepared.map((row, i) => ({ id: row.record.id, seconds: row.record.seconds!, score: personalRefutationScores[i] }));
+const cloudRefutation = includeV4Refutation && cloudValidation ? scoreV4Refutation(cloudPrepared) : [];
+if (cloudValidation && cloudRefutation.length) cloudValidation.results.push(summarizeV4Refutation(cloudRecords.map(row => row.seconds), cloudRefutation));
+const benchmarkResults = skipBenchmarks ? null : runBenchmarks(featureRows, experiments, preparationMs, includeV4Refutation);
 /** Git metadata is unavailable in source archives; do not invent a revision. */
 function gitMetadata(args: readonly string[]): string | null {
   try {
@@ -125,6 +133,7 @@ const reportContext: ReportContext = {
     cloudCorpusId: `sha256:${createHash("sha256").update(readFileSync(resolve(__dirname, "../../docs/difficulty/data/cloud-sudoku-20250407.csv"))).digest("hex")}`,
     cloudLegacy: "Frozen V3 combined difficulty snapshot; random seed reset to 81 for each puzzle; prepared solution",
     cloudLegacySnapshotId: `sha256:${createHash("sha256").update(readFileSync(resolve(__dirname, "../../docs/difficulty/data/cloud-sudoku-legacy-scores.csv"))).digest("hex")}`,
+    v4Refutation: includeV4Refutation ? "Raw V4 refutation score, 30 runs, boost 1, seed 81; solution prepared; no score cache" : "Eliminated",
     eliminatedProcedures: registry.procedures.map(record => record.procedure).join(", ") || "None",
   },
 };
@@ -138,6 +147,7 @@ writeJson("results.json", {
   corpus,
   experiments,
   cloudValidation,
+  v4Refutation: includeV4Refutation ? { personal: personalRefutation, cloud: cloudRefutation } : null,
   eliminatedProcedures: registry.procedures,
 });
 writeJson("models.json", experiments.map(experiment => ({ name: experiment.name, includeScarcity: experiment.includeScarcity ?? false, traceLimit: experiment.traceLimit,
@@ -166,8 +176,9 @@ const predictionRows = experiments.flatMap(experiment => {
 });
 writeCsv("predictions.csv", predictionRows);
 writeCsv("cloud-predictions.csv", cloudRecords.map((record, i) => ({ id: record.id, puzzle: record.puzzle,
-  seconds: record.seconds, completionCount: record.completionCount, legacyScore: legacyScores[i],
+  seconds: record.seconds, completionCount: record.completionCount, legacyScore: legacyScores[i], v4RefutationScore: cloudRefutation[i],
   ...Object.fromEntries((cloudValidation?.predictions ?? []).map(row => [row.procedure, Math.exp(row.values[i])])) })));
 
-writeFileSync(resolve(output, "REPORT.md"), renderReport(experiments, correlationRows, corpus, benchmarkResults, reportContext, registry.procedures, cloudValidation?.results));
+writeFileSync(resolve(output, "REPORT.md"), renderReport(experiments, correlationRows, corpus, benchmarkResults, reportContext, registry.procedures, cloudValidation?.results,
+  includeV4Refutation && personalRefutation.length ? summarizeV4Refutation(personalRefutation.map(row => row.seconds), personalRefutationScores) : undefined));
 console.log(`Research outputs written to ${output}`);
