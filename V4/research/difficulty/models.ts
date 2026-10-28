@@ -104,6 +104,7 @@ export function fitModel(rows: readonly Observation[], spec: ModelSpec): FittedM
   if (!coefficients.every(Number.isFinite)) return null;
   const parameters = { target: "logSeconds" as const, intercept, coefficients, means, scales };
   if (spec.kind === "direct") return { kind: "direct", spec, ...parameters, target: "seconds" };
+  if (spec.kind === "scarcity") return { kind: "scarcity", spec, ...parameters };
   if (spec.kind === "power") return { kind: "power", spec, ...parameters };
   if (spec.kind === "reduction" || spec.kind === "bottleneck" || spec.kind === "cascade") return { kind: spec.kind, spec, ...parameters };
   if (spec.kind === "quadratic") return { kind: "quadratic", spec, ...parameters };

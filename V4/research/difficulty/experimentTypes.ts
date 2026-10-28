@@ -24,6 +24,7 @@ export interface ExperimentSpec {
   readonly name: string;
   readonly features: readonly string[];
   readonly includeTrace: boolean;
+  readonly includeScarcity?: boolean;
   /** The fixed early-strategy experiment uses the first ten placements only. */
   readonly traceLimit?: typeof EARLY_TRACE_LIMIT;
   /** Suppress generic feature searches for a preregistered fixed experiment. */
@@ -100,6 +101,7 @@ export interface CoefficientRow {
 export interface ExperimentResult {
   readonly name: string;
   readonly includeTrace: boolean;
+  readonly includeScarcity?: boolean;
   readonly traceLimit?: typeof EARLY_TRACE_LIMIT;
   readonly candidateCount: number;
   readonly heldout: readonly HeldoutPrediction[];

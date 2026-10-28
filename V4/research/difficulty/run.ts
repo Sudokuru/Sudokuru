@@ -114,7 +114,7 @@ const reportContext: ReportContext = {
     quadraticBasis: "x, x^2; training-only centering and scaling of each term",
     additionalModels: JSON.stringify(EXPERIMENTS.map(experiment => ({ name: experiment.name, models: experiment.additionalModels ?? [] }))),
     earlyTraceLimit: EARLY_TRACE_LIMIT,
-    featurePipelines: JSON.stringify(EXPERIMENTS.map(experiment => ({ name: experiment.name, includeTrace: experiment.includeTrace,
+    featurePipelines: JSON.stringify(EXPERIMENTS.map(experiment => ({ name: experiment.name, includeTrace: experiment.includeTrace, includeScarcity: experiment.includeScarcity ?? false,
       traceLimit: experiment.traceLimit ?? null, fixedModelsOnly: experiment.fixedModelsOnly ?? false }))),
     bootstrap: `paired puzzle resampling of fixed predictions; ${BOOTSTRAP_REPEATS} samples, seed ${BOOTSTRAP_SEED}; descriptive, not post-selection inference`,
     benchmarks: skipBenchmarks ? "Skipped" : "Enabled",
@@ -140,7 +140,7 @@ writeJson("results.json", {
   cloudValidation,
   eliminatedProcedures: registry.procedures,
 });
-writeJson("models.json", experiments.map(experiment => ({ name: experiment.name, traceLimit: experiment.traceLimit,
+writeJson("models.json", experiments.map(experiment => ({ name: experiment.name, includeScarcity: experiment.includeScarcity ?? false, traceLimit: experiment.traceLimit,
   models: experiment.summaries.map(summary => ({ family: summary.family, model: summary.finalModel })) })));
 writeCsv("coefficients.csv", experiments.flatMap(experiment => experiment.coefficients));
 writeJson("dataset-audit.json", featureRows.map(row => ({ id: row.record.id, puzzle: row.record.puzzle,

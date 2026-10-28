@@ -1,6 +1,7 @@
 import { cpus, platform, arch } from "node:os";
 import { performance } from "node:perf_hooks";
 import { initialFeatures } from "./features";
+import { unitScarcity } from "./unitScarcity";
 import { singleTrace } from "./singleTrace";
 import { predict } from "./models";
 import { mean, quantile } from "./statistics";
@@ -69,8 +70,8 @@ export function runBenchmarks(
       benchmarks.push(benchmark(`${experiment.name}/${summary.family} prediction`, i => predict(model, featureRows[i].features), BENCHMARK_SETTINGS.predictionBatch));
       benchmarks.push(benchmark(`${experiment.name} extraction + ${summary.family} prediction`, i => {
         const initial = initialFeatures(featureRows[i].record.puzzle);
-        const features = !experiment.includeTrace ? initial.features :
-          { ...initial.features, ...singleTrace(initial.board, featureRows[i].solution, experiment.traceLimit).features };
+        const features = { ...initial.features, ...(experiment.includeScarcity ? unitScarcity(initial.board) : {}),
+          ...(experiment.includeTrace ? singleTrace(initial.board, featureRows[i].solution, experiment.traceLimit).features : {}) };
         return predict(model, features);
       }));
     }

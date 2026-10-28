@@ -5,7 +5,7 @@ import { experimentCandidates } from "./models";
 import { modelFamily } from "./evaluation";
 import { EARLY_TRACE_LIMIT } from "./settings";
 
-export const PROCEDURE_FAMILIES = ["selected", "single", "pair", "quadratic", "ridge", "direct", "power", "reduction", "bottleneck", "cascade"] as const;
+export const PROCEDURE_FAMILIES = ["selected", "single", "pair", "quadratic", "ridge", "direct", "power", "reduction", "bottleneck", "cascade", "scarcity"] as const;
 
 export const EXPERIMENTS: readonly ExperimentSpec[] = [
   { name: "initial", features: INITIAL_MODEL_FEATURES, includeTrace: false, additionalModels: [
@@ -13,6 +13,10 @@ export const EXPERIMENTS: readonly ExperimentSpec[] = [
     { id: "power:notes", kind: "power", features: ["notes"] },
   ] },
   { name: "initial+trace", features: TRACE_MODEL_FEATURES, includeTrace: true },
+  { name: "unit-scarcity", features: ["unitTwoLocationFraction"], includeTrace: false,
+    includeScarcity: true, fixedModelsOnly: true, includeSelected: false, additionalModels: [
+      { id: "scarcity:unitTwoLocationFraction", kind: "scarcity", features: ["unitTwoLocationFraction"] },
+    ] },
   { name: "obvious-cascade", features: ["notes", "traceFilledFraction"], includeTrace: true,
     fixedModelsOnly: true, includeSelected: false, additionalModels: [
       { id: "cascade:notes+traceFilledFraction", kind: "cascade", features: ["notes", "traceFilledFraction"] },

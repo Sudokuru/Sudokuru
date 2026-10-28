@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { initialFeatures } from "./features";
+import { unitScarcity } from "./unitScarcity";
 import { singleTrace } from "./singleTrace";
 import { predict } from "./models";
 import { metrics, pearson, spearman } from "./statistics";
@@ -53,9 +54,10 @@ export function evaluateCloud(rows: readonly CloudPrepared[], experiments: reado
   const seconds = rows.map(row => row.record.seconds);
   for (const row of rows) {
     const initial = initialFeatures(row.record.puzzle);
+    const scarcity = entries.some(entry => entry.experiment.includeScarcity) ? unitScarcity(initial.board) : null;
     const traces = new Map<number, ReturnType<typeof singleTrace>>();
     for (const entry of entries) {
-      let features = initial.features;
+      let features = entry.experiment.includeScarcity ? { ...initial.features, ...scarcity! } : initial.features;
       if (entry.experiment.includeTrace) {
         const limit = entry.experiment.traceLimit ?? 81;
         let trace = traces.get(limit);

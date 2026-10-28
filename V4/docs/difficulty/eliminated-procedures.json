@@ -1484,6 +1484,116 @@
         "corpusSize": 44,
         "checksum": 29656050.733740654
       }
+    },
+    {
+      "procedure": "unit-scarcity/scarcity",
+      "reason": "User decision: discontinue the scarcity-only procedure after evaluation.",
+      "recordedAt": "2026-10-28T01:17:49.139Z",
+      "score": 0.47315864466527624,
+      "scoreDefinition": "(2 + Spearman + Pearson) / 4; clamped to [0, 1]",
+      "scoringP95Ms": 0.9204290500006201,
+      "statistics": {
+        "n": 1533,
+        "spearman": -0.059092122112706,
+        "pearson": -0.048273299226189,
+        "logRmse": 0.9113660493297459,
+        "secondsMae": 261.7357231987932
+      },
+      "evaluated": 1533,
+      "total": 1533,
+      "modelId": "scarcity:unitTwoLocationFraction",
+      "runContext": {
+        "codeRevision": "aed3fbbe85a32f0df5275f02f532e4c899a6cb4e",
+        "workingTreeDirty": true,
+        "corpusId": "sha256:9cad68c41de157b7783418a61b4718a0c811daaed0a76f83148fa0797a5d6dd8",
+        "sourceCommit": "d770c39eeda6fba8ef08c33d302b49cc4c41fe3d",
+        "personalBatches": [
+          {
+            "name": "csv-personal",
+            "puzzles": 14
+          },
+          {
+            "name": "Sudokuru 1",
+            "puzzles": 4
+          },
+          {
+            "name": "Sudokuru 2",
+            "puzzles": 4
+          }
+        ],
+        "independentValidationPuzzles": 1533,
+        "legacyRuntimeMeasured": false,
+        "criteria": {
+          "maxRankingLoss": null,
+          "scoringP95BudgetMs": null
+        },
+        "settings": {
+          "target": "logSeconds, except direct-time fits seconds; evaluation uses log-seconds",
+          "selection": "Spearman, log RMSE, complexity, stable ID",
+          "outer": "leave one personal puzzle out",
+          "inner": "leave one training puzzle out",
+          "ridgePenalties": [
+            0.01,
+            0.1,
+            1,
+            10,
+            100
+          ],
+          "ridgeObjective": "mean squared log error + penalty * squared standardized weights; unpenalized intercept",
+          "quadraticBasis": "x, x^2; training-only centering and scaling of each term",
+          "additionalModels": "[{\"name\":\"initial\",\"models\":[{\"id\":\"direct:notes\",\"kind\":\"direct\",\"features\":[\"notes\"],\"minimumSeconds\":1},{\"id\":\"power:notes\",\"kind\":\"power\",\"features\":[\"notes\"]}]},{\"name\":\"initial+trace\",\"models\":[]},{\"name\":\"unit-scarcity\",\"models\":[{\"id\":\"scarcity:unitTwoLocationFraction\",\"kind\":\"scarcity\",\"features\":[\"unitTwoLocationFraction\"]},{\"id\":\"scarcitySingle:empty+unitTwoLocationFraction\",\"kind\":\"scarcitySingle\",\"features\":[\"empty\",\"unitTwoLocationFraction\"]},{\"id\":\"scarcitySingle:notes+unitTwoLocationFraction\",\"kind\":\"scarcitySingle\",\"features\":[\"notes\",\"unitTwoLocationFraction\"]},{\"id\":\"scarcitySingle:meanNotes+unitTwoLocationFraction\",\"kind\":\"scarcitySingle\",\"features\":[\"meanNotes\",\"unitTwoLocationFraction\"]},{\"id\":\"scarcitySingle:singles+unitTwoLocationFraction\",\"kind\":\"scarcitySingle\",\"features\":[\"singles\",\"unitTwoLocationFraction\"]},{\"id\":\"scarcitySingle:singleFraction+unitTwoLocationFraction\",\"kind\":\"scarcitySingle\",\"features\":[\"singleFraction\",\"unitTwoLocationFraction\"]},{\"id\":\"scarcitySingle:singlesPerCandidate+unitTwoLocationFraction\",\"kind\":\"scarcitySingle\",\"features\":[\"singlesPerCandidate\",\"unitTwoLocationFraction\"]},{\"id\":\"scarcitySingle:pairs+unitTwoLocationFraction\",\"kind\":\"scarcitySingle\",\"features\":[\"pairs\",\"unitTwoLocationFraction\"]},{\"id\":\"scarcitySingle:pairFraction+unitTwoLocationFraction\",\"kind\":\"scarcitySingle\",\"features\":[\"pairFraction\",\"unitTwoLocationFraction\"]},{\"id\":\"scarcitySingle:triples+unitTwoLocationFraction\",\"kind\":\"scarcitySingle\",\"features\":[\"triples\",\"unitTwoLocationFraction\"]},{\"id\":\"scarcitySingle:tripleFraction+unitTwoLocationFraction\",\"kind\":\"scarcitySingle\",\"features\":[\"tripleFraction\",\"unitTwoLocationFraction\"]},{\"id\":\"scarcitySingle:many+unitTwoLocationFraction\",\"kind\":\"scarcitySingle\",\"features\":[\"many\",\"unitTwoLocationFraction\"]},{\"id\":\"scarcitySingle:manyFraction+unitTwoLocationFraction\",\"kind\":\"scarcitySingle\",\"features\":[\"manyFraction\",\"unitTwoLocationFraction\"]},{\"id\":\"scarcitySingle:candidateVariance+unitTwoLocationFraction\",\"kind\":\"scarcitySingle\",\"features\":[\"candidateVariance\",\"unitTwoLocationFraction\"]},{\"id\":\"scarcitySingle:emptyPerSingle+unitTwoLocationFraction\",\"kind\":\"scarcitySingle\",\"features\":[\"emptyPerSingle\",\"unitTwoLocationFraction\"]},{\"id\":\"scarcitySingle:notesPerSingle+unitTwoLocationFraction\",\"kind\":\"scarcitySingle\",\"features\":[\"notesPerSingle\",\"unitTwoLocationFraction\"]},{\"id\":\"scarcityDirect:notes+unitTwoLocationFraction\",\"kind\":\"scarcityDirect\",\"features\":[\"notes\",\"unitTwoLocationFraction\"],\"minimumSeconds\":1},{\"id\":\"scarcityPower:notes+unitTwoLocationFraction\",\"kind\":\"scarcityPower\",\"features\":[\"notes\",\"unitTwoLocationFraction\"]}]},{\"name\":\"obvious-cascade\",\"models\":[{\"id\":\"cascade:notes+traceFilledFraction\",\"kind\":\"cascade\",\"features\":[\"notes\",\"traceFilledFraction\"]}]},{\"name\":\"early-singles\",\"models\":[{\"id\":\"reduction:notes+earlyCandidateReduction10\",\"kind\":\"reduction\",\"features\":[\"notes\",\"earlyCandidateReduction10\"]},{\"id\":\"bottleneck:notes+earlyBottleneck10\",\"kind\":\"bottleneck\",\"features\":[\"notes\",\"earlyBottleneck10\"]}]}]",
+          "earlyTraceLimit": 10,
+          "featurePipelines": "[{\"name\":\"initial\",\"includeTrace\":false,\"includeScarcity\":false,\"traceLimit\":null,\"fixedModelsOnly\":false},{\"name\":\"initial+trace\",\"includeTrace\":true,\"includeScarcity\":false,\"traceLimit\":null,\"fixedModelsOnly\":false},{\"name\":\"unit-scarcity\",\"includeTrace\":false,\"includeScarcity\":true,\"traceLimit\":null,\"fixedModelsOnly\":true},{\"name\":\"obvious-cascade\",\"includeTrace\":true,\"includeScarcity\":false,\"traceLimit\":null,\"fixedModelsOnly\":true},{\"name\":\"early-singles\",\"includeTrace\":true,\"includeScarcity\":false,\"traceLimit\":10,\"fixedModelsOnly\":true}]",
+          "bootstrap": "paired puzzle resampling of fixed predictions; 2000 samples, seed 711; descriptive, not post-selection inference",
+          "benchmarks": "Enabled",
+          "warmupPasses": 5,
+          "measuredPasses": 20,
+          "predictionBatch": 1000,
+          "eliminationRegistryId": "sha256:2dc78a6ec24b77718e6bc4a5a37d09bf6d71a375c348a5c514e2b6706bbebd75",
+          "cloudCorpusId": "sha256:40a5668d6c28f0dd68bf4020ad3ab72fd17afdbaa18a8ce6b55657f16055d996",
+          "cloudLegacy": "Frozen V3 combined difficulty snapshot; random seed reset to 81 for each puzzle; prepared solution",
+          "cloudLegacySnapshotId": "sha256:c17110c705ab76d7e160b292925483032337a6475777c93a0d0f577551eabfdb",
+          "eliminatedProcedures": "initial/tree, initial+trace/tree, initial/selected, initial/pair, initial+trace/single, initial+trace/pair, initial/ridge, initial+trace/ridge, initial/quadratic, initial+trace/quadratic, initial+trace/selected, early-singles/reduction, early-singles/bottleneck, obvious-cascade/cascade"
+        },
+        "evaluationCohort": "cloud-sudoku"
+      },
+      "benchmarkContext": {
+        "runtime": {
+          "node": "22.6.0",
+          "bun": "1.2.2",
+          "boringssl": "29a2cd359458c9384694b75456026e4b57e3e567",
+          "openssl": "1.1.0",
+          "libarchive": "898dc8319355b7e985f68a9819f182aaed61b53a",
+          "mimalloc": "4c283af60cdae205df5a872530c77e2a6a307d43",
+          "picohttpparser": "066d2b1e9ab820703db0837a7255d92d30f0c9f5",
+          "uwebsockets": "c1708ea6ab529a4c747a8282a24d125dc20b0a63",
+          "webkit": "e32c6356625cfacebff0c61d182f759abf6f508a",
+          "zig": "0.13.0",
+          "zlib": "886098f3f339617b4243b286f5ed364b9989e245",
+          "tinycc": "ab631362d839333660a265d3084d8ff060b96753",
+          "lolhtml": "8d4c273ded322193d017042d1f48df2766b0f88b",
+          "ares": "d1722e6e8acaf10eb73fa995798a9cd421d9f85e",
+          "libdeflate": "dc76454a39e7e83b68c3704b6e3784654f8d5ac5",
+          "usockets": "c1708ea6ab529a4c747a8282a24d125dc20b0a63",
+          "lshpack": "3d0f1fc1d6e66a642e7a98c55deb38aa986eb4b0",
+          "zstd": "794ea1b0afca0f020f4e57b6732332231fb23c70",
+          "v8": "12.4.254.14-node.12",
+          "uv": "1.48.0",
+          "napi": "9",
+          "icu": "75.1",
+          "unicode": "15.1",
+          "modules": "127"
+        },
+        "platform": "linux",
+        "arch": "x64",
+        "cpu": "AMD Ryzen 5 5600X 6-Core Processor",
+        "preparationMs": 768.72402,
+        "warmupPasses": 5,
+        "measuredPasses": 20,
+        "predictionBatch": 1000,
+        "corpusSize": 44,
+        "checksum": 44390988.49336668
+      }
     }
   ]
 }

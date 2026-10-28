@@ -1,6 +1,7 @@
 import { TIMING_BATCHES } from "./data";
 import type { PreparedPuzzle } from "./prepare";
 import { initialFeatures } from "./features";
+import { unitScarcity } from "./unitScarcity";
 import { singleTrace } from "./singleTrace";
 import { experimentCandidates, fitModel, modelTerms, predict } from "./models";
 import { modelFamily, nestedCrossValidation, selectModel } from "./evaluation";
@@ -22,7 +23,7 @@ export function prepareResearch(prepared: readonly PreparedPuzzle[]) {
   const featureRows: FeatureRow[] = prepared.map(row => {
     const initial = initialFeatures(row.record.puzzle);
     const trace = singleTrace(initial.board, row.solution);
-    return { ...row, features: { ...initial.features, ...trace.features }, trace };
+    return { ...row, features: { ...initial.features, ...unitScarcity(initial.board), ...trace.features }, trace };
   });
   const timed: TimedObservation[] = featureRows.flatMap(row => row.record.batch === undefined ? [] : [{
     id: row.record.id, batch: row.record.batch, seconds: row.record.seconds!, kind: TIMING_BATCHES[row.record.batch],
@@ -245,7 +246,7 @@ export function runExperiment(
     const rows = heldout.filter(row => row.batch === batch);
     return { batch, scores: metrics(rows.map(row => row.seconds), rows.map(row => row.logPrediction)) };
   });
-  return { name: experiment.name, includeTrace: experiment.includeTrace, traceLimit: experiment.traceLimit, candidateCount: specs.length, heldout, summaries, batchSensitivity,
+  return { name: experiment.name, includeTrace: experiment.includeTrace, includeScarcity: experiment.includeScarcity, traceLimit: experiment.traceLimit, candidateCount: specs.length, heldout, summaries, batchSensitivity,
     finalSelection, fitted, comparisons, coefficients,
     sitePredictions: site.map(row => ({ id: row.id, batch: row.batch, seconds: row.seconds, logPrediction: predict(fitted, row.features) })),
     perPersonalBatch,

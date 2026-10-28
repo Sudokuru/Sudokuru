@@ -57,10 +57,13 @@ export interface BottleneckSpec extends StrategyInputs { readonly kind: "bottlen
 export interface CascadeSpec extends StrategyInputs { readonly kind: "cascade"; }
 export type StrategySpec = ReductionSpec | BottleneckSpec | CascadeSpec;
 
-export type ModelSpec = ConstantSpec | LinearSpec | QuadraticSpec | RidgeSpec | DirectSpec | PowerSpec | StrategySpec;
+export interface ScarcityOnlySpec extends BaseSpec { readonly kind: "scarcity"; readonly features: readonly [string]; }
+export type ScarcitySpec = ScarcityOnlySpec;
+
+export type ModelSpec = ConstantSpec | LinearSpec | QuadraticSpec | RidgeSpec | DirectSpec | PowerSpec | StrategySpec | ScarcitySpec;
 
 /** Reporting groups for baselines and formula sizes. */
-export type ModelFamily = "constant" | "single" | "pair" | "multivariate" | "quadratic" | "ridge" | "direct" | "power" | "reduction" | "bottleneck" | "cascade";
+export type ModelFamily = "constant" | "single" | "pair" | "multivariate" | "quadratic" | "ridge" | "direct" | "power" | "reduction" | "bottleneck" | "cascade" | "scarcity";
 
 /**
  * Trained state. Formula coefficients, means, and scales follow modelTerms(spec)
@@ -116,7 +119,12 @@ export interface StrategyModel extends FormulaParameters {
   readonly spec: StrategySpec;
 }
 
-export type FittedModel = ConstantModel | LinearModel | QuadraticModel | RidgeModel | DirectModel | PowerModel | StrategyModel;
+export interface ScarcityModel extends FormulaParameters {
+  readonly kind: "scarcity";
+  readonly spec: ScarcityOnlySpec;
+}
+
+export type FittedModel = ConstantModel | LinearModel | QuadraticModel | RidgeModel | DirectModel | PowerModel | StrategyModel | ScarcityModel;
 
 /** A recipe scored on predictions for puzzles excluded from each fitting step. */
 export interface CandidateResult {

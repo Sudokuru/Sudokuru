@@ -36,7 +36,7 @@ export type TraceFeatures = {
 };
 
 /** Complete set of V4 research heuristics, excluding historical scores. */
-export type Features = InitialFeatures & TraceFeatures;
+export type Features = InitialFeatures & TraceFeatures & import("./unitScarcity").UnitScarcityFeatures;
 
 /** Historical score columns retain their names in exported CSV artifacts. */
 export type HistoricalScores = {
