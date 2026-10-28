@@ -117,6 +117,8 @@ Each has exactly one recipe, two fitted parameters, no trace, and no feature or 
 
 ### Fixed early-strategy experiments
 
+`obvious-cascade/cascade` tests the fixed formula `logSeconds = a + b * log(1 + notes) + c * traceFilledFraction`. The trace uses the existing V4 obvious-single hints and applies the first row-major move until solved or stalled, with at most 81 placements. The fraction is placements divided by the original empty-cell count. It does not use hidden singles. A prepared solution is used only for hint guards; solution preparation is excluded from timings. The experiment fits three parameters on personal training puzzles, with no feature selection, then evaluates the final fit on the Cloud validation cohort. A direct comparison with `initial/power` and its combined timing is reported. Cloud data has already been inspected and is exploratory, not a fresh blind test.
+
 The `early-singles` experiment tests two specific additions to the note-count power baseline, each using exactly one predefined recipe:
 
 - `early-singles/reduction`: `logSeconds = a + b * log(1 + notes) + c * earlyCandidateReduction10`.

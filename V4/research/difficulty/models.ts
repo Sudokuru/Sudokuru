@@ -7,14 +7,14 @@ import type { ExperimentSpec } from "./experimentTypes";
 
 /** Raw formula terms; quadratic coefficients multiply x and x², respectively. */
 export function modelTerms(spec: ModelSpec): readonly string[] {
-  if (spec.kind === "reduction" || spec.kind === "bottleneck") return [`log1p(${spec.features[0]})`, spec.features[1]];
+  if (spec.kind === "reduction" || spec.kind === "bottleneck" || spec.kind === "cascade") return [`log1p(${spec.features[0]})`, spec.features[1]];
   if (spec.kind === "power") return [`log1p(${spec.features[0]})`];
   return spec.kind === "quadratic" ? [spec.features[0], `${spec.features[0]}^2`] : spec.features;
 }
 
 function featureValues(spec: ModelSpec, features: ModelInputs): number[] {
   const values = spec.features.map(feature => features[feature]);
-  if (spec.kind === "reduction" || spec.kind === "bottleneck") return [values[0] < 0 ? NaN : Math.log1p(values[0]), values[1]];
+  if (spec.kind === "reduction" || spec.kind === "bottleneck" || spec.kind === "cascade") return [values[0] < 0 ? NaN : Math.log1p(values[0]), values[1]];
   if (spec.kind === "power") return [values[0] < 0 ? NaN : Math.log1p(values[0])];
   return spec.kind === "quadratic" ? [values[0], values[0] ** 2] : values;
 }
@@ -105,7 +105,7 @@ export function fitModel(rows: readonly Observation[], spec: ModelSpec): FittedM
   const parameters = { target: "logSeconds" as const, intercept, coefficients, means, scales };
   if (spec.kind === "direct") return { kind: "direct", spec, ...parameters, target: "seconds" };
   if (spec.kind === "power") return { kind: "power", spec, ...parameters };
-  if (spec.kind === "reduction" || spec.kind === "bottleneck") return { kind: spec.kind, spec, ...parameters };
+  if (spec.kind === "reduction" || spec.kind === "bottleneck" || spec.kind === "cascade") return { kind: spec.kind, spec, ...parameters };
   if (spec.kind === "quadratic") return { kind: "quadratic", spec, ...parameters };
   if (spec.kind === "ridge") return { kind: "ridge", spec, ...parameters };
   return { kind: "linear", spec, ...parameters };

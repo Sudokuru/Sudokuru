@@ -75,6 +75,7 @@ export function renderReport(
   const initial = selectedExperiments.find(experiment => !experiment.includeTrace);
   const powerBaseline = experiments.find(experiment => experiment.name === "initial" && summary(experiment, "power"));
   const earlySingles = experiments.find(experiment => experiment.name === "early-singles");
+  const obviousCascade = experiments.find(experiment => experiment.name === "obvious-cascade");
   const batchCount = (name: string) => context?.personalBatches.find(batch => batch.name === name)?.puzzles;
   const notesCorrelation = correlationRows.find(row => row.cohort === "personal" && row.target === "seconds" && row.feature === "notes");
   const mainRows: { procedure: string; score: number | null; scoringP95Ms: number | null }[] = [
@@ -133,11 +134,13 @@ export function renderReport(
     "## Does adding trace information help?",
     "These differences use the personal-data leave-one-out results. Changes are first minus second, not uncertainty estimates. Only matching puzzle identities are compared. Trace procedures use obvious singles; they do not evaluate richer strategies.",
     "The fixed early-singles procedures add one feature to log(1 + notes), using at most ten row-major placements and stopping on a solve or stall. Reduction counts candidates removed from peer cells, excluding each placed single's own note. Bottleneck sums 1 / availableSingles before observed placements; forced moves contribute one. Short traces use observed moves only, with no invented terminal-stall sample. Both fit three parameters and have no feature/window search. Their combined timings include the bounded trace and assume a prepared solution.",
+    "The obvious-cascade procedure fits logSeconds = a + b × log(1 + notes) + c × traceFilledFraction. Its full trace repeatedly applies the first row-major obvious single until the puzzle is solved or stalls; traceFilledFraction is placements divided by original empty cells. It uses no hidden singles and assumes a prepared solution for hint guards. The fixed recipe has three fitted parameters and no feature search.",
     table(deltaHeadings, [
       ...(initial ? selectedExperiments.filter(experiment => experiment.includeTrace).map(experiment =>
         comparisonRows(experiment, initial, "selected", "selected")) : []),
       ...(powerBaseline && earlySingles ? (["reduction", "bottleneck"] as const).filter(family => summary(earlySingles, family)).map(family =>
         comparisonRows(earlySingles, powerBaseline, family, "power")) : []),
+      ...(powerBaseline && obviousCascade && summary(obviousCascade, "cascade") ? [comparisonRows(obviousCascade, powerBaseline, "cascade", "power")] : []),
     ]),
     "## Does allowing more complex models help?",
     "These differences use the personal-data leave-one-out results. Each family selects features or hyperparameters inside its training folds. Family comparisons are exploratory. Choosing a family after inspecting these results requires fresh validation.",

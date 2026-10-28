@@ -54,12 +54,13 @@ interface StrategyInputs extends BaseSpec {
 
 export interface ReductionSpec extends StrategyInputs { readonly kind: "reduction"; }
 export interface BottleneckSpec extends StrategyInputs { readonly kind: "bottleneck"; }
-export type StrategySpec = ReductionSpec | BottleneckSpec;
+export interface CascadeSpec extends StrategyInputs { readonly kind: "cascade"; }
+export type StrategySpec = ReductionSpec | BottleneckSpec | CascadeSpec;
 
 export type ModelSpec = ConstantSpec | LinearSpec | QuadraticSpec | RidgeSpec | DirectSpec | PowerSpec | StrategySpec;
 
 /** Reporting groups for baselines and formula sizes. */
-export type ModelFamily = "constant" | "single" | "pair" | "multivariate" | "quadratic" | "ridge" | "direct" | "power" | "reduction" | "bottleneck";
+export type ModelFamily = "constant" | "single" | "pair" | "multivariate" | "quadratic" | "ridge" | "direct" | "power" | "reduction" | "bottleneck" | "cascade";
 
 /**
  * Trained state. Formula coefficients, means, and scales follow modelTerms(spec)
@@ -111,7 +112,7 @@ export interface PowerModel extends FormulaParameters {
 }
 
 export interface StrategyModel extends FormulaParameters {
-  readonly kind: "reduction" | "bottleneck";
+  readonly kind: "reduction" | "bottleneck" | "cascade";
   readonly spec: StrategySpec;
 }
 
