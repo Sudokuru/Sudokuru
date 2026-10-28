@@ -1,5 +1,5 @@
 /** Offline research entry point: bun V4/research/difficulty/run.ts [--out directory] [--skip-benchmarks]. */
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { performance } from "node:perf_hooks";
 import { execFileSync } from "node:child_process";
@@ -13,15 +13,20 @@ import { BOOTSTRAP_REPEATS, BOOTSTRAP_SEED, ACCEPTANCE_CRITERIA, BENCHMARK_SETTI
 import type { ReportContext } from "./reportTypes";
 import { activeExperiment, EXPERIMENTS } from "./procedures";
 import { ELIMINATION_REGISTRY_PATH, readEliminationRegistry } from "./eliminations";
+import { loadCloudSudoku, prepareCloudSudoku } from "./cloudSudoku";
+import { evaluateCloud, loadLegacyScores } from "./cloudValidation";
 
 const args = process.argv.slice(2);
 let outputDirectory = "V4/docs/difficulty/results";
 let skipBenchmarks = false;
+let skipCloudValidation = false;
 let registryPath = ELIMINATION_REGISTRY_PATH;
 for (let i = 0; i < args.length; i++) {
   const argument = args[i];
   if (argument === "--skip-benchmarks") {
     skipBenchmarks = true;
+  } else if (argument === "--skip-cloud-validation") {
+    skipCloudValidation = true;
   } else if (argument === "--out") {
     const directory = args[++i];
     if (!directory || directory.startsWith("--")) throw new Error("--out requires a directory.");
@@ -31,7 +36,7 @@ for (let i = 0; i < args.length; i++) {
     if (!path || path.startsWith("--")) throw new Error("--registry requires a file.");
     registryPath = resolve(path);
   } else {
-    throw new Error(`Unknown argument: ${argument}. Supported options: --out directory, --skip-benchmarks, --registry file.`);
+    throw new Error(`Unknown argument: ${argument}. Supported options: --out directory, --skip-benchmarks, --skip-cloud-validation, --registry file.`);
   }
 }
 const output = resolve(outputDirectory);
@@ -72,6 +77,14 @@ const experiments = EXPERIMENTS.flatMap(spec => {
   const result = runExperiment(experiment, personal, site, cohorts);
   return result ? [result] : [];
 });
+console.log(skipCloudValidation ? "Cloud validation skipped." : "Preparing independent Cloud Sudoku validation puzzles.");
+const cloudRecords = skipCloudValidation ? [] : loadCloudSudoku();
+const cloudPrepared = prepareCloudSudoku(cloudRecords);
+const originalPuzzles = new Set(DIFFICULTY_RESEARCH_PUZZLES.map(row => row.puzzle));
+if (cloudRecords.some(row => originalPuzzles.has(row.puzzle))) throw new Error("Cloud validation overlaps the training corpus.");
+if (cloudRecords.length) console.log("Loading frozen legacy scores for Cloud Sudoku.");
+const legacyScores = cloudRecords.length ? loadLegacyScores(cloudRecords) : [];
+const cloudValidation = cloudRecords.length ? evaluateCloud(cloudPrepared, experiments, legacyScores) : null;
 const benchmarkResults = skipBenchmarks ? null : runBenchmarks(featureRows, experiments, preparationMs);
 /** Git metadata is unavailable in source archives; do not invent a revision. */
 function gitMetadata(args: readonly string[]): string | null {
@@ -89,8 +102,7 @@ const reportContext: ReportContext = {
   sourceCommit: "d770c39eeda6fba8ef08c33d302b49cc4c41fe3d",
   personalBatches: cohorts.filter(cohort => cohort.name.startsWith("batch:") && cohort.rows[0]?.kind === "personal")
     .map(cohort => ({ name: cohort.name.slice(6), puzzles: cohort.rows.length })),
-  // This runner performs personal cross-validation and site-proxy transfer only.
-  independentValidationPuzzles: 0,
+  independentValidationPuzzles: cloudRecords.length,
   legacyRuntimeMeasured: false,
   criteria: ACCEPTANCE_CRITERIA,
   settings: {
@@ -110,6 +122,9 @@ const reportContext: ReportContext = {
     measuredPasses: BENCHMARK_SETTINGS.measuredPasses,
     predictionBatch: BENCHMARK_SETTINGS.predictionBatch,
     eliminationRegistryId: `sha256:${createHash("sha256").update(JSON.stringify(registry)).digest("hex")}`,
+    cloudCorpusId: `sha256:${createHash("sha256").update(readFileSync(resolve(__dirname, "../../docs/difficulty/data/cloud-sudoku-20250407.csv"))).digest("hex")}`,
+    cloudLegacy: "Frozen V3 combined difficulty snapshot; random seed reset to 81 for each puzzle; prepared solution",
+    cloudLegacySnapshotId: `sha256:${createHash("sha256").update(readFileSync(resolve(__dirname, "../../docs/difficulty/data/cloud-sudoku-legacy-scores.csv"))).digest("hex")}`,
     eliminatedProcedures: registry.procedures.map(record => record.procedure).join(", ") || "None",
   },
 };
@@ -122,6 +137,7 @@ writeJson("results.json", {
   reportContext,
   corpus,
   experiments,
+  cloudValidation,
   eliminatedProcedures: registry.procedures,
 });
 writeJson("models.json", experiments.map(experiment => ({ name: experiment.name, traceLimit: experiment.traceLimit,
@@ -149,6 +165,9 @@ const predictionRows = experiments.flatMap(experiment => {
   return [...personalPredictions, ...sitePredictions];
 });
 writeCsv("predictions.csv", predictionRows);
+writeCsv("cloud-predictions.csv", cloudRecords.map((record, i) => ({ id: record.id, puzzle: record.puzzle,
+  seconds: record.seconds, completionCount: record.completionCount, legacyScore: legacyScores[i],
+  ...Object.fromEntries((cloudValidation?.predictions ?? []).map(row => [row.procedure, Math.exp(row.values[i])])) })));
 
-writeFileSync(resolve(output, "REPORT.md"), renderReport(experiments, correlationRows, corpus, benchmarkResults, reportContext, registry.procedures));
+writeFileSync(resolve(output, "REPORT.md"), renderReport(experiments, correlationRows, corpus, benchmarkResults, reportContext, registry.procedures, cloudValidation?.results));
 console.log(`Research outputs written to ${output}`);

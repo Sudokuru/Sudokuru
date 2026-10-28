@@ -111,7 +111,21 @@ export function captureElimination(
     summary.total !== results.corpus.personal || summary.heldout.n !== summary.evaluated) {
     throw new Error(`Procedure ${procedure} has no complete held-out result in this run.`);
   }
-  const score = humanCorrelationScore(summary.heldout);
+  let statistics = summary.heldout;
+  let evaluated = summary.evaluated as number;
+  let total = summary.total as number;
+  let evaluationCohort = "personal-outer-holdout";
+  if (object(results.cloudValidation)) {
+    if (!Array.isArray(results.cloudValidation.results)) throw new Error("Invalid Cloud validation results.");
+    const cloud = results.cloudValidation.results.find(row => object(row) && row.procedure === procedure);
+    if (!object(cloud) || !isStatistics(cloud.scores) || cloud.scores.n !== results.reportContext.independentValidationPuzzles) {
+      throw new Error(`Procedure ${procedure} has no complete Cloud validation result in this run.`);
+    }
+    statistics = cloud.scores;
+    evaluated = total = cloud.scores.n;
+    evaluationCohort = "cloud-sudoku";
+  }
+  const score = humanCorrelationScore(statistics);
   if (score === null) throw new Error(`Procedure ${procedure} has unavailable human correlations.`);
   let scoringP95Ms: number | null = null;
   let benchmarkContext: Record<string, unknown> | null = null;
@@ -131,9 +145,9 @@ export function captureElimination(
   }
   const record = {
     procedure, reason: reason.trim(), recordedAt, score, scoreDefinition: SCORE_DEFINITION, scoringP95Ms,
-    statistics: summary.heldout, evaluated: summary.evaluated, total: summary.total,
+    statistics, evaluated, total,
     modelId: object(summary.finalModel) && object(summary.finalModel.spec) ? summary.finalModel.spec.id : null,
-    runContext: results.reportContext, benchmarkContext,
+    runContext: { ...results.reportContext, evaluationCohort }, benchmarkContext,
   };
   return parseEliminationRegistry({ version: 1, procedures: [record] }).procedures[0];
 }

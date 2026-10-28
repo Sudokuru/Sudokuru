@@ -5,6 +5,7 @@ import { rawCoefficients } from "./experiments";
 import { INITIAL_MODEL_FEATURES } from "./features";
 import { humanCorrelationScore } from "./statistics";
 import type { EliminatedProcedure } from "./eliminations";
+import type { ValidationResult } from "./cloudValidation";
 
 const fmt = (value: number | null | undefined) => value == null ? "n/a" : value.toFixed(3);
 const difference = (a: number | null | undefined, b: number | null | undefined) =>
@@ -45,6 +46,7 @@ export function renderReport(
   benchmarkResults: BenchmarkResults | null,
   context?: ReportContext,
   eliminated: readonly EliminatedProcedure[] = [],
+  validation?: readonly ValidationResult[],
 ): string {
   // Historical snapshots win over any stale live row supplied by a caller.
   experiments = experiments.map(experiment => ({ ...experiment,
@@ -87,22 +89,49 @@ export function renderReport(
       scoringP95Ms: scoring(experiment, row.family)?.p95Ms ?? null,
     }))),
   ];
+  if (validation) {
+    mainRows.splice(0, mainRows.length, ...validation.map(row => ({ procedure: row.procedure === "legacy" ? "legacy (V3)" : row.procedure,
+      score: humanCorrelationScore(row.scores), scoringP95Ms: row.procedure === "legacy" ? null : (() => {
+        const experiment = experiments.find(item => row.procedure.startsWith(`${item.name}/`));
+        const family = experiment?.summaries.find(item => `${experiment.name}/${item.family}` === row.procedure)?.family;
+        return experiment && family ? scoring(experiment, family)?.p95Ms ?? null : null;
+      })() })));
+  }
   mainRows.sort((a, b) => (b.score ?? -1) - (a.score ?? -1) || a.procedure.localeCompare(b.procedure));
+  const topStrategies = validation ? mainRows.filter(row => row.procedure !== "legacy (V3)" && row.score !== null).slice(0, 3) : [];
+  const legacyValidation = validation?.find(row => row.procedure === "legacy");
   const scoreHeadings = ["Procedure", "Human-correlation score ↑", "Scoring p95 ms ↓"];
   return [
     "# V4 difficulty research results",
     "Two metrics summarize each procedure: human-correlation score (higher is better) and scoring p95 in milliseconds (lower is better). The score is (2 + Spearman + Pearson) / 4, equally weighting ordering and linear agreement with human solve times: 0 means perfectly reversed, 0.5 means zero average correlation, and 1 means perfect agreement. It is not a probability. Missing correlations produce n/a. Raw statistics are retained in the appendices; model selection is unchanged.",
     "## How do approaches compare with legacy?",
     ...(experiments.length === 0 ? ["No experiments ran; model evaluation and fitted-model results are unavailable."] : []),
-    "Personal predictions hold each puzzle out of both model selection and fitting. Scoring p95 includes extraction plus prediction for the final fitted model, excluding training and solution preparation. The summary shows only procedures evaluated on all personal puzzles; partial coverage and unavailable results remain in the appendices. Legacy is a historical reference, not a newly validated procedure.",
+    validation ? "Cloud Sudoku results evaluate final models fitted on all personal training puzzles against independent puzzle-level mean solve times, with each puzzle weighted equally regardless of completion count. Legacy scores are a checked-in V3 snapshot originally calculated with a reset random seed per puzzle. Scoring p95 is measured separately on the original 44-puzzle corpus; it excludes training and solution preparation. Legacy runtime was not measured." :
+      "Personal predictions hold each puzzle out of both model selection and fitting. Scoring p95 includes extraction plus prediction for the final fitted model, excluding training and solution preparation. The summary shows only procedures evaluated on all personal puzzles; partial coverage and unavailable results remain in the appendices. Legacy is a historical reference, not a newly validated procedure.",
     "Active results are sorted by human-correlation score, highest first. Equal scores sort by procedure name; unavailable scores appear last.",
     table(scoreHeadings, mainRows.map(row => [row.procedure, fmt(row.score), fmt(row.scoringP95Ms)])),
+    ...(validation ? ["## Top three strategies versus legacy on Cloud Sudoku",
+      "Ranked by the Cloud human-correlation score. Legacy produces a difficulty score rather than predicted seconds, so its time errors are unavailable; Pearson compares its raw score with seconds. Timings use the original benchmark corpus. These comparisons use the same validation puzzles; choosing winners here makes subsequent use of this set exploratory.",
+      ...topStrategies.flatMap(row => {
+        const model = validation.find(item => item.procedure === row.procedure)!;
+        const legacy = legacyValidation?.scores;
+        return [`### ${row.procedure} versus legacy`, table(["Metric", row.procedure, "Legacy (V3)"], [
+          ["Puzzles", String(model.scores.n), legacy ? String(legacy.n) : "n/a"],
+          ["Human-correlation score ↑", fmt(row.score), fmt(humanCorrelationScore(legacy))],
+          ["Spearman ↑", fmt(model.scores.spearman), fmt(legacy?.spearman)],
+          ["Pearson ↑", fmt(model.scores.pearson), fmt(legacy?.pearson)],
+          ["Log RMSE ↓", fmt(model.scores.logRmse), "n/a"],
+          ["MAE seconds ↓", fmt(model.scores.secondsMae), "n/a"],
+          ["Scoring p95 ms ↓", fmt(row.scoringP95Ms), "n/a"],
+        ])];
+      }), "## Personal training corpus results",
+      "The personal-data leave-one-puzzle-out results and historical legacy comparisons remain in the appendices below."] : []),
     "### Eliminated procedures",
     eliminated.length ? table(scoreHeadings, eliminated.map(record =>
       [`${record.procedure} (eliminated)`, fmt(record.score), fmt(record.scoringP95Ms)])) : "No procedures have been eliminated.",
     "Eliminated rows use frozen measurements from [eliminated-procedures.json](../eliminated-procedures.json). They are historical results, potentially from different corpora, code, or machines; see the decision records below. They are not recalculated by this run.",
     "## Does adding trace information help?",
-    "Changes are first minus second, not uncertainty estimates. Only matching puzzle identities are compared. Trace procedures use obvious singles; they do not evaluate richer strategies.",
+    "These differences use the personal-data leave-one-out results. Changes are first minus second, not uncertainty estimates. Only matching puzzle identities are compared. Trace procedures use obvious singles; they do not evaluate richer strategies.",
     "The fixed early-singles procedures add one feature to log(1 + notes), using at most ten row-major placements and stopping on a solve or stall. Reduction counts candidates removed from peer cells, excluding each placed single's own note. Bottleneck sums 1 / availableSingles before observed placements; forced moves contribute one. Short traces use observed moves only, with no invented terminal-stall sample. Both fit three parameters and have no feature/window search. Their combined timings include the bounded trace and assume a prepared solution.",
     table(deltaHeadings, [
       ...(initial ? selectedExperiments.filter(experiment => experiment.includeTrace).map(experiment =>
@@ -111,7 +140,7 @@ export function renderReport(
         comparisonRows(earlySingles, powerBaseline, family, "power")) : []),
     ]),
     "## Does allowing more complex models help?",
-    "Each family selects features or hyperparameters inside its training folds. Family comparisons are exploratory. Choosing a family after inspecting these results requires fresh validation.",
+    "These differences use the personal-data leave-one-out results. Each family selects features or hyperparameters inside its training folds. Family comparisons are exploratory. Choosing a family after inspecting these results requires fresh validation.",
     "Quadratic procedures fit x and x² for one feature. Ridge procedures combine all allowed features with a coefficient penalty selected inside training folds. Both reuse the same feature extraction as the existing formulas.",
     "The fixed initial/direct procedure fits seconds = a + b × notes, with a one-second prediction floor. The fixed initial/power procedure fits logSeconds = a + b × log(1 + notes). Each fits two parameters using only training puzzles, with no feature or hyperparameter search and no trace extraction.",
     table(deltaHeadings, experiments.filter(experiment => summary(experiment, "single")).flatMap(experiment => (["pair", "quadratic", "ridge", "direct", "power"] as const).filter(family =>
@@ -161,7 +190,7 @@ export function renderReport(
         String(record.runContext.codeRevision ?? "n/a"), record.scoreDefinition,
       ])),
     "## Appendix: fitted models and coefficients",
-    "These recipes are selected and fitted using all personal observations. Their training scores do not validate these particular formulas on new puzzles. Held-out scores above evaluate the selection procedures, which may choose a different recipe in each fold.",
+    "These recipes are selected and fitted using all personal observations. Their training scores do not validate these particular formulas on new puzzles. The personal held-out scores below evaluate the selection procedures, which may choose a different recipe in each fold.",
     table(["Features", "Family", "Final fitted recipe", "Training Spearman"], experiments.flatMap(experiment => experiment.summaries.map(row =>
       [experiment.name, row.family, row.finalModel?.spec.id ?? "unavailable", fmt(row.training?.spearman)]))),
     "[coefficients.csv](coefficients.csv) contains formula-term weights and inner-CV selection scores. Its target column is seconds for direct-time models and logSeconds otherwise. Direct-time predictions are floored at the saved minimumSeconds before taking logs for evaluation; other formulas are exponentiated for seconds without retransformation bias correction. [models.json](models.json) contains final parameters, targets, transformations, and any prediction floor.",

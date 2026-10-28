@@ -41,6 +41,24 @@ function report(experiments: readonly ExperimentResult[] = [initial], metadata: 
 }
 
 describe("difficulty executive report", () => {
+  test("ranks Cloud validation results and gives the top three individual comparisons with legacy", () => {
+    const make = (procedure: string, spearman: number) => ({ procedure,
+      scores: { n: 6, spearman, pearson: spearman, logRmse: 0.3, secondsMae: 10 } });
+    const validation = [make("initial/single", 0.7), make("initial/quadratic", 0.8),
+      make("initial/power", 0.9), make("initial/direct", 0.6),
+      { procedure: "legacy", scores: { n: 6, spearman: 0.75, pearson: 0.75, logRmse: null, secondsMae: null } }];
+    const rendered = unpad(renderReport([initial], [], corpus, benchmarks, context, [], validation));
+    const main = rendered.split("## Top three strategies")[0];
+    expect(main.indexOf("initial/power | 0.950")).toBeLessThan(main.indexOf("initial/quadratic | 0.900"));
+    expect(main).toContain("legacy (V3) | 0.875");
+    const details = rendered.split("## Top three strategies")[1].split("## Personal training corpus results")[0];
+    expect(details).toContain("### initial/power versus legacy");
+    expect(details).toContain("### initial/quadratic versus legacy");
+    expect(details).toContain("### initial/single versus legacy");
+    expect(details).not.toContain("### initial/direct versus legacy");
+    expect(details).toContain("MAE seconds ↓ | 10.000 | n/a");
+    expect(details).toContain("Spearman ↑ | 0.900 | 0.750");
+  });
   test("sorts active rows by unrounded score, resolves ties by name, and puts unavailable scores last", () => {
     const correlations = { selected: 0.6, single: 0.6004, quadratic: 0.8, ridge: 0.8, pair: null };
     const experiment: ExperimentResult = { ...initial, comparisons: [],

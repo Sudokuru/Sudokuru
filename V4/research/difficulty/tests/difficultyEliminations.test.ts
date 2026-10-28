@@ -39,6 +39,19 @@ describe("manual difficulty procedure eliminations", () => {
     expect(record.recordedAt).toBe("2026-10-22T00:00:00.000Z");
   });
 
+  test("captures the Cloud result shown in the main table when available", () => {
+    const { results, benchmarks } = artifacts();
+    const reportContext = { ...results.reportContext, independentValidationPuzzles: 4 };
+    const scores = { n: 4, spearman: 0.4, pearson: 0.2, logRmse: 0.9, secondsMae: 40 };
+    const record = captureElimination({ ...results, reportContext, cloudValidation: { results: [
+      { procedure: "initial/tree", scores },
+    ] } }, { ...benchmarks, reportContext }, "initial/tree", "reason");
+    expect(record.score).toBeCloseTo(0.65);
+    expect(record.statistics).toEqual(scores);
+    expect(record.evaluated).toBe(4);
+    expect(record.runContext.evaluationCohort).toBe("cloud-sudoku");
+  });
+
   test("explicitly skipped benchmarks produce null timing, not zero or a stale measurement", () => {
     const { results } = artifacts();
     results.reportContext.settings.benchmarks = "Skipped";
@@ -142,7 +155,7 @@ describe("manual difficulty procedure eliminations", () => {
       writeFileSync(registry, saved);
       const output = join(directory, "results");
       const run = Bun.spawnSync([process.execPath, resolve(__dirname, "../run.ts"),
-        "--registry", registry, "--out", output, "--skip-benchmarks"]);
+        "--registry", registry, "--out", output, "--skip-benchmarks", "--skip-cloud-validation"]);
       expect(run.exitCode).toBe(0);
       const results = JSON.parse(readFileSync(join(output, "results.json"), "utf8"));
       expect(results.experiments).toEqual([]);
