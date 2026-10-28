@@ -824,6 +824,556 @@
         "corpusSize": 44,
         "checksum": 39952167.77388667
       }
+    },
+    {
+      "procedure": "initial/quadratic",
+      "reason": "User decision: retain only initial/single, initial/direct, and initial/power for further evaluation.",
+      "recordedAt": "2026-10-28T01:05:19.417Z",
+      "score": 0.5953524196111906,
+      "scoreDefinition": "(2 + Spearman + Pearson) / 4; clamped to [0, 1]",
+      "scoringP95Ms": 0.7500070000009142,
+      "statistics": {
+        "n": 1533,
+        "spearman": 0.236215420115048,
+        "pearson": 0.145194258329714,
+        "logRmse": 0.6094094197621316,
+        "secondsMae": 264.02992360520386
+      },
+      "evaluated": 1533,
+      "total": 1533,
+      "modelId": "quadratic:notes",
+      "runContext": {
+        "codeRevision": "382404cc0eb0d22561bcab364d097b346fbf8c69",
+        "workingTreeDirty": true,
+        "corpusId": "sha256:9cad68c41de157b7783418a61b4718a0c811daaed0a76f83148fa0797a5d6dd8",
+        "sourceCommit": "d770c39eeda6fba8ef08c33d302b49cc4c41fe3d",
+        "personalBatches": [
+          {
+            "name": "csv-personal",
+            "puzzles": 14
+          },
+          {
+            "name": "Sudokuru 1",
+            "puzzles": 4
+          },
+          {
+            "name": "Sudokuru 2",
+            "puzzles": 4
+          }
+        ],
+        "independentValidationPuzzles": 1533,
+        "legacyRuntimeMeasured": false,
+        "criteria": {
+          "maxRankingLoss": null,
+          "scoringP95BudgetMs": null
+        },
+        "settings": {
+          "target": "logSeconds, except direct-time fits seconds; evaluation uses log-seconds",
+          "selection": "Spearman, log RMSE, complexity, stable ID",
+          "outer": "leave one personal puzzle out",
+          "inner": "leave one training puzzle out",
+          "ridgePenalties": [
+            0.01,
+            0.1,
+            1,
+            10,
+            100
+          ],
+          "ridgeObjective": "mean squared log error + penalty * squared standardized weights; unpenalized intercept",
+          "quadraticBasis": "x, x^2; training-only centering and scaling of each term",
+          "additionalModels": "[{\"name\":\"initial\",\"models\":[{\"id\":\"direct:notes\",\"kind\":\"direct\",\"features\":[\"notes\"],\"minimumSeconds\":1},{\"id\":\"power:notes\",\"kind\":\"power\",\"features\":[\"notes\"]}]},{\"name\":\"initial+trace\",\"models\":[]},{\"name\":\"early-singles\",\"models\":[{\"id\":\"reduction:notes+earlyCandidateReduction10\",\"kind\":\"reduction\",\"features\":[\"notes\",\"earlyCandidateReduction10\"]},{\"id\":\"bottleneck:notes+earlyBottleneck10\",\"kind\":\"bottleneck\",\"features\":[\"notes\",\"earlyBottleneck10\"]}]}]",
+          "earlyTraceLimit": 10,
+          "featurePipelines": "[{\"name\":\"initial\",\"includeTrace\":false,\"traceLimit\":null,\"fixedModelsOnly\":false},{\"name\":\"initial+trace\",\"includeTrace\":true,\"traceLimit\":null,\"fixedModelsOnly\":false},{\"name\":\"early-singles\",\"includeTrace\":true,\"traceLimit\":10,\"fixedModelsOnly\":true}]",
+          "bootstrap": "paired puzzle resampling of fixed predictions; 2000 samples, seed 711; descriptive, not post-selection inference",
+          "benchmarks": "Enabled",
+          "warmupPasses": 5,
+          "measuredPasses": 20,
+          "predictionBatch": 1000,
+          "eliminationRegistryId": "sha256:f526569e8111938301b45e8335deceae4154e5d3bddf771f0c1222fbcce6c8e6",
+          "cloudCorpusId": "sha256:40a5668d6c28f0dd68bf4020ad3ab72fd17afdbaa18a8ce6b55657f16055d996",
+          "cloudLegacy": "Frozen V3 combined difficulty snapshot; random seed reset to 81 for each puzzle; prepared solution",
+          "cloudLegacySnapshotId": "sha256:c17110c705ab76d7e160b292925483032337a6475777c93a0d0f577551eabfdb",
+          "eliminatedProcedures": "initial/tree, initial+trace/tree, initial/selected, initial/pair, initial+trace/single, initial+trace/pair, initial/ridge, initial+trace/ridge"
+        },
+        "evaluationCohort": "cloud-sudoku"
+      },
+      "benchmarkContext": {
+        "runtime": {
+          "node": "22.6.0",
+          "bun": "1.2.2",
+          "boringssl": "29a2cd359458c9384694b75456026e4b57e3e567",
+          "openssl": "1.1.0",
+          "libarchive": "898dc8319355b7e985f68a9819f182aaed61b53a",
+          "mimalloc": "4c283af60cdae205df5a872530c77e2a6a307d43",
+          "picohttpparser": "066d2b1e9ab820703db0837a7255d92d30f0c9f5",
+          "uwebsockets": "c1708ea6ab529a4c747a8282a24d125dc20b0a63",
+          "webkit": "e32c6356625cfacebff0c61d182f759abf6f508a",
+          "zig": "0.13.0",
+          "zlib": "886098f3f339617b4243b286f5ed364b9989e245",
+          "tinycc": "ab631362d839333660a265d3084d8ff060b96753",
+          "lolhtml": "8d4c273ded322193d017042d1f48df2766b0f88b",
+          "ares": "d1722e6e8acaf10eb73fa995798a9cd421d9f85e",
+          "libdeflate": "dc76454a39e7e83b68c3704b6e3784654f8d5ac5",
+          "usockets": "c1708ea6ab529a4c747a8282a24d125dc20b0a63",
+          "lshpack": "3d0f1fc1d6e66a642e7a98c55deb38aa986eb4b0",
+          "zstd": "794ea1b0afca0f020f4e57b6732332231fb23c70",
+          "v8": "12.4.254.14-node.12",
+          "uv": "1.48.0",
+          "napi": "9",
+          "icu": "75.1",
+          "unicode": "15.1",
+          "modules": "127"
+        },
+        "platform": "linux",
+        "arch": "x64",
+        "cpu": "AMD Ryzen 5 5600X 6-Core Processor",
+        "preparationMs": 676.440771,
+        "warmupPasses": 5,
+        "measuredPasses": 20,
+        "predictionBatch": 1000,
+        "corpusSize": 44,
+        "checksum": 54433757.43937774
+      }
+    },
+    {
+      "procedure": "initial+trace/quadratic",
+      "reason": "User decision: retain only initial/single, initial/direct, and initial/power for further evaluation.",
+      "recordedAt": "2026-10-28T01:05:19.452Z",
+      "score": 0.5953524196111906,
+      "scoreDefinition": "(2 + Spearman + Pearson) / 4; clamped to [0, 1]",
+      "scoringP95Ms": 1.1570584999974014,
+      "statistics": {
+        "n": 1533,
+        "spearman": 0.236215420115048,
+        "pearson": 0.145194258329714,
+        "logRmse": 0.6094094197621316,
+        "secondsMae": 264.02992360520386
+      },
+      "evaluated": 1533,
+      "total": 1533,
+      "modelId": "quadratic:notes",
+      "runContext": {
+        "codeRevision": "382404cc0eb0d22561bcab364d097b346fbf8c69",
+        "workingTreeDirty": true,
+        "corpusId": "sha256:9cad68c41de157b7783418a61b4718a0c811daaed0a76f83148fa0797a5d6dd8",
+        "sourceCommit": "d770c39eeda6fba8ef08c33d302b49cc4c41fe3d",
+        "personalBatches": [
+          {
+            "name": "csv-personal",
+            "puzzles": 14
+          },
+          {
+            "name": "Sudokuru 1",
+            "puzzles": 4
+          },
+          {
+            "name": "Sudokuru 2",
+            "puzzles": 4
+          }
+        ],
+        "independentValidationPuzzles": 1533,
+        "legacyRuntimeMeasured": false,
+        "criteria": {
+          "maxRankingLoss": null,
+          "scoringP95BudgetMs": null
+        },
+        "settings": {
+          "target": "logSeconds, except direct-time fits seconds; evaluation uses log-seconds",
+          "selection": "Spearman, log RMSE, complexity, stable ID",
+          "outer": "leave one personal puzzle out",
+          "inner": "leave one training puzzle out",
+          "ridgePenalties": [
+            0.01,
+            0.1,
+            1,
+            10,
+            100
+          ],
+          "ridgeObjective": "mean squared log error + penalty * squared standardized weights; unpenalized intercept",
+          "quadraticBasis": "x, x^2; training-only centering and scaling of each term",
+          "additionalModels": "[{\"name\":\"initial\",\"models\":[{\"id\":\"direct:notes\",\"kind\":\"direct\",\"features\":[\"notes\"],\"minimumSeconds\":1},{\"id\":\"power:notes\",\"kind\":\"power\",\"features\":[\"notes\"]}]},{\"name\":\"initial+trace\",\"models\":[]},{\"name\":\"early-singles\",\"models\":[{\"id\":\"reduction:notes+earlyCandidateReduction10\",\"kind\":\"reduction\",\"features\":[\"notes\",\"earlyCandidateReduction10\"]},{\"id\":\"bottleneck:notes+earlyBottleneck10\",\"kind\":\"bottleneck\",\"features\":[\"notes\",\"earlyBottleneck10\"]}]}]",
+          "earlyTraceLimit": 10,
+          "featurePipelines": "[{\"name\":\"initial\",\"includeTrace\":false,\"traceLimit\":null,\"fixedModelsOnly\":false},{\"name\":\"initial+trace\",\"includeTrace\":true,\"traceLimit\":null,\"fixedModelsOnly\":false},{\"name\":\"early-singles\",\"includeTrace\":true,\"traceLimit\":10,\"fixedModelsOnly\":true}]",
+          "bootstrap": "paired puzzle resampling of fixed predictions; 2000 samples, seed 711; descriptive, not post-selection inference",
+          "benchmarks": "Enabled",
+          "warmupPasses": 5,
+          "measuredPasses": 20,
+          "predictionBatch": 1000,
+          "eliminationRegistryId": "sha256:f526569e8111938301b45e8335deceae4154e5d3bddf771f0c1222fbcce6c8e6",
+          "cloudCorpusId": "sha256:40a5668d6c28f0dd68bf4020ad3ab72fd17afdbaa18a8ce6b55657f16055d996",
+          "cloudLegacy": "Frozen V3 combined difficulty snapshot; random seed reset to 81 for each puzzle; prepared solution",
+          "cloudLegacySnapshotId": "sha256:c17110c705ab76d7e160b292925483032337a6475777c93a0d0f577551eabfdb",
+          "eliminatedProcedures": "initial/tree, initial+trace/tree, initial/selected, initial/pair, initial+trace/single, initial+trace/pair, initial/ridge, initial+trace/ridge"
+        },
+        "evaluationCohort": "cloud-sudoku"
+      },
+      "benchmarkContext": {
+        "runtime": {
+          "node": "22.6.0",
+          "bun": "1.2.2",
+          "boringssl": "29a2cd359458c9384694b75456026e4b57e3e567",
+          "openssl": "1.1.0",
+          "libarchive": "898dc8319355b7e985f68a9819f182aaed61b53a",
+          "mimalloc": "4c283af60cdae205df5a872530c77e2a6a307d43",
+          "picohttpparser": "066d2b1e9ab820703db0837a7255d92d30f0c9f5",
+          "uwebsockets": "c1708ea6ab529a4c747a8282a24d125dc20b0a63",
+          "webkit": "e32c6356625cfacebff0c61d182f759abf6f508a",
+          "zig": "0.13.0",
+          "zlib": "886098f3f339617b4243b286f5ed364b9989e245",
+          "tinycc": "ab631362d839333660a265d3084d8ff060b96753",
+          "lolhtml": "8d4c273ded322193d017042d1f48df2766b0f88b",
+          "ares": "d1722e6e8acaf10eb73fa995798a9cd421d9f85e",
+          "libdeflate": "dc76454a39e7e83b68c3704b6e3784654f8d5ac5",
+          "usockets": "c1708ea6ab529a4c747a8282a24d125dc20b0a63",
+          "lshpack": "3d0f1fc1d6e66a642e7a98c55deb38aa986eb4b0",
+          "zstd": "794ea1b0afca0f020f4e57b6732332231fb23c70",
+          "v8": "12.4.254.14-node.12",
+          "uv": "1.48.0",
+          "napi": "9",
+          "icu": "75.1",
+          "unicode": "15.1",
+          "modules": "127"
+        },
+        "platform": "linux",
+        "arch": "x64",
+        "cpu": "AMD Ryzen 5 5600X 6-Core Processor",
+        "preparationMs": 676.440771,
+        "warmupPasses": 5,
+        "measuredPasses": 20,
+        "predictionBatch": 1000,
+        "corpusSize": 44,
+        "checksum": 54433757.43937774
+      }
+    },
+    {
+      "procedure": "initial+trace/selected",
+      "reason": "User decision: retain only initial/single, initial/direct, and initial/power for further evaluation.",
+      "recordedAt": "2026-10-28T01:05:19.486Z",
+      "score": 0.5953524196111906,
+      "scoreDefinition": "(2 + Spearman + Pearson) / 4; clamped to [0, 1]",
+      "scoringP95Ms": 1.067424499999015,
+      "statistics": {
+        "n": 1533,
+        "spearman": 0.236215420115048,
+        "pearson": 0.145194258329714,
+        "logRmse": 0.6094094197621316,
+        "secondsMae": 264.02992360520386
+      },
+      "evaluated": 1533,
+      "total": 1533,
+      "modelId": "quadratic:notes",
+      "runContext": {
+        "codeRevision": "382404cc0eb0d22561bcab364d097b346fbf8c69",
+        "workingTreeDirty": true,
+        "corpusId": "sha256:9cad68c41de157b7783418a61b4718a0c811daaed0a76f83148fa0797a5d6dd8",
+        "sourceCommit": "d770c39eeda6fba8ef08c33d302b49cc4c41fe3d",
+        "personalBatches": [
+          {
+            "name": "csv-personal",
+            "puzzles": 14
+          },
+          {
+            "name": "Sudokuru 1",
+            "puzzles": 4
+          },
+          {
+            "name": "Sudokuru 2",
+            "puzzles": 4
+          }
+        ],
+        "independentValidationPuzzles": 1533,
+        "legacyRuntimeMeasured": false,
+        "criteria": {
+          "maxRankingLoss": null,
+          "scoringP95BudgetMs": null
+        },
+        "settings": {
+          "target": "logSeconds, except direct-time fits seconds; evaluation uses log-seconds",
+          "selection": "Spearman, log RMSE, complexity, stable ID",
+          "outer": "leave one personal puzzle out",
+          "inner": "leave one training puzzle out",
+          "ridgePenalties": [
+            0.01,
+            0.1,
+            1,
+            10,
+            100
+          ],
+          "ridgeObjective": "mean squared log error + penalty * squared standardized weights; unpenalized intercept",
+          "quadraticBasis": "x, x^2; training-only centering and scaling of each term",
+          "additionalModels": "[{\"name\":\"initial\",\"models\":[{\"id\":\"direct:notes\",\"kind\":\"direct\",\"features\":[\"notes\"],\"minimumSeconds\":1},{\"id\":\"power:notes\",\"kind\":\"power\",\"features\":[\"notes\"]}]},{\"name\":\"initial+trace\",\"models\":[]},{\"name\":\"early-singles\",\"models\":[{\"id\":\"reduction:notes+earlyCandidateReduction10\",\"kind\":\"reduction\",\"features\":[\"notes\",\"earlyCandidateReduction10\"]},{\"id\":\"bottleneck:notes+earlyBottleneck10\",\"kind\":\"bottleneck\",\"features\":[\"notes\",\"earlyBottleneck10\"]}]}]",
+          "earlyTraceLimit": 10,
+          "featurePipelines": "[{\"name\":\"initial\",\"includeTrace\":false,\"traceLimit\":null,\"fixedModelsOnly\":false},{\"name\":\"initial+trace\",\"includeTrace\":true,\"traceLimit\":null,\"fixedModelsOnly\":false},{\"name\":\"early-singles\",\"includeTrace\":true,\"traceLimit\":10,\"fixedModelsOnly\":true}]",
+          "bootstrap": "paired puzzle resampling of fixed predictions; 2000 samples, seed 711; descriptive, not post-selection inference",
+          "benchmarks": "Enabled",
+          "warmupPasses": 5,
+          "measuredPasses": 20,
+          "predictionBatch": 1000,
+          "eliminationRegistryId": "sha256:f526569e8111938301b45e8335deceae4154e5d3bddf771f0c1222fbcce6c8e6",
+          "cloudCorpusId": "sha256:40a5668d6c28f0dd68bf4020ad3ab72fd17afdbaa18a8ce6b55657f16055d996",
+          "cloudLegacy": "Frozen V3 combined difficulty snapshot; random seed reset to 81 for each puzzle; prepared solution",
+          "cloudLegacySnapshotId": "sha256:c17110c705ab76d7e160b292925483032337a6475777c93a0d0f577551eabfdb",
+          "eliminatedProcedures": "initial/tree, initial+trace/tree, initial/selected, initial/pair, initial+trace/single, initial+trace/pair, initial/ridge, initial+trace/ridge"
+        },
+        "evaluationCohort": "cloud-sudoku"
+      },
+      "benchmarkContext": {
+        "runtime": {
+          "node": "22.6.0",
+          "bun": "1.2.2",
+          "boringssl": "29a2cd359458c9384694b75456026e4b57e3e567",
+          "openssl": "1.1.0",
+          "libarchive": "898dc8319355b7e985f68a9819f182aaed61b53a",
+          "mimalloc": "4c283af60cdae205df5a872530c77e2a6a307d43",
+          "picohttpparser": "066d2b1e9ab820703db0837a7255d92d30f0c9f5",
+          "uwebsockets": "c1708ea6ab529a4c747a8282a24d125dc20b0a63",
+          "webkit": "e32c6356625cfacebff0c61d182f759abf6f508a",
+          "zig": "0.13.0",
+          "zlib": "886098f3f339617b4243b286f5ed364b9989e245",
+          "tinycc": "ab631362d839333660a265d3084d8ff060b96753",
+          "lolhtml": "8d4c273ded322193d017042d1f48df2766b0f88b",
+          "ares": "d1722e6e8acaf10eb73fa995798a9cd421d9f85e",
+          "libdeflate": "dc76454a39e7e83b68c3704b6e3784654f8d5ac5",
+          "usockets": "c1708ea6ab529a4c747a8282a24d125dc20b0a63",
+          "lshpack": "3d0f1fc1d6e66a642e7a98c55deb38aa986eb4b0",
+          "zstd": "794ea1b0afca0f020f4e57b6732332231fb23c70",
+          "v8": "12.4.254.14-node.12",
+          "uv": "1.48.0",
+          "napi": "9",
+          "icu": "75.1",
+          "unicode": "15.1",
+          "modules": "127"
+        },
+        "platform": "linux",
+        "arch": "x64",
+        "cpu": "AMD Ryzen 5 5600X 6-Core Processor",
+        "preparationMs": 676.440771,
+        "warmupPasses": 5,
+        "measuredPasses": 20,
+        "predictionBatch": 1000,
+        "corpusSize": 44,
+        "checksum": 54433757.43937774
+      }
+    },
+    {
+      "procedure": "early-singles/reduction",
+      "reason": "User decision: retain only initial/single, initial/direct, and initial/power for further evaluation.",
+      "recordedAt": "2026-10-28T01:05:19.518Z",
+      "score": 0.5446223055825485,
+      "scoreDefinition": "(2 + Spearman + Pearson) / 4; clamped to [0, 1]",
+      "scoringP95Ms": 0.9678414999971203,
+      "statistics": {
+        "n": 1533,
+        "spearman": 0.104496879827586,
+        "pearson": 0.073992342502608,
+        "logRmse": 0.49786990528225,
+        "secondsMae": 199.09932760412838
+      },
+      "evaluated": 1533,
+      "total": 1533,
+      "modelId": "reduction:notes+earlyCandidateReduction10",
+      "runContext": {
+        "codeRevision": "382404cc0eb0d22561bcab364d097b346fbf8c69",
+        "workingTreeDirty": true,
+        "corpusId": "sha256:9cad68c41de157b7783418a61b4718a0c811daaed0a76f83148fa0797a5d6dd8",
+        "sourceCommit": "d770c39eeda6fba8ef08c33d302b49cc4c41fe3d",
+        "personalBatches": [
+          {
+            "name": "csv-personal",
+            "puzzles": 14
+          },
+          {
+            "name": "Sudokuru 1",
+            "puzzles": 4
+          },
+          {
+            "name": "Sudokuru 2",
+            "puzzles": 4
+          }
+        ],
+        "independentValidationPuzzles": 1533,
+        "legacyRuntimeMeasured": false,
+        "criteria": {
+          "maxRankingLoss": null,
+          "scoringP95BudgetMs": null
+        },
+        "settings": {
+          "target": "logSeconds, except direct-time fits seconds; evaluation uses log-seconds",
+          "selection": "Spearman, log RMSE, complexity, stable ID",
+          "outer": "leave one personal puzzle out",
+          "inner": "leave one training puzzle out",
+          "ridgePenalties": [
+            0.01,
+            0.1,
+            1,
+            10,
+            100
+          ],
+          "ridgeObjective": "mean squared log error + penalty * squared standardized weights; unpenalized intercept",
+          "quadraticBasis": "x, x^2; training-only centering and scaling of each term",
+          "additionalModels": "[{\"name\":\"initial\",\"models\":[{\"id\":\"direct:notes\",\"kind\":\"direct\",\"features\":[\"notes\"],\"minimumSeconds\":1},{\"id\":\"power:notes\",\"kind\":\"power\",\"features\":[\"notes\"]}]},{\"name\":\"initial+trace\",\"models\":[]},{\"name\":\"early-singles\",\"models\":[{\"id\":\"reduction:notes+earlyCandidateReduction10\",\"kind\":\"reduction\",\"features\":[\"notes\",\"earlyCandidateReduction10\"]},{\"id\":\"bottleneck:notes+earlyBottleneck10\",\"kind\":\"bottleneck\",\"features\":[\"notes\",\"earlyBottleneck10\"]}]}]",
+          "earlyTraceLimit": 10,
+          "featurePipelines": "[{\"name\":\"initial\",\"includeTrace\":false,\"traceLimit\":null,\"fixedModelsOnly\":false},{\"name\":\"initial+trace\",\"includeTrace\":true,\"traceLimit\":null,\"fixedModelsOnly\":false},{\"name\":\"early-singles\",\"includeTrace\":true,\"traceLimit\":10,\"fixedModelsOnly\":true}]",
+          "bootstrap": "paired puzzle resampling of fixed predictions; 2000 samples, seed 711; descriptive, not post-selection inference",
+          "benchmarks": "Enabled",
+          "warmupPasses": 5,
+          "measuredPasses": 20,
+          "predictionBatch": 1000,
+          "eliminationRegistryId": "sha256:f526569e8111938301b45e8335deceae4154e5d3bddf771f0c1222fbcce6c8e6",
+          "cloudCorpusId": "sha256:40a5668d6c28f0dd68bf4020ad3ab72fd17afdbaa18a8ce6b55657f16055d996",
+          "cloudLegacy": "Frozen V3 combined difficulty snapshot; random seed reset to 81 for each puzzle; prepared solution",
+          "cloudLegacySnapshotId": "sha256:c17110c705ab76d7e160b292925483032337a6475777c93a0d0f577551eabfdb",
+          "eliminatedProcedures": "initial/tree, initial+trace/tree, initial/selected, initial/pair, initial+trace/single, initial+trace/pair, initial/ridge, initial+trace/ridge"
+        },
+        "evaluationCohort": "cloud-sudoku"
+      },
+      "benchmarkContext": {
+        "runtime": {
+          "node": "22.6.0",
+          "bun": "1.2.2",
+          "boringssl": "29a2cd359458c9384694b75456026e4b57e3e567",
+          "openssl": "1.1.0",
+          "libarchive": "898dc8319355b7e985f68a9819f182aaed61b53a",
+          "mimalloc": "4c283af60cdae205df5a872530c77e2a6a307d43",
+          "picohttpparser": "066d2b1e9ab820703db0837a7255d92d30f0c9f5",
+          "uwebsockets": "c1708ea6ab529a4c747a8282a24d125dc20b0a63",
+          "webkit": "e32c6356625cfacebff0c61d182f759abf6f508a",
+          "zig": "0.13.0",
+          "zlib": "886098f3f339617b4243b286f5ed364b9989e245",
+          "tinycc": "ab631362d839333660a265d3084d8ff060b96753",
+          "lolhtml": "8d4c273ded322193d017042d1f48df2766b0f88b",
+          "ares": "d1722e6e8acaf10eb73fa995798a9cd421d9f85e",
+          "libdeflate": "dc76454a39e7e83b68c3704b6e3784654f8d5ac5",
+          "usockets": "c1708ea6ab529a4c747a8282a24d125dc20b0a63",
+          "lshpack": "3d0f1fc1d6e66a642e7a98c55deb38aa986eb4b0",
+          "zstd": "794ea1b0afca0f020f4e57b6732332231fb23c70",
+          "v8": "12.4.254.14-node.12",
+          "uv": "1.48.0",
+          "napi": "9",
+          "icu": "75.1",
+          "unicode": "15.1",
+          "modules": "127"
+        },
+        "platform": "linux",
+        "arch": "x64",
+        "cpu": "AMD Ryzen 5 5600X 6-Core Processor",
+        "preparationMs": 676.440771,
+        "warmupPasses": 5,
+        "measuredPasses": 20,
+        "predictionBatch": 1000,
+        "corpusSize": 44,
+        "checksum": 54433757.43937774
+      }
+    },
+    {
+      "procedure": "early-singles/bottleneck",
+      "reason": "User decision: retain only initial/single, initial/direct, and initial/power for further evaluation.",
+      "recordedAt": "2026-10-28T01:05:19.555Z",
+      "score": 0.5555559532735528,
+      "scoreDefinition": "(2 + Spearman + Pearson) / 4; clamped to [0, 1]",
+      "scoringP95Ms": 0.9259040500004629,
+      "statistics": {
+        "n": 1533,
+        "spearman": 0.13400927535561,
+        "pearson": 0.088214537738601,
+        "logRmse": 0.518408435606249,
+        "secondsMae": 210.85313190056462
+      },
+      "evaluated": 1533,
+      "total": 1533,
+      "modelId": "bottleneck:notes+earlyBottleneck10",
+      "runContext": {
+        "codeRevision": "382404cc0eb0d22561bcab364d097b346fbf8c69",
+        "workingTreeDirty": true,
+        "corpusId": "sha256:9cad68c41de157b7783418a61b4718a0c811daaed0a76f83148fa0797a5d6dd8",
+        "sourceCommit": "d770c39eeda6fba8ef08c33d302b49cc4c41fe3d",
+        "personalBatches": [
+          {
+            "name": "csv-personal",
+            "puzzles": 14
+          },
+          {
+            "name": "Sudokuru 1",
+            "puzzles": 4
+          },
+          {
+            "name": "Sudokuru 2",
+            "puzzles": 4
+          }
+        ],
+        "independentValidationPuzzles": 1533,
+        "legacyRuntimeMeasured": false,
+        "criteria": {
+          "maxRankingLoss": null,
+          "scoringP95BudgetMs": null
+        },
+        "settings": {
+          "target": "logSeconds, except direct-time fits seconds; evaluation uses log-seconds",
+          "selection": "Spearman, log RMSE, complexity, stable ID",
+          "outer": "leave one personal puzzle out",
+          "inner": "leave one training puzzle out",
+          "ridgePenalties": [
+            0.01,
+            0.1,
+            1,
+            10,
+            100
+          ],
+          "ridgeObjective": "mean squared log error + penalty * squared standardized weights; unpenalized intercept",
+          "quadraticBasis": "x, x^2; training-only centering and scaling of each term",
+          "additionalModels": "[{\"name\":\"initial\",\"models\":[{\"id\":\"direct:notes\",\"kind\":\"direct\",\"features\":[\"notes\"],\"minimumSeconds\":1},{\"id\":\"power:notes\",\"kind\":\"power\",\"features\":[\"notes\"]}]},{\"name\":\"initial+trace\",\"models\":[]},{\"name\":\"early-singles\",\"models\":[{\"id\":\"reduction:notes+earlyCandidateReduction10\",\"kind\":\"reduction\",\"features\":[\"notes\",\"earlyCandidateReduction10\"]},{\"id\":\"bottleneck:notes+earlyBottleneck10\",\"kind\":\"bottleneck\",\"features\":[\"notes\",\"earlyBottleneck10\"]}]}]",
+          "earlyTraceLimit": 10,
+          "featurePipelines": "[{\"name\":\"initial\",\"includeTrace\":false,\"traceLimit\":null,\"fixedModelsOnly\":false},{\"name\":\"initial+trace\",\"includeTrace\":true,\"traceLimit\":null,\"fixedModelsOnly\":false},{\"name\":\"early-singles\",\"includeTrace\":true,\"traceLimit\":10,\"fixedModelsOnly\":true}]",
+          "bootstrap": "paired puzzle resampling of fixed predictions; 2000 samples, seed 711; descriptive, not post-selection inference",
+          "benchmarks": "Enabled",
+          "warmupPasses": 5,
+          "measuredPasses": 20,
+          "predictionBatch": 1000,
+          "eliminationRegistryId": "sha256:f526569e8111938301b45e8335deceae4154e5d3bddf771f0c1222fbcce6c8e6",
+          "cloudCorpusId": "sha256:40a5668d6c28f0dd68bf4020ad3ab72fd17afdbaa18a8ce6b55657f16055d996",
+          "cloudLegacy": "Frozen V3 combined difficulty snapshot; random seed reset to 81 for each puzzle; prepared solution",
+          "cloudLegacySnapshotId": "sha256:c17110c705ab76d7e160b292925483032337a6475777c93a0d0f577551eabfdb",
+          "eliminatedProcedures": "initial/tree, initial+trace/tree, initial/selected, initial/pair, initial+trace/single, initial+trace/pair, initial/ridge, initial+trace/ridge"
+        },
+        "evaluationCohort": "cloud-sudoku"
+      },
+      "benchmarkContext": {
+        "runtime": {
+          "node": "22.6.0",
+          "bun": "1.2.2",
+          "boringssl": "29a2cd359458c9384694b75456026e4b57e3e567",
+          "openssl": "1.1.0",
+          "libarchive": "898dc8319355b7e985f68a9819f182aaed61b53a",
+          "mimalloc": "4c283af60cdae205df5a872530c77e2a6a307d43",
+          "picohttpparser": "066d2b1e9ab820703db0837a7255d92d30f0c9f5",
+          "uwebsockets": "c1708ea6ab529a4c747a8282a24d125dc20b0a63",
+          "webkit": "e32c6356625cfacebff0c61d182f759abf6f508a",
+          "zig": "0.13.0",
+          "zlib": "886098f3f339617b4243b286f5ed364b9989e245",
+          "tinycc": "ab631362d839333660a265d3084d8ff060b96753",
+          "lolhtml": "8d4c273ded322193d017042d1f48df2766b0f88b",
+          "ares": "d1722e6e8acaf10eb73fa995798a9cd421d9f85e",
+          "libdeflate": "dc76454a39e7e83b68c3704b6e3784654f8d5ac5",
+          "usockets": "c1708ea6ab529a4c747a8282a24d125dc20b0a63",
+          "lshpack": "3d0f1fc1d6e66a642e7a98c55deb38aa986eb4b0",
+          "zstd": "794ea1b0afca0f020f4e57b6732332231fb23c70",
+          "v8": "12.4.254.14-node.12",
+          "uv": "1.48.0",
+          "napi": "9",
+          "icu": "75.1",
+          "unicode": "15.1",
+          "modules": "127"
+        },
+        "platform": "linux",
+        "arch": "x64",
+        "cpu": "AMD Ryzen 5 5600X 6-Core Processor",
+        "preparationMs": 676.440771,
+        "warmupPasses": 5,
+        "measuredPasses": 20,
+        "predictionBatch": 1000,
+        "corpusSize": 44,
+        "checksum": 54433757.43937774
+      }
     }
   ]
 }
