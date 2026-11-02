@@ -35,15 +35,10 @@ function* generateHints(
   puzzle: readonly (readonly CellProps[])[],
   solution: readonly (readonly SudokuNumber[])[],
   strategies?: readonly SudokuStrategy[]
-): Generator<Hint, void> {
+): Generator<Hint, void, void> {
   const vision = createSudokuVision(puzzle, solution, strategies);
 
-  for (
-    let nextCheck = vision.pop();
-    nextCheck !== null;
-    nextCheck = vision.pop()
-  ) {
-    const [strategy, locationToCheck] = nextCheck;
+  for (const [strategy, locationToCheck] of vision) {
     const hint = STRATEGY_HINT_FUNCTIONS[strategy](
       puzzle,
       solution,

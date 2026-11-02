@@ -1,4 +1,3 @@
-import { Queue } from "data-structure-typed";
 import { SUDOKU_STRATEGY_ARRAY } from "./Types";
 import type {
   CellLocation,
@@ -8,65 +7,44 @@ import type {
   SudokuStrategy,
 } from "./Types";
 
-type SudokuVisionQueueItem = readonly [
+type SudokuVisionItem = readonly [
   strategy: SudokuStrategy,
   locationToCheck: CellLocation
 ];
 
-type StrategyQueueFactory = (
-  state: SudokuVisionState
-) => Queue<CellLocation>;
-
-type SudokuVisionState = {
-  puzzle: readonly (readonly CellProps[])[];
-  solution: readonly (readonly SudokuNumber[])[];
-  strategyPriority: readonly SudokuStrategy[];
-  currentStrategyIndex: number;
-  strategyQueues: Partial<
-    Record<SudokuStrategy, Queue<CellLocation> | null>
-  >;
-  noteCellsByNoteCount: readonly NoteCellWithLocation[];
-};
-
-export interface SudokuVision {
-  pop(): SudokuVisionQueueItem | null;
-}
-
-/**
- * Builds the row-major queue used when wrong-value scanning is enabled.
- */
-function createWrongValueQueue(
+type StrategyLocationGeneratorFactory = (
   puzzle: readonly (readonly CellProps[])[],
   solution: readonly (readonly SudokuNumber[])[]
-): Queue<CellLocation> {
-  const queue = new Queue<CellLocation>();
+) => Generator<CellLocation, void, void>;
 
+export interface SudokuVision
+  extends Generator<SudokuVisionItem, void, void> {}
+
+/**
+ * Lazily yields wrong user values in row-major order.
+ */
+function* generateWrongValueLocations(
+  puzzle: readonly (readonly CellProps[])[],
+  solution: readonly (readonly SudokuNumber[])[]
+): Generator<CellLocation, void, void> {
   for (let r = 0; r < puzzle.length; r += 1) {
     for (let c = 0; c < puzzle[r].length; c += 1) {
       const cell = puzzle[r][c];
 
       if (cell.type === "value" && cell.value !== solution[r][c]) {
-        queue.push({ r, c });
-	// TODO: for performance make this queue creation (and the others) more
-	// lazy by only adding one item to queue at a time (have to store where it
-	// was looking last to make this happen)
-	// might be able to do this via generator pattern like with generate hint in hints.ts
+        yield { r, c };
       }
     }
   }
-
-  return queue;
 }
 
 /**
- * Builds the row-major queue of note cells missing their solution value.
+ * Lazily yields note cells missing their solution value in row-major order.
  */
-function createAmendNotesQueue(
+function* generateAmendNotesLocations(
   puzzle: readonly (readonly CellProps[])[],
   solution: readonly (readonly SudokuNumber[])[]
-): Queue<CellLocation> {
-  const queue = new Queue<CellLocation>();
-
+): Generator<CellLocation, void, void> {
   for (let r = 0; r < puzzle.length; r += 1) {
     for (let c = 0; c < puzzle[r].length; c += 1) {
       const cell = puzzle[r][c];
@@ -75,12 +53,10 @@ function createAmendNotesQueue(
         cell.type === "note" &&
         !cell.notes.includes(solution[r][c])
       ) {
-        queue.push({ r, c });
+        yield { r, c };
       }
     }
   }
-
-  return queue;
 }
 
 /**
@@ -116,112 +92,61 @@ function createNoteCellsByNoteCount(
 }
 
 /**
- * Builds a queue of valid one-note cells from the shared note-count scan order.
+ * Lazily yields valid one-note cells from the note-count scan order.
  */
-function createObviousSingleQueue(
-  noteCellsByNoteCount: readonly NoteCellWithLocation[],
+function* generateObviousSingleLocations(
+  puzzle: readonly (readonly CellProps[])[],
   solution: readonly (readonly SudokuNumber[])[]
-): Queue<CellLocation> {
-  const queue = new Queue<CellLocation>();
-
-  for (const { r, c, notes } of noteCellsByNoteCount) {
+): Generator<CellLocation, void, void> {
+  for (const { r, c, notes } of createNoteCellsByNoteCount(puzzle)) {
     if (notes.length > 1) {
       break;
     }
 
     if (notes.length === 1 && notes[0] === solution[r][c]) {
-      queue.push({ r, c });
+      yield { r, c };
     }
   }
-
-  return queue;
 }
 
-const STRATEGY_QUEUE_FACTORIES: Record<
+const STRATEGY_LOCATION_GENERATOR_FACTORIES: Record<
   SudokuStrategy,
-  StrategyQueueFactory
+  StrategyLocationGeneratorFactory
 > = {
-  WRONG_VALUE: (state) =>
-    createWrongValueQueue(state.puzzle, state.solution),
-  AMEND_NOTES: (state) =>
-    createAmendNotesQueue(state.puzzle, state.solution),
-  OBVIOUS_SINGLE: (state) =>
-    createObviousSingleQueue(
-      state.noteCellsByNoteCount,
-      state.solution
-    ),
+  WRONG_VALUE: generateWrongValueLocations,
+  AMEND_NOTES: generateAmendNotesLocations,
+  OBVIOUS_SINGLE: generateObviousSingleLocations,
 };
 
 /**
- * Removes and identifies the next location from a strategy queue.
+ * Yields each strategy and location check in deterministic vision order.
  */
-function popQueue(
-  strategy: SudokuStrategy,
-  queue: Queue<CellLocation>
-): SudokuVisionQueueItem {
-  return [strategy, queue.shift()!];
+function* generateSudokuVision(
+  puzzle: readonly (readonly CellProps[])[],
+  solution: readonly (readonly SudokuNumber[])[],
+  strategyPriority: readonly SudokuStrategy[]
+): SudokuVision {
+  for (const strategy of strategyPriority) {
+    const generateLocations =
+      STRATEGY_LOCATION_GENERATOR_FACTORIES[strategy];
+
+    for (const locationToCheck of generateLocations(puzzle, solution)) {
+      yield [strategy, locationToCheck];
+    }
+  }
 }
 
 /**
- * Lazily creates, advances, or pops one strategy's queue.
- */
-function popStrategyQueue(
-  state: SudokuVisionState,
-  strategy: SudokuStrategy,
-  createQueue: StrategyQueueFactory
-): SudokuVisionQueueItem | null {
-  let queue = state.strategyQueues[strategy];
-
-  if (queue === null || queue === undefined) {
-    queue = createQueue(state);
-    state.strategyQueues[strategy] = queue;
-  }
-
-  if (queue.isEmpty()) {
-    state.currentStrategyIndex += 1;
-    return popState(state);
-  }
-
-  return popQueue(strategy, queue);
-}
-
-/**
- * Removes the next check from the queue for the current strategy.
- */
-function popState(state: SudokuVisionState): SudokuVisionQueueItem | null {
-  const currentStrategy =
-    state.strategyPriority[state.currentStrategyIndex] ?? null;
-
-  if (currentStrategy === null) {
-    return null;
-  }
-
-  return popStrategyQueue(
-    state,
-    currentStrategy,
-    STRATEGY_QUEUE_FACTORIES[currentStrategy]
-  );
-}
-
-/**
- * Creates a vision queue that prioritizes strategy and location checks for a puzzle.
+ * Creates a lazy vision generator that prioritizes strategy and location checks.
  */
 export function createSudokuVision(
   puzzle: readonly (readonly CellProps[])[],
   solution: readonly (readonly SudokuNumber[])[],
   strategies?: readonly SudokuStrategy[]
 ): SudokuVision {
-  const strategyPriority = strategies ?? SUDOKU_STRATEGY_ARRAY;
-  const state: SudokuVisionState = {
+  return generateSudokuVision(
     puzzle,
     solution,
-    strategyPriority,
-    currentStrategyIndex: 0,
-    strategyQueues: {},
-    noteCellsByNoteCount: createNoteCellsByNoteCount(puzzle),
-  };
-
-  return {
-    pop: () => popState(state),
-  };
+    strategies ?? SUDOKU_STRATEGY_ARRAY
+  );
 }

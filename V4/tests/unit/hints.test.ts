@@ -119,7 +119,7 @@ describe("getHint", () => {
         expectedHint: getObviousSingleHint,
       },
     ])(
-      "returns the first queued $strategy candidate",
+      "returns the first generated $strategy candidate",
       ({ strategy, puzzle: createPuzzle, firstLocation, expectedHint }) => {
         const puzzle = createPuzzle();
         const expected = expectStrategyHint(

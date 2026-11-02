@@ -137,14 +137,14 @@ describe("getAllHints", () => {
         strategy: "WRONG_VALUE",
         stages: [{ text: "Second application at this cell." }],
       };
-      const pop = jest
-        .fn()
-        .mockReturnValueOnce(["WRONG_VALUE", location] as const)
-        .mockReturnValueOnce(["WRONG_VALUE", location] as const)
-        .mockReturnValueOnce(null);
+      function* generateRepeatedVisionChecks() {
+        yield ["WRONG_VALUE", location] as const;
+        yield ["WRONG_VALUE", location] as const;
+      }
+
       jest
         .spyOn(sudokuVisionModule, "createSudokuVision")
-        .mockReturnValue({ pop });
+        .mockReturnValue(generateRepeatedVisionChecks());
       jest
         .spyOn(wrongValueModule, "getWrongValueHint")
         .mockReturnValueOnce(firstHint)

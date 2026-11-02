@@ -1,0 +1,4 @@
+interface:
+  display_name: "TypeScript Best Practices"
+  short_description: "Apply consistent TypeScript typing practices"
+  default_prompt: "Use $typescript-best-practices for this TypeScript task."

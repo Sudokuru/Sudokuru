@@ -1,0 +1,117 @@
+Provenance
+==========
+
+This is generated output from the pre-V4 (V3) version of Sudokuru. It was created by running the legacy Generator/DifficultyBenchmark.ts script from the Generator directory:
+
+npx ts-node DifficultyBenchmark.ts > Benchmarks.txt
+
+
+Puzzles used
+============
+
+The index in each benchmark table below corresponds to the index shown here.
+
+Sudoku of the day 1 (http://www.sudokuoftheday.co.uk/)
+
+index | solveTimeSeconds | puzzle
+0 | 460 | 100603700700240560304795080800002400046300100000500008003000809000050307020830010
+1 | 746 | 007900100000700060630000407006000200800000706000008005902004800450000900000000001
+2 | 898 | 000000800654090000100600000000000090000082037009030008000500100040129050002040000
+3 | 1410 | 090038070000000380000006400050004900080370600140000000000000200670410009500009000
+
+Sudoku of the day 2 (http://www.sudokuoftheday.co.uk/)
+
+index | solveTimeSeconds | puzzle
+0 | 460 | 000005008000804109002090540230080654700650800085031002020000000050208716008100000
+1 | 746 | 090000060000100450306000100005002001800000040027450000000907000002000000001020800
+2 | 898 | 002054039700000000050000007005000004040690300020000090007500600000403050000208000
+3 | 1410 | 801000290006500000000089006600003000015000008000600420000000000900428017500700000
+
+Sudokuru 1
+
+index | solveTimeSeconds | puzzle
+0 | 85 | 640508003135006870728143659213957468000402305000630097071825906092304781486719532
+1 | 89 | 092146587405238190001079204210365709900004813734091650160452300023917465547683920
+2 | 135 | 209006148650040390180009007890007436410500279720964010060801954048035720501492603
+3 | 251 | 800340006043008910001002043370469100100503700520810639905074000410930208700100095
+
+Sudokuru 2
+
+index | solveTimeSeconds | puzzle
+0 | 90 | 840179600106538420700600080018425376405017298237986514520760843674093150381250069
+1 | 173 | 246800073100004906935600802410700200050069380683020007590378604800102539000006718
+2 | 209 | 980004652052689134060120070003246795020001086670090201246900810007002403000460029
+3 | 293 | 906500870415000000070004501080000600207015030500000082800100706743986215651472390
+
+
+Sudoku of the day 1 data:
+┌─────────┬──────────────────┬─────────────────┬─────────────────┬─────────────────────────┬───────────┬───────────────┐
+│ (index) │ solveTimeSeconds │ refutationScore │ dependencyScore │ adjustedDependencyScore │ notGivens │ combinedScore │
+├─────────┼──────────────────┼─────────────────┼─────────────────┼─────────────────────────┼───────────┼───────────────┤
+│    0    │       460        │        0        │       -9        │  -0.005987652385803245  │    47     │     -5988     │
+│    1    │       746        │       25        │       -3        │ -0.0013834358603789009  │    57     │   24998617    │
+│    2    │       898        │       52        │       -0        │           -0            │    57     │   52000000    │
+│    3    │       1410       │       97        │       -0        │           -0            │    56     │   97000000    │
+└─────────┴──────────────────┴─────────────────┴─────────────────┴─────────────────────────┴───────────┴───────────────┘
+Givens correlation coefficient: 0.629851558
+Refutation score correlation coefficient: 0.993475153
+Dependency score correlation coefficient: 0.821686514
+Adjusted dependency score correlation coefficient: 0.792964076
+Basic combined refutation+dependency score correlation coefficient: 0.990455781
+Combined score correlation coefficient: 0.99347441
+
+Sudoku of the day 2 data:
+┌─────────┬──────────────────┬─────────────────┬─────────────────┬─────────────────────────┬───────────┬───────────────┐
+│ (index) │ solveTimeSeconds │ refutationScore │ dependencyScore │ adjustedDependencyScore │ notGivens │ combinedScore │
+├─────────┼──────────────────┼─────────────────┼─────────────────┼─────────────────────────┼───────────┼───────────────┤
+│    0    │       460        │        0        │       -10       │  -0.006652947095336939  │    47     │     -6653     │
+│    1    │       746        │       48        │       -2        │ -0.0008923121528339182  │    58     │   47999108    │
+│    2    │       898        │       51        │       -1        │ -0.0004611452867929669  │    57     │   50999539    │
+│    3    │       1410       │       49        │       -1        │ -0.00047691693991442697 │    56     │   48999523    │
+└─────────┴──────────────────┴─────────────────┴─────────────────┴─────────────────────────┴───────────┴───────────────┘
+Givens correlation coefficient: 0.581852602
+Refutation score correlation coefficient: 0.700931059
+Dependency score correlation coefficient: 0.748872918
+Adjusted dependency score correlation coefficient: 0.729932061
+Basic combined refutation+dependency score correlation coefficient: 0.708394393
+Combined score correlation coefficient: 0.700934683
+
+Sudokuru 1 data:
+┌─────────┬──────────────────┬─────────────────┬─────────────────┬─────────────────────────┬───────────┬───────────────┐
+│ (index) │ solveTimeSeconds │ refutationScore │ dependencyScore │ adjustedDependencyScore │ notGivens │ combinedScore │
+├─────────┼──────────────────┼─────────────────┼─────────────────┼─────────────────────────┼───────────┼───────────────┤
+│    0    │        85        │        0        │       -11       │  -0.03382018860234085   │    21     │    -33820     │
+│    1    │        89        │        0        │       -10       │  -0.03373207119183909   │    20     │    -33732     │
+│    2    │       135        │        0        │       -18       │  -0.029972040384358068  │    29     │    -29972     │
+│    3    │       251        │        0        │       -23       │  -0.024107077290382233  │    37     │    -24107     │
+└─────────┴──────────────────┴─────────────────┴─────────────────┴─────────────────────────┴───────────┴───────────────┘
+Givens correlation coefficient: 0.970248248
+Refutation score correlation coefficient: 0
+Dependency score correlation coefficient: -0.945915769
+Adjusted dependency score correlation coefficient: 0.994222177
+Basic combined refutation+dependency score correlation coefficient: -0.945915769
+Combined score correlation coefficient: 0.99422284
+
+Sudokuru 2 data:
+┌─────────┬──────────────────┬─────────────────┬─────────────────┬─────────────────────────┬───────────┬───────────────┐
+│ (index) │ solveTimeSeconds │ refutationScore │ dependencyScore │ adjustedDependencyScore │ notGivens │ combinedScore │
+├─────────┼──────────────────┼─────────────────┼─────────────────┼─────────────────────────┼───────────┼───────────────┤
+│    0    │        90        │        0        │       -10       │  -0.03373207119183909   │    20     │    -33732     │
+│    1    │       173        │        0        │       -22       │  -0.027077760238824577  │    34     │    -27078     │
+│    2    │       209        │        0        │       -14       │  -0.018236922390357332  │    33     │    -18237     │
+│    3    │       293        │        0        │       -11       │  -0.010959830853219584  │    38     │    -10960     │
+└─────────┴──────────────────┴─────────────────┴─────────────────┴─────────────────────────┴───────────┴───────────────┘
+Givens correlation coefficient: 0.916772978
+Refutation score correlation coefficient: 0
+Dependency score correlation coefficient: 0.03367596
+Adjusted dependency score correlation coefficient: 0.980982573
+Basic combined refutation+dependency score correlation coefficient: 0.03367596
+Combined score correlation coefficient: 0.980980594
+
+Average correlation scores:
+Givens correlation coefficient: 0.7746813465
+Refutation score correlation coefficient: 0.423601553
+Dependency score correlation coefficient: 0.16457990575
+Adjusted dependency score correlation coefficient: 0.87452522175
+Basic combined refutation+dependency score correlation coefficient: 0.19665259124999998
+Combined score correlation coefficient: 0.91740313175
