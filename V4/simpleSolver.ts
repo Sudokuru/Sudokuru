@@ -89,31 +89,6 @@ function getSingle(
 }
 
 /**
- * Returns every puzzle location in Fisher-Yates shuffled order.
- */
-function getShuffledLocations(
-  size: number,
-  nextRandom: () => number
-): CellLocation[] {
-  const locations = Array.from(
-    { length: size * size },
-    (_, index): CellLocation => ({
-      r: Math.floor(index / size),
-      c: index % size,
-    })
-  );
-
-  for (let index = locations.length - 1; index > 0; index -= 1) {
-    const swapIndex = Math.floor(nextRandom() * (index + 1));
-    const location = locations[index];
-    locations[index] = locations[swapIndex];
-    locations[swapIndex] = location;
-  }
-
-  return locations;
-}
-
-/**
  * Removes a placed value from all note-cell peers in row, column, and box order.
  */
 function simplifyPeerNotes(
@@ -148,30 +123,37 @@ function simplifyPeerNotes(
 }
 
 /**
- * Returns a new puzzle with one randomized obvious or hidden single solved and
- * its peer notes simplified, or null when neither strategy can make progress.
+ * Chooses uniformly among cells with an obvious or hidden single in row-major
+ * order, then returns a new puzzle with that value placed and peers simplified.
+ * Returns null when neither strategy can make progress. Only draws randomness
+ * when more than one cell is eligible.
  */
 export function solveSimpleStep(
   puzzle: readonly (readonly CellProps[])[],
   nextRandom: () => number
 ): CellProps[][] | null {
-  const locations = getShuffledLocations(puzzle.length, nextRandom);
+  const singles: { location: CellLocation; value: SudokuNumber }[] = [];
 
-  for (const location of locations) {
-    const single = getSingle(puzzle, location);
+  for (let r = 0; r < puzzle.length; r += 1) {
+    for (let c = 0; c < puzzle.length; c += 1) {
+      const location = { r, c };
+      const value = getSingle(puzzle, location);
 
-    if (single === null) {
-      continue;
+      if (value !== null) {
+        singles.push({ location, value });
+      }
     }
-
-    const updatedPuzzle = clonePuzzle(puzzle);
-    updatedPuzzle[location.r][location.c] = {
-      type: "value",
-      value: single,
-    };
-    simplifyPeerNotes(updatedPuzzle, location, single);
-    return updatedPuzzle;
   }
 
-  return null;
+  if (singles.length === 0) {
+    return null;
+  }
+
+  const index =
+    singles.length === 1 ? 0 : Math.floor(nextRandom() * singles.length);
+  const { location, value } = singles[index];
+  const updatedPuzzle = clonePuzzle(puzzle);
+  updatedPuzzle[location.r][location.c] = { type: "value", value };
+  simplifyPeerNotes(updatedPuzzle, location, value);
+  return updatedPuzzle;
 }

@@ -22,29 +22,33 @@ const COLUMN_OBVIOUS_PAIR_SOLUTION =
   ADDITIONAL_TEST_BOARDS_BY_NAME.COLUMN_OBVIOUS_PAIR_SOLUTION;
 
 /**
- * Scores recorded from the legacy implementation after resetting its seed
- * before each boost case.
+ * V4 expectations for Mulberry32 seed 81, direct selection among eligible
+ * cells, and ten runs. Historical fixture scores remain unchanged.
  */
 const COLUMN_OBVIOUS_PAIR_SCORES_BY_BOOST = [
   [0, 38],
   [0.5, 38],
-  [1, 58],
+  [1, 57],
+] as const;
+
+const V4_REFUTATION_SCORES = [
+  0, 0, 0, 0, 0, 0, 65, 0, 0, 0, 57, 0, 78, 0, 48, 0, 80, 0, 59, 58, 56,
 ] as const;
 
 describe("getRefutationScore", () => {
-  describe("legacy score compatibility", () => {
+  describe("V4 sampled scores", () => {
     it.each(
       ALL_ADDITIONAL_BOARDS_WITH_REFUTATION_SCORES.map(
         (fixture, index) => [index, fixture] as const
       )
     )(
-      "matches the hardcoded boost=1 score for additional board %i",
-      (_index, { board, solution, refutationScore }) => {
+      "matches the V4 boost=1 score for additional board %i",
+      (index, { board, solution }) => {
         const puzzle: CellProps[][] = getPuzzle(board.flat().join(""));
         const solutionCopy: SudokuNumber[][] = cloneBoard(solution);
 
         expect(getRefutationScore(puzzle, solutionCopy, 1)).toBe(
-          refutationScore
+          V4_REFUTATION_SCORES[index]
         );
       }
     );
@@ -105,6 +109,28 @@ describe("getRefutationScore", () => {
   });
 
   describe("functional behavior", () => {
+    it("repeats the V4 score after unrelated ratings evict the cached result", () => {
+      const puzzle = getPuzzle(COLUMN_OBVIOUS_PAIR.flat().join(""));
+      const solution = cloneBoard(COLUMN_OBVIOUS_PAIR_SOLUTION);
+
+      expect(getRefutationScore(puzzle, solution, 1)).toBe(57);
+
+      // The score cache holds 32 entries. Distinct boost keys on a solved board
+      // evict the target without making this a test of cache-hit repeatability.
+      const solvedPuzzle = getPuzzle(solution.flat().join(""));
+      for (let index = 0; index < 33; index += 1) {
+        expect(getRefutationScore(solvedPuzzle, solution, index / 32)).toBe(0);
+      }
+
+      const unrelated = ADDITIONAL_TEST_BOARDS_BY_NAME.BOX_OBVIOUS_PAIR;
+      const unrelatedSolution =
+        ADDITIONAL_TEST_BOARDS_BY_NAME.BOX_OBVIOUS_PAIR_SOLUTION;
+      expect(
+        getRefutationScore(getPuzzle(unrelated.flat().join("")), unrelatedSolution, 1)
+      ).toBe(78);
+      expect(getRefutationScore(puzzle, solution, 1)).toBe(57);
+    });
+
     it("returns the same literal score on repeated calls", () => {
       const firstPuzzle: CellProps[][] = getPuzzle(
         COLUMN_OBVIOUS_PAIR.flat().join("")
@@ -158,14 +184,14 @@ describe("getRefutationScore", () => {
           cloneBoard(solution),
           1
         )
-      ).toBe(58);
+      ).toBe(57);
       expect(
         getRefutationScore(
           puzzleWithSolutionOnlyNotes,
           cloneBoard(solution),
           1
         )
-      ).toBe(58);
+      ).toBe(57);
     });
 
     it("treats matching user values as placed puzzle values", () => {
@@ -185,10 +211,10 @@ describe("getRefutationScore", () => {
 
       expect(
         getRefutationScore(givenPuzzle, cloneBoard(solution), 1)
-      ).toBe(58);
+      ).toBe(57);
       expect(
         getRefutationScore(userValuePuzzle, cloneBoard(solution), 1)
-      ).toBe(58);
+      ).toBe(57);
     });
 
     it("does not mutate the puzzle or solution", () => {
@@ -204,7 +230,7 @@ describe("getRefutationScore", () => {
 
       expect(puzzle).toEqual(puzzleBefore);
       expect(solution).toEqual(solutionBefore);
-      expect(score).toBe(58);
+      expect(score).toBe(57);
     });
   });
 });

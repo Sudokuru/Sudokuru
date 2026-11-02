@@ -272,13 +272,57 @@ const SECOND_SINGLE_EXPECTED: CellProps[][] = [
   ],
 ];
 
-const ROW_MAJOR_RANDOM = (): number => 0.999999;
-const MOVE_INDEX_ONE_FIRST_RANDOM = (): number => 0;
+const FIRST_SINGLE_RANDOM = (): number => 0;
+const LAST_SINGLE_RANDOM = (): number => 0.999999;
 
 describe("solveSimpleStep", () => {
+  it.each([
+    ["no singles", ALL_NOTES],
+    ["one single", ROW_HIDDEN_SINGLE],
+  ] as const)("does not draw randomness with %s", (_label, puzzle) => {
+    solveSimpleStep(clonePuzzle(puzzle), () => {
+      throw new Error("No random choice is needed");
+    });
+  });
+
+  it.each([
+    [0, FIRST_SINGLE_EXPECTED],
+    [0.499999, FIRST_SINGLE_EXPECTED],
+    [0.5, SECOND_SINGLE_EXPECTED],
+    [0.999999, SECOND_SINGLE_EXPECTED],
+  ] as const)("uses exactly one draw at the selection boundary %s", (draw, expected) => {
+    let drawCount = 0;
+    const result = solveSimpleStep(clonePuzzle(TWO_OBVIOUS_SINGLES), () => {
+      drawCount += 1;
+      return draw;
+    });
+
+    expect(result).toEqual(expected);
+    expect(drawCount).toBe(1);
+  });
+
+  it.each([
+    [0.499999, 0, 0, 1],
+    [0.5, 3, 3, 2],
+  ] as const)(
+    "counts a cell hidden in three units only once when drawing %s",
+    (draw, row, column, value) => {
+      const puzzle = clonePuzzle(ROW_HIDDEN_SINGLE);
+      puzzle[1][0] = { type: "note", notes: [2, 3, 4] };
+      puzzle[1][1] = { type: "note", notes: [2, 3, 4] };
+      puzzle[2][0] = { type: "note", notes: [2, 3, 4] };
+      puzzle[3][0] = { type: "note", notes: [2, 3, 4] };
+      puzzle[3][3] = { type: "note", notes: [2] };
+
+      const result = solveSimpleStep(puzzle, () => draw);
+
+      expect(result?.[row][column]).toEqual({ type: "value", value });
+    }
+  );
+
   it("returns null when no obvious or hidden single is available", () => {
     expect(
-      solveSimpleStep(clonePuzzle(ALL_NOTES), ROW_MAJOR_RANDOM)
+      solveSimpleStep(clonePuzzle(ALL_NOTES), FIRST_SINGLE_RANDOM)
     ).toBeNull();
   });
 
@@ -286,7 +330,7 @@ describe("solveSimpleStep", () => {
     const puzzle = clonePuzzle(ALL_NOTES);
     puzzle[0][0] = { type: "note", notes: [1] };
 
-    expect(solveSimpleStep(puzzle, ROW_MAJOR_RANDOM)).toEqual(
+    expect(solveSimpleStep(puzzle, FIRST_SINGLE_RANDOM)).toEqual(
       PLACED_ONE_AT_ORIGIN
     );
   });
@@ -297,7 +341,7 @@ describe("solveSimpleStep", () => {
     ["box", BOX_HIDDEN_SINGLE],
   ] as const)("places a %s hidden single", (_unit, puzzle) => {
     expect(
-      solveSimpleStep(clonePuzzle(puzzle), ROW_MAJOR_RANDOM)
+      solveSimpleStep(clonePuzzle(puzzle), FIRST_SINGLE_RANDOM)
     ).toEqual(PLACED_ONE_AT_ORIGIN);
   });
 
@@ -305,7 +349,7 @@ describe("solveSimpleStep", () => {
     expect(
       solveSimpleStep(
         clonePuzzle(ROW_PRECEDENCE_INPUT),
-        ROW_MAJOR_RANDOM
+        FIRST_SINGLE_RANDOM
       )
     ).toEqual(ROW_PRECEDENCE_EXPECTED);
   });
@@ -313,12 +357,12 @@ describe("solveSimpleStep", () => {
   it.each([
     {
       label: "row-major first",
-      nextRandom: ROW_MAJOR_RANDOM,
+      nextRandom: FIRST_SINGLE_RANDOM,
       expected: FIRST_SINGLE_EXPECTED,
     },
     {
-      label: "shuffled first",
-      nextRandom: MOVE_INDEX_ONE_FIRST_RANDOM,
+      label: "row-major last",
+      nextRandom: LAST_SINGLE_RANDOM,
       expected: SECOND_SINGLE_EXPECTED,
     },
   ])(
@@ -333,11 +377,11 @@ describe("solveSimpleStep", () => {
   it("returns the same result for fresh equivalent random sources", () => {
     const firstResult = solveSimpleStep(
       clonePuzzle(TWO_OBVIOUS_SINGLES),
-      ROW_MAJOR_RANDOM
+      FIRST_SINGLE_RANDOM
     );
     const secondResult = solveSimpleStep(
       clonePuzzle(TWO_OBVIOUS_SINGLES),
-      ROW_MAJOR_RANDOM
+      FIRST_SINGLE_RANDOM
     );
 
     expect(firstResult).toEqual(FIRST_SINGLE_EXPECTED);
@@ -348,7 +392,7 @@ describe("solveSimpleStep", () => {
     const puzzle = clonePuzzle(ROW_HIDDEN_SINGLE);
     const puzzleBefore = clonePuzzle(puzzle);
 
-    solveSimpleStep(puzzle, ROW_MAJOR_RANDOM);
+    solveSimpleStep(puzzle, FIRST_SINGLE_RANDOM);
 
     expect(puzzle).toEqual(puzzleBefore);
   });

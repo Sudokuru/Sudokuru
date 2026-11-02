@@ -2,7 +2,7 @@ import { createSeededRandom } from "./random";
 import { BOX_LAYOUTS } from "./Types";
 import type { BoxLayout, CellProps, SudokuNumber } from "./Types";
 
-const REFUTATION_RUN_COUNT = 30;
+const REFUTATION_RUN_COUNT = 10;
 const MAX_CACHED_REFUTATION_SCORES = 32;
 const refutationScoreCache = new Map<string, number>();
 
@@ -29,11 +29,6 @@ type RefutationBoard = {
   boxValues: Uint16Array;
   hasDuplicates: boolean;
   remainingCellCount: number;
-};
-
-type SolverScratch = {
-  orderedLocations: Uint8Array;
-  shuffledLocations: Uint8Array;
 };
 
 /**
@@ -397,62 +392,35 @@ function getSingleCandidate(
 }
 
 /**
- * Creates reusable row-major and shuffled location buffers.
- */
-function createSolverScratch(cellCount: number): SolverScratch {
-  const orderedLocations = new Uint8Array(cellCount);
-
-  for (let cellIndex = 0; cellIndex < cellCount; cellIndex += 1) {
-    orderedLocations[cellIndex] = cellIndex;
-  }
-
-  return {
-    orderedLocations,
-    shuffledLocations: new Uint8Array(cellCount),
-  };
-}
-
-/**
- * Places one seeded-random obvious or hidden single when available.
+ * Chooses uniformly among eligible cells using a reusable row-major buffer.
+ * Each cell appears once, even when multiple units identify a hidden single.
  */
 function solveSingleStep(
   board: RefutationBoard,
   nextRandom: () => number,
-  scratch: SolverScratch
+  singleLocations: Uint8Array
 ): boolean {
-  const { shuffledLocations, orderedLocations } = scratch;
-  shuffledLocations.set(orderedLocations);
   const cellCount = board.geometry.cellCount;
+  let singleCount = 0;
 
-  for (let index = cellCount - 1; index > 0; index -= 1) {
-    const swapIndex = Math.floor(nextRandom() * (index + 1));
-    const cellIndex = shuffledLocations[index];
-    shuffledLocations[index] = shuffledLocations[swapIndex];
-    shuffledLocations[swapIndex] = cellIndex;
+  for (let cellIndex = 0; cellIndex < cellCount; cellIndex += 1) {
+    if (
+      board.values[cellIndex] === 0 &&
+      getSingleCandidate(board, cellIndex) !== -1
+    ) {
+      singleLocations[singleCount] = cellIndex;
+      singleCount += 1;
+    }
   }
 
-  for (
-    let locationIndex = 0;
-    locationIndex < cellCount;
-    locationIndex += 1
-  ) {
-    const cellIndex = shuffledLocations[locationIndex];
-
-    if (board.values[cellIndex] !== 0) {
-      continue;
-    }
-
-    const candidateIndex = getSingleCandidate(board, cellIndex);
-
-    if (candidateIndex === -1) {
-      continue;
-    }
-
-    placeValue(board, cellIndex, candidateIndex + 1, true);
-    return true;
+  if (singleCount === 0) {
+    return false;
   }
 
-  return false;
+  const index = singleCount === 1 ? 0 : Math.floor(nextRandom() * singleCount);
+  const cellIndex = singleLocations[index];
+  placeValue(board, cellIndex, getSingleCandidate(board, cellIndex) + 1, true);
+  return true;
 }
 
 /**
@@ -488,7 +456,8 @@ function getSolutionValues(
 }
 
 /**
- * Returns a puzzle's refutation score for the supplied solution.
+ * Returns a puzzle's refutation score, averaging ten deterministic sampled runs
+ * for the supplied solution and rounding down. One seeded stream spans all runs.
  *
  * The boost must be between 0 and 1 and controls the proportion of remaining
  * cells that may be skipped after a refutation candidate has been found.
@@ -512,7 +481,7 @@ export function getRefutationScore(
   const branchBoard = createBoardStorage(initialBoard);
   const { size, cellCount } = initialBoard.geometry;
   const solutionValues = getSolutionValues(solution, size);
-  const solverScratch = createSolverScratch(cellCount);
+  const singleLocations = new Uint8Array(cellCount);
   const nextRandom = createSeededRandom();
   let totalRefutationScore = 0;
 
@@ -520,7 +489,7 @@ export function getRefutationScore(
     copyRefutationBoard(initialBoard, board);
 
     while (!isSolved(board)) {
-      while (solveSingleStep(board, nextRandom, solverScratch)) {
+      while (solveSingleStep(board, nextRandom, singleLocations)) {
         // Continue until obvious and hidden singles are exhausted.
       }
 
@@ -566,7 +535,7 @@ export function getRefutationScore(
 
             if (
               hasDuplicateValues(branchBoard) ||
-              !solveSingleStep(branchBoard, nextRandom, solverScratch)
+              !solveSingleStep(branchBoard, nextRandom, singleLocations)
             ) {
               break;
             }
