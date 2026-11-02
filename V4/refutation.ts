@@ -394,6 +394,12 @@ function getSingleCandidate(
 /**
  * Chooses uniformly among eligible cells using a reusable row-major buffer.
  * Each cell appears once, even when multiple units identify a hidden single.
+ * Within a cell, obvious singles take precedence, followed by hidden singles
+ * in row, column, then box order.
+ *
+ * Returns false without making a move when no cell is eligible. One eligible
+ * cell needs no random draw; multiple eligible cells use one draw to select
+ * a cell. The location buffer is reused throughout the rating.
  */
 function solveSingleStep(
   board: RefutationBoard,
@@ -457,10 +463,17 @@ function getSolutionValues(
 
 /**
  * Returns a puzzle's refutation score, averaging ten deterministic sampled runs
- * for the supplied solution and rounding down. One seeded stream spans all runs.
+ * for the supplied solution and rounding down. Each calculation starts a random
+ * stream with seed 81 and advances it across all ten runs. Repeated calculations
+ * with the same inputs produce the same score, independently of other ratings.
  *
- * The boost must be between 0 and 1 and controls the proportion of remaining
- * cells that may be skipped after a refutation candidate has been found.
+ * The boost must be between 0 and 1. Once a refutation candidate has been found,
+ * each subsequent remaining cell is skipped with probability boost. Higher boost
+ * values reduce the number of cells evaluated. The fixed seed makes the sampled
+ * paths repeatable; the score is still an estimate based on those paths.
+ *
+ * Retains up to 32 recently used completed scores. Does not mutate the supplied
+ * puzzle or solution.
  */
 export function getRefutationScore(
   puzzle: readonly (readonly CellProps[])[],

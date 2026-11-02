@@ -2,7 +2,9 @@ const DEFAULT_RANDOM_SEED = 81;
 
 /**
  * Creates an isolated Mulberry32 generator returning values in [0, 1).
- * Seeds are normalized to 32-bit integers; zero is a valid seed.
+ * The default seed is 81. Seeds are normalized to signed 32-bit integers;
+ * zero is valid. Generators with the same normalized seed produce the same
+ * sequence, and advancing one generator does not affect another.
  *
  * Adapted from https://github.com/bryc/code/blob/master/jshash/PRNGs.md#mulberry32
  */
