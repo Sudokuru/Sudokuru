@@ -1,5 +1,6 @@
 import { clonePuzzle } from "../../puzzles";
 import {
+  getAvailableSingles,
   placeSimpleValue,
   prepareSimplePuzzle,
   solveSimpleStep,
@@ -342,6 +343,56 @@ describe("placeSimpleValue", () => {
       notes: [],
     });
     expect(puzzle[0][1]).toEqual({ type: "note", notes: [1] });
+  });
+});
+
+describe("getAvailableSingles", () => {
+  it("returns one move per eligible cell in row-major order", () => {
+    const puzzle = clonePuzzle(TWO_OBVIOUS_SINGLES);
+    const before = clonePuzzle(puzzle);
+
+    expect(getAvailableSingles(puzzle)).toEqual([
+      { location: { r: 0, c: 0 }, value: 1 },
+      { location: { r: 0, c: 1 }, value: 2 },
+    ]);
+    expect(puzzle).toEqual(before);
+  });
+
+  it("returns no moves when no cell has an obvious or hidden single", () => {
+    expect(getAvailableSingles(ALL_NOTES)).toEqual([]);
+  });
+
+  it("counts a cell hidden in its row, column, and box only once", () => {
+    const puzzle = clonePuzzle(ROW_HIDDEN_SINGLE);
+    puzzle[1][0] = { type: "note", notes: [2, 3, 4] };
+    puzzle[1][1] = { type: "note", notes: [2, 3, 4] };
+    puzzle[2][0] = { type: "note", notes: [2, 3, 4] };
+    puzzle[3][0] = { type: "note", notes: [2, 3, 4] };
+    puzzle[3][3] = { type: "note", notes: [2] };
+
+    expect(getAvailableSingles(puzzle)).toEqual([
+      { location: { r: 0, c: 0 }, value: 1 },
+      { location: { r: 3, c: 3 }, value: 2 },
+    ]);
+  });
+
+  it("chooses row before column and box when a cell has competing hidden singles", () => {
+    expect(getAvailableSingles(ROW_PRECEDENCE_INPUT)[0]).toEqual({
+      location: { r: 0, c: 0 },
+      value: 1,
+    });
+  });
+
+  it("chooses column before box when a cell has competing hidden singles", () => {
+    const puzzle = clonePuzzle(COLUMN_HIDDEN_SINGLE);
+    puzzle[0][1] = { type: "note", notes: [1, 3, 4] };
+    puzzle[1][0] = { type: "note", notes: [3, 4] };
+    puzzle[1][1] = { type: "note", notes: [1, 3, 4] };
+
+    expect(getAvailableSingles(puzzle)[0]).toEqual({
+      location: { r: 0, c: 0 },
+      value: 1,
+    });
   });
 });
 

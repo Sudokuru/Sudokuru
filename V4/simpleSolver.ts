@@ -167,15 +167,13 @@ export function placeSimpleValue(
 }
 
 /**
- * Chooses uniformly among cells with an obvious or hidden single in row-major
- * order, then returns a new puzzle with that value placed and peers simplified.
- * Returns null when neither strategy can make progress. Only draws randomness
- * when more than one cell is eligible.
+ * Lists each cell with an obvious or hidden single once, in row-major order.
+ * Within a cell, obvious singles take precedence over hidden singles in row,
+ * column, then box order.
  */
-export function solveSimpleStep(
-  puzzle: readonly (readonly CellProps[])[],
-  nextRandom: () => number
-): CellProps[][] | null {
+export function getAvailableSingles(
+  puzzle: readonly (readonly CellProps[])[]
+): { location: CellLocation; value: SudokuNumber }[] {
   const singles: { location: CellLocation; value: SudokuNumber }[] = [];
 
   for (let r = 0; r < puzzle.length; r += 1) {
@@ -188,6 +186,21 @@ export function solveSimpleStep(
       }
     }
   }
+
+  return singles;
+}
+
+/**
+ * Chooses uniformly among cells with an obvious or hidden single in row-major
+ * order, then returns a new puzzle with that value placed and peers simplified.
+ * Returns null when neither strategy can make progress. Only draws randomness
+ * when more than one cell is eligible.
+ */
+export function solveSimpleStep(
+  puzzle: readonly (readonly CellProps[])[],
+  nextRandom: () => number
+): CellProps[][] | null {
+  const singles = getAvailableSingles(puzzle);
 
   if (singles.length === 0) {
     return null;
