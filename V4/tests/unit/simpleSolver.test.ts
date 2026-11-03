@@ -1,6 +1,12 @@
 import { clonePuzzle } from "../../puzzles";
-import { solveSimpleStep } from "../../simpleSolver";
-import type { CellProps } from "../../Types";
+import {
+  placeSimpleValue,
+  prepareSimplePuzzle,
+  solveSimpleStep,
+} from "../../simpleSolver";
+import { SUPPORTED_BOARD_SIZES, type CellProps } from "../../Types";
+import { getPuzzle } from "../../validate";
+import { SOLVED_TEST_BOARDS } from "../utils/testBoards";
 
 const ALL_NOTES: CellProps[][] = [
   [
@@ -274,6 +280,70 @@ const SECOND_SINGLE_EXPECTED: CellProps[][] = [
 
 const FIRST_SINGLE_RANDOM = (): number => 0;
 const LAST_SINGLE_RANDOM = (): number => 0.999999;
+
+describe("prepareSimplePuzzle", () => {
+  it("rebuilds legal notes from both givens and user values without changing the input", () => {
+    const puzzle = getPuzzle("1000000000000004");
+    puzzle[3][3] = { type: "value", value: 4 };
+    puzzle[0][1] = { type: "note", notes: [1, 4] };
+    const before = clonePuzzle(puzzle);
+
+    const prepared = prepareSimplePuzzle(puzzle);
+
+    expect(prepared).toEqual([
+      [{ type: "given", value: 1 }, { type: "note", notes: [2, 3, 4] },
+        { type: "note", notes: [2, 3, 4] }, { type: "note", notes: [2, 3] }],
+      [{ type: "note", notes: [2, 3, 4] }, { type: "note", notes: [2, 3, 4] },
+        { type: "note", notes: [1, 2, 3, 4] }, { type: "note", notes: [1, 2, 3] }],
+      [{ type: "note", notes: [2, 3, 4] }, { type: "note", notes: [1, 2, 3, 4] },
+        { type: "note", notes: [1, 2, 3] }, { type: "note", notes: [1, 2, 3] }],
+      [{ type: "note", notes: [2, 3] }, { type: "note", notes: [1, 2, 3] },
+        { type: "note", notes: [1, 2, 3] }, { type: "value", value: 4 }],
+    ]);
+    expect(puzzle).toEqual(before);
+    expect(prepared[0][0]).not.toBe(puzzle[0][0]);
+    expect(prepared[0][1]).not.toBe(prepared[0][2]);
+    if (prepared[0][1].type === "note" && prepared[0][2].type === "note") {
+      expect(prepared[0][1].notes).not.toBe(prepared[0][2].notes);
+    }
+  });
+
+  it.each(SUPPORTED_BOARD_SIZES)(
+    "initializes the sole missing candidate on a size-%i board",
+    (size) => {
+      const puzzle = getPuzzle(SOLVED_TEST_BOARDS[size].flat().join(""));
+      puzzle[0][0] = { type: "note", notes: [] };
+      expect(prepareSimplePuzzle(puzzle)[0][0]).toEqual({
+        type: "note",
+        notes: [1],
+      });
+    }
+  );
+});
+
+describe("placeSimpleValue", () => {
+  it("places a value, simplifies all peers, and preserves the original puzzle", () => {
+    const puzzle = clonePuzzle(ALL_NOTES);
+    const before = clonePuzzle(puzzle);
+    const updated = placeSimpleValue(puzzle, { r: 0, c: 0 }, 1);
+    expect(updated).toEqual(PLACED_ONE_AT_ORIGIN);
+    expect(puzzle).toEqual(before);
+    expect(updated[3][3]).not.toBe(puzzle[3][3]);
+    if (updated[3][3].type === "note" && puzzle[3][3].type === "note") {
+      expect(updated[3][3].notes).not.toBe(puzzle[3][3].notes);
+    }
+  });
+
+  it("leaves an empty note list when an assumption contradicts a peer", () => {
+    const puzzle = clonePuzzle(ALL_NOTES);
+    puzzle[0][1] = { type: "note", notes: [1] };
+    expect(placeSimpleValue(puzzle, { r: 0, c: 0 }, 1)[0][1]).toEqual({
+      type: "note",
+      notes: [],
+    });
+    expect(puzzle[0][1]).toEqual({ type: "note", notes: [1] });
+  });
+});
 
 describe("solveSimpleStep", () => {
   it.each([

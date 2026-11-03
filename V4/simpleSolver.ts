@@ -123,6 +123,50 @@ function simplifyPeerNotes(
 }
 
 /**
+ * Returns a fresh puzzle with every legal candidate derived from placed values.
+ * User notes are ignored; givens and user-entered values constrain peers equally.
+ */
+export function prepareSimplePuzzle(
+  puzzle: readonly (readonly CellProps[])[]
+): CellProps[][] {
+  const prepared = clonePuzzle(puzzle);
+  const allNotes = Array.from({ length: puzzle.length }, (_, index) => index + 1);
+
+  for (const row of prepared) {
+    for (const cell of row) {
+      if (cell.type === "note") {
+        cell.notes = [...allNotes];
+      }
+    }
+  }
+
+  for (let r = 0; r < prepared.length; r += 1) {
+    for (let c = 0; c < prepared.length; c += 1) {
+      const cell = prepared[r][c];
+      if (cell.type !== "note") {
+        simplifyPeerNotes(prepared, { r, c }, cell.value);
+      }
+    }
+  }
+
+  return prepared;
+}
+
+/**
+ * Places a value and removes it from peer notes in a new, independent puzzle.
+ */
+export function placeSimpleValue(
+  puzzle: readonly (readonly CellProps[])[],
+  location: CellLocation,
+  value: SudokuNumber
+): CellProps[][] {
+  const updatedPuzzle = clonePuzzle(puzzle);
+  updatedPuzzle[location.r][location.c] = { type: "value", value };
+  simplifyPeerNotes(updatedPuzzle, location, value);
+  return updatedPuzzle;
+}
+
+/**
  * Chooses uniformly among cells with an obvious or hidden single in row-major
  * order, then returns a new puzzle with that value placed and peers simplified.
  * Returns null when neither strategy can make progress. Only draws randomness
@@ -152,8 +196,5 @@ export function solveSimpleStep(
   const index =
     singles.length === 1 ? 0 : Math.floor(nextRandom() * singles.length);
   const { location, value } = singles[index];
-  const updatedPuzzle = clonePuzzle(puzzle);
-  updatedPuzzle[location.r][location.c] = { type: "value", value };
-  simplifyPeerNotes(updatedPuzzle, location, value);
-  return updatedPuzzle;
+  return placeSimpleValue(puzzle, location, value);
 }

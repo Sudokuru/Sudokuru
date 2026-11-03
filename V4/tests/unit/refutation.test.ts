@@ -11,6 +11,7 @@ import {
   ADDITIONAL_TEST_BOARDS_BY_NAME,
   ALL_ADDITIONAL_BOARDS_WITH_REFUTATION_SCORES,
 } from "../utils/additionalBoards";
+import { createEmptyPuzzle } from "../utils/puzzleFactories";
 import {
   SINGLE_NOTE_PATCH_BY_SIZE,
   SOLVED_TEST_BOARDS,
@@ -21,18 +22,9 @@ const COLUMN_OBVIOUS_PAIR =
 const COLUMN_OBVIOUS_PAIR_SOLUTION =
   ADDITIONAL_TEST_BOARDS_BY_NAME.COLUMN_OBVIOUS_PAIR_SOLUTION;
 
-/**
- * V4 expectations for Mulberry32 seed 81, direct selection among eligible
- * cells, and ten runs. Historical fixture scores remain unchanged.
- */
-const COLUMN_OBVIOUS_PAIR_SCORES_BY_BOOST = [
-  [0, 38],
-  [0.5, 38],
-  [1, 57],
-] as const;
-
+/** Literal expectations for three seeded runs with a 32-trial budget per run. */
 const V4_REFUTATION_SCORES = [
-  0, 0, 0, 0, 0, 0, 65, 0, 0, 0, 57, 0, 78, 0, 48, 0, 80, 0, 59, 58, 56,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 18, 0, 27, 0, 2, 0, 59, null, 0,
 ] as const;
 
 describe("getRefutationScore", () => {
@@ -42,28 +34,14 @@ describe("getRefutationScore", () => {
         (fixture, index) => [index, fixture] as const
       )
     )(
-      "matches the V4 boost=1 score for additional board %i",
+      "matches the bounded V4 score for additional board %i",
       (index, { board, solution }) => {
         const puzzle: CellProps[][] = getPuzzle(board.flat().join(""));
         const solutionCopy: SudokuNumber[][] = cloneBoard(solution);
 
-        expect(getRefutationScore(puzzle, solutionCopy, 1)).toBe(
+        expect(getRefutationScore(puzzle, solutionCopy)).toBe(
           V4_REFUTATION_SCORES[index]
         );
-      }
-    );
-
-    it.each(COLUMN_OBVIOUS_PAIR_SCORES_BY_BOOST)(
-      "matches the hardcoded column-pair score at boost %s",
-      (boost, expectedScore) => {
-        const puzzle: CellProps[][] = getPuzzle(
-          COLUMN_OBVIOUS_PAIR.flat().join("")
-        );
-        const solution: SudokuNumber[][] = cloneBoard(
-          COLUMN_OBVIOUS_PAIR_SOLUTION
-        );
-
-        expect(getRefutationScore(puzzle, solution, boost)).toBe(expectedScore);
       }
     );
   });
@@ -81,7 +59,7 @@ describe("getRefutationScore", () => {
         );
         const puzzle: CellProps[][] = getPuzzle(solution.flat().join(""));
 
-        expect(getRefutationScore(puzzle, solution, 1)).toBe(0);
+        expect(getRefutationScore(puzzle, solution)).toBe(0);
       }
     );
 
@@ -103,32 +81,76 @@ describe("getRefutationScore", () => {
             ? { ...patch.cell, notes: [...patch.cell.notes] }
             : { ...patch.cell };
 
-        expect(getRefutationScore(puzzle, solution, 1)).toBe(0);
+        expect(getRefutationScore(puzzle, solution)).toBe(0);
       }
     );
   });
 
   describe("functional behavior", () => {
-    it("repeats the V4 score after unrelated ratings evict the cached result", () => {
+    it("counts the assumption and subsequent singles for a multi-step refutation", () => {
+      const puzzle = getPuzzle(COLUMN_OBVIOUS_PAIR.flat().join(""));
+      expect(getRefutationScore(puzzle, COLUMN_OBVIOUS_PAIR_SOLUTION)).toBe(9);
+    });
+
+    it("sums all incorrect candidate costs for a refutable cell", () => {
+      const puzzle = getPuzzle(
+        ADDITIONAL_TEST_BOARDS_BY_NAME.POINTING_PAIR.flat().join("")
+      );
+      expect(
+        getRefutationScore(
+          puzzle,
+          ADDITIONAL_TEST_BOARDS_BY_NAME.POINTING_PAIR_SOLUTION
+        )
+      ).toBe(59);
+    });
+
+    it("returns null when a later run exhausts its trial budget", () => {
+      // This digit relabeling of POINTING_PAIR scores its first run, then
+      // reaches the 32-trial limit in the second run. Partial averages are invalid.
+      const puzzle = getPuzzle(
+        "002090000010600000005000041300000890040035060060009100800050000030000000000000416"
+      );
+      const solution = [
+        "482591637",
+        "713642985",
+        "695783241",
+        "357216894",
+        "941835762",
+        "268479153",
+        "826154379",
+        "134967528",
+        "579328416",
+      ].map((row) => [...row].map(Number));
+
+      expect(getRefutationScore(puzzle, solution)).toBeNull();
+    });
+
+    it("returns null when a wrong assumption completes an alternative solution", () => {
+      expect(
+        getRefutationScore(createEmptyPuzzle(2), SOLVED_TEST_BOARDS[2])
+      ).toBeNull();
+    });
+
+    it("returns null when single deductions cannot refute any cell", () => {
+      expect(
+        getRefutationScore(createEmptyPuzzle(4), SOLVED_TEST_BOARDS[4])
+      ).toBeNull();
+    });
+
+    it("is independent of unrelated ratings", () => {
       const puzzle = getPuzzle(COLUMN_OBVIOUS_PAIR.flat().join(""));
       const solution = cloneBoard(COLUMN_OBVIOUS_PAIR_SOLUTION);
+      expect(getRefutationScore(puzzle, solution)).toBe(9);
 
-      expect(getRefutationScore(puzzle, solution, 1)).toBe(57);
-
-      // The score cache holds 32 entries. Distinct boost keys on a solved board
-      // evict the target without making this a test of cache-hit repeatability.
-      const solvedPuzzle = getPuzzle(solution.flat().join(""));
-      for (let index = 0; index < 33; index += 1) {
-        expect(getRefutationScore(solvedPuzzle, solution, index / 32)).toBe(0);
-      }
-
-      const unrelated = ADDITIONAL_TEST_BOARDS_BY_NAME.BOX_OBVIOUS_PAIR;
-      const unrelatedSolution =
-        ADDITIONAL_TEST_BOARDS_BY_NAME.BOX_OBVIOUS_PAIR_SOLUTION;
       expect(
-        getRefutationScore(getPuzzle(unrelated.flat().join("")), unrelatedSolution, 1)
-      ).toBe(78);
-      expect(getRefutationScore(puzzle, solution, 1)).toBe(57);
+        getRefutationScore(
+          getPuzzle(
+            ADDITIONAL_TEST_BOARDS_BY_NAME.BOX_OBVIOUS_PAIR.flat().join("")
+          ),
+          ADDITIONAL_TEST_BOARDS_BY_NAME.BOX_OBVIOUS_PAIR_SOLUTION
+        )
+      ).toBe(18);
+      expect(getRefutationScore(puzzle, solution)).toBe(9);
     });
 
     it("returns the same literal score on repeated calls", () => {
@@ -145,8 +167,8 @@ describe("getRefutationScore", () => {
         COLUMN_OBVIOUS_PAIR_SOLUTION
       );
 
-      expect(getRefutationScore(firstPuzzle, firstSolution, 0.5)).toBe(38);
-      expect(getRefutationScore(secondPuzzle, secondSolution, 0.5)).toBe(38);
+      expect(getRefutationScore(firstPuzzle, firstSolution)).toBe(9);
+      expect(getRefutationScore(secondPuzzle, secondSolution)).toBe(9);
     });
 
     it("ignores user note contents when calculating difficulty", () => {
@@ -179,19 +201,11 @@ describe("getRefutationScore", () => {
       }
 
       expect(
-        getRefutationScore(
-          puzzleWithEmptyNotes,
-          cloneBoard(solution),
-          1
-        )
-      ).toBe(57);
+        getRefutationScore(puzzleWithEmptyNotes, cloneBoard(solution))
+      ).toBe(9);
       expect(
-        getRefutationScore(
-          puzzleWithSolutionOnlyNotes,
-          cloneBoard(solution),
-          1
-        )
-      ).toBe(57);
+        getRefutationScore(puzzleWithSolutionOnlyNotes, cloneBoard(solution))
+      ).toBe(9);
     });
 
     it("treats matching user values as placed puzzle values", () => {
@@ -210,11 +224,11 @@ describe("getRefutationScore", () => {
       );
 
       expect(
-        getRefutationScore(givenPuzzle, cloneBoard(solution), 1)
-      ).toBe(57);
+        getRefutationScore(givenPuzzle, cloneBoard(solution))
+      ).toBe(9);
       expect(
-        getRefutationScore(userValuePuzzle, cloneBoard(solution), 1)
-      ).toBe(57);
+        getRefutationScore(userValuePuzzle, cloneBoard(solution))
+      ).toBe(9);
     });
 
     it("does not mutate the puzzle or solution", () => {
@@ -226,11 +240,11 @@ describe("getRefutationScore", () => {
       );
       const puzzleBefore: CellProps[][] = clonePuzzle(puzzle);
       const solutionBefore: SudokuNumber[][] = cloneBoard(solution);
-      const score: number = getRefutationScore(puzzle, solution, 1);
+      const score: number | null = getRefutationScore(puzzle, solution);
 
       expect(puzzle).toEqual(puzzleBefore);
       expect(solution).toEqual(solutionBefore);
-      expect(score).toBe(57);
+      expect(score).toBe(9);
     });
   });
 });
