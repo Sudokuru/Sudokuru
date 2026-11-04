@@ -15,12 +15,12 @@ import {
 
 describe("getRawDifficulty", () => {
   it.each([
-    ["ONLY_OBVIOUS_SINGLES", -9980],
-    ["COLUMN_OBVIOUS_PAIR", 8997911],
-    ["POINTING_PAIR", 58999807],
-    ["HIDDEN_SINGLE_DRILL", -5887],
+    ["ONLY_OBVIOUS_SINGLES", -93977],
+    ["COLUMN_OBVIOUS_PAIR", -12865],
+    ["POINTING_PAIR", 12722],
+    ["HIDDEN_SINGLE_DRILL", -60373],
   ] as const)(
-    "matches the combined V4 score for %s with either solution path",
+    "matches the calibrated V4 score for %s with either solution path",
     (fixtureName, expected) => {
       const puzzle = getPuzzle(
         ADDITIONAL_TEST_BOARDS_BY_NAME[fixtureName].flat().join("")
@@ -34,20 +34,25 @@ describe("getRawDifficulty", () => {
 
   it("uses the capped refutation component when a run cannot finish", () => {
     const puzzle = getPuzzle(BOUNDED_REFUTATION_BOARD.puzzle);
+    const solution = BOUNDED_REFUTATION_BOARD.solution;
+    const options = { refutationMaxTrialsPerRun: 0 };
 
-    expect(getRawDifficulty(puzzle)).toBe(255999807);
     expect(
-      getRawDifficulty(puzzle, BOUNDED_REFUTATION_BOARD.solution)
-    ).toBe(255999807);
+      getRefutationScore(puzzle, solution, { runCount: 1, maxTrialsPerRun: 0 })
+    ).toBeNull();
+    expect(getRawDifficulty(puzzle, undefined, options)).toBe(12722);
+    expect(getRawDifficulty(puzzle, solution, options)).toBe(12722);
   });
 
   it("also caps a finite refutation score above the provisional ceiling", () => {
     const puzzle = getPuzzle(HIGH_REFUTATION_BOARD.puzzle);
     const solution = HIGH_REFUTATION_BOARD.solution;
 
-    expect(getRefutationScore(puzzle, solution)).toBe(259);
-    expect(getRawDifficulty(puzzle)).toBe(255998617);
-    expect(getRawDifficulty(puzzle, solution)).toBe(255998617);
+    expect(
+      getRefutationScore(puzzle, solution, { runCount: 1, maxTrialsPerRun: 64 })
+    ).toBe(252);
+    expect(getRawDifficulty(puzzle)).toBe(4242);
+    expect(getRawDifficulty(puzzle, solution)).toBe(4242);
   });
 
   it.each(SUPPORTED_BOARD_SIZES)(
@@ -69,8 +74,8 @@ describe("getRawDifficulty", () => {
       const [patch] = SINGLE_NOTE_PATCH_BY_SIZE[size];
       puzzle[patch.row][patch.column] = { type: "note", notes: [] };
 
-      expect(getRawDifficulty(puzzle)).toBe(-50000);
-      expect(getRawDifficulty(puzzle, solution)).toBe(-50000);
+      expect(getRawDifficulty(puzzle)).toBe(-400000);
+      expect(getRawDifficulty(puzzle, solution)).toBe(-400000);
     }
   );
 
@@ -79,11 +84,11 @@ describe("getRawDifficulty", () => {
       ADDITIONAL_TEST_BOARDS_BY_NAME.COLUMN_OBVIOUS_PAIR.flat().join("")
     );
 
-    expect(getRawDifficulty(puzzle)).toBe(8997911);
+    expect(getRawDifficulty(puzzle)).toBe(-12865);
     expect(getRawDifficulty(getPuzzle(BOUNDED_REFUTATION_BOARD.puzzle))).toBe(
-      255999807
+      12722
     );
-    expect(getRawDifficulty(puzzle)).toBe(8997911);
+    expect(getRawDifficulty(puzzle)).toBe(-12865);
   });
 
   it("ignores user notes and preserves both inputs on either solution path", () => {
@@ -103,8 +108,8 @@ describe("getRawDifficulty", () => {
     const beforePuzzle = clonePuzzle(puzzle);
     const beforeSolution = cloneBoard(solution);
 
-    expect(getRawDifficulty(puzzle)).toBe(8997911);
-    expect(getRawDifficulty(puzzle, solution)).toBe(8997911);
+    expect(getRawDifficulty(puzzle)).toBe(-12865);
+    expect(getRawDifficulty(puzzle, solution)).toBe(-12865);
     expect(puzzle).toEqual(beforePuzzle);
     expect(solution).toEqual(beforeSolution);
   });

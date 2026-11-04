@@ -17,10 +17,10 @@ if (!Number.isFinite(maxSeconds) || maxSeconds <= 0 || !Number.isSafeInteger(max
 const deadline = started + maxSeconds * 1000;
 const resultsPath = resolve(output ?? resolve(__dirname, "difficulty-tuning-results.txt"));
 const baseline: Required<RawDifficultyOptions> = {
-  refutationRunCount: 3, refutationMaxTrialsPerRun: 32, refutationSeed: 81,
-  dependencyRunCount: 3, dependencyStepCount: 20, dependencySeed: 81,
-  refutationWeight: 1, dependencyWeight: 1, refutationEmptyCellExponent: 0,
-  dependencyEmptyCellExponent: 1.9, maxRefutationScore: 256, outputScale: 1_000_000,
+  refutationRunCount: 1, refutationMaxTrialsPerRun: 64, refutationSeed: 81,
+  dependencyRunCount: 3, dependencyStepCount: 25, dependencySeed: 81,
+  refutationWeight: 1, dependencyWeight: 10, refutationEmptyCellExponent: 2,
+  dependencyEmptyCellExponent: 1.9, maxRefutationScore: 48, outputScale: 1_000_000,
 };
 const grid = {
   refutationRunCount: [1, 3],

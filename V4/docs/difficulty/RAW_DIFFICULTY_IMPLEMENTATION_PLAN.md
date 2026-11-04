@@ -2,6 +2,8 @@
 
 Implemented in [`V4/difficulty.ts`](../../difficulty.ts). The plan below records the scope and chosen defaults; label mapping and the hint-based redesign remain separate.
 
+The defaults and score expectations below describe the initial implementation. Subsequent human-time calibration changed the combined API defaults; see `difficulty.ts` for current values and the alternative tunings considered.
+
 ## Summary
 
 Add `getRawDifficulty` using the V4 refutation and dependency scorers. Keep all combined-score tuning values together in `V4/difficulty.ts`. This change delivers the numeric API only; `getGameDifficulty` labels and `getSudokuData` remain separate work.
