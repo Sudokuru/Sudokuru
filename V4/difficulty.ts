@@ -3,25 +3,33 @@ import { getRefutationScore } from "./refutation";
 import type { CellProps, SudokuNumber } from "./Types";
 import { getPuzzleSolution } from "./validate";
 
-// Sampling controls: more runs reduce move-order variation at additional cost.
-// The trial budget bounds refutation work; dependency samples only early moves.
-const REFUTATION_RUN_COUNT = 3;
-const REFUTATION_MAX_TRIALS_PER_RUN = 32;
-const REFUTATION_SEED = 81;
-const DEPENDENCY_RUN_COUNT = 3;
-const DEPENDENCY_STEP_COUNT = 20;
-const DEPENDENCY_SEED = 81;
-
-// Higher refutation scores increase difficulty; dependency scores are negative.
-// Each component is divided by emptyCellCount ** its normalization exponent.
-const REFUTATION_WEIGHT = 1;
-const DEPENDENCY_WEIGHT = 1;
-const REFUTATION_EMPTY_CELL_EXPONENT = 0;
-const DEPENDENCY_EMPTY_CELL_EXPONENT = 1.9;
-
-// Provisional ceiling for both unresolved and finite refutation scores.
-const MAX_REFUTATION_SCORE = 256;
-const OUTPUT_SCALE = 1_000_000;
+/** Optional tuning parameters for the combined raw difficulty score. */
+export interface RawDifficultyOptions {
+  /** Positive integer number of refutation paths. Default: 3. */
+  refutationRunCount?: number;
+  /** Nonnegative integer trial budget per refutation path. Default: 32. */
+  refutationMaxTrialsPerRun?: number;
+  /** Seed for refutation path selection. Default: 81. */
+  refutationSeed?: number;
+  /** Positive integer number of dependency paths. Default: 3. */
+  dependencyRunCount?: number;
+  /** Positive integer number of early moves sampled per dependency path. Default: 20. */
+  dependencyStepCount?: number;
+  /** Seed for dependency path selection. Default: 81. */
+  dependencySeed?: number;
+  /** Multiplier for the normalized refutation score. Default: 1. */
+  refutationWeight?: number;
+  /** Multiplier for the normalized dependency score. Default: 1. */
+  dependencyWeight?: number;
+  /** Empty-cell normalization exponent for refutation. Default: 0. */
+  refutationEmptyCellExponent?: number;
+  /** Empty-cell normalization exponent for dependency. Default: 1.9. */
+  dependencyEmptyCellExponent?: number;
+  /** Ceiling for both unresolved and finite refutation scores. Default: 256. */
+  maxRefutationScore?: number;
+  /** Multiplier applied before rounding the combined score. Default: 1,000,000. */
+  outputScale?: number;
+}
 
 /**
  * Combines bounded refutation cost and early single-move availability into a
@@ -36,10 +44,26 @@ const OUTPUT_SCALE = 1_000_000;
  * A null refutation receives the provisional maximum, and finite refutation
  * scores are capped at the same value before normalization. This is a raw
  * numeric rating; game difficulty labels are assigned separately.
+ * Sampling, weights, normalization, the cap, and output scale can be changed
+ * through `options`; omitted settings use the defaults listed in its type.
  */
 export function getRawDifficulty(
   puzzle: readonly (readonly CellProps[])[],
-  solution?: readonly (readonly SudokuNumber[])[]
+  solution?: readonly (readonly SudokuNumber[])[],
+  {
+    refutationRunCount = 3,
+    refutationMaxTrialsPerRun = 32,
+    refutationSeed = 81,
+    dependencyRunCount = 3,
+    dependencyStepCount = 20,
+    dependencySeed = 81,
+    refutationWeight = 1,
+    dependencyWeight = 1,
+    refutationEmptyCellExponent = 0,
+    dependencyEmptyCellExponent = 1.9,
+    maxRefutationScore = 256,
+    outputScale = 1_000_000,
+  }: RawDifficultyOptions = {}
 ): number {
   let emptyCellCount = 0;
   for (const row of puzzle) {
@@ -55,27 +79,27 @@ export function getRawDifficulty(
 
   const matchingSolution = solution ?? getPuzzleSolution(puzzle);
   const refutation = getRefutationScore(puzzle, matchingSolution, {
-    runCount: REFUTATION_RUN_COUNT,
-    maxTrialsPerRun: REFUTATION_MAX_TRIALS_PER_RUN,
-    seed: REFUTATION_SEED,
+    runCount: refutationRunCount,
+    maxTrialsPerRun: refutationMaxTrialsPerRun,
+    seed: refutationSeed,
   });
   const dependency = getDependencyScore(puzzle, {
-    runCount: DEPENDENCY_RUN_COUNT,
-    stepCount: DEPENDENCY_STEP_COUNT,
-    seed: DEPENDENCY_SEED,
+    runCount: dependencyRunCount,
+    stepCount: dependencyStepCount,
+    seed: dependencySeed,
   });
   const cappedRefutation = Math.min(
-    refutation ?? MAX_REFUTATION_SCORE,
-    MAX_REFUTATION_SCORE
+    refutation ?? maxRefutationScore,
+    maxRefutationScore
   );
   const denominator = Math.max(1, emptyCellCount);
   const normalizedRefutation =
-    cappedRefutation / denominator ** REFUTATION_EMPTY_CELL_EXPONENT;
+    cappedRefutation / denominator ** refutationEmptyCellExponent;
   const normalizedDependency =
-    dependency / denominator ** DEPENDENCY_EMPTY_CELL_EXPONENT;
+    dependency / denominator ** dependencyEmptyCellExponent;
 
-  return Math.round(OUTPUT_SCALE * (
-    REFUTATION_WEIGHT * normalizedRefutation +
-    DEPENDENCY_WEIGHT * normalizedDependency
+  return Math.round(outputScale * (
+    refutationWeight * normalizedRefutation +
+    dependencyWeight * normalizedDependency
   ));
 }

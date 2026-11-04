@@ -8,9 +8,9 @@ Add `getRawDifficulty` using the V4 refutation and dependency scorers. Keep all 
 
 ## Implementation
 
-- Add `getRawDifficulty(puzzle: readonly (readonly CellProps[])[], solution?: readonly (readonly SudokuNumber[])[]): number` in `V4/difficulty.ts`. If no solution is supplied, obtain one with `getPuzzleSolution`; a supplied solution is trusted as already validated. Return `0` for an already completed, prevalidated board.
+- Add `getRawDifficulty(puzzle: readonly (readonly CellProps[])[], solution?: readonly (readonly SudokuNumber[])[], options?: RawDifficultyOptions): number` in `V4/difficulty.ts`. If no solution is supplied, obtain one with `getPuzzleSolution`; a supplied solution is trusted as already validated. Return `0` for an already completed, prevalidated board.
 - Add optional typed settings to `V4/refutation.ts` and `V4/dependency.ts`, preserving their current calls and defaults. The combined API passes explicit settings from `difficulty.ts`: refutation runs **3**, trials per run **32**, seed **81**; dependency runs **3**, early steps **20**, seed **81**. Reject nonpositive run/step counts and negative or noninteger trial budgets.
-- Keep these additional named constants in `difficulty.ts`: refutation and dependency weights **1** each; separate empty-cell normalization exponents **0** and **1.9**; maximum refutation score **256**; output scale **1,000,000**. Count note cells as empty, using a minimum denominator of one. Replace a `null` refutation with 256 and **cap finite refutation scores at 256**. Preserve the scorers' existing rounding, then compute:
+- Expose every combined-score tuning value as a field in optional `RawDifficultyOptions`, defaulting to the following values: refutation and dependency weights **1** each; separate empty-cell normalization exponents **0** and **1.9**; maximum refutation score **256**; output scale **1,000,000**. Count note cells as empty, using a minimum denominator of one. Replace a `null` refutation with 256 and **cap finite refutation scores at 256**. Preserve the scorers' existing rounding, then compute:
 
   ```text
   Math.round(scale * (

@@ -10,7 +10,7 @@ The legacy implementation adapted those ideas to estimate human difficulty, but 
 
 [`getRawDifficulty`](../../difficulty.ts) now combines V4's bounded refutation and dependency scores. It accepts a prevalidated puzzle and an optional matching solution; omitting the solution invokes `getPuzzleSolution`. Completed puzzles return zero. Ratings are deterministic integers, and easy puzzles can receive negative scores.
 
-All combined-score tuning constants live in `difficulty.ts`: both run counts and seeds, the refutation trial budget, the dependency sampling window, component weights, empty-cell normalization exponents, a provisional refutation ceiling, and the output scale. The default formula is:
+The optional `RawDifficultyOptions` argument to `getRawDifficulty` controls both run counts and seeds, the refutation trial budget, the dependency sampling window, component weights, empty-cell normalization exponents, the provisional refutation ceiling, and the output scale. Its defaults produce this formula:
 
 ```text
 round(1,000,000 * (min(refutation ?? 256, 256) + dependency / emptyCellCount ** 1.9))
