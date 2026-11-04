@@ -390,10 +390,8 @@ Return an array of hints representing every possible application of the requeste
 
 ### Difficulty Module
 
-* implemented: `getRawDifficulty` in `difficulty.ts`
 * input: prevalidated puzzle / board and optional matching solution
 * output: raw difficulty integer combining bounded refutation and early single availability
-* pending: mapping module, raw → `GameDifficulty`; later hint-based redesign
 
 ### Strategy Modules (example: Obvious Single)
 
