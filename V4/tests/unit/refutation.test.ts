@@ -12,6 +12,7 @@ import {
   ALL_ADDITIONAL_BOARDS_WITH_REFUTATION_SCORES,
 } from "../utils/additionalBoards";
 import { createEmptyPuzzle } from "../utils/puzzleFactories";
+import { BOUNDED_REFUTATION_BOARD } from "../utils/difficultyBoards";
 import {
   SINGLE_NOTE_PATCH_BY_SIZE,
   SOLVED_TEST_BOARDS,
@@ -28,6 +29,93 @@ const V4_REFUTATION_SCORES = [
 ] as const;
 
 describe("getRefutationScore", () => {
+  describe("sampling options", () => {
+    it("preserves standalone defaults when options are omitted or explicit", () => {
+      const puzzle = getPuzzle(COLUMN_OBVIOUS_PAIR.flat().join(""));
+
+      expect(getRefutationScore(puzzle, COLUMN_OBVIOUS_PAIR_SOLUTION, {})).toBe(9);
+      expect(
+        getRefutationScore(puzzle, COLUMN_OBVIOUS_PAIR_SOLUTION, {
+          runCount: 3,
+          maxTrialsPerRun: 32,
+          seed: 81,
+        })
+      ).toBe(9);
+    });
+
+    it("can stop after the first successful run before a later run stalls", () => {
+      const puzzle = getPuzzle(BOUNDED_REFUTATION_BOARD.puzzle);
+
+      expect(
+        getRefutationScore(puzzle, BOUNDED_REFUTATION_BOARD.solution, {
+          runCount: 1,
+        })
+      ).toBe(61);
+      expect(
+        getRefutationScore(puzzle, BOUNDED_REFUTATION_BOARD.solution)
+      ).toBeNull();
+    });
+
+    it("finishes a bounded rating when allowed one additional trial per run", () => {
+      const puzzle = getPuzzle(BOUNDED_REFUTATION_BOARD.puzzle);
+
+      expect(
+        getRefutationScore(puzzle, BOUNDED_REFUTATION_BOARD.solution, {
+          maxTrialsPerRun: 33,
+        })
+      ).toBe(47);
+    });
+
+    it("uses an explicit zero seed and repeats that stream independently", () => {
+      const puzzle = getPuzzle(COLUMN_OBVIOUS_PAIR.flat().join(""));
+
+      expect(
+        getRefutationScore(puzzle, COLUMN_OBVIOUS_PAIR_SOLUTION, { seed: 0 })
+      ).toBe(6);
+      expect(getRefutationScore(puzzle, COLUMN_OBVIOUS_PAIR_SOLUTION)).toBe(9);
+      expect(
+        getRefutationScore(puzzle, COLUMN_OBVIOUS_PAIR_SOLUTION, { seed: 0 })
+      ).toBe(6);
+    });
+
+    it("permits free singles but no wrong-candidate trials with a zero budget", () => {
+      expect(
+        getRefutationScore(getPuzzle("1000"), SOLVED_TEST_BOARDS[2], {
+          maxTrialsPerRun: 0,
+        })
+      ).toBe(0);
+      expect(
+        getRefutationScore(
+          getPuzzle(COLUMN_OBVIOUS_PAIR.flat().join("")),
+          COLUMN_OBVIOUS_PAIR_SOLUTION,
+          { maxTrialsPerRun: 0 }
+        )
+      ).toBeNull();
+    });
+
+    it.each([0, -1, 1.5, NaN, Infinity])(
+      "rejects invalid run count %s",
+      (runCount) => {
+        expect(() =>
+          getRefutationScore(getPuzzle("1000"), SOLVED_TEST_BOARDS[2], {
+            runCount,
+          })
+        ).toThrow(RangeError);
+      }
+    );
+
+    it.each([-1, 1.5, NaN, Infinity])(
+      "rejects invalid trial budget %s",
+      (maxTrialsPerRun) => {
+        expect(() =>
+          getRefutationScore(getPuzzle("1000"), SOLVED_TEST_BOARDS[2], {
+            maxTrialsPerRun,
+          })
+        ).toThrow(RangeError);
+      }
+    );
+  });
+
   describe("V4 sampled scores", () => {
     it.each(
       ALL_ADDITIONAL_BOARDS_WITH_REFUTATION_SCORES.map(
@@ -105,24 +193,10 @@ describe("getRefutationScore", () => {
     });
 
     it("returns null when a later run exhausts its trial budget", () => {
-      // This digit relabeling of POINTING_PAIR scores its first run, then
-      // reaches the 32-trial limit in the second run. Partial averages are invalid.
-      const puzzle = getPuzzle(
-        "002090000010600000005000041300000890040035060060009100800050000030000000000000416"
-      );
-      const solution = [
-        "482591637",
-        "713642985",
-        "695783241",
-        "357216894",
-        "941835762",
-        "268479153",
-        "826154379",
-        "134967528",
-        "579328416",
-      ].map((row) => [...row].map(Number));
-
-      expect(getRefutationScore(puzzle, solution)).toBeNull();
+      const puzzle = getPuzzle(BOUNDED_REFUTATION_BOARD.puzzle);
+      expect(
+        getRefutationScore(puzzle, BOUNDED_REFUTATION_BOARD.solution)
+      ).toBeNull();
     });
 
     it("returns null when a wrong assumption completes an alternative solution", () => {

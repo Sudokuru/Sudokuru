@@ -6,11 +6,23 @@ Before V4, Sudokuru's difficulty calculation was closely based on the computatio
 
 The legacy implementation adapted those ideas to estimate human difficulty, but doing so required substantial simulation logic written specifically for difficulty calculation. That work is computationally expensive and overlaps with solving behavior implemented elsewhere in Sudokuru.
 
-## Direction for V4
+## Current V4 implementation
 
-V4 will introduce a simpler difficulty module that produces broadly similar, useful difficulty ratings while being easier to understand, maintain, and extend.
+[`getRawDifficulty`](../../difficulty.ts) now combines V4's bounded refutation and dependency scores. It accepts a prevalidated puzzle and an optional matching solution; omitting the solution invokes `getPuzzleSolution`. Completed puzzles return zero. Ratings are deterministic integers, and easy puzzles can receive negative scores.
 
-The new module should reuse the same strategy detection code used to create hints. Difficulty calculation should observe which strategies are available and applied during a solve instead of maintaining a separate collection of ad hoc solving and simulation code. This keeps the difficulty model aligned with the techniques Sudokuru actually teaches and exposes through hints.
+All combined-score tuning constants live in `difficulty.ts`: both run counts and seeds, the refutation trial budget, the dependency sampling window, component weights, empty-cell normalization exponents, a provisional refutation ceiling, and the output scale. The default formula is:
+
+```text
+round(1,000,000 * (min(refutation ?? 256, 256) + dependency / emptyCellCount ** 1.9))
+```
+
+Refutation defaults to three runs with 32 trials per run; dependency defaults to three paths of 20 steps. Each scorer uses its own seed-81 stream and retains its standalone defaults. The cap applies to unresolved and finite refutation scores before normalization. User notes are ignored, and inputs are not mutated. `getGameDifficulty` label mapping and `getSudokuData` integration remain pending.
+
+## Future hint-based direction
+
+The larger hint-based redesign remains separate from the implemented refutation-plus-dependency API. Its aim is to produce broadly similar, useful difficulty ratings while being easier to understand, maintain, and extend.
+
+The future module should reuse the same strategy detection code used to create hints. Difficulty calculation should observe which strategies are available and applied during a solve instead of maintaining a separate collection of ad hoc solving and simulation code. This keeps the difficulty model aligned with the techniques Sudokuru actually teaches and exposes through hints.
 
 Performance is a primary requirement. The module should avoid the many randomized solve and refutation runs used by the legacy algorithm and should be fast enough to rate puzzles as part of real-time puzzle generation.
 

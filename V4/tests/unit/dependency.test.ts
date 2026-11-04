@@ -13,6 +13,71 @@ const COLUMN_OBVIOUS_PAIR =
   ADDITIONAL_TEST_BOARDS_BY_NAME.COLUMN_OBVIOUS_PAIR;
 
 describe("getDependencyScore", () => {
+  describe("sampling options", () => {
+    it("preserves standalone defaults when options are omitted or explicit", () => {
+      const puzzle = getPuzzle(COLUMN_OBVIOUS_PAIR.flat().join(""));
+
+      expect(getDependencyScore(puzzle, {})).toBeCloseTo(-3.6666666666666665, 12);
+      expect(
+        getDependencyScore(puzzle, { runCount: 3, stepCount: 20, seed: 81 })
+      ).toBeCloseTo(-3.6666666666666665, 12);
+    });
+
+    it.each([
+      [1, -3],
+      [2, -2.5],
+      [3, -2],
+      [20, -0.3],
+    ])("averages over a fixed %i-step sampling window", (stepCount, expected) => {
+      // This 2x2 puzzle offers three singles, then two, then one.
+      const puzzle = getPuzzle("1000");
+
+      expect(getDependencyScore(puzzle, { stepCount })).toBe(expected);
+    });
+
+    it("uses the requested number of independently started paths", () => {
+      const puzzle = getPuzzle(COLUMN_OBVIOUS_PAIR.flat().join(""));
+
+      expect(getDependencyScore(puzzle, { runCount: 1 })).toBe(-3.7);
+      expect(getDependencyScore(puzzle, { runCount: 3 })).toBeCloseTo(
+        -3.6666666666666665,
+        12
+      );
+    });
+
+    it("uses an explicit zero seed and repeats that stream independently", () => {
+      const puzzle = getPuzzle(COLUMN_OBVIOUS_PAIR.flat().join(""));
+
+      expect(getDependencyScore(puzzle, { seed: 0 })).toBeCloseTo(
+        -3.683333333333333,
+        12
+      );
+      expect(getDependencyScore(puzzle)).toBeCloseTo(-3.6666666666666665, 12);
+      expect(getDependencyScore(puzzle, { seed: 0 })).toBeCloseTo(
+        -3.683333333333333,
+        12
+      );
+    });
+
+    it.each([0, -1, 1.5, NaN, Infinity])(
+      "rejects invalid run count %s",
+      (runCount) => {
+        expect(() =>
+          getDependencyScore(getPuzzle("1000"), { runCount })
+        ).toThrow(RangeError);
+      }
+    );
+
+    it.each([0, -1, 1.5, NaN, Infinity])(
+      "rejects invalid step count %s",
+      (stepCount) => {
+        expect(() =>
+          getDependencyScore(getPuzzle("1000"), { stepCount })
+        ).toThrow(RangeError);
+      }
+    );
+  });
+
   it.each(SUPPORTED_BOARD_SIZES)(
     "returns zero for a solved size-%i puzzle",
     (size) => {

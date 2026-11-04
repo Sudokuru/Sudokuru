@@ -5,6 +5,15 @@ import type { CellLocation, CellProps, SudokuNumber } from "./Types";
 const REFUTATION_RUN_COUNT = 3;
 const MAX_TRIALS_PER_RUN = 32;
 
+export interface RefutationOptions {
+  /** Positive integer number of sampled solve paths. Defaults to 3. */
+  runCount?: number;
+  /** Nonnegative integer trial budget for each path. Defaults to 32. */
+  maxTrialsPerRun?: number;
+  /** Seed for one random stream shared across paths. Defaults to 81. */
+  seed?: number;
+}
+
 type TrialBudget = { remaining: number };
 type RefutableCell = { location: CellLocation; cost: number };
 
@@ -88,11 +97,12 @@ function findRefutableCell(
 function scoreRun(
   initial: readonly (readonly CellProps[])[],
   solution: readonly (readonly SudokuNumber[])[],
-  nextRandom: () => number
+  nextRandom: () => number,
+  maxTrialsPerRun: number
 ): number | null {
   let puzzle = initial;
   let score = 0;
-  const budget: TrialBudget = { remaining: MAX_TRIALS_PER_RUN };
+  const budget: TrialBudget = { remaining: maxTrialsPerRun };
 
   while (true) {
     const next = solveSimpleStep(puzzle, nextRandom);
@@ -115,31 +125,44 @@ function scoreRun(
 }
 
 /**
- * Averages three sampled refutation runs, rounded down, using one Mulberry32
- * stream seeded with 81 across all runs. Repeated calls are deterministic.
+ * Averages sampled refutation runs, rounded down. Defaults to three runs using
+ * one Mulberry32 stream seeded with 81. Repeated calls are deterministic.
  *
- * Each run permits 32 wrong-candidate trials. Returns null if any run cannot
- * refute a cell or needs another trial after exhausting its budget. Null means
- * this bounded method could not rate the puzzle, not a difficulty category.
+ * Each run permits 32 wrong-candidate trials by default. Returns null if any run
+ * cannot refute a cell or needs another trial after exhausting its budget. Null
+ * means this bounded method could not rate the puzzle, not a difficulty category.
  *
  * Inputs must be prevalidated with a matching supplied solution. User notes are
  * ignored; neither input is mutated. Completed ratings are not cached.
+ * Throws RangeError for invalid run counts or trial budgets.
  */
 export function getRefutationScore(
   puzzle: readonly (readonly CellProps[])[],
-  solution: readonly (readonly SudokuNumber[])[]
+  solution: readonly (readonly SudokuNumber[])[],
+  {
+    runCount = REFUTATION_RUN_COUNT,
+    maxTrialsPerRun = MAX_TRIALS_PER_RUN,
+    seed = 81,
+  }: RefutationOptions = {}
 ): number | null {
+  if (!Number.isInteger(runCount) || runCount <= 0) {
+    throw new RangeError("runCount must be a positive integer.");
+  }
+  if (!Number.isInteger(maxTrialsPerRun) || maxTrialsPerRun < 0) {
+    throw new RangeError("maxTrialsPerRun must be a nonnegative integer.");
+  }
+
   const initial = prepareSimplePuzzle(puzzle);
-  const nextRandom = createSeededRandom();
+  const nextRandom = createSeededRandom(seed);
   let total = 0;
 
-  for (let run = 0; run < REFUTATION_RUN_COUNT; run += 1) {
-    const score = scoreRun(initial, solution, nextRandom);
+  for (let run = 0; run < runCount; run += 1) {
+    const score = scoreRun(initial, solution, nextRandom, maxTrialsPerRun);
     if (score === null) {
       return null;
     }
     total += score;
   }
 
-  return Math.floor(total / REFUTATION_RUN_COUNT);
+  return Math.floor(total / runCount);
 }
