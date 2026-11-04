@@ -8,3 +8,4 @@ jest-coverage/
 junit.xml
 *.swp
 *.DS_STORE
+V4/scripts/difficulty-tuning-results.txt
