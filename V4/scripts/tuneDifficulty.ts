@@ -23,14 +23,14 @@ const baseline: Required<RawDifficultyOptions> = {
   dependencyEmptyCellExponent: 1.9, maxRefutationScore: 256, outputScale: 1_000_000,
 };
 const grid = {
-  refutationRunCount: [1, 3, 5, 10],
-  refutationMaxTrialsPerRun: [16, 32, 64, 128],
-  dependencyRunCount: [1, 3, 5, 10],
-  dependencyStepCount: [5, 10, 20, 30],
-  dependencyWeight: [0.1, 1, 10, 100, 1000],
-  refutationEmptyCellExponent: [0, 0.5, 1, 1.5, 2],
-  dependencyEmptyCellExponent: [0, 1, 1.5, 1.9, 2.5],
-  maxRefutationScore: [64, 128, 256, 512],
+  refutationRunCount: [1, 3],
+  refutationMaxTrialsPerRun: [64],
+  dependencyRunCount: [3, 5, 10],
+  dependencyStepCount: [20, 25, 30, 35, 40],
+  dependencyWeight: [10],
+  refutationEmptyCellExponent: [2],
+  dependencyEmptyCellExponent: [1.9],
+  maxRefutationScore: [16, 32, 48, 64, 96],
 };
 type GroupResult = { name: string; scores: number[]; pearson: number | null };
 type Result = {
