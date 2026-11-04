@@ -18,11 +18,9 @@ round(1,000,000 * (min(refutation ?? 48, 48) / emptyCellCount ** 2 + 10 * depend
 
 The combined API defaults to one refutation run with 64 trials and three dependency paths of 25 steps. Each scorer uses its own seed-81 stream. Standalone scorer defaults remain three runs with 32 trials for refutation and three paths of 20 steps for dependency. The cap applies to unresolved and finite refutation scores before normalization. User notes are ignored, and inputs are not mutated. The comments in `difficulty.ts` document the calibration results and alternative tunings. `getGameDifficulty` label mapping and `getSudokuData` integration remain pending.
 
-## Future hint-based direction
+## Original Plan for hint-based direction
 
-The larger hint-based redesign remains separate from the implemented refutation-plus-dependency API. Its aim is to produce broadly similar, useful difficulty ratings while being easier to understand, maintain, and extend.
-
-The future module should reuse the same strategy detection code used to create hints. Difficulty calculation should observe which strategies are available and applied during a solve instead of maintaining a separate collection of ad hoc solving and simulation code. This keeps the difficulty model aligned with the techniques Sudokuru actually teaches and exposes through hints.
+The following was the original plan for difficulty improvements. However, a reimplementation of the legacy V4 approach ended up performing way better on human correlation than both the old legacy V4 approach as well as all the other approaches I tried. It also consistently runs in under 20 milliseconds meaning it's should be fast enough to support real time puzzle generation.
 
 Performance is a primary requirement. The module should avoid the many randomized solve and refutation runs used by the legacy algorithm and should be fast enough to rate puzzles as part of real-time puzzle generation.
 
