@@ -253,7 +253,6 @@ A stage may include any of the following (each optional):
 * Obtains a unique solution with `getPuzzleSolution` when one is not supplied; its errors propagate. Supplying a validated solution avoids this work.
 * Returns `0` for a completed puzzle. User notes are ignored; inputs are not mutated.
 * Optional `RawDifficultyOptions` on `getRawDifficulty` controls sampling counts, trial budget, seeds, weights, empty-cell normalization exponents, refutation cap, and output scale. Defaults preserve the current score behavior.
-* The provisional refutation cap applies to both unresolved (`null`) and excessive finite scores. Game difficulty labels remain separate work.
 
 ---
 
