@@ -1,5 +1,5 @@
 import { getPuzzle } from "../../validate";
-import { getRefutationScore } from "../../refutation";
+import { getRefutationScore } from "./historicalRefutation";
 import { pearson, spearman } from "./statistics";
 import type { ValidationResult } from "./cloudValidation";
 

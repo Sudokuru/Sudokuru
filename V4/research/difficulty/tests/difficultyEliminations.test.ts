@@ -52,20 +52,22 @@ describe("manual difficulty procedure eliminations", () => {
     expect(record.runContext.evaluationCohort).toBe("cloud-sudoku");
   });
 
-  test("captures a raw V4 refutation score without inventing time errors", () => {
+  test.each(["v4/refutation", "v4/difficulty-recommended", "v4/difficulty-runs10-cap48",
+    "v4/difficulty-runs5-cap48", "v4/difficulty-runs3-cap32", "v4/difficulty-runs10-cap32"])
+  ("captures %s without inventing time errors", procedure => {
     const { results, benchmarks } = artifacts();
     const reportContext = { ...results.reportContext, independentValidationPuzzles: 4 };
     const scores = { n: 4, spearman: 0.4, pearson: 0.2, logRmse: null, secondsMae: null };
     const record = captureElimination({ ...results, reportContext, cloudValidation: { results: [
-      { procedure: "v4/refutation", scores },
-    ] } }, { ...benchmarks, reportContext, benchmarks: [{ name: "v4/refutation scoring", p95Ms: 2 }] },
-    "v4/refutation", "reason");
+      { procedure, scores },
+    ] } }, { ...benchmarks, reportContext, benchmarks: [{ name: `${procedure} scoring`, p95Ms: 2 }] },
+    procedure, "reason");
     expect(record.score).toBeCloseTo(0.65);
     expect(record.statistics).toEqual(scores);
     expect(record.scoringP95Ms).toBe(2);
     expect(record.runContext.evaluationCohort).toBe("cloud-sudoku");
     expect(() => captureElimination({ ...results, reportContext, cloudValidation: { results: [] } },
-      { ...benchmarks, reportContext }, "v4/refutation", "reason")).toThrow("no complete Cloud");
+      { ...benchmarks, reportContext }, procedure, "reason")).toThrow("no complete Cloud");
   });
 
   test("explicitly skipped benchmarks produce null timing, not zero or a stale measurement", () => {

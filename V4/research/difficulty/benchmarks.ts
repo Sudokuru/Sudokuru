@@ -7,7 +7,9 @@ import { predict } from "./models";
 import { mean, quantile } from "./statistics";
 import { BENCHMARK_SETTINGS } from "./settings";
 import { getPuzzle } from "../../validate";
-import { getRefutationScore } from "../../refutation";
+import { getRefutationScore } from "./historicalRefutation";
+import { getRawDifficulty } from "../../difficulty";
+import type { V4DifficultyTuning } from "./v4Difficulty";
 import type { FeatureRow, ExperimentResult } from "./experimentTypes";
 import type { BenchmarkResult, BenchmarkResults } from "./benchmarkTypes";
 
@@ -30,6 +32,7 @@ export function runBenchmarks(
   experiments: readonly ExperimentResult[],
   preparationMs: number,
   includeV4Refutation = false,
+  tunings: readonly V4DifficultyTuning[] = [],
 ): BenchmarkResults | null {
   if (featureRows.length === 0) {
     console.warn("Too little data for benchmarks: no puzzles to measure.");
@@ -68,6 +71,10 @@ export function runBenchmarks(
   benchmarks.push(benchmark("trace extraction (initialized board + prepared solution)", i => singleTrace(initialized[i], featureRows[i].solution).features.tracePlacements));
   if (includeV4Refutation) benchmarks.push(benchmark("v4/refutation scoring", i =>
     getRefutationScore(getPuzzle(featureRows[i].record.puzzle), featureRows[i].solution, 1)));
+  for (const tuning of tunings) {
+    benchmarks.push(benchmark(`${tuning.procedure} scoring`, i =>
+      getRawDifficulty(getPuzzle(featureRows[i].record.puzzle), featureRows[i].solution, tuning.options)));
+  }
   for (const experiment of experiments) {
     for (const summary of experiment.summaries) {
       const model = summary.finalModel;

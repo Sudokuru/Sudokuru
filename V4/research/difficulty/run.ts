@@ -17,6 +17,8 @@ import { loadCloudSudoku, prepareCloudSudoku } from "./cloudSudoku";
 import { evaluateCloud, loadLegacyScores } from "./cloudValidation";
 import { scoreV4Refutation, summarizeV4Refutation } from "./v4Refutation";
 
+import { V4_DIFFICULTY_TUNINGS, scoreV4Difficulty, summarizeRawDifficulty } from "./v4Difficulty";
+
 const args = process.argv.slice(2);
 let outputDirectory = "V4/docs/difficulty/results";
 let skipBenchmarks = false;
@@ -93,7 +95,19 @@ const personalRefutationScores = includeV4Refutation ? scoreV4Refutation(persona
 const personalRefutation = personalPrepared.map((row, i) => ({ id: row.record.id, seconds: row.record.seconds!, score: personalRefutationScores[i] }));
 const cloudRefutation = includeV4Refutation && cloudValidation ? scoreV4Refutation(cloudPrepared) : [];
 if (cloudValidation && cloudRefutation.length) cloudValidation.results.push(summarizeV4Refutation(cloudRecords.map(row => row.seconds), cloudRefutation));
-const benchmarkResults = skipBenchmarks ? null : runBenchmarks(featureRows, experiments, preparationMs, includeV4Refutation);
+const activeTunings = V4_DIFFICULTY_TUNINGS.filter(tuning => !registry.procedures.some(row => row.procedure === tuning.procedure));
+const v4Difficulty = activeTunings.map(tuning => {
+  console.log(`Evaluating ${tuning.procedure}.`);
+  const personalScores = scoreV4Difficulty(personalPrepared, tuning.options);
+  const personalSummary = summarizeRawDifficulty(tuning.procedure, personalPrepared.map(row => row.record.seconds!), personalScores);
+  const cloudScores = scoreV4Difficulty(cloudPrepared, tuning.options);
+  const cloudSummary = cloudRecords.length ? summarizeRawDifficulty(tuning.procedure, cloudRecords.map(row => row.seconds), cloudScores) : null;
+  if (cloudSummary) cloudValidation!.results.push(cloudSummary);
+  return { ...tuning, personalSummary, cloudSummary,
+    personal: personalPrepared.map((row, i) => ({ id: row.record.id, seconds: row.record.seconds!, score: personalScores[i] })),
+    cloud: cloudScores };
+});
+const benchmarkResults = skipBenchmarks ? null : runBenchmarks(featureRows, experiments, preparationMs, includeV4Refutation, activeTunings);
 /** Git metadata is unavailable in source archives; do not invent a revision. */
 function gitMetadata(args: readonly string[]): string | null {
   try {
@@ -134,6 +148,8 @@ const reportContext: ReportContext = {
     cloudLegacy: "Frozen V3 combined difficulty snapshot; random seed reset to 81 for each puzzle; prepared solution",
     cloudLegacySnapshotId: `sha256:${createHash("sha256").update(readFileSync(resolve(__dirname, "../../docs/difficulty/data/cloud-sudoku-legacy-scores.csv"))).digest("hex")}`,
     v4Refutation: includeV4Refutation ? "Raw V4 refutation score, 30 runs, boost 1, seed 81; solution prepared; no score cache" : "Eliminated",
+    v4DifficultySource: "gttravis/V4-difficulty at 25d39b3; fixed tunings from difficulty.ts comments",
+    v4DifficultyTunings: JSON.stringify(activeTunings),
     eliminatedProcedures: registry.procedures.map(record => record.procedure).join(", ") || "None",
   },
 };
@@ -147,6 +163,7 @@ writeJson("results.json", {
   corpus,
   experiments,
   cloudValidation,
+  v4Difficulty,
   v4Refutation: includeV4Refutation ? { personal: personalRefutation, cloud: cloudRefutation } : null,
   eliminatedProcedures: registry.procedures,
 });
@@ -175,10 +192,14 @@ const predictionRows = experiments.flatMap(experiment => {
   return [...personalPredictions, ...sitePredictions];
 });
 writeCsv("predictions.csv", predictionRows);
+writeCsv("v4-difficulty-personal.csv", v4Difficulty.flatMap(tuning => tuning.personal.map(row => ({
+  procedure: tuning.procedure, evaluation: "personal-calibration-diagnostic", ...row,
+}))));
 writeCsv("cloud-predictions.csv", cloudRecords.map((record, i) => ({ id: record.id, puzzle: record.puzzle,
   seconds: record.seconds, completionCount: record.completionCount, legacyScore: legacyScores[i], v4RefutationScore: cloudRefutation[i],
+  ...Object.fromEntries(v4Difficulty.map(tuning => [tuning.procedure, tuning.cloud[i]])),
   ...Object.fromEntries((cloudValidation?.predictions ?? []).map(row => [row.procedure, Math.exp(row.values[i])])) })));
 
 writeFileSync(resolve(output, "REPORT.md"), renderReport(experiments, correlationRows, corpus, benchmarkResults, reportContext, registry.procedures, cloudValidation?.results,
-  includeV4Refutation && personalRefutation.length ? summarizeV4Refutation(personalRefutation.map(row => row.seconds), personalRefutationScores) : undefined));
+  includeV4Refutation && personalRefutation.length ? summarizeV4Refutation(personalRefutation.map(row => row.seconds), personalRefutationScores) : undefined, v4Difficulty.map(tuning => tuning.personalSummary)));
 console.log(`Research outputs written to ${output}`);

@@ -1,5 +1,6 @@
 import { readFileSync, renameSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { isV4RawProcedure } from "./v4Difficulty";
 import { humanCorrelationScore } from "./statistics";
 import type { ValidationStats } from "./cloudValidation";
 import { PROCEDURE_FAMILIES } from "./procedures";
@@ -50,7 +51,7 @@ function isStatistics(value: unknown): value is ValidationStats {
 }
 function validProcedure(value: unknown): value is string {
   if (typeof value !== "string") return false;
-  if (value === "v4/refutation") return true;
+  if (isV4RawProcedure(value)) return true;
   const slash = value.lastIndexOf("/");
   return slash > 0 && ARCHIVABLE_FAMILIES.some(family => family === value.slice(slash + 1));
 }
@@ -67,7 +68,7 @@ export function parseEliminationRegistry(value: unknown): EliminationRegistry {
       !finite(record.score) || record.score < 0 || record.score > 1 || typeof record.scoreDefinition !== "string" || !record.scoreDefinition.trim() ||
       !(record.scoringP95Ms === null || finite(record.scoringP95Ms) && record.scoringP95Ms >= 0) ||
       !isStatistics(record.statistics) || record.statistics.spearman === null || record.statistics.pearson === null ||
-      (record.procedure !== "v4/refutation" && (record.statistics.logRmse === null || record.statistics.secondsMae === null)) ||
+      (!isV4RawProcedure(record.procedure) && (record.statistics.logRmse === null || record.statistics.secondsMae === null)) ||
       !count(record.evaluated) || !count(record.total) ||
       record.evaluated < 2 || record.evaluated !== record.total || record.statistics.n !== record.evaluated ||
       !(record.modelId === null || typeof record.modelId === "string") || !object(record.runContext) ||
@@ -110,7 +111,7 @@ export function captureElimination(
   const experiment = results.experiments.find(row => object(row) && row.name === name);
   const summary = object(experiment) && Array.isArray(experiment.summaries) ?
     experiment.summaries.find(row => object(row) && row.family === family) : undefined;
-  if (procedure !== "v4/refutation" && (!object(summary) || !isStatistics(summary.heldout) || summary.evaluated !== summary.total ||
+  if (!isV4RawProcedure(procedure) && (!object(summary) || !isStatistics(summary.heldout) || summary.evaluated !== summary.total ||
     summary.total !== results.corpus.personal || summary.heldout.n !== summary.evaluated)) {
     throw new Error(`Procedure ${procedure} has no complete held-out result in this run.`);
   }
@@ -122,7 +123,7 @@ export function captureElimination(
     if (!Array.isArray(results.cloudValidation.results)) throw new Error("Invalid Cloud validation results.");
     const cloud = results.cloudValidation.results.find(row => object(row) && row.procedure === procedure);
     if (!object(cloud) || !isStatistics(cloud.scores) || cloud.scores.n !== results.reportContext.independentValidationPuzzles ||
-      (procedure !== "v4/refutation" && (cloud.scores.logRmse === null || cloud.scores.secondsMae === null))) {
+      (!isV4RawProcedure(procedure) && (cloud.scores.logRmse === null || cloud.scores.secondsMae === null))) {
       throw new Error(`Procedure ${procedure} has no complete Cloud validation result in this run.`);
     }
     statistics = cloud.scores;
@@ -143,7 +144,7 @@ export function captureElimination(
       JSON.stringify(benchmarks.reportContext) !== JSON.stringify(results.reportContext)) {
       throw new Error("Benchmark provenance does not match results. Regenerate the run before recording an elimination.");
     }
-    const timingName = procedure === "v4/refutation" ? "v4/refutation scoring" : `${name} extraction + ${family} prediction`;
+    const timingName = isV4RawProcedure(procedure) ? `${procedure} scoring` : `${name} extraction + ${family} prediction`;
     const timing = benchmarks.benchmarks.find(row => object(row) && row.name === timingName);
     if (!object(timing) || !finite(timing.p95Ms) || timing.p95Ms < 0) throw new Error(`No calculation-time measurement for ${procedure}.`);
     scoringP95Ms = timing.p95Ms;

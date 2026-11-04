@@ -202,3 +202,37 @@ git diff --check
 Compile-time feature and historical-score checks live in `V4/research/difficulty/tests/types/difficultyFeatures.typecheck.ts`. Bun executes tests but does not type-check them; the root TypeScript configuration excludes `*.test.ts`, so these checks deliberately use a different suffix and run with `tsc --noEmit`.
 
 CI runs core V4 tests, research tests, and TypeScript checks separately. Jest excludes V4 and remains responsible for the legacy tests. Benchmark tests check output structure and valid timing summaries, not machine-dependent speed thresholds.
+
+### Fixed combined V4 difficulty recipes
+
+The regular report command also evaluates all five tunings documented in
+`V4/difficulty.ts`, imported from `gttravis/V4-difficulty` at `25d39b3`:
+
+| Procedure | Dependency runs | Refutation cap |
+| --- | ---: | ---: |
+| `v4/difficulty-recommended` | 3 | 48 |
+| `v4/difficulty-runs10-cap48` | 10 | 48 |
+| `v4/difficulty-runs5-cap48` | 5 | 48 |
+| `v4/difficulty-runs3-cap32` | 3 | 32 |
+| `v4/difficulty-runs10-cap32` | 10 | 32 |
+
+All use one refutation run, 64 trials, 25 dependency steps, seeds 81,
+weights 1/10, empty-cell exponents 2/1.9, and output scale 1,000,000.
+The research recipes resolve every setting explicitly in `v4Difficulty.ts`,
+so later API default changes do not silently change these procedure IDs.
+They are fixed raw scores, not models fitted to this report's corpus. Compare
+scores directly with seconds; no exponentiation or time-error metrics apply.
+
+Each recipe gets its own Cloud correlation row, benchmark, and column in
+`cloud-predictions.csv`. `results.json` records full options and aligned scores;
+`v4-difficulty-personal.csv` records personal scores with puzzle IDs. Personal
+results are calibration diagnostics because that corpus overlaps the earlier
+30-board tuning dataset. The larger Cloud corpus provides a separate comparison;
+selecting winners on it makes subsequent comparisons exploratory.
+
+The existing `v4/refutation` row retains its original 30-run, boost-1 behavior
+through `historicalRefutation.ts` and `historicalRandom.ts`. These snapshots are
+research-only; the top-level V4 modules implement the newer combined scorer.
+Each new procedure supports the existing elimination workflow independently.
+`--skip-cloud-validation` still produces personal diagnostics, and
+`--skip-benchmarks` leaves timing fields unavailable.

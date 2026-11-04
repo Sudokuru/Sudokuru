@@ -7,6 +7,8 @@ import { humanCorrelationScore } from "./statistics";
 import type { EliminatedProcedure } from "./eliminations";
 import type { ValidationResult } from "./cloudValidation";
 
+import { V4_DIFFICULTY_TUNINGS, isV4RawProcedure } from "./v4Difficulty";
+
 const fmt = (value: number | null | undefined) => value == null ? "n/a" : value.toFixed(3);
 const difference = (a: number | null | undefined, b: number | null | undefined) =>
   a == null || b == null ? "n/a" : fmt(a - b);
@@ -48,7 +50,10 @@ export function renderReport(
   eliminated: readonly EliminatedProcedure[] = [],
   validation?: readonly ValidationResult[],
   personalRefutation?: ValidationResult,
+  personalDifficulty: readonly ValidationResult[] = [],
 ): string {
+  validation = validation?.filter(row => !eliminated.some(record => record.procedure === row.procedure));
+  personalDifficulty = personalDifficulty.filter(row => !eliminated.some(record => record.procedure === row.procedure));
   // Historical snapshots win over any stale live row supplied by a caller.
   experiments = experiments.map(experiment => ({ ...experiment,
     summaries: experiment.summaries.filter(row => !eliminated.some(record => record.procedure === `${experiment.name}/${row.family}`)),
@@ -93,13 +98,18 @@ export function renderReport(
   ];
   if (validation) {
     mainRows.splice(0, mainRows.length, ...validation.map(row => ({ procedure: row.procedure === "legacy" ? "legacy (V3)" : row.procedure,
-      score: humanCorrelationScore(row.scores), scoringP95Ms: row.procedure === "legacy" ? null : row.procedure === "v4/refutation" ?
-        benchmarkResults?.benchmarks.find(item => item.name === "v4/refutation scoring")?.p95Ms ?? null : (() => {
+      score: humanCorrelationScore(row.scores), scoringP95Ms: row.procedure === "legacy" ? null : isV4RawProcedure(row.procedure) ?
+        benchmarkResults?.benchmarks.find(item => item.name === `${row.procedure} scoring`)?.p95Ms ?? null : (() => {
         const experiment = experiments.find(item => row.procedure.startsWith(`${item.name}/`));
         const family = experiment?.summaries.find(item => `${experiment.name}/${item.family}` === row.procedure)?.family;
         return experiment && family ? scoring(experiment, family)?.p95Ms ?? null : null;
       })() })));
   }
+  if (!validation) mainRows.push(...personalDifficulty.map(row => ({
+    procedure: row.procedure, score: humanCorrelationScore(row.scores),
+    scoringP95Ms: benchmarkResults?.benchmarks.find(item => item.name === `${row.procedure} scoring`)?.p95Ms ?? null,
+  })));
+  const combinedResults = (validation ?? personalDifficulty).filter(row => V4_DIFFICULTY_TUNINGS.some(tuning => tuning.procedure === row.procedure));
   mainRows.sort((a, b) => (b.score ?? -1) - (a.score ?? -1) || a.procedure.localeCompare(b.procedure));
   const topStrategies = validation ? mainRows.filter(row => row.procedure !== "legacy (V3)" && row.score !== null).slice(0, 3) : [];
   const legacyValidation = validation?.find(row => row.procedure === "legacy");
@@ -109,12 +119,12 @@ export function renderReport(
     "Two metrics summarize each procedure: human-correlation score (higher is better) and scoring p95 in milliseconds (lower is better). The score is (2 + Spearman + Pearson) / 4, equally weighting ordering and linear agreement with human solve times: 0 means perfectly reversed, 0.5 means zero average correlation, and 1 means perfect agreement. It is not a probability. Missing correlations produce n/a. Raw statistics are retained in the appendices; model selection is unchanged.",
     "## How do approaches compare with legacy?",
     ...(experiments.length === 0 ? ["No experiments ran; model evaluation and fitted-model results are unavailable."] : []),
-    validation ? "Cloud Sudoku results evaluate personal-trained models and the unfitted V4 refutation difficulty score against puzzle-level mean solve times, with each puzzle weighted equally regardless of completion count. V4 refutation is only one component of the legacy formula and requires a prepared solution. Legacy combined scores are a checked-in V3 snapshot originally calculated with a reset random seed per puzzle. Scoring p95 is measured separately on the original 44-puzzle corpus; it excludes training and solution preparation. Legacy runtime was not measured." :
+    validation ? "Cloud Sudoku results evaluate personal-trained models and fixed V4 raw difficulty scores against puzzle-level mean solve times, with each puzzle weighted equally regardless of completion count. The historical v4/refutation procedure retains its original 30-run implementation. The five v4/difficulty procedures combine the newer refutation and dependency scores; their parameters were frozen before this larger-corpus evaluation. All use prepared solutions. Legacy combined scores are a checked-in V3 snapshot originally calculated with a reset random seed per puzzle. Scoring p95 is measured separately on the original 44-puzzle corpus; it excludes training and solution preparation. Legacy runtime was not measured." :
       "Personal predictions hold each puzzle out of both model selection and fitting. Scoring p95 includes extraction plus prediction for the final fitted model, excluding training and solution preparation. The summary shows only procedures evaluated on all personal puzzles; partial coverage and unavailable results remain in the appendices. Legacy is a historical reference, not a newly validated procedure.",
     "Active results are sorted by human-correlation score, highest first. Equal scores sort by procedure name; unavailable scores appear last.",
     table(scoreHeadings, mainRows.map(row => [row.procedure, fmt(row.score), fmt(row.scoringP95Ms)])),
     ...(validation ? ["## Top three strategies versus legacy on Cloud Sudoku",
-      "Ranked by the Cloud human-correlation score. Legacy and V4 refutation produce difficulty scores rather than predicted seconds, so their time errors are unavailable; Pearson compares raw scores with seconds. Timings use the original benchmark corpus. These comparisons use the same validation puzzles; choosing winners here makes subsequent use of this set exploratory.",
+      "Ranked by the Cloud human-correlation score. Legacy and the V4 raw-score procedures produce difficulty scores rather than predicted seconds, so their time errors are unavailable; Pearson compares raw scores with seconds. Timings use the original benchmark corpus. These comparisons use the same validation puzzles; choosing winners here makes subsequent use of this set exploratory.",
       ...topStrategies.flatMap(row => {
         const model = validation.find(item => item.procedure === row.procedure)!;
         const legacy = legacyValidation?.scores;
@@ -136,6 +146,18 @@ export function renderReport(
     eliminated.length ? table(scoreHeadings, eliminated.map(record =>
       [`${record.procedure} (eliminated)`, fmt(record.score), fmt(record.scoringP95Ms)])) : "No procedures have been eliminated.",
     "Eliminated rows use frozen measurements from [eliminated-procedures.json](../eliminated-procedures.json). They are historical results, potentially from different corpora, code, or machines; see the decision records below. They are not recalculated by this run.",
+    ...(combinedResults.length ? ["## V4 combined difficulty tunings",
+      "These five recipes were imported from difficulty.ts at commit 25d39b3. Recommended identifies the earlier speed/accuracy choice, not a winner selected by this report. Original tuning used mean Pearson across five small groups; this report ranks by (2 + Spearman + Pearson) / 4. Raw scores may be negative and are compared directly with seconds, without exponentiation or time-error metrics.",
+      "Shared settings: refutation runs 1, trials 64, dependency steps 25, seeds 81, weights 1/10, empty-cell exponents 2/1.9, output scale 1,000,000. Full resolved options and per-puzzle scores are saved in results.json; cloud-predictions.csv has a separate raw-score column per procedure.",
+      table(["Procedure", "Dependency runs", "Refutation cap", "Original tuning mean Pearson", "Evaluated puzzles", "Spearman", "Pearson"], combinedResults.map(row => {
+        const tuning = V4_DIFFICULTY_TUNINGS.find(item => item.procedure === row.procedure)!;
+        return [row.procedure, String(tuning.options.dependencyRunCount), String(tuning.options.maxRefutationScore),
+          tuning.tuningMeanPearson.toFixed(10), String(row.scores.n), fmt(row.scores.spearman), fmt(row.scores.pearson)];
+      })),
+      "Personal results below are calibration diagnostics: this corpus overlaps the small dataset used to choose these tunings. They are not held-out predictions or independent validation. When Cloud validation is skipped, these diagnostics also supply the main comparison rows for the combined V4 procedures.",
+      table(["Procedure", "Personal puzzles", "Spearman", "Pearson"], personalDifficulty.map(row =>
+        [row.procedure, String(row.scores.n), fmt(row.scores.spearman), fmt(row.scores.pearson)])),
+    ] : []),
     "## Does adding trace information help?",
     "These differences use the personal-data leave-one-out results. Changes are first minus second, not uncertainty estimates. Only matching puzzle identities are compared. Trace procedures use obvious singles; they do not evaluate richer strategies.",
     "The fixed early-singles procedures add one feature to log(1 + notes), using at most ten row-major placements and stopping on a solve or stall. Reduction counts candidates removed from peer cells, excluding each placed single's own note. Bottleneck sums 1 / availableSingles before observed placements; forced moves contribute one. Short traces use observed moves only, with no invented terminal-stall sample. Both fit three parameters and have no feature/window search. Their combined timings include the bounded trace and assume a prepared solution.",
