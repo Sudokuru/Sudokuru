@@ -38,7 +38,7 @@ describe("getRawDifficulty", () => {
     const options = { refutationMaxTrialsPerRun: 0 };
 
     expect(
-      getRefutationScore(puzzle, solution, { runCount: 1, maxTrialsPerRun: 0 })
+      getRefutationScore(puzzle, solution, {seed: 81,  runCount: 1, maxTrialsPerRun: 0 })
     ).toBeNull();
     expect(getRawDifficulty(puzzle, undefined, options)).toBe(12722);
     expect(getRawDifficulty(puzzle, solution, options)).toBe(12722);
@@ -49,7 +49,7 @@ describe("getRawDifficulty", () => {
     const solution = HIGH_REFUTATION_BOARD.solution;
 
     expect(
-      getRefutationScore(puzzle, solution, { runCount: 1, maxTrialsPerRun: 64 })
+      getRefutationScore(puzzle, solution, {seed: 81,  runCount: 1, maxTrialsPerRun: 64 })
     ).toBe(252);
     expect(getRawDifficulty(puzzle)).toBe(4242);
     expect(getRawDifficulty(puzzle, solution)).toBe(4242);

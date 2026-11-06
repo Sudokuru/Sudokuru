@@ -16,7 +16,7 @@ The optional `RawDifficultyOptions` argument to `getRawDifficulty` controls both
 round(1,000,000 * (min(refutation ?? 48, 48) / emptyCellCount ** 2 + 10 * dependency / emptyCellCount ** 1.9))
 ```
 
-The combined API defaults to one refutation run with 64 trials and three dependency paths of 25 steps. Each scorer uses its own seed-81 stream. Standalone scorer defaults remain three runs with 32 trials for refutation and three paths of 20 steps for dependency. The cap applies to unresolved and finite refutation scores before normalization. User notes are ignored, and inputs are not mutated. The comments in `difficulty.ts` document the calibration results and alternative tunings. `getGameDifficulty` label mapping and `getSudokuData` integration remain pending.
+The combined API defaults to one refutation run with 64 trials and three dependency paths of 25 steps. Each scorer uses its own seed-81 stream. Refutation and dependency scorers require explicit run counts, budgets or sampling windows, and seeds; all scoring defaults are owned by `difficulty.ts`. The cap applies to unresolved and finite refutation scores before normalization. User notes are ignored, and inputs are not mutated. The comments in `difficulty.ts` document the calibration results and alternative tunings. `getGameDifficulty` label mapping and `getSudokuData` integration remain pending.
 
 ## Original Plan for hint-based direction
 

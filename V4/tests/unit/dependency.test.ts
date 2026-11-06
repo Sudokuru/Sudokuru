@@ -14,10 +14,9 @@ const COLUMN_OBVIOUS_PAIR =
 
 describe("getDependencyScore", () => {
   describe("sampling options", () => {
-    it("preserves standalone defaults when options are omitted or explicit", () => {
+    it("uses explicitly supplied sampling settings", () => {
       const puzzle = getPuzzle(COLUMN_OBVIOUS_PAIR.flat().join(""));
 
-      expect(getDependencyScore(puzzle, {})).toBeCloseTo(-3.6666666666666665, 12);
       expect(
         getDependencyScore(puzzle, { runCount: 3, stepCount: 20, seed: 81 })
       ).toBeCloseTo(-3.6666666666666665, 12);
@@ -32,14 +31,14 @@ describe("getDependencyScore", () => {
       // This 2x2 puzzle offers three singles, then two, then one.
       const puzzle = getPuzzle("1000");
 
-      expect(getDependencyScore(puzzle, { stepCount })).toBe(expected);
+      expect(getDependencyScore(puzzle, { runCount: 3, seed: 81,  stepCount })).toBe(expected);
     });
 
     it("uses the requested number of independently started paths", () => {
       const puzzle = getPuzzle(COLUMN_OBVIOUS_PAIR.flat().join(""));
 
-      expect(getDependencyScore(puzzle, { runCount: 1 })).toBe(-3.7);
-      expect(getDependencyScore(puzzle, { runCount: 3 })).toBeCloseTo(
+      expect(getDependencyScore(puzzle, {stepCount: 20, seed: 81,  runCount: 1 })).toBe(-3.7);
+      expect(getDependencyScore(puzzle, {stepCount: 20, seed: 81,  runCount: 3 })).toBeCloseTo(
         -3.6666666666666665,
         12
       );
@@ -48,12 +47,12 @@ describe("getDependencyScore", () => {
     it("uses an explicit zero seed and repeats that stream independently", () => {
       const puzzle = getPuzzle(COLUMN_OBVIOUS_PAIR.flat().join(""));
 
-      expect(getDependencyScore(puzzle, { seed: 0 })).toBeCloseTo(
+      expect(getDependencyScore(puzzle, { runCount: 3, stepCount: 20,  seed: 0 })).toBeCloseTo(
         -3.683333333333333,
         12
       );
-      expect(getDependencyScore(puzzle)).toBeCloseTo(-3.6666666666666665, 12);
-      expect(getDependencyScore(puzzle, { seed: 0 })).toBeCloseTo(
+      expect(getDependencyScore(puzzle, { runCount: 3, stepCount: 20, seed: 81 })).toBeCloseTo(-3.6666666666666665, 12);
+      expect(getDependencyScore(puzzle, { runCount: 3, stepCount: 20,  seed: 0 })).toBeCloseTo(
         -3.683333333333333,
         12
       );
@@ -63,7 +62,7 @@ describe("getDependencyScore", () => {
       "rejects invalid run count %s",
       (runCount) => {
         expect(() =>
-          getDependencyScore(getPuzzle("1000"), { runCount })
+          getDependencyScore(getPuzzle("1000"), {stepCount: 20, seed: 81,  runCount })
         ).toThrow(RangeError);
       }
     );
@@ -72,7 +71,7 @@ describe("getDependencyScore", () => {
       "rejects invalid step count %s",
       (stepCount) => {
         expect(() =>
-          getDependencyScore(getPuzzle("1000"), { stepCount })
+          getDependencyScore(getPuzzle("1000"), { runCount: 3, seed: 81,  stepCount })
         ).toThrow(RangeError);
       }
     );
@@ -82,12 +81,12 @@ describe("getDependencyScore", () => {
     "returns zero for a solved size-%i puzzle",
     (size) => {
       const puzzle = getPuzzle(SOLVED_TEST_BOARDS[size].flat().join(""));
-      expect(getDependencyScore(puzzle)).toBe(0);
+      expect(getDependencyScore(puzzle, { runCount: 3, stepCount: 20, seed: 81 })).toBe(0);
     }
   );
 
   it("returns zero when a puzzle has no available simple move", () => {
-    expect(getDependencyScore(createEmptyPuzzle(4))).toBe(0);
+    expect(getDependencyScore(createEmptyPuzzle(4), { runCount: 3, stepCount: 20, seed: 81 })).toBe(0);
   });
 
   it.each(SUPPORTED_BOARD_SIZES)(
@@ -100,7 +99,7 @@ describe("getDependencyScore", () => {
         notes: [],
       };
 
-      expect(getDependencyScore(puzzle)).toBe(-0.05);
+      expect(getDependencyScore(puzzle, { runCount: 3, stepCount: 20, seed: 81 })).toBe(-0.05);
     }
   );
 
@@ -111,13 +110,13 @@ describe("getDependencyScore", () => {
     const puzzle = getPuzzle(
       ADDITIONAL_TEST_BOARDS_BY_NAME[fixtureName].flat().join("")
     );
-    expect(getDependencyScore(puzzle)).toBeCloseTo(expected, 12);
+    expect(getDependencyScore(puzzle, { runCount: 3, stepCount: 20, seed: 81 })).toBeCloseTo(expected, 12);
   });
 
   it("repeats the same seeded result independently of unrelated ratings", () => {
     const puzzle = getPuzzle(COLUMN_OBVIOUS_PAIR.flat().join(""));
 
-    expect(getDependencyScore(puzzle)).toBeCloseTo(
+    expect(getDependencyScore(puzzle, { runCount: 3, stepCount: 20, seed: 81 })).toBeCloseTo(
       -3.6666666666666665,
       12
     );
@@ -125,10 +124,10 @@ describe("getDependencyScore", () => {
       getDependencyScore(
         getPuzzle(
           ADDITIONAL_TEST_BOARDS_BY_NAME.ONLY_OBVIOUS_SINGLES.flat().join("")
-        )
+        ), { runCount: 3, stepCount: 20, seed: 81 }
       )
     ).toBeCloseTo(-14.4, 12);
-    expect(getDependencyScore(puzzle)).toBeCloseTo(
+    expect(getDependencyScore(puzzle, { runCount: 3, stepCount: 20, seed: 81 })).toBeCloseTo(
       -3.6666666666666665,
       12
     );
@@ -146,11 +145,11 @@ describe("getDependencyScore", () => {
       }
     }
 
-    expect(getDependencyScore(puzzleWithEmptyNotes)).toBeCloseTo(
+    expect(getDependencyScore(puzzleWithEmptyNotes, { runCount: 3, stepCount: 20, seed: 81 })).toBeCloseTo(
       -3.6666666666666665,
       12
     );
-    expect(getDependencyScore(puzzleWithMisleadingNotes)).toBeCloseTo(
+    expect(getDependencyScore(puzzleWithMisleadingNotes, { runCount: 3, stepCount: 20, seed: 81 })).toBeCloseTo(
       -3.6666666666666665,
       12
     );
@@ -166,11 +165,11 @@ describe("getDependencyScore", () => {
       )
     );
 
-    expect(getDependencyScore(givenPuzzle)).toBeCloseTo(
+    expect(getDependencyScore(givenPuzzle, { runCount: 3, stepCount: 20, seed: 81 })).toBeCloseTo(
       -3.6666666666666665,
       12
     );
-    expect(getDependencyScore(userValuePuzzle)).toBeCloseTo(
+    expect(getDependencyScore(userValuePuzzle, { runCount: 3, stepCount: 20, seed: 81 })).toBeCloseTo(
       -3.6666666666666665,
       12
     );
@@ -180,7 +179,7 @@ describe("getDependencyScore", () => {
     const puzzle = getPuzzle(COLUMN_OBVIOUS_PAIR.flat().join(""));
     const before = clonePuzzle(puzzle);
 
-    getDependencyScore(puzzle);
+    getDependencyScore(puzzle, { runCount: 3, stepCount: 20, seed: 81 });
 
     expect(puzzle).toEqual(before);
   });

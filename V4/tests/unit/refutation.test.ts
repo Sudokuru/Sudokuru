@@ -30,10 +30,9 @@ const V4_REFUTATION_SCORES = [
 
 describe("getRefutationScore", () => {
   describe("sampling options", () => {
-    it("preserves standalone defaults when options are omitted or explicit", () => {
+    it("uses explicitly supplied sampling settings", () => {
       const puzzle = getPuzzle(COLUMN_OBVIOUS_PAIR.flat().join(""));
 
-      expect(getRefutationScore(puzzle, COLUMN_OBVIOUS_PAIR_SOLUTION, {})).toBe(9);
       expect(
         getRefutationScore(puzzle, COLUMN_OBVIOUS_PAIR_SOLUTION, {
           runCount: 3,
@@ -47,12 +46,12 @@ describe("getRefutationScore", () => {
       const puzzle = getPuzzle(BOUNDED_REFUTATION_BOARD.puzzle);
 
       expect(
-        getRefutationScore(puzzle, BOUNDED_REFUTATION_BOARD.solution, {
+        getRefutationScore(puzzle, BOUNDED_REFUTATION_BOARD.solution, { maxTrialsPerRun: 32, seed: 81,
           runCount: 1,
         })
       ).toBe(61);
       expect(
-        getRefutationScore(puzzle, BOUNDED_REFUTATION_BOARD.solution)
+        getRefutationScore(puzzle, BOUNDED_REFUTATION_BOARD.solution, { runCount: 3, maxTrialsPerRun: 32, seed: 81 })
       ).toBeNull();
     });
 
@@ -60,7 +59,7 @@ describe("getRefutationScore", () => {
       const puzzle = getPuzzle(BOUNDED_REFUTATION_BOARD.puzzle);
 
       expect(
-        getRefutationScore(puzzle, BOUNDED_REFUTATION_BOARD.solution, {
+        getRefutationScore(puzzle, BOUNDED_REFUTATION_BOARD.solution, { runCount: 3, seed: 81,
           maxTrialsPerRun: 33,
         })
       ).toBe(47);
@@ -70,17 +69,17 @@ describe("getRefutationScore", () => {
       const puzzle = getPuzzle(COLUMN_OBVIOUS_PAIR.flat().join(""));
 
       expect(
-        getRefutationScore(puzzle, COLUMN_OBVIOUS_PAIR_SOLUTION, { seed: 0 })
+        getRefutationScore(puzzle, COLUMN_OBVIOUS_PAIR_SOLUTION, { runCount: 3, maxTrialsPerRun: 32,  seed: 0 })
       ).toBe(6);
-      expect(getRefutationScore(puzzle, COLUMN_OBVIOUS_PAIR_SOLUTION)).toBe(9);
+      expect(getRefutationScore(puzzle, COLUMN_OBVIOUS_PAIR_SOLUTION, { runCount: 3, maxTrialsPerRun: 32, seed: 81 })).toBe(9);
       expect(
-        getRefutationScore(puzzle, COLUMN_OBVIOUS_PAIR_SOLUTION, { seed: 0 })
+        getRefutationScore(puzzle, COLUMN_OBVIOUS_PAIR_SOLUTION, { runCount: 3, maxTrialsPerRun: 32,  seed: 0 })
       ).toBe(6);
     });
 
     it("permits free singles but no wrong-candidate trials with a zero budget", () => {
       expect(
-        getRefutationScore(getPuzzle("1000"), SOLVED_TEST_BOARDS[2], {
+        getRefutationScore(getPuzzle("1000"), SOLVED_TEST_BOARDS[2], { runCount: 3, seed: 81,
           maxTrialsPerRun: 0,
         })
       ).toBe(0);
@@ -88,7 +87,7 @@ describe("getRefutationScore", () => {
         getRefutationScore(
           getPuzzle(COLUMN_OBVIOUS_PAIR.flat().join("")),
           COLUMN_OBVIOUS_PAIR_SOLUTION,
-          { maxTrialsPerRun: 0 }
+          { runCount: 3, seed: 81,  maxTrialsPerRun: 0 }
         )
       ).toBeNull();
     });
@@ -97,7 +96,7 @@ describe("getRefutationScore", () => {
       "rejects invalid run count %s",
       (runCount) => {
         expect(() =>
-          getRefutationScore(getPuzzle("1000"), SOLVED_TEST_BOARDS[2], {
+          getRefutationScore(getPuzzle("1000"), SOLVED_TEST_BOARDS[2], { maxTrialsPerRun: 32, seed: 81,
             runCount,
           })
         ).toThrow(RangeError);
@@ -108,7 +107,7 @@ describe("getRefutationScore", () => {
       "rejects invalid trial budget %s",
       (maxTrialsPerRun) => {
         expect(() =>
-          getRefutationScore(getPuzzle("1000"), SOLVED_TEST_BOARDS[2], {
+          getRefutationScore(getPuzzle("1000"), SOLVED_TEST_BOARDS[2], { runCount: 3, seed: 81,
             maxTrialsPerRun,
           })
         ).toThrow(RangeError);
@@ -127,7 +126,7 @@ describe("getRefutationScore", () => {
         const puzzle: CellProps[][] = getPuzzle(board.flat().join(""));
         const solutionCopy: SudokuNumber[][] = cloneBoard(solution);
 
-        expect(getRefutationScore(puzzle, solutionCopy)).toBe(
+        expect(getRefutationScore(puzzle, solutionCopy, { runCount: 3, maxTrialsPerRun: 32, seed: 81 })).toBe(
           V4_REFUTATION_SCORES[index]
         );
       }
@@ -147,7 +146,7 @@ describe("getRefutationScore", () => {
         );
         const puzzle: CellProps[][] = getPuzzle(solution.flat().join(""));
 
-        expect(getRefutationScore(puzzle, solution)).toBe(0);
+        expect(getRefutationScore(puzzle, solution, { runCount: 3, maxTrialsPerRun: 32, seed: 81 })).toBe(0);
       }
     );
 
@@ -169,7 +168,7 @@ describe("getRefutationScore", () => {
             ? { ...patch.cell, notes: [...patch.cell.notes] }
             : { ...patch.cell };
 
-        expect(getRefutationScore(puzzle, solution)).toBe(0);
+        expect(getRefutationScore(puzzle, solution, { runCount: 3, maxTrialsPerRun: 32, seed: 81 })).toBe(0);
       }
     );
   });
@@ -177,7 +176,7 @@ describe("getRefutationScore", () => {
   describe("functional behavior", () => {
     it("counts the assumption and subsequent singles for a multi-step refutation", () => {
       const puzzle = getPuzzle(COLUMN_OBVIOUS_PAIR.flat().join(""));
-      expect(getRefutationScore(puzzle, COLUMN_OBVIOUS_PAIR_SOLUTION)).toBe(9);
+      expect(getRefutationScore(puzzle, COLUMN_OBVIOUS_PAIR_SOLUTION, { runCount: 3, maxTrialsPerRun: 32, seed: 81 })).toBe(9);
     });
 
     it("sums all incorrect candidate costs for a refutable cell", () => {
@@ -187,7 +186,7 @@ describe("getRefutationScore", () => {
       expect(
         getRefutationScore(
           puzzle,
-          ADDITIONAL_TEST_BOARDS_BY_NAME.POINTING_PAIR_SOLUTION
+          ADDITIONAL_TEST_BOARDS_BY_NAME.POINTING_PAIR_SOLUTION, { runCount: 3, maxTrialsPerRun: 32, seed: 81 }
         )
       ).toBe(59);
     });
@@ -195,36 +194,36 @@ describe("getRefutationScore", () => {
     it("returns null when a later run exhausts its trial budget", () => {
       const puzzle = getPuzzle(BOUNDED_REFUTATION_BOARD.puzzle);
       expect(
-        getRefutationScore(puzzle, BOUNDED_REFUTATION_BOARD.solution)
+        getRefutationScore(puzzle, BOUNDED_REFUTATION_BOARD.solution, { runCount: 3, maxTrialsPerRun: 32, seed: 81 })
       ).toBeNull();
     });
 
     it("returns null when a wrong assumption completes an alternative solution", () => {
       expect(
-        getRefutationScore(createEmptyPuzzle(2), SOLVED_TEST_BOARDS[2])
+        getRefutationScore(createEmptyPuzzle(2), SOLVED_TEST_BOARDS[2], { runCount: 3, maxTrialsPerRun: 32, seed: 81 })
       ).toBeNull();
     });
 
     it("returns null when single deductions cannot refute any cell", () => {
       expect(
-        getRefutationScore(createEmptyPuzzle(4), SOLVED_TEST_BOARDS[4])
+        getRefutationScore(createEmptyPuzzle(4), SOLVED_TEST_BOARDS[4], { runCount: 3, maxTrialsPerRun: 32, seed: 81 })
       ).toBeNull();
     });
 
     it("is independent of unrelated ratings", () => {
       const puzzle = getPuzzle(COLUMN_OBVIOUS_PAIR.flat().join(""));
       const solution = cloneBoard(COLUMN_OBVIOUS_PAIR_SOLUTION);
-      expect(getRefutationScore(puzzle, solution)).toBe(9);
+      expect(getRefutationScore(puzzle, solution, { runCount: 3, maxTrialsPerRun: 32, seed: 81 })).toBe(9);
 
       expect(
         getRefutationScore(
           getPuzzle(
             ADDITIONAL_TEST_BOARDS_BY_NAME.BOX_OBVIOUS_PAIR.flat().join("")
           ),
-          ADDITIONAL_TEST_BOARDS_BY_NAME.BOX_OBVIOUS_PAIR_SOLUTION
+          ADDITIONAL_TEST_BOARDS_BY_NAME.BOX_OBVIOUS_PAIR_SOLUTION, { runCount: 3, maxTrialsPerRun: 32, seed: 81 }
         )
       ).toBe(18);
-      expect(getRefutationScore(puzzle, solution)).toBe(9);
+      expect(getRefutationScore(puzzle, solution, { runCount: 3, maxTrialsPerRun: 32, seed: 81 })).toBe(9);
     });
 
     it("returns the same literal score on repeated calls", () => {
@@ -241,8 +240,8 @@ describe("getRefutationScore", () => {
         COLUMN_OBVIOUS_PAIR_SOLUTION
       );
 
-      expect(getRefutationScore(firstPuzzle, firstSolution)).toBe(9);
-      expect(getRefutationScore(secondPuzzle, secondSolution)).toBe(9);
+      expect(getRefutationScore(firstPuzzle, firstSolution, { runCount: 3, maxTrialsPerRun: 32, seed: 81 })).toBe(9);
+      expect(getRefutationScore(secondPuzzle, secondSolution, { runCount: 3, maxTrialsPerRun: 32, seed: 81 })).toBe(9);
     });
 
     it("ignores user note contents when calculating difficulty", () => {
@@ -275,10 +274,10 @@ describe("getRefutationScore", () => {
       }
 
       expect(
-        getRefutationScore(puzzleWithEmptyNotes, cloneBoard(solution))
+        getRefutationScore(puzzleWithEmptyNotes, cloneBoard(solution), { runCount: 3, maxTrialsPerRun: 32, seed: 81 })
       ).toBe(9);
       expect(
-        getRefutationScore(puzzleWithSolutionOnlyNotes, cloneBoard(solution))
+        getRefutationScore(puzzleWithSolutionOnlyNotes, cloneBoard(solution), { runCount: 3, maxTrialsPerRun: 32, seed: 81 })
       ).toBe(9);
     });
 
@@ -298,10 +297,10 @@ describe("getRefutationScore", () => {
       );
 
       expect(
-        getRefutationScore(givenPuzzle, cloneBoard(solution))
+        getRefutationScore(givenPuzzle, cloneBoard(solution), { runCount: 3, maxTrialsPerRun: 32, seed: 81 })
       ).toBe(9);
       expect(
-        getRefutationScore(userValuePuzzle, cloneBoard(solution))
+        getRefutationScore(userValuePuzzle, cloneBoard(solution), { runCount: 3, maxTrialsPerRun: 32, seed: 81 })
       ).toBe(9);
     });
 
@@ -314,7 +313,7 @@ describe("getRefutationScore", () => {
       );
       const puzzleBefore: CellProps[][] = clonePuzzle(puzzle);
       const solutionBefore: SudokuNumber[][] = cloneBoard(solution);
-      const score: number | null = getRefutationScore(puzzle, solution);
+      const score: number | null = getRefutationScore(puzzle, solution, { runCount: 3, maxTrialsPerRun: 32, seed: 81 });
 
       expect(puzzle).toEqual(puzzleBefore);
       expect(solution).toEqual(solutionBefore);

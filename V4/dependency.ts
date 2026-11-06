@@ -6,36 +6,33 @@ import {
 } from "./simpleSolver";
 import type { CellProps } from "./Types";
 
-const DEPENDENCY_RUN_COUNT = 3;
-const EARLY_STEP_COUNT = 20;
-
 export interface DependencyOptions {
-  /** Positive integer number of sampled solve paths. Defaults to 3. */
-  runCount?: number;
-  /** Positive integer sampling window per path. Defaults to 20 moves. */
-  stepCount?: number;
-  /** Seed for one random stream shared across paths. Defaults to 81. */
-  seed?: number;
+  /** Positive integer number of sampled solve paths. */
+  runCount: number;
+  /** Positive integer sampling window per path. */
+  stepCount: number;
+  /** Seed for one random stream shared across paths. */
+  seed: number;
 }
 
 /**
  * Measures how many obvious or hidden singles are available early in a solve.
- * By default, three paths begin at the same puzzle and sample up to 20 moves
- * each. The negative, unrounded mean makes more available singles an easier
+ * The requested paths begin at the same puzzle and sample the supplied number
+ * of moves each. The negative, unrounded mean makes more available singles an easier
  * score. A stalled path contributes zero for its remaining steps; zero also
  * describes an already solved puzzle.
  *
  * Inputs must be prevalidated. User notes are ignored, neither input cells nor
- * notes are mutated, and each call uses its own random stream (default seed 81).
+ * notes are mutated, and each call uses its own random stream from the supplied seed.
  * Throws RangeError for invalid run or step counts.
  */
 export function getDependencyScore(
   puzzle: readonly (readonly CellProps[])[],
   {
-    runCount = DEPENDENCY_RUN_COUNT,
-    stepCount = EARLY_STEP_COUNT,
-    seed = 81,
-  }: DependencyOptions = {}
+    runCount,
+    stepCount,
+    seed,
+  }: DependencyOptions
 ): number {
   if (!Number.isInteger(runCount) || runCount <= 0) {
     throw new RangeError("runCount must be a positive integer.");
