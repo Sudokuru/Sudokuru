@@ -94,18 +94,38 @@ groups.push({ name: "CSV average times",
 });
 if (groups.length !== 5 || groups.some((group, i) => group.puzzles.length !== (i === 4 ? 14 : 4) ||
     group.times.some((time) => !Number.isFinite(time) || time <= 0))) throw new Error("Expected five groups of 4/4/4/4/14 human-time boards.");
-function runSearch(): number {
-  let completed = 0;
+function prepareBoards() {
   const prepared: { puzzle: ReturnType<typeof getPuzzle>; solution: number[][] }[][] = [];
   for (const group of groups) {
     const boards: (typeof prepared)[number] = [];
     for (const text of group.puzzles) {
-      if (performance.now() >= deadline) return completed;
+      if (performance.now() >= deadline) return null;
       const puzzle = getPuzzle(text);
       boards.push({ puzzle, solution: getPuzzleSolution(puzzle) });
     }
     prepared.push(boards);
   }
+  return prepared;
+}
+function evaluateVariation(options: Required<RawDifficultyOptions>, prepared: ReturnType<typeof prepareBoards>): Result | null {
+  const results: GroupResult[] = [];
+  for (const [i, group] of groups.entries()) {
+    const scores: number[] = [];
+    for (const { puzzle, solution } of prepared[i]) {
+      if (performance.now() >= deadline) return null;
+      scores.push(getRawDifficulty(puzzle, solution, options));
+    }
+    const pearson = correlation(scores, group.times);
+    results.push({ name: group.name, scores, pearson: Number.isFinite(pearson) ? pearson : null });
+  }
+  const meanPearson = results.some((group) => group.pearson === null) ? null :
+    results.reduce((sum, group) => sum + group.pearson, 0) / results.length;
+  return { context, options, groups: results, meanPearson };
+}
+function runSearch(): number {
+  let completed = 0;
+  const prepared = prepareBoards();
+  if (prepared === null) return completed;
   const dimensions = Object.entries(grid);
   const order = Array.from({ length: dimensions.reduce((n, [, values]) => n * values.length, 1) }, (_, i) => i);
   const random = createSeededRandom(81);
@@ -123,19 +143,8 @@ function runSearch(): number {
       }
     }
     if (seen.has(key(options))) continue;
-    const results: GroupResult[] = [];
-    for (const [i, group] of groups.entries()) {
-      const scores: number[] = [];
-      for (const { puzzle, solution } of prepared[i]) {
-        if (performance.now() >= deadline) return completed;
-        scores.push(getRawDifficulty(puzzle, solution, options));
-      }
-      const pearson = correlation(scores, group.times);
-      results.push({ name: group.name, scores, pearson: Number.isFinite(pearson) ? pearson : null });
-    }
-    const meanPearson = results.some((group) => group.pearson === null) ? null :
-      results.reduce((sum, group) => sum + group.pearson, 0) / results.length;
-    const record: Result = { context, options, groups: results, meanPearson };
+    const record = evaluateVariation(options, prepared);
+    if (record === null) return completed;
     appendFileSync(resultsPath, JSON.stringify(record) + "\n");
     current.push(record);
     seen.add(key(options));
