@@ -16,6 +16,7 @@ export interface RefutationOptions {
 
 type TrialBudget = { remaining: number };
 type RefutableCell = { location: CellLocation; cost: number };
+type CellTrialResult = number | null | "exhausted";
 
 /**
  * Counts an assumption and subsequent singles until an empty cell has no notes.
@@ -44,6 +45,27 @@ function measureTrial(
   return cost;
 }
 
+/** Sum the wrong-candidate trials for one cell, preserving the shared budget. */
+function measureCellCandidates(
+  puzzle: readonly (readonly CellProps[])[],
+  location: CellLocation,
+  candidates: readonly SudokuNumber[],
+  solutionValue: SudokuNumber,
+  nextRandom: () => number,
+  budget: TrialBudget
+): CellTrialResult {
+  let cost = 0;
+  for (const candidate of candidates) {
+    if (candidate === solutionValue) continue;
+    if (budget.remaining === 0) return "exhausted";
+    budget.remaining -= 1;
+    const trialCost = measureTrial(puzzle, location, candidate, nextRandom);
+    if (trialCost === null) return null;
+    cost += trialCost;
+  }
+  return cost;
+}
+
 /**
  * Returns the first row-major cell whose incorrect candidates can all be
  * refuted, summing their costs. Candidates are prepared in ascending order.
@@ -58,32 +80,11 @@ function findRefutableCell(
   for (let r = 0; r < puzzle.length; r += 1) {
     for (let c = 0; c < puzzle.length; c += 1) {
       const cell = puzzle[r][c];
-      if (cell.type !== "note") {
-        continue;
-      }
-
-      let cost = 0;
-      let refutable = true;
-      for (const candidate of cell.notes) {
-        if (candidate === solution[r][c]) {
-          continue;
-        }
-        if (budget.remaining === 0) {
-          return null;
-        }
-        budget.remaining -= 1;
-
-        const trialCost = measureTrial(puzzle, { r, c }, candidate, nextRandom);
-        if (trialCost === null) {
-          refutable = false;
-          break;
-        }
-        cost += trialCost;
-      }
-
-      if (refutable) {
-        return { location: { r, c }, cost };
-      }
+      if (cell.type !== "note") continue;
+      const location = { r, c };
+      const cost = measureCellCandidates(puzzle, location, cell.notes, solution[r][c], nextRandom, budget);
+      if (cost === "exhausted") return null;
+      if (cost !== null) return { location, cost };
     }
   }
 

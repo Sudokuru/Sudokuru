@@ -34,12 +34,10 @@ const grid = {
 };
 type GroupResult = { name: string; scores: number[]; pearson: number | null };
 type Result = {
-  context: string;
-  options: Required<RawDifficultyOptions>;
-  groups: GroupResult[];
-  meanPearson: number | null;
+  context: string; options: Required<RawDifficultyOptions>;
+  groups: GroupResult[]; meanPearson: number | null;
 };
-const optionKeys = Object.keys(baseline).sort();
+const optionKeys = Object.keys(baseline).sort((a, b) => a.localeCompare(b));
 const key = (options: RawDifficultyOptions): string => JSON.stringify(optionKeys.map((name) => options[name]));
 const nullableNumber = (value: unknown): boolean => value === null || Number.isFinite(value);
 function readResult(line: string, lineNumber: number): Result {
@@ -48,7 +46,9 @@ function readResult(line: string, lineNumber: number): Result {
     if (typeof record.context !== "string" || !optionKeys.every((name) => Number.isFinite(record.options?.[name])) ||
         !nullableNumber(record.meanPearson) || !Array.isArray(record.groups) || record.groups.length !== 5 ||
         !record.groups.every((group) => typeof group.name === "string" && nullableNumber(group.pearson) &&
-          Array.isArray(group.scores) && group.scores.length > 1 && group.scores.every(Number.isFinite))) throw new Error();
+          Array.isArray(group.scores) && group.scores.length > 1 && group.scores.every(Number.isFinite))) {
+      throw new Error("Result does not match the expected tuning record format.");
+    }
     return record;
   } catch {
     throw new Error(`Malformed result at ${resultsPath}:${lineNumber}`);
@@ -68,7 +68,6 @@ if (tail) {
     truncateSync(resultsPath, Buffer.byteLength(saved) - Buffer.byteLength(tail));
   }
 }
-
 const root = resolve(__dirname, "..");
 const csv = readFileSync(resolve(root, "docs/difficulty/data/legacy-difficulty-benchmarks.csv"), "utf8");
 const report = readFileSync(resolve(root, "docs/difficulty/data/legacy-generator-difficulty-benchmarks.txt"), "utf8");
@@ -95,14 +94,13 @@ groups.push({ name: "CSV average times",
 });
 if (groups.length !== 5 || groups.some((group, i) => group.puzzles.length !== (i === 4 ? 14 : 4) ||
     group.times.some((time) => !Number.isFinite(time) || time <= 0))) throw new Error("Expected five groups of 4/4/4/4/14 human-time boards.");
-
-let completed = 0;
-search: {
+function runSearch(): number {
+  let completed = 0;
   const prepared: { puzzle: ReturnType<typeof getPuzzle>; solution: number[][] }[][] = [];
   for (const group of groups) {
     const boards: (typeof prepared)[number] = [];
     for (const text of group.puzzles) {
-      if (performance.now() >= deadline) break search;
+      if (performance.now() >= deadline) return completed;
       const puzzle = getPuzzle(text);
       boards.push({ puzzle, solution: getPuzzleSolution(puzzle) });
     }
@@ -129,7 +127,7 @@ search: {
     for (const [i, group] of groups.entries()) {
       const scores: number[] = [];
       for (const { puzzle, solution } of prepared[i]) {
-        if (performance.now() >= deadline) break search;
+        if (performance.now() >= deadline) return completed;
         scores.push(getRawDifficulty(puzzle, solution, options));
       }
       const pearson = correlation(scores, group.times);
@@ -143,7 +141,9 @@ search: {
     seen.add(key(options));
     completed += 1;
   }
+  return completed;
 }
+const completed = runSearch();
 console.log(`Added ${completed} variations; ${current.length} recorded for this context. Results: ${resultsPath}`);
 console.log("Top five by mean Pearson (tuning data, not independent validation):");
 current.filter((record) => record.meanPearson !== null).sort((a, b) => b.meanPearson - a.meanPearson)
