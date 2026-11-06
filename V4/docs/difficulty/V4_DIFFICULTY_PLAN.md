@@ -20,7 +20,7 @@ The combined API defaults to one refutation run with 64 trials and three depende
 
 ## Original Plan for hint-based direction
 
-The following was the original plan for difficulty improvements. However, a reimplementation of the legacy V4 approach ended up performing way better on human correlation than both the old legacy V4 approach as well as all the other approaches I tried. It also consistently runs in under 20 milliseconds meaning it's should be fast enough to support real time puzzle generation.
+The following was the original plan for difficulty improvements. However, a reimplementation of the legacy V4 approach ended up performing way better on human correlation than both the old legacy V4 approach as well as all the other approaches I tried. It also consistently runs in under 10 milliseconds, meaning it should be fast enough to support real-time puzzle generation.
 
 Performance is a primary requirement. The module should avoid the many randomized solve and refutation runs used by the legacy algorithm and should be fast enough to rate puzzles as part of real-time puzzle generation.
 
