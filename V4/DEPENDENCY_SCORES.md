@@ -109,14 +109,10 @@ Examples:
 | 1.9 | -1 | Few simple options; harder dependency profile |
 | 0.0 | 0 | No sampled simple progress |
 
-## Notes For V4
+## V4 Dependency Score
 
-The legacy dependency score is a useful high-level heuristic, but it has a few design constraints to keep in mind for V4:
+`V4/dependency.ts` keeps the same idea while reusing V4's single-move solver. It rebuilds candidates from placed values, ignoring user notes, then counts cells with an obvious or hidden single along three seeded paths of at most 20 moves each by default. Each path starts from the same puzzle; the random stream advances across paths. A cell is counted once even if more than one unit identifies its single. Optional `runCount`, `stepCount`, and `seed` settings change the sampling; run and step counts must be positive integers.
 
-- It depends on candidate notes being initialized correctly before scoring.
-- It uses randomness when choosing which single to apply next, then averages over 30 runs.
-- It only considers obvious singles and hidden singles.
-- It samples at most 20 early steps.
-- Raw scores are not directly comparable across puzzles with very different numbers of givens unless they are normalized.
-- The production difficulty formula currently adjusts the raw dependency score by dividing by `emptyCellCount ** 1.9` before adding it to the refutation score.
+V4 returns the negative average across all possible sampled steps (60 by default) **without flooring**. If a path stalls, its remaining steps contribute zero. A solved puzzle or one with no available simple move returns zero. The fixed seed makes repeated scores deterministic, but the score remains a sample of possible move orders. This standalone score is not normalized for the number of empty cells.
 
+`getRawDifficulty` in `V4/difficulty.ts` combines this score with refutation, using three dependency paths of 25 steps and multiplying dependency by `10 / emptyCellCount ** 1.9` by default. Empty cells are note cells, so both given and user values reduce that count. Its optional `RawDifficultyOptions` argument controls the sampling and normalization values and passes those settings to both scorers. The 30-run integer formula above remains historical legacy behavior.

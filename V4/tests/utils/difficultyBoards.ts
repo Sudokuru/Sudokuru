@@ -1,5 +1,45 @@
 import type { BoardStringWithDifficulty } from "./TestTypes";
 
+/**
+ * A uniquely solvable digit relabeling of POINTING_PAIR. Its first seeded
+ * refutation run finishes, but its second exceeds the default 32-trial budget.
+ */
+export const BOUNDED_REFUTATION_BOARD = {
+  puzzle:
+    "002090000010600000005000041300000890040035060060009100800050000030000000000000416",
+  solution: [
+    [4, 8, 2, 5, 9, 1, 6, 3, 7],
+    [7, 1, 3, 6, 4, 2, 9, 8, 5],
+    [6, 9, 5, 7, 8, 3, 2, 4, 1],
+    [3, 5, 7, 2, 1, 6, 8, 9, 4],
+    [9, 4, 1, 8, 3, 5, 7, 6, 2],
+    [2, 6, 8, 4, 7, 9, 1, 5, 3],
+    [8, 2, 6, 1, 5, 4, 3, 7, 9],
+    [1, 3, 4, 9, 6, 7, 5, 2, 8],
+    [5, 7, 9, 3, 2, 8, 4, 1, 6],
+  ],
+};
+
+/**
+ * A symmetry and digit permutation of difficulty fixture 81 with finite V4
+ * refutation score 259, above the combined rating's provisional ceiling of 256.
+ */
+export const HIGH_REFUTATION_BOARD = {
+  puzzle:
+    "000020600000408000080160900100000002040280000005000000910050460008090070002300080",
+  solution: [
+    [7, 5, 4, 9, 2, 3, 6, 1, 8],
+    [6, 9, 1, 4, 7, 8, 3, 2, 5],
+    [2, 8, 3, 1, 6, 5, 9, 4, 7],
+    [1, 7, 6, 5, 4, 9, 8, 3, 2],
+    [3, 4, 9, 2, 8, 1, 7, 5, 6],
+    [8, 2, 5, 7, 3, 6, 1, 9, 4],
+    [9, 1, 7, 8, 5, 2, 4, 6, 3],
+    [5, 3, 8, 6, 9, 4, 2, 7, 1],
+    [4, 6, 2, 3, 1, 7, 5, 8, 9],
+  ],
+};
+
 export const DIFFICULTY_TEST_BOARD_STRINGS: string[] = [
   "003070040006002301089000000000107080517000006000400000271009005095000000000020000",
   "120740609400800000089003010000402001000000000040600900300020006200006000008000400",

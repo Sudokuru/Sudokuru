@@ -6,11 +6,21 @@ Before V4, Sudokuru's difficulty calculation was closely based on the computatio
 
 The legacy implementation adapted those ideas to estimate human difficulty, but doing so required substantial simulation logic written specifically for difficulty calculation. That work is computationally expensive and overlaps with solving behavior implemented elsewhere in Sudokuru.
 
-## Direction for V4
+## Current V4 implementation
 
-V4 will introduce a simpler difficulty module that produces broadly similar, useful difficulty ratings while being easier to understand, maintain, and extend.
+[`getRawDifficulty`](../../difficulty.ts) now combines V4's bounded refutation and dependency scores. It accepts a prevalidated puzzle and an optional matching solution; omitting the solution invokes `getPuzzleSolution`. Completed puzzles return zero. Ratings are deterministic integers, and easy puzzles can receive negative scores.
 
-The new module should reuse the same strategy detection code used to create hints. Difficulty calculation should observe which strategies are available and applied during a solve instead of maintaining a separate collection of ad hoc solving and simulation code. This keeps the difficulty model aligned with the techniques Sudokuru actually teaches and exposes through hints.
+The optional `RawDifficultyOptions` argument to `getRawDifficulty` controls both run counts and seeds, the refutation trial budget, the dependency sampling window, component weights, empty-cell normalization exponents, the provisional refutation ceiling, and the output scale. Its defaults produce this formula:
+
+```text
+round(1,000,000 * (min(refutation ?? 48, 48) / emptyCellCount ** 2 + 10 * dependency / emptyCellCount ** 1.9))
+```
+
+The combined API defaults to one refutation run with 64 trials and three dependency paths of 25 steps. Each scorer uses its own seed-81 stream. Refutation and dependency scorers require explicit run counts, budgets or sampling windows, and seeds; all scoring defaults are owned by `difficulty.ts`. The cap applies to unresolved and finite refutation scores before normalization. User notes are ignored, and inputs are not mutated. The comments in `difficulty.ts` document the calibration results and alternative tunings. `getGameDifficulty` label mapping and `getSudokuData` integration remain pending.
+
+## Original Plan for hint-based direction
+
+The following was the original plan for difficulty improvements. However, a reimplementation of the legacy V4 approach ended up performing way better on human correlation than both the old legacy V4 approach as well as all the other approaches I tried. It also consistently runs in under 10 milliseconds, meaning it should be fast enough to support real-time puzzle generation.
 
 Performance is a primary requirement. The module should avoid the many randomized solve and refutation runs used by the legacy algorithm and should be fast enough to rate puzzles as part of real-time puzzle generation.
 

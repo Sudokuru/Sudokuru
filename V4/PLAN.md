@@ -240,11 +240,19 @@ A stage may include any of the following (each optional):
 
 **Input**
 
-* `puzzle: CellProps[][]`
+* `puzzle: readonly (readonly CellProps[])[]` (prevalidated)
+* `solution?: readonly (readonly SudokuNumber[])[]` (trusted matching solution)
 
 **Output**
 
-* `rawDifficulty: number`
+* `rawDifficulty: number` (deterministic integer; may be negative)
+
+**Notes**
+
+* Implemented in `difficulty.ts` using the V4 refutation and dependency scores.
+* Obtains a unique solution with `getPuzzleSolution` when one is not supplied; its errors propagate. Supplying a validated solution avoids this work.
+* Returns `0` for a completed puzzle. User notes are ignored; inputs are not mutated.
+* Optional `RawDifficultyOptions` on `getRawDifficulty` controls sampling counts, trial budget, seeds, weights, empty-cell normalization exponents, refutation cap, and output scale. Defaults preserve the current score behavior.
 
 ---
 
@@ -382,9 +390,8 @@ Return an array of hints representing every possible application of the requeste
 
 ### Difficulty Module
 
-* input: prevalidated puzzle / board
-* output: raw difficulty number
-* mapping module: raw → `GameDifficulty`
+* input: prevalidated puzzle / board and optional matching solution
+* output: raw difficulty integer combining bounded refutation and early single availability
 
 ### Strategy Modules (example: Obvious Single)
 
@@ -596,7 +603,7 @@ For each strategy:
 | ☑      | `getHint`                                    | Deterministic; staged hints; strategy ordering; tests              | <https://github.com/Sudokuru/Sudokuru/pull/119> |
 | ☑      | `getAllHints`                                | Deterministic; uses one required strategy; tests                   | <https://github.com/Sudokuru/Sudokuru/pull/119> |
 | ☑      | `applyHint`                                  | Pure; correct diffs; tests                                         | <https://github.com/Sudokuru/Sudokuru/pull/119> |
-| ☐      | Difficulty module                            | `getRawDifficulty` returns stable number; tests                    | —       |
+| ☑      | Difficulty module                            | `getRawDifficulty` returns stable number; tests                    | —       |
 | ☐      | `getGameDifficulty` (placeholder ok)         | Returns `GameDifficulty`; boundaries documented                    | —       |
 | ☐      | `getGivensCount`                             | Correct count; tests                                               | —       |
 | ☐      | `getSudokuData`                              | Produces SudokuData; drill loop stable; tests                      | —       |
