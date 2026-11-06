@@ -1,4 +1,4 @@
-This is an excerpt from a report generated on the gttravis/V4-difficulty-coefs branch that ran the V4 difficulty calculations against a larger dataset alongside V3 legacy and some experimental approaches. The results overwhelmingly support V4 as the best human correlation scoring approach and it runs in less than 20 milliseconds the vast majority of the time.
+This is an excerpt from a report generated on the gttravis/V4-difficulty-coefs branch that ran the V4 difficulty calculations against a larger dataset alongside V3 legacy and some experimental approaches. The results overwhelmingly support V4 as the best human correlation scoring approach and it runs in less than 10 milliseconds the vast majority of the time.
 
 # V4 difficulty research results
 
